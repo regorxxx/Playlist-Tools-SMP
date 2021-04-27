@@ -12,13 +12,20 @@ Then load any script into a SMP panel within foobar. See info for usage.
 # INFO: 
 
 This is general info for all the scripts. Within all files you will find 3 big scripts (playlist manager, search_bydistance and buttons framework.
-And a collection of small utilities (search same by..., top tracks, remove duplicates, etc.). 
+And a collection of small utilities (search same by..., top tracks, remove duplicates, etc.).
+
+![image](https://user-images.githubusercontent.com/83307074/116298906-927f2c00-a78c-11eb-96c4-ca99e58d1a40.png)
+
 All files have extensive comments and descriptions at the header and all along the code, so you can check specific info about what everything does in its own file.
+
+![image](https://user-images.githubusercontent.com/83307074/116299366-20f3ad80-a78d-11eb-9194-8d6b91bc942c.png)
 
 There is a thread at hydrogenaud.io which contains several images and explanations of what each thing does too.
 https://hydrogenaud.io/index.php?topic=120394
 
 The '_images' folder shows screenshots to show how the scripts look in my pc:
+
+![image](https://user-images.githubusercontent.com/83307074/116299680-85167180-a78d-11eb-80e4-f00f147421be.png)
 
 The main folder (the one you found this readme) contains these scripts. Linked buttons are added below their main script for convenience:
 
@@ -77,6 +84,8 @@ All these js files (except those with (*)) contain only the functions, i.e. they
 You would need a button, a main menu call, etc. to use them. So they are meant to be called by other scripts.
 If you want to use them as standalone scripts within a panel, check the examples at 'buttons' folder. 
 Those are individual working -as is- buttons (check list). Since they are working standalone examples, all are marked with (*).
+
+![image](https://user-images.githubusercontent.com/83307074/116299720-952e5100-a78d-11eb-9759-2435a08bb56d.png)
 
   * buttons_playlist_tools_menu.js (*)
 	* buttons_remove_duplicates.js (*)
