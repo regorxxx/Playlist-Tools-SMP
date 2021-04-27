@@ -25,53 +25,53 @@ The main folder (the one you found this readme) contains these scripts. Linked b
   * top_tracks.js
       * buttons_search_top_tracks.js (*)
       * buttons_playlist_tools_menu.js (*)
-    * top_tracks_from_date.js
-      * buttons_search_top_tracks_from_date.js (*)
-      * buttons_playlist_tools_menu.js (*)
-    * tags_automation.js
-      * buttons_tags_automation.js (*)
-      * buttons_playlist_tools_menu.js (*)
-    * search_same_by.js
-      - buttons_search_same_by.js (*)
-      - buttons_playlist_tools_menu.js (*)
+  * top_tracks_from_date.js
+    * buttons_search_top_tracks_from_date.js (*)
+    * buttons_playlist_tools_menu.js (*)
+  * tags_automation.js
+    * buttons_tags_automation.js (*)
+    * buttons_playlist_tools_menu.js (*)
+  * search_same_by.js
+    * buttons_search_same_by.js (*)
+    * buttons_playlist_tools_menu.js (*)
   * search_same_style_moods.js
-		* buttons_search_same_style_moods.js (*)
-	* search_same_style.js
-		* buttons_search_same_style.js (*)
-	* search_bydistance.js
-		* ALSO READ: helpers\music_graph_descriptors_xxx.js
-		* ALSO SEE: Draw Graph.html
-		* buttons_search_bydistance_customizable.js (*)
-		* buttons_search_bydistance.js (*)
-		* buttons_playlist_tools_menu.js (*)
-	* remove_duplicates.js
-		* buttons_remove_duplicates.js (*)
-		* buttons_playlist_tools_menu.js (*)
-	* playlist_manager.js (*)
-		* Panel manager requires some fonts.
-			* _resources\Wingdings 3.ttf
-			* _resources\Wingdings 2.ttf
-			* _resources\guifx_v2_transports.ttf
-			* _resources\fontawesome-webfont.ttf
-	* playlist_tools_menu.js
-		* buttons_playlist_tools_menu.js (*)
-	* Draw Graph.html
-		* ALSO READ: helpers\music_graph_descriptors_xxx.js
-		* ALSO SEE: search_bydistance.js
-		* NOT meant to be used within foobar.
-		* Load the file in any browser to use it.
-	* mainmenu_edit.js (*)
-		* ALSO SEE: skip_tag_from_playback.js
-		* Adds menu entries to File menu.
-	* skip_tag_from_playback.js
-		* ALSO SEE: mainmenu_edit.js
-		* Meant to be used along standard foobar buttons.
-		* Link button to File\Spider Monkey Panel\x...
-	* find_remove_from_playlists.js
-		* ALSO SEE: playlist_tools_menu.js
-		* buttons_playlist_tools_menu.js (*)
-	* world_map.js (*)
-		- TODO
+  	* buttons_search_same_style_moods.js (*)
+  * search_same_style.js
+  	* buttons_search_same_style.js (*)
+  * search_bydistance.js
+  	* ALSO READ: helpers\music_graph_descriptors_xxx.js
+  	* ALSO SEE: Draw Graph.html
+  	* buttons_search_bydistance_customizable.js (*)
+  	* buttons_search_bydistance.js (*)
+  	* buttons_playlist_tools_menu.js (*)
+  * remove_duplicates.js
+  	* buttons_remove_duplicates.js (*)
+  	* buttons_playlist_tools_menu.js (*)
+  * playlist_manager.js (*)
+  	* Requires some fonts.
+  		* _resources\Wingdings 3.ttf
+  		* _resources\Wingdings 2.ttf
+  		* _resources\guifx_v2_transports.ttf
+  		* _resources\fontawesome-webfont.ttf
+  * playlist_tools_menu.js
+  	* buttons_playlist_tools_menu.js (*)
+  * Draw Graph.html
+  	* ALSO READ: helpers\music_graph_descriptors_xxx.js
+  	* ALSO SEE: search_bydistance.js
+  	* NOT meant to be used within foobar.
+  	* Load the file in any browser to use it.
+  * mainmenu_edit.js (*)
+  	* ALSO SEE: skip_tag_from_playback.js
+  	* Adds menu entries to File menu.
+  * skip_tag_from_playback.js
+  	* ALSO SEE: mainmenu_edit.js
+  	* Meant to be used along standard foobar buttons.
+  	* Link button to File\Spider Monkey Panel\x...
+  * find_remove_from_playlists.js
+  	* ALSO SEE: playlist_tools_menu.js
+  	* buttons_playlist_tools_menu.js (*)
+  * world_map.js (*)
+  	* May be used along WilB's Biography 1.1.3
 		
 All these js files (except those with (*)) contain only the functions, i.e. they will not do anything if you load them on a panel. 
 You would need a button, a main menu call, etc. to use them. So they are meant to be called by other scripts.
