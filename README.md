@@ -3,11 +3,11 @@ A collection of Spider Monkey Scripts for foobar2000
 
 # INSTALLATION: 
 
-Copy all files from the zip into YOUR_FOOBAR_PROFILE_PATH\scripts\SMP\xxx-scripts
-Any other path WILL NOT work without editing the scripts.
-For ex: mine is 			c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...
-For portable installations: .\foobar2000\profile\scripts\SMP\xxx-scripts\...
-Then load any script into a SMP panel within foobar. See info for usage. 
+Copy all files from the zip into YOUR_FOOBAR_PROFILE_PATH\scripts\SMP\xxx-scripts  
+Any other path WILL NOT work without editing the scripts.  
+For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
+For portable installations: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
+Then load any script into a SMP panel within foobar. See info for usage.  
 
 # INFO: 
 
@@ -81,8 +81,8 @@ The main folder (the one you found this readme) contains these scripts. Linked b
   	* May be used along WilB's Biography 1.1.3
 		
 All these js files (except those with (*)) contain only the functions, i.e. they will not do anything if you load them on a panel. 
-You would need a button, a main menu call, etc. to use them. So they are meant to be called by other scripts.
-If you want to use them as standalone scripts within a panel, check the examples at 'buttons' folder. 
+You would need a button, a main menu call, etc. to use them. So they are meant to be called by other scripts.  
+If you want to use them as standalone scripts within a panel, check the examples at 'buttons' folder.
 Those are individual working -as is- buttons (check list). Since they are working standalone examples, all are marked with (*).
 
 ![image](https://user-images.githubusercontent.com/83307074/116299720-952e5100-a78d-11eb-9759-2435a08bb56d.png)
@@ -117,8 +117,8 @@ They do nothing by their-selves, since they have no functionality associated to 
   * _buttons_blank.js
 	
 The 'helpers' folder contains common files used by most of the scripts. Don't touch or load these alone, although there are 2 exceptions.
-'music_graph_descriptors_xxx.js', 'music_graph_descriptors_xxx_user.js' and 'dyngenre_map_xxx.js' files, which are related to 'search_bydistance' & 'search_same_by'. 
+'music_graph_descriptors_xxx.js', 'music_graph_descriptors_xxx_user.js' and 'dyngenre_map_xxx.js' files, which are related to 'search_bydistance' & 'search_same_by'.   
 Look at those files to understand what they do and why some users may want to add their own genres/styles there.
 
-The 'ngraph' folder is another helper folder. Don't touch these. They are required to create graphs within foobar or for html rendering.
+The 'ngraph' folder is another helper folder. Don't touch these. They are required to create graphs within foobar or for html rendering.  
 Read 'music_graph_descriptors_xxx.js' and check 'Draw Graph.html' in your browser (drag n drop) to see what they do.
