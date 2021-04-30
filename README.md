@@ -17,7 +17,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	.\xxx*scripts\top_rated_tracks.js  
 * Same by...  
 	.\xxx*scripts\search_same_by.js
-* Similar by... (aka [Search-by-Distance](https://github.com/regorxxx/Search-by-Distance-SMP/blob/main/README.md))  
+* Similar by... (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP/blob/main/README.md))  
 	.\xxx*scripts\search_bydistance.js
 * Special Playlists... (contains functionality from the other scripts)  
 	.\xxx*scripts\search_bydistance.js  
@@ -55,4 +55,5 @@ Copy all files from the zip into YOUR_FOOBAR_PROFILE_PATH\scripts\SMP\xxx-script
 Any other path WILL NOT work without editing the scripts.  
 For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
 For portable installations: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
-Then load any button script into a SMP panel within foobar (there are buttons bars and independent buttons for the individual scripts and the playlist tools menu). 'buttons_playlist_tools_menu.js' is associated to the tools menu.
+Then load any button script into a SMP panel within foobar.  
+There are buttons bars and independent buttons for the individual scripts and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu.
