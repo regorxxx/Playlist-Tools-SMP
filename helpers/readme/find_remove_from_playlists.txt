@@ -1,0 +1,2 @@
+﻿Finds or delete the selection from a different playlist. 
+Therefore it shows all the playlists the tracks actually are in.

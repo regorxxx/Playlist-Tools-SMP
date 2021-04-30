@@ -1,0 +1,12 @@
+﻿Alternative to foo_playlist_revive.
+Playlist Revive makes dead items in a playlist alive again by replacing them with the matching ones in media library.
+A handy utility for those who often move or rename their media files/folders.
+
+Matching:
+	- Audio MD5 (Exact Match)
+	- Title + Length + Size (Exact Match)
+	- Tags (Similarity)
+
+Usage:
+	- Select the tracks in the relevant playlist.
+	- Apply script (using a button, menu entry, main menu SMP, etc. associated to it).

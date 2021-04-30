@@ -1,0 +1,59 @@
+﻿Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
+Note this ONLY USES already existing tags, it will not calculate similarity or anything else 
+i.e. "dynamic_genre" tag will not be calculated on the fly, or scores. Use "search_bydistance.js" for that.
+If some tags are missing, then they get skipped.
+
+Conditions are set as an object with keys (tags) and values (number of coincidences):
+sameBy = {genre: 1, style: 2 , mood: 5} -> Must match at least 1 genre value, 2 style values and 5 mood values.
+
+Setting a 0 value for any key (tag) forces matching of all the tag values for that tag name.
+sameBy = {genre: 0, style: 2 , mood: 5} -> Must match all genre values, 2 style values and 5 mood values.
+
+If X value is greater than the values of a tag, then it simply must match all of them. For ex. if we select a track with 3 moods:
+sameBy = {genre: 0, style: 2 , mood: 5} -> Must match all genre values , 2 style values and (3 < 5) all moods values.
+
+Setting a -X value for any key (tag) forces matching of all the tag values less X. 
+If multi-value tag has less values than x, then must match only one. For ex. if we select a track with 3 genres:
+sameBy = {genre: -1, style: 2 , mood: 5} -> Must match (3-1=) 2 genre values , 2 style values and 5 mood values.
+sameBy = {genre: -2, style: 2 , mood: 5} -> Must match (3-2=) 1 genre values , 2 style values and 5 mood values.
+sameBy = {genre: -10, style: 2 , mood: 5} -> Must match (3 <= 10) 1 genre values, 2 style values and 5 mood values.
+
++X/-X value for any key (tag) can be float € (0,1). Outside that range they have no use. 
+Final values are rounded, and minimum will always be 1. Maximum all tags values. Also f(-X) = f(1 - X):
+sameBy = {genre: -0.33, style: 2 , mood: 5} -> Must match (n - n * 1/3 = n * 2/3) two thirds of genre values , 2 style values and 5 mood values.
+sameBy = {genre: 0.66, style: 2 , mood: 5} -> Must match (n * 2/3) two thirds of genre values , 2 style values and 5 mood values.
+sameBy = {genre: 0.5, style: 2 , mood: 5} -> Must match (n * 1/2) half of the genre values , 2 style values and 5 mood values.
+
+After query search, duplicates are removed according to the tags set (checkDuplicatesBy).
+You can change sorting, playlist name and/or force a final query (added to the other requisites).
+
+- Tags logic - 
+Title-format only tags, like "rating" or "$year(%date%)" are acquired via TF, but must be written without "%", like the rest. See dynamicTags.
+ONLY expressions defined there can be used. Why? No way to know if the output is a number, a string, etc. if arbitrary TF expressions are allowed.
+
+When the tags are not strings (genre, etc.) but numeric values (date, etc.), the pair {key: value} work as a range. See numericTags.
+sameBy = {genre: -1, date: 10} -> Must match all genre values and dates between (-10,+10).
+
+A special subset of numeric tags may be cyclic, so the values can only be within a predefined range. See cyclicTags and cyclicTagsDescriptor.
+
+- Examples of functionality -
+buttons_search_style_moods <-> use sameBy = {style: 2, mood: 6}
+buttons_search_same_style <-> use sameBy = {style: 0}
+Tracks from same artist and equal rating <-> use sameBy = {artist: 0, rating: 0}
+Tracks from same genre and style and date within 10 years <-> use sameBy = {genre: 0, style: 0, date: 10}
+Tracks from same genre but allowing n-2 style coincidences and date within 10 years <-> use sameBy = {genre: 0, style: -2, date: 10}
+
+- Caveat -
+Although the +X/-X notations seem to produce similar results, they don't. Let's say we have a track with n style values, then:
+Using -X notation: final number is always relative to number of tags of selected track.
+5 values && sameBy = {genre: 0, style: -2, date: 10} -> must match (5-2=) 3 styles.
+4 values && sameBy = {genre: 0, style: -2, date: 10} -> must match (4-2=) 2 styles.
+3 values && sameBy = {genre: 0, style: -2, date: 10} -> must match (3-2=) 1 style.
+2 values && sameBy = {genre: 0, style: -2, date: 10} -> must match (2 <= 2) 1 style.
+1 values && sameBy = {genre: 0, style: -2, date: 10} -> must match (2 <= 2) 1 style.
+But using +X notation: final number is a constant value (if possible).
+5 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
+4 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
+3 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
+2 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
+1 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 1 style.
