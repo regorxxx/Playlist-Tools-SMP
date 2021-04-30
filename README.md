@@ -1,124 +1,65 @@
 # Playlist-Tools-SMP
-A collection of Spider Monkey Scripts for foobar2000
+A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel) Scripts for [foobar200](https://www.foobar2000.org), built within a menu, which serves as a hub for 'usage examples' and shortcuts to the most requested foobar missing functionalities: remove duplicates by tags, revive dead items, check errors on tags, spotify-like playlist creation, advanced queries, etc.
 
-# INSTALLATION: 
+![Animation7](https://user-images.githubusercontent.com/83307074/116756221-471e8500-a9fb-11eb-96c9-2c269bf91fef.gif)
 
+# Features: 
+
+![Animation9](https://user-images.githubusercontent.com/83307074/116756215-44239480-a9fb-11eb-8489-b56a178c70f4.gif)
+
+It's impossible to offer a complete list of the things that can be done with these tools, in a few words: anything related to playlist creation, sorting, library maintenance, automation, etc. But a readme for every utility can be found using the corresponding menu.
+
+The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
+* Most played tracks from...  
+	.\xxx*scripts\top_tracks.js  
+	.\xxx*scripts\top_tracks_from_date.js  
+* Top Rated tracks from..  
+	.\xxx*scripts\top_rated_tracks.js  
+* Same by...  
+	.\xxx*scripts\search_same_by.js
+* Similar by... (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP/blob/main/README.md))  
+	.\xxx*scripts\search_bydistance.js
+* Special Playlists... (contains functionality from the other scripts)  
+	.\xxx*scripts\search_bydistance.js  
+	.\xxx*scripts\search_same_by.js  
+* Tools...  
+	* Remove duplicates  
+		.\xxx*scripts\remove_duplicates.js
+	* Query filtering  
+		.\xxx*scripts\filter_by_query.js
+	* Harmonic mix  
+		.\xxx*scripts\harmonic_mixing.js
+	* Sort by key  
+		.\xxx*scripts\sort_by_key.js
+	* Scatter by tags  
+		.\xxx*scripts\scatter_by_tags.js
+	* Check tags  
+		.\xxx*scripts\check_library_tags.js
+	* Write tags  
+		.\xxx*scripts\tags_automation.js
+	* Find track(s) in...  
+		.\xxx*scripts\find_remove_from_playlists.js
+	* Remove track(s) from...  
+		.\xxx*scripts\find_remove_from_playlists.js
+	* Playlist Revive  
+		.\xxx*scripts\playlist_revive.js
+
+The menus are highly customizable. They are created on demand according to the selected tracks or current playlist, and many entries can be added, removed or edited to suit your needs. Also if some scripts are missing, the menu is rebuilt skipping those entries (letting you to install selectively what you need).
+
+![Animation8](https://user-images.githubusercontent.com/83307074/116756213-4259d100-a9fb-11eb-9452-657389977f69.gif)
+
+![Animation10](https://user-images.githubusercontent.com/83307074/116756219-4685ee80-a9fb-11eb-80be-413f0e691dd4.gif)
+
+## Also integrates
+1. [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP): creates intelligent "spotify-like" playlist using high-level data from tracks and computing their similarity using genres/styles.
+2. [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation): Javascript implementation of the Camelot Wheel, ready to use "harmonic mixing" rules and translations for standard key notations.
+
+![playlist_tools_menu_05](https://user-images.githubusercontent.com/83307074/116759000-cebac280-aa00-11eb-8a81-9a450e13205a.gif)
+
+# Installation: 
 Copy all files from the zip into YOUR_FOOBAR_PROFILE_PATH\scripts\SMP\xxx-scripts  
 Any other path WILL NOT work without editing the scripts.  
 For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
 For portable installations: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
-Then load any script into a SMP panel within foobar. See info for usage.  
-
-# INFO: 
-
-This is general info for all the scripts. Within all files you will find 3 big scripts (playlist manager, search_bydistance and buttons framework.
-And a collection of small utilities (search same by..., top tracks, remove duplicates, etc.).
-
-![image](https://user-images.githubusercontent.com/83307074/116298906-927f2c00-a78c-11eb-96c4-ca99e58d1a40.png)
-
-All files have extensive comments and descriptions at the header and all along the code, so you can check specific info about what everything does in its own file.
-
-![image](https://user-images.githubusercontent.com/83307074/116299366-20f3ad80-a78d-11eb-9194-8d6b91bc942c.png)
-
-There is a thread at hydrogenaud.io which contains several images and explanations of what each thing does too.
-https://hydrogenaud.io/index.php?topic=120394
-
-The '_images' folder shows screenshots to show how the scripts look in my pc:
-
-![image](https://user-images.githubusercontent.com/83307074/116299680-85167180-a78d-11eb-80e4-f00f147421be.png)
-
-The main folder (the one you found this readme) contains these scripts. Linked buttons are added below their main script for convenience:
-
-  * top_tracks.js
-      * buttons_search_top_tracks.js (*)
-      * buttons_playlist_tools_menu.js (*)
-  * top_tracks_from_date.js
-    * buttons_search_top_tracks_from_date.js (*)
-    * buttons_playlist_tools_menu.js (*)
-  * tags_automation.js
-    * buttons_tags_automation.js (*)
-    * buttons_playlist_tools_menu.js (*)
-  * search_same_by.js
-    * buttons_search_same_by.js (*)
-    * buttons_playlist_tools_menu.js (*)
-  * search_same_style_moods.js
-  	* buttons_search_same_style_moods.js (*)
-  * search_same_style.js
-  	* buttons_search_same_style.js (*)
-  * search_bydistance.js
-  	* ALSO READ: helpers\music_graph_descriptors_xxx.js
-  	* ALSO SEE: Draw Graph.html
-  	* buttons_search_bydistance_customizable.js (*)
-  	* buttons_search_bydistance.js (*)
-  	* buttons_playlist_tools_menu.js (*)
-  * remove_duplicates.js
-  	* buttons_remove_duplicates.js (*)
-  	* buttons_playlist_tools_menu.js (*)
-  * playlist_manager.js (*)
-  	* Requires some fonts.
-  		* _resources\Wingdings 3.ttf
-  		* _resources\Wingdings 2.ttf
-  		* _resources\guifx_v2_transports.ttf
-  		* _resources\fontawesome-webfont.ttf
-  * playlist_tools_menu.js
-  	* buttons_playlist_tools_menu.js (*)
-  * Draw Graph.html
-  	* ALSO READ: helpers\music_graph_descriptors_xxx.js
-  	* ALSO SEE: search_bydistance.js
-  	* NOT meant to be used within foobar.
-  	* Load the file in any browser to use it.
-  * mainmenu_edit.js (*)
-  	* ALSO SEE: skip_tag_from_playback.js
-  	* Adds menu entries to File menu.
-  * skip_tag_from_playback.js
-  	* ALSO SEE: mainmenu_edit.js
-  	* Meant to be used along standard foobar buttons.
-  	* Link button to File\Spider Monkey Panel\x...
-  * find_remove_from_playlists.js
-  	* ALSO SEE: playlist_tools_menu.js
-  	* buttons_playlist_tools_menu.js (*)
-  * world_map.js (*)
-  	* May be used along WilB's Biography 1.1.3
-		
-All these js files (except those with (*)) contain only the functions, i.e. they will not do anything if you load them on a panel. 
-You would need a button, a main menu call, etc. to use them. So they are meant to be called by other scripts.  
-If you want to use them as standalone scripts within a panel, check the examples at 'buttons' folder.
-Those are individual working -as is- buttons (check list). Since they are working standalone examples, all are marked with (*).
-
-![image](https://user-images.githubusercontent.com/83307074/116299720-952e5100-a78d-11eb-9759-2435a08bb56d.png)
-
-  * buttons_playlist_tools_menu.js (*)
-	* buttons_remove_duplicates.js (*)
-	* buttons_search_bydistance.js (*)
-	* buttons_search_bydistance_customizable.js (*)
-	* buttons_search_same_style.js (*)
-	* buttons_search_same_style_moods.js
-	* buttons_search_same_by.js (*)
-	* buttons_search_top_tracks.js (*)
-	* buttons_search_top_tracks_from_date.js (*)
-	* buttons_tags_automation.js (*)
-
-For complete buttons bar with merged buttons, check list below. Adding/removing buttons to create your own bar is easy.
-A matter of adding/removing 1 line at those files (check 'buttonsPath'). You can use '..._example_merged' files too as template.
-
-  * search_bydistance.js
-    * _buttons_merged_sbd_customizable.js (*)
-  * ALL:
-    * _buttons_merged.js (*)
-
-The buttons framework has some examples that can be used to create your own combinations of buttons and bars.
-They do nothing by their-selves, since they have no functionality associated to pressing the button.
-
-  * _buttons_panel_blank.js
-  * _buttons_example_merged_double.js
-  * _buttons_example_merged.js
-  * _buttons_example.js
-  * _buttons_blank_merged.js
-  * _buttons_blank.js
-	
-The 'helpers' folder contains common files used by most of the scripts. Don't touch or load these alone, although there are 2 exceptions.
-'music_graph_descriptors_xxx.js', 'music_graph_descriptors_xxx_user.js' and 'dyngenre_map_xxx.js' files, which are related to 'search_bydistance' & 'search_same_by'.   
-Look at those files to understand what they do and why some users may want to add their own genres/styles there.
-
-The 'ngraph' folder is another helper folder. Don't touch these. They are required to create graphs within foobar or for html rendering.  
-Read 'music_graph_descriptors_xxx.js' and check 'Draw Graph.html' in your browser (drag n drop) to see what they do.
+Then load any button script into a SMP panel within foobar.  
+There are buttons bars and independent buttons for the individual scripts and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu.
