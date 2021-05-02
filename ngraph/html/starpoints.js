@@ -15,7 +15,7 @@ function getStarPoints(nodeSize) {
     let outerRadius = innerRadius * innerOuterRadiusRatio;
 
 	return calcStarPoints(centerX, centerY, innerCirclePoints, innerRadius, outerRadius);
-};
+}
 
 function calcStarPoints(centerX, centerY, innerCirclePoints, innerRadius, outerRadius) {
 	const angle = (Math.PI / innerCirclePoints);
@@ -24,14 +24,14 @@ function calcStarPoints(centerX, centerY, innerCirclePoints, innerRadius, outerR
 	const totalPoints = innerCirclePoints * 2; // 10 in a 5-points star 
 	let points = '';
 	for (let i = 0; i < totalPoints; i++) {
-		let isEvenIndex = i % 2 == 0;
+		let isEvenIndex = i % 2 === 0;
 		let r = isEvenIndex ? outerRadius : innerRadius;
 		let currX = centerX + Math.cos(i * angle + angleOffsetToCenterStar ) * r;
 		let currY = centerY + Math.sin(i * angle + angleOffsetToCenterStar) * r;
 		points += currX + ',' + currY + ' ';
 	}
 	return points;
-};
+}
 
 function getStarPointsOffset(nodeSize, offsetX, offsetY) {
 	const starWidth = nodeSize;
@@ -48,4 +48,4 @@ function getStarPointsOffset(nodeSize, offsetX, offsetY) {
     let outerRadius = innerRadius * innerOuterRadiusRatio;
 
 	return calcStarPoints(centerX, centerY, innerCirclePoints, innerRadius, outerRadius);
-};
+}

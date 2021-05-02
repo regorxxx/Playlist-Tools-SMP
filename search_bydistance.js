@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 /*	
-	Search by Distance v 0.2.6 06/04/21
+	Search by Distance v 1.0.0 02/05/21
 	-----------------------------------
 	Creates a playlist with similar tracks to the currently selected one according to genre, style, key, etc.
 	Every track of the library is given a score according to those tags and/or a distance according to genre/style.
@@ -25,7 +25,7 @@
 		
 	Some weight/tags pairs can be linked to TitleFormat Expr. Use tag names instead of TF expressions when possible (+ performance). 
 	For example, see dateWeight: TF is used to have the same results for tracks with YYYY-MM tags or YYYY tags.
-		- dateTag		 : $year(%date%)			-customNumWeight : (unused by default)
+		- dateTag		 : $year(%date%)			-customNumTag : (unused by default)
 		
 	Genre and Style tags (or their remapped values) can be globally filtered. See 'genreStyleFilter'. Case sensitive.
 	For example, when comparing genre values from track A to track B, 'Soundtrack' and 'Radio Program' values are omitted:
@@ -2114,7 +2114,6 @@ function calcMeanDistance(mygraph, style_genre_reference, style_genre_new) {
 		if (!difference.size) { // If style_genre_new is superset of style_genre_reference.
 			map_distance = 0;
 		} else {
-			let map_distance_set = new Set();
 			let influenceDistance = 0;
 			for (let style_genre of difference) { // No need to check for those already matched. We are making an assumption here... i.e. that A genre has zero distance to only one value: A. But not to multiple ones: A, B, etc. That possibility is given by zero weight substitutions, but in that case 'calc_map_distance' will output a zero distance too.
 				let setMin = Infinity;

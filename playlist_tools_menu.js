@@ -367,10 +367,11 @@ const menu = new _menu();
 		const menuName = menu.newMenu('Dynamic Queries...');
 		{	// Dynamic menu
 			let queryFilter = [
-				{name: 'Same songs on library'		, args: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST#'},
+				{name: 'Same title (any artist)'	, args: 'TITLE IS #TITLE#'},
+				{name: 'Same songs (by artist)'		, args: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST#'},
 				{name: 'Duplicates on library'		, args: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST# AND DATE IS #$year(%date%)#'},
-				{name: 'Same date on library'		, args: 'DATE IS #$year(%date%)#'},
-				{name: 'Live versions on library'	, args: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
+				{name: 'Same date (any track)'		, args: 'DATE IS #$year(%date%)#'},
+				{name: 'Live versions of same song'	, args: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
 			];
 			const queryFilterDefaults = [...queryFilter];
 			let selArg = {args: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST#'};
