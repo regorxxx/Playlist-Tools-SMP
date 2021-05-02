@@ -75,7 +75,7 @@ function playlistRevive({
 			const infoLibr = handleLibr.GetFileInfo();
 			let count = 0;
 			let md5Idx = info.InfoFind('md5'), md5LibrIdx = infoLibr.InfoFind('md5'); // With same MD5, it's an exact match
-			if (md5Idx != -1 && md5LibrIdx != -1 && info.InfoValue(info.InfoFind('md5')) === infoLibr.InfoValue(infoLibr.InfoFind('md5'))) {count = numTags; bExact = true;}
+			if (md5Idx !== -1 && md5LibrIdx !== -1 && info.InfoValue(info.InfoFind('md5')) === infoLibr.InfoValue(infoLibr.InfoFind('md5'))) {count = numTags; bExact = true;}
 			if (new Set(tags[0][index]).intersectionSize(new Set(tagsLibrary[0][indexLibr]))) { // Instead of checking equality, tracks may have more than one title (?)
 				if (handle.Length === handleLibr.Length) {
 					count++; // Bonus score if it changed tags and thus size but length is the same
@@ -98,15 +98,15 @@ function playlistRevive({
 					}
 				}
 			}
-			if (bExact || isFinite(numTags) && numTags != 0 && count / numTags >= simThreshold && !alternativesSet.has(indexLibr)) {
+			if (bExact || isFinite(numTags) && numTags !== 0 && count / numTags >= simThreshold && !alternativesSet.has(indexLibr)) {
 				alternativesSet.add(indexLibr);
 				alternativesObj.push({idx: indexLibr, simil: Math.round(count / numTags * 100), bExact});
 			}
 		});
-		if (alternativesSet.size != 0) {alternatives.set(index, alternativesObj.sort(function (a, b) {return b.simil - a.simil;}));}
+		if (alternativesSet.size !== 0) {alternatives.set(index, alternativesObj.sort(function (a, b) {return b.simil - a.simil;}));}
 	});
 	console.log('Found ' + alternatives.size + ' alternative(s) on active playlist');
-	if (alternatives.size != 0) {
+	if (alternatives.size !== 0) {
 		let bOverHundred = false;
 		let bExact = false;
 		// Process the alternatives

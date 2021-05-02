@@ -45,7 +45,7 @@ function do_search_same_style_moods(	playlistLength = 50,
 		let sel_info = sel.GetFileInfo();
         //Loop styles
 		let styleIdx = sel_info.MetaFind("style");
-        let styleNumber = (styleIdx != -1) ? sel_info.MetaValueCount(styleIdx) : 0;
+        let styleNumber = (styleIdx !== -1) ? sel_info.MetaValueCount(styleIdx) : 0;
 		if (styleNumber === 0) {
 			console.log('Track selected has no "style" tag');
 			return;
@@ -65,7 +65,7 @@ function do_search_same_style_moods(	playlistLength = 50,
 				
         //Loop moods
 		let moodIdx = sel_info.MetaFind("mood");
-        let moodNumber = (moodIdx != -1) ? sel_info.MetaValueCount(moodIdx) : 0;
+        let moodNumber = (moodIdx !== -1) ? sel_info.MetaValueCount(moodIdx) : 0;
 		if (moodNumber === 0) {
 			console.log('Track selected has no "mood" tag');
 			return;

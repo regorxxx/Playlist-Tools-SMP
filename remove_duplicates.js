@@ -58,7 +58,7 @@ function do_remove_duplicates(handleList = null, sortouput = null, checkfirst = 
 	}
 	
 	if (sortouput !== null) { // Output Sorting?
-		if (sortouput != "" && sortouput != sortInput) {tfo = fb.TitleFormat(sortouput);}
+		if (sortouput.length && sortouput !== sortInput) {tfo = fb.TitleFormat(sortouput);}
 		else {tfo = fb.TitleFormat("$rand()");}
 		items.OrderByFormat(tfo, 1);
 	}
@@ -125,7 +125,7 @@ function do_remove_duplicatesV2(handleList = null, sortouput = null, checkKeys =
 	}
 	
 	if (sortouput !== null) { // Output Sorting?
-		if (sortouput != "" && sortouput != sortInput) {tfo = fb.TitleFormat(sortouput);}
+		if (sortouput.length && sortouput !== sortInput) {tfo = fb.TitleFormat(sortouput);}
 		else {tfo = fb.TitleFormat("$rand()");}
 		items.OrderByFormat(tfo, 1);
 	}
@@ -201,7 +201,7 @@ function do_remove_duplicatesV3(handleList = null, sortouput = null, checkKeys =
 	}
 	
 	if (sortouput !== null) { // Output Sorting?
-		if (sortouput != "" && sortouput != sortInput) {tfo = fb.TitleFormat(sortouput);}
+		if (sortouput.length && sortouput !== sortInput) {tfo = fb.TitleFormat(sortouput);}
 		else {tfo = fb.TitleFormat("$rand()");}
 		items.OrderByFormat(tfo, 1);
 	}

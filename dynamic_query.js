@@ -9,7 +9,7 @@ function do_dynamic_query({query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusIte
 	if (!query || !query.length) {return null;}
 	if (!handle) {return null}
 	
-	if (query.indexOf('#') != -1) {query = queryReplaceWithCurrent(query, handle);}
+	if (query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, handle);}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'do_dynamic_query'); return null;}
 	let handleList = fb.GetQueryItems(fb.GetLibraryItems(), query);

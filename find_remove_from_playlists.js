@@ -25,7 +25,7 @@ function findInPlaylists(selList = fb.GetFocusItem()) {
 	let inPlaylistSet = new Set();
 	for (const sel of selList.Convert()){
 		for (let i = 0; i < plman.PlaylistCount; i++) {
-			if (plman.GetPlaylistItems(i).Find(sel) != -1) {
+			if (plman.GetPlaylistItems(i).Find(sel) !== -1) {
 				if (!inPlaylistSet.has(i)) {
 					inPlaylist.push({index: i, name: plman.GetPlaylistName(i), bLocked: plman.IsPlaylistLocked(i)});
 					inPlaylistSet.add(i);
@@ -46,7 +46,7 @@ function focusInPlaylist(selList, playlistIndex) {
 	plman.ClearPlaylistSelection(playlistIndex);
 	for (const sel of selListArr) {
 		idx = handle_list.Find(sel);
-		if (idx != -1) {plman.SetPlaylistSelection(plman.ActivePlaylist, [idx], true);}
+		if (idx !== -1) {plman.SetPlaylistSelection(plman.ActivePlaylist, [idx], true);}
 	}	
 	plman.SetPlaylistFocusItem(plman.ActivePlaylist, idx);
 }

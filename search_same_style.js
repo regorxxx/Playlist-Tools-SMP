@@ -43,7 +43,7 @@ function do_search_same_style(	playlistLength = 50,
 		let sel_info = sel.GetFileInfo();
         //Loop styles
 		let styleIdx = sel_info.MetaFind("style");
-        let styleNumber = (styleIdx != -1) ? sel_info.MetaValueCount(styleIdx) : 0;
+        let styleNumber = (styleIdx !== -1) ? sel_info.MetaValueCount(styleIdx) : 0;
 		if (styleNumber === 0) {
 			console.log('Track selected has no "style" tag');
 			return;
