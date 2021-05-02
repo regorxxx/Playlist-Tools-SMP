@@ -171,7 +171,7 @@ const doOnce = (task, fn) => {
 			doOnceCache.push(task);
 			return fn(...args);
 		}
-	}
+	};
 }
 
 function _isFunction(obj) {

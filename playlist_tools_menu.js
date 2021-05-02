@@ -567,7 +567,7 @@ const menu = new _menu();
 				selArgs.forEach( (selArg) => {
 					if (selArg.title === 'sep') {
 						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
+						menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
@@ -864,7 +864,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			selArgs.forEach( (selArg) => {
 				if (selArg.title === 'sep') {
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				} else {
 					let entryText = selArg.title;
 					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
