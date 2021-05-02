@@ -25,7 +25,7 @@ function playlistRevive({
 					simThreshold = 1, // 1 only allows exact matches, lower allows some tag differences, but at least the main tag must be the same!
 					bSimulate = false,
 					} = {}) {
-	if (selItems === undefined || selItems === null || selItems.Count === 0) {
+	if (typeof selItems === 'undefined' || selItems === null || selItems.Count === 0) {
 		return;
 	}
 

@@ -637,7 +637,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 			originaldistance += moodWeight;
 			if (moodWeight / totalweight / moodNumber * kMoodNumber >= totalweight / countweights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				let k = moodNumber >= kMoodNumber ? kMoodNumber : moodNumber; //on combinations of 4
 				const moodcomb = k_combinations(mood, k);
 				query[queryl] += query_combinations(moodcomb, moodTag, "OR", "AND");
@@ -1274,7 +1274,7 @@ function do_searchby_distance({
 			originalWeightValue += genreWeight;
 			if ( genreWeight / totalWeight >= totalWeight / countWeights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				if (genreTag.length > 1) {query[queryl] += query_join(query_combinations(genre, genreTag, "OR"), "OR");}
 				else {query[queryl] += query_combinations(genre, genreTag, "OR");}
 			}
@@ -1285,7 +1285,7 @@ function do_searchby_distance({
 			originalWeightValue += styleWeight;
 			if ( styleWeight / totalWeight >= totalWeight / countWeights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				if (styleTag.length > 1) {query[queryl] += query_join(query_combinations(style, styleTag, "OR"), "OR");}
 				else {query[queryl] += query_combinations(style, styleTag, "OR");}
 			}
@@ -1311,7 +1311,7 @@ function do_searchby_distance({
 			originalWeightValue += moodWeight;
 			if ( moodWeight / totalWeight / moodNumber * kMoodNumber >= totalWeight / countWeights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				const k = moodNumber >= kMoodNumber ? kMoodNumber : moodNumber; //on combinations of 6
 				const moodComb = k_combinations(mood, k);
 				
@@ -1417,7 +1417,7 @@ function do_searchby_distance({
 			originalWeightValue += composerWeight;
 			if ( composerWeight / totalWeight >= totalWeight / countWeights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				if (composerTag.length > 1) {query[queryl] += query_join(query_combinations(composer, composerTag, "OR"), "OR");}
 				else {query[queryl] += query_combinations(style, composerTag, "OR");}
 			}
@@ -1428,7 +1428,7 @@ function do_searchby_distance({
 			originalWeightValue += customStrWeight;
 			if ( customStrWeight / totalWeight >= totalWeight / countWeights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				if (customStrTag.length > 1) {query[queryl] += query_join(query_combinations(customStr, customStrTag, "OR"), "OR");}
 				else {query[queryl] += query_combinations(style, customStrTag, "OR");}
 			}

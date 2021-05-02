@@ -27,7 +27,7 @@ const debouncedStep = debounce(step, 300); // Only continues next step when last
 // Check if tag update was done on a selected file and wait until all tracks are updated
 function on_metadb_changed(handle_list) {
 	if (iStep) {
-		if (sel_items !== undefined && sel_items !== null && count_items !== null) {
+		if (typeof sel_items !== 'undefined' && sel_items !== null && count_items !== null) {
 			handle_list.Sort();
 			handle_list.MakeIntersection(sel_items);
 			if (handle_list.Count !== 0 && count_items !== 0) {
@@ -51,7 +51,7 @@ function tagsAutomation() {
 	count_items = 0;
 	currentTime = 0;
 	sel_items = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-	if (sel_items !== undefined && sel_items !== null) {
+	if (typeof sel_items !== 'undefined' && sel_items !== null) {
 		sel_items.Sort();
 		count_items = sel_items.Count;
 		if (count_items === 0) {

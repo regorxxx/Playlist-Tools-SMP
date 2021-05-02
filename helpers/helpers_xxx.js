@@ -160,7 +160,7 @@ const throttle = (func, delay, immediate) => {
 			}
 			timerId = null; 
 		}, delay);
-	}
+	};
 };
 
 // Fire functions only once
@@ -912,7 +912,7 @@ function query_combinations(tagsArray, queryKey, tagsArrayLogic, subtagsArrayLog
 			console.log("query_combinations(): tagsArray [" + tagsArray + "] was null, empty or not an array");
 			return; //Array was null or not an array
 		}
-		if (queryKey === undefined || queryKey === null || !queryKey) {
+		if (typeof queryKey === 'undefined' || queryKey === null || !queryKey) {
 			console.log("query_combinations(): queryKey not set");
 			return;
 		}

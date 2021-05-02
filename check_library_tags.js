@@ -93,7 +93,7 @@ function checkTags({
 					stringSimilThreshold = 0.85, // How much tag values must be similar to be considered as alternative values
 					bUseDic = properties['bUseDic'][1],
 					} = {}) {
-	if (selItems === undefined || selItems === null || selItems.count === 0) {
+	if (typeof selItems === 'undefined' || selItems === null || selItems.count === 0) {
 		return;
 	}
 	if (freqThreshold > 1 || freqThreshold < 0) {freqThreshold = 1;}
@@ -352,7 +352,7 @@ function checkTags({
 				tagValuesExcluded = {};
 				mergeStringToTagsObject(tagValuesExcluded, inputTags);
 				let currentTags = [];
-				Object.keys(tagValuesExcluded).forEach( (key) => {currentTags.push([...tagValuesExcluded[key]].map((value) => {return key + ',' + value}).join(';'))});
+				Object.keys(tagValuesExcluded).forEach( (key) => {currentTags.push([...tagValuesExcluded[key]].map((value) => {return key + ',' + value;}).join(';'));});
 				properties['tagValuesExcluded'][1] = currentTags.join(';'); // Instead of inputTags, to remove duplicates
 				overwriteProperties(properties);
 			}
