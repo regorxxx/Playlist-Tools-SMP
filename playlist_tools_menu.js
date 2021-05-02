@@ -1036,7 +1036,7 @@ const menu = new _menu();
 					const sel = new FbMetadbHandleList(nowPlay);
 					var inPlaylist = findInPlaylists(sel);
 					const bShowCurrent = args.properties['bFindShowCurrent'][1];
-					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index})}
+					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
 					const playlistsNum = inPlaylist.length;
 					if (playlistsNum) {
 						// Split entries in sub-menus if there are too many playlists...
@@ -1053,12 +1053,12 @@ const menu = new _menu();
 								const subMenu_i = menu.newMenu(idx, subMenuName);
 								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 									const playlist = inPlaylist[j];
-									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
 						} else { // Or just show all
 							for (const playlist of inPlaylist) {
-								menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+								menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 							}
 						}
 					} else {

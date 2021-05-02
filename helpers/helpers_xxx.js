@@ -172,7 +172,7 @@ const doOnce = (task, fn) => {
 			return fn(...args);
 		}
 	};
-}
+};
 
 function _isFunction(obj) {
   return !!(obj && obj.constructor && obj.call && obj.apply);
