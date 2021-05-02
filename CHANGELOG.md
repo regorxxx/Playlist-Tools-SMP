@@ -2,9 +2,18 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [1.0.1](#101---2021-05-02)
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+
+## [1.0.1] - 2021-05-02
+### Added
+
+### Changed
+- Hotfix for harmonic mixing. Adds limits to key searching and playlist length.
+
+### Removed
 
 ## [1.0.0] - 2021-05-02
 ### Added

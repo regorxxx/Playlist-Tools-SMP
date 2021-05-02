@@ -813,6 +813,7 @@ const menu = new _menu();
 					let entryText = selArg.title;
 					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 						args.selItems = args.selItems();
+						args.playlistLength = args.selItems.Count; // Max allowed
 						do_harmonic_mixing(args);
 					}, flags: selArg.flags ? selArg.flags : undefined});
 				}

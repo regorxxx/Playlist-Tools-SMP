@@ -22,8 +22,9 @@ function do_harmonic_mixing({
 							} = {}) {
 	// Safety checks
 	if (!keyTag.length) {return;}
-	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_harmonic_mixing: playlistLength (' + playlistLength + ') must be greater than zero'); return false;}
+	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_harmonic_mixing: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return false;}
 	if (!selItems || !selItems.Count) {return;}
+	if (selItems.Count < playlistLength) {playlistLength = selItems.Count;}
 	// Tags and constants
 	const keyHandle = getTagsValuesV3(selItems, [keyTag], true);
 	const poolLength = selItems.Count;
@@ -54,7 +55,8 @@ function do_harmonic_mixing({
 	let toCheck = new Set(Array(poolLength).fill().map((_, index) => index).sort(() => Math.random() - 0.5));
 	let nextIndex = 0; // Initial track, it will match most times the last reference track when using progressive playlists
 	selectedHandlesArray.push(selItems[nextIndex]);
-	for (let i = 0, j = 0, h = 0; i < playlistLength - 1; i++) {
+	for (let i = 0, j = 0; i < playlistLength - 1; i++) {
+		if (!toCheck.size) {break;}
 		const index = nextIndex;
 		let camelotKeyCurrent;
 		if (!keyCache.has(i)) {
