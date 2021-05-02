@@ -112,7 +112,7 @@ const menu = new _menu();
 			const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
 			selYearArr.forEach( (selYear) => {
 				let args = {year: selYear};
-				menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...args}) => {do_top_tracks_from_date(args)}});
+				menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...args}) => {do_top_tracks_from_date(args);}});
 				});
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
@@ -138,7 +138,7 @@ const menu = new _menu();
 				try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), window.Name, '4 WEEKS', true).trim();}
 				catch (e) {return;}
 				if (!input.length) {return;}
-				do_top_tracks_from_date({...defaultArgs,  last: input, bUseLast: true})
+				do_top_tracks_from_date({...defaultArgs,  last: input, bUseLast: true});
 				}});
 		}
 		menu.newEntry({entryText: 'sep'});
@@ -234,13 +234,13 @@ const menu = new _menu();
 					// Add separators
 					if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 						let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
-						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
+						menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
 					} else { 
 						// Create names for all entries
 						let text = '';
 						if (!queryObj.hasOwnProperty('name') || !queryObj.name.length) {
 							Object.keys(queryObj.args.sameBy).forEach((key, index, array) => {
-								text += (!text.length ? '' : index != array.length - 1 ? ', ' : ' and ');
+								text += (!text.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
 								text += capitalizeFirstLetter(key) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
 								});
 						} else {text = queryObj.name;}
@@ -265,7 +265,7 @@ const menu = new _menu();
 						selArg.args.sameBy = convertStringToObject(input, 'number', ',');
 						args.properties['sameByCustomArg'][1] = convertObjectToString(selArg.args.sameBy); // And update property with new value
 						overwriteProperties(args.properties); // Updates panel
-						do_search_same_by(selArg.args)
+						do_search_same_by(selArg.args);
 					}, flags: focusFlags});
 					// Menu to configure property
 					menu.newEntry({menuName, entryText: 'sep'});
@@ -277,13 +277,13 @@ const menu = new _menu();
 						let name = '';
 						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
 						catch (e) {return;}
-						if (name === 'sep') {input = {name: name};} // Add separator
+						if (name === 'sep') {input = {name};} // Add separator
 						else { // or new entry
 							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name, convertObjectToString(args.sameBy, ','), true);}
 							catch (e) {return;}
 							if (!input.length) {return;}
 							if (input.indexOf(',') === -1) {return;}
-							if (input.indexOf(';') != -1) {return;}
+							if (input.indexOf(';') !== -1) {return;}
 							let logic = 'AND';
 							try {logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', window.Name, logic, true);}
 							catch (e) {return;}
@@ -296,7 +296,7 @@ const menu = new _menu();
 								let answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
 								if (answer === popup.yes) {bOnlyRemap = true;}
 							}
-							input = {name: name, args: {sameBy: convertStringToObject(input, 'number', ','), logic: logic, remapTags: convertStringToObject(remap, 'string', ',', ';'), bOnlyRemap: bOnlyRemap}};
+							input = {name: name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: convertStringToObject(remap, 'string', ',', ';'), bOnlyRemap}};
 							// Final check
 							try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
 							catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
@@ -307,7 +307,7 @@ const menu = new _menu();
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						args.properties['sameByQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 						overwriteProperties(args.properties); // Updates panel
-					;}});
+					;}})
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
 						queryFilter.forEach( (queryObj, index) => {
@@ -345,12 +345,12 @@ const menu = new _menu();
 					let entryText = '';
 					if (!selArg.hasOwnProperty('title')) {
 						Object.keys(selArg.args.sameBy).forEach((key, index, array) => {
-							entryText += (!entryText.length ? '' : index != array.length - 1 ? ', ' : ' and ');
+							entryText += (!entryText.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
 							entryText += capitalizeFirstLetter(key) + (selArg.args.sameBy[key] > 1 ? 's' : '') + ' (=' + selArg.args.sameBy[key] + ')';
 							});
 					} else {entryText = selArg.title;}
 					let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-					menu.newEntry({menuName: entryMenuName, entryText: entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args)}, flags: focusFlags});
+					menu.newEntry({menuName: entryMenuName, entryText: entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
 				}
 			});
 		}
@@ -605,7 +605,7 @@ const menu = new _menu();
 						menu.newEntry({menuName: specialMenu, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							const globQuery = args.properties['forcedQuery'][1];
-							if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] != globQuery) { // Join queries if needed
+							if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
 								args['forcedQuery'] =  globQuery + ' AND ' + args['forcedQuery'];
 							}
 							do_searchby_distance(args);
@@ -729,7 +729,7 @@ const menu = new _menu();
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + text, func: () => {
 							let query = queryObj.query;
 							let focusHandle = fb.GetFocusItem(true);
-							if (focusHandle && query.indexOf('#') != -1) {query = queryReplaceWithCurrent(query, focusHandle);}
+							if (focusHandle && query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, focusHandle);}
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 							do_filter_by_query(null, query);
@@ -743,7 +743,7 @@ const menu = new _menu();
 					catch (e) {return;}
 					if (!query.length) {return;}
 					let focusHandle = fb.GetFocusItem(true);
-					if (focusHandle && query.indexOf('#') != -1) {query = queryReplaceWithCurrent(query, focusHandle);}
+					if (focusHandle && query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, focusHandle);}
 					try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 					do_filter_by_query(null, query);
@@ -1036,7 +1036,7 @@ const menu = new _menu();
 					const sel = new FbMetadbHandleList(nowPlay);
 					var inPlaylist = findInPlaylists(sel);
 					const bShowCurrent = args.properties['bFindShowCurrent'][1];
-					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist != playlist.index})}
+					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index})}
 					const playlistsNum = inPlaylist.length;
 					if (playlistsNum) {
 						// Split entries in sub-menus if there are too many playlists...
@@ -1078,7 +1078,7 @@ const menu = new _menu();
 					if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
 					var inPlaylist = findInPlaylists(sel);
 					const bShowCurrent = args.properties['bFindShowCurrent'][1];
-					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist != playlist.index})}
+					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index})}
 					const playlistsNum = inPlaylist.length;
 					if (playlistsNum) {
 						// Split entries in sub-menus if there are too many playlists...
@@ -1208,7 +1208,7 @@ const menu = new _menu();
 						}
 						const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
 						optionsIdx[index] = idx; // For later use
-						if (index != options.length - 1) { // Predefined sizes
+						if (index !== options.length - 1) { // Predefined sizes
 							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 								args.properties['findRemoveSplitSize'][1] = val;
@@ -1229,7 +1229,7 @@ const menu = new _menu();
 					menu.checkMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
 						const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
-						return (size != -1 ? size : options.length - 1);
+						return (size !== -1 ? size : options.length - 1);
 					});
 				}
  				{	// maxSelCount ( Find in / Remove from Playlists)
@@ -1244,7 +1244,7 @@ const menu = new _menu();
 						}
 						const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
 						optionsIdx[index] = idx; // For later use
-						if (index != options.length - 1) { // Predefined sizes
+						if (index !== options.length - 1) { // Predefined sizes
 							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 								args.properties['maxSelCount'][1] = val;
@@ -1265,7 +1265,7 @@ const menu = new _menu();
 					menu.checkMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
 						const size = options.indexOf(args.properties['maxSelCount'][1]);
-						return (size != -1 ? size : options.length - 1);
+						return (size !== -1 ? size : options.length - 1);
 					});
 				}
 				menu.newEntry({menuName: configMenu, entryText: 'sep'});
