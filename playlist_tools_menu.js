@@ -1078,7 +1078,7 @@ const menu = new _menu();
 					if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
 					var inPlaylist = findInPlaylists(sel);
 					const bShowCurrent = args.properties['bFindShowCurrent'][1];
-					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index})}
+					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index});}
 					const playlistsNum = inPlaylist.length;
 					if (playlistsNum) {
 						// Split entries in sub-menus if there are too many playlists...
