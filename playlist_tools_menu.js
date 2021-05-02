@@ -75,8 +75,8 @@ const menu_panelProperties = {firstPopup:	['Playlist Tools: Fired once', false],
 
 // Checks
 menu_properties['playlistLength'].push({greater: 0, func: Number.isSafeInteger}, menu_properties['playlistLength'][1]);
-menu_properties['forcedQuery'].push({func: (query) => {return checkQuery(query, true)}}, menu_properties['forcedQuery'][1]);
-menu_properties['ratingLimits'].push({func: (str) => {return (isString(str) && str.length == 3 && str.indexOf(',') == 1)}}, menu_properties['ratingLimits'][1]);
+menu_properties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['forcedQuery'][1]);
+menu_properties['ratingLimits'].push({func: (str) => {return (isString(str) && str.length === 3 && str.indexOf(',') === 1);}}, menu_properties['ratingLimits'][1]);
 
 /* 
 	Load properties and set default global Parameters
@@ -166,7 +166,7 @@ const menu = new _menu();
 		selYearArr.forEach( (selYear) => {
 			let selArgs = { ...defaultArgs};
 			let dateQuery = '';
-			if (selYear.length == 2) {
+			if (selYear.length === 2) {
 				dateQuery = '"$year(%date%)" GREATER ' + selYear[0] + ' AND "$year(%date%)" LESS ' + selYear[1];
 			} else {
 				dateQuery = '"$year(%date%)" IS ' + selYear;
@@ -189,7 +189,7 @@ const menu = new _menu();
 				}
 				let selArgs = { ...defaultArgs};
 				let dateQuery = '';
-				if (selYear.length == 2) {
+				if (selYear.length === 2) {
 					dateQuery = '"$year(%date%)" GREATER ' + selYear[0] + ' AND "$year(%date%)" LESS ' +  selYear[1];
 				} else {
 					dateQuery = '"$year(%date%)" IS ' + selYear;
@@ -232,7 +232,7 @@ const menu = new _menu();
 				queryFilter = JSON.parse(args.properties['sameByQueries'][1]);
 				queryFilter.forEach( (queryObj) => {
 					// Add separators
-					if (queryObj.hasOwnProperty('name') && queryObj.name == 'sep') {
+					if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 						let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
 						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
 					} else { 
@@ -277,12 +277,12 @@ const menu = new _menu();
 						let name = '';
 						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
 						catch (e) {return;}
-						if (name == 'sep') {input = {name: name};} // Add separator
+						if (name === 'sep') {input = {name: name};} // Add separator
 						else { // or new entry
 							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name, convertObjectToString(args.sameBy, ','), true);}
 							catch (e) {return;}
 							if (!input.length) {return;}
-							if (input.indexOf(',') == -1) {return;}
+							if (input.indexOf(',') === -1) {return;}
 							if (input.indexOf(';') != -1) {return;}
 							let logic = 'AND';
 							try {logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', window.Name, logic, true);}
@@ -294,7 +294,7 @@ const menu = new _menu();
 							let bOnlyRemap = false;
 							if (remap.length) {
 								let answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
-								if (answer == popup.yes) {bOnlyRemap = true;}
+								if (answer === popup.yes) {bOnlyRemap = true;}
 							}
 							input = {name: name, args: {sameBy: convertStringToObject(input, 'number', ','), logic: logic, remapTags: convertStringToObject(remap, 'string', ',', ';'), bOnlyRemap: bOnlyRemap}};
 							// Final check
@@ -311,7 +311,7 @@ const menu = new _menu();
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
 						queryFilter.forEach( (queryObj, index) => {
-							const text = (queryObj.name == 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
+							const text = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 							menu.newEntry({menuName: subMenuSecondName, entryText: text, func: () => {
 								queryFilter.splice(index, 1);
 								args.properties['sameByQueries'][1] = JSON.stringify(queryFilter);
@@ -338,7 +338,7 @@ const menu = new _menu();
 				{title: 'sep', menu: specialMenu},
 			];
 			selArgs.forEach( (selArg) => {
-				if (selArg.title == 'sep') {
+				if (selArg.title === 'sep') {
 					let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
 					menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
 				} else {
@@ -388,7 +388,7 @@ const menu = new _menu();
 				queryFilter = JSON.parse(args.properties['dynamicQueries'][1]);
 				queryFilter.forEach( (queryObj) => {
 					// Add separators
-					if (queryObj.hasOwnProperty('name') && queryObj.name == 'sep') {
+					if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 						let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
 						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
 					} else { 
@@ -433,7 +433,7 @@ const menu = new _menu();
 						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
 						catch (e) {return;}
 						if (!name.length) {return;}
-						if (name == 'sep') {input = {name: name};} // Add separator
+						if (name === 'sep') {input = {name: name};} // Add separator
 						else { // or new entry
 							let query = '';
 							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, selArg.args, true);}
@@ -454,7 +454,7 @@ const menu = new _menu();
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
 						queryFilter.forEach( (queryObj, index) => {
-							const text = (queryObj.name == 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
+							const text = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 							menu.newEntry({menuName: subMenuSecondName, entryText: text, func: () => {
 								queryFilter.splice(index, 1);
 								args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
@@ -485,7 +485,7 @@ const menu = new _menu();
 		const toDelete = ['genreWeight', 'styleWeight', 'dyngenreWeight', 'dyngenreRange', 'moodWeight', 'keyWeight', 'keyRange', 'dateWeight', 'dateRange', 'bpmWeight', 'bpmRange', 'composerWeight', 'customStrWeight', 'customNumWeight', 'customNumRange', 'forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'sbd_max_graph_distance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN'];
 		let toMerge = {}; // Deep copy
 		Object.keys(SearchByDistance_properties).forEach( (key) => {
-			if (toDelete.indexOf(key) == -1) {
+			if (toDelete.indexOf(key) === -1) {
 				toMerge[key] = [...SearchByDistance_properties[key]];
 				toMerge[key][0] = '\'Search similar\' ' + toMerge[key][0];
 			}
@@ -515,11 +515,11 @@ const menu = new _menu();
 					{title: 'Random Styles/Genres mix, same Mood', args: {sbd_max_graph_distance: 400, method: 'GRAPH'}}
 				];
 				selArgs.forEach( (selArg) => {
-					if (selArg.title == 'sep') {
+					if (selArg.title === 'sep') {
 						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
 						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
 					} else {
-						const entryArg = entryArgs.find((item) => {return item.title == selArg.title;});
+						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
 						menu.newEntry({menuName: menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -540,11 +540,11 @@ const menu = new _menu();
 					{title: 'Random Styles/Genres mix, same Mood', args: {dyngenreWeight: 20, dyngenreRange: 2, method: 'DYNGENRE'}}
 				];
 				selArgs.forEach( (selArg) => {
-					if (selArg.title == 'sep') {
+					if (selArg.title === 'sep') {
 						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
 						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
 					} else {
-						const entryArg = entryArgs.find((item) => {return item.title == selArg.title;});
+						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
 						menu.newEntry({menuName: menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -565,11 +565,11 @@ const menu = new _menu();
 					{title: 'Random Styles/Genres mix, same Mood', args: {method: 'WEIGHT'}}
 				];
 				selArgs.forEach( (selArg) => {
-					if (selArg.title == 'sep') {
+					if (selArg.title === 'sep') {
 						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
 						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
 					} else {
-						const entryArg = entryArgs.find((item) => {return item.title == selArg.title;});
+						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
 						menu.newEntry({menuName: menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -598,7 +598,7 @@ const menu = new _menu();
 					{title: 'Harmonic mix with only instrumental tracks', args: {moodWeight: 15, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 35, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: 'GENRE IS Instrumental OR STYLE IS Instrumental'}}
 					];
 				selArgs.forEach( (selArg) => {
-					if (selArg.title == 'sep') {
+					if (selArg.title === 'sep') {
 						menu.newEntry({menuName: specialMenu, entryText: 'sep'})
 					} else {
 						let entryText = selArg.title;
@@ -666,7 +666,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)... ', func: (args = {...scriptDefaultArgs}) => {
 				const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputDuplic.join(','));
-				if (sortInputDuplic.join(',') == input) {return;}
+				if (sortInputDuplic.join(',') === input) {return;}
 				if (!input.length) {return;}
 				sortInputDuplic = input.split(',').filter(n => n);
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -675,7 +675,7 @@ const menu = new _menu();
 			}});
 			menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
 				const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputFilter.join(','));
-				if (sortInputFilter.join(',') == input) {return;}
+				if (sortInputFilter.join(',') === input) {return;}
 				if (!input.length) {return;}
 				sortInputFilter = input.split(',').filter(n => n);
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -684,7 +684,7 @@ const menu = new _menu();
 			}});
 			menu.newEntry({menuName: subMenuName, entryText: 'Set number allowed (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
 				const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name, nAllowed));
-				if (nAllowed == input) {return;}
+				if (nAllowed === input) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
 				nAllowed = input;
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -721,7 +721,7 @@ const menu = new _menu();
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				queryFilter = JSON.parse(args.properties['queryFilter'][1]);
 				queryFilter.forEach( (queryObj) => {
-					if (queryObj.name == 'sep') { // Create separators
+					if (queryObj.name === 'sep') { // Create separators
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 					} else { 
 						// Create names for all entries
@@ -755,13 +755,13 @@ const menu = new _menu();
 					try {name = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', window.Name, '', true);}
 					catch (e) {return;}
 					if (!name.length) {return;}
-					if (name == 'sep') {input = {name: name};} // Add separator
+					if (name === 'sep') {input = {name: name};} // Add separator
 					else {
 						let query;
 						try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, '', true);}
 						catch (e) {return;}
 						if (!query.length) {return;}
-						if (query.indexOf('#') == -1) { // Try the query only if it is not a dynamic one
+						if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 						}
@@ -775,7 +775,7 @@ const menu = new _menu();
 				{
 					const subMenuSecondName = menu.newMenu('Remove query from list...', subMenuName);
 					queryFilter.forEach( (queryObj, index) => {
-						const text = (queryObj.name == 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
+						const text = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 						menu.newEntry({menuName: subMenuSecondName, entryText: text, func: () => {
 							queryFilter.splice(index, 1);
 							args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
@@ -807,7 +807,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText: 'Using rule of Fifths (new playlist):', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			selArgs.forEach( (selArg) => {
-				if (selArg.title == 'sep') {
+				if (selArg.title === 'sep') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				} else {
 					let entryText = selArg.title;
@@ -833,7 +833,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText: 'Using Camelot Wheel\'s notation:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			selArgs.forEach( (selArg) => {
-				if (selArg.title == 'sep') {
+				if (selArg.title === 'sep') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				} else {
 					let entryText = selArg.title;
@@ -863,7 +863,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText: 'Reorder selection according to tags:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			selArgs.forEach( (selArg) => {
-				if (selArg.title == 'sep') {
+				if (selArg.title === 'sep') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				} else {
 					let entryText = selArg.title;
@@ -885,7 +885,7 @@ const menu = new _menu();
 			const toDelete = ['bUseDic'];
 			let toMerge = {}; // Deep copy
 			Object.keys(checkTags_properties).forEach( (key) => {
-				if (toDelete.indexOf(key) == -1) {
+				if (toDelete.indexOf(key) === -1) {
 					toMerge[key] = [...checkTags_properties[key]];
 					toMerge[key][0] = '\'Tools\\Check tags\' ' + toMerge[key][0];
 				}
@@ -920,7 +920,7 @@ const menu = new _menu();
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'Limits comparisons to:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 				tagsToCheck.forEach( (obj) => {
-					if (obj == 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
+					if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
 					menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, bUseDic: obj.bUseDic}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
 						args.properties['tagNamesToCheck'][1] = obj.tag;
@@ -944,7 +944,7 @@ const menu = new _menu();
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'Limits comparisons to:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 				tagsToCheck.forEach( (obj) => {
-					if (obj == 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
+					if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
 					menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
 						args.properties['tagNamesToCheck'][1] = obj.tag;
@@ -956,7 +956,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText: 'Configure tags to check...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', window.Name, args.properties['tagNamesToCheck'][1]);
-				if (args.properties['tagNamesToCheck'][1] == input) {return;}
+				if (args.properties['tagNamesToCheck'][1] === input) {return;}
 				if (!input.length) {return;}
 				args.properties['tagNamesToCheck'][1] = [...new Set(input.split(',').filter(Boolean))].join(','); // filter holes and remove duplicates
 				overwriteProperties(args.properties); // Updates panel
@@ -970,7 +970,7 @@ const menu = new _menu();
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', window.Name, args.properties['tagNamesExcludedDic'][1]);
-					if (args.properties['tagNamesExcludedDic'][1] == input) {return;}
+					if (args.properties['tagNamesExcludedDic'][1] === input) {return;}
 					if (!input.length) {return;}
 					args.properties['tagNamesExcludedDic'][1] = [...new Set(input.split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
 					overwriteProperties(args.properties); // Updates panel
@@ -978,7 +978,7 @@ const menu = new _menu();
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'Set dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', window.Name, args.properties['dictName'][1]);
-					if (args.properties['dictName'][1] == input) {return;}
+					if (args.properties['dictName'][1] === input) {return;}
 					if (!input.length) {return;}
 					const dictPath = args.properties['dictPath'][1] + '\\' + input;
 					if (isCompatible('1.4.0') ? !utils.IsDirectory(dictPath) : !utils.FileTest(dictPath, "d")) {fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return;}
@@ -988,7 +988,7 @@ const menu = new _menu();
 				menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', window.Name, args.properties['dictPath'][1]);
-					if (args.properties['dictPath'][1] == input) {return;}
+					if (args.properties['dictPath'][1] === input) {return;}
 					if (!input.length) {return;}
 					if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, "d")) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
 					args.properties['dictPath'][1] = input;
@@ -1053,12 +1053,12 @@ const menu = new _menu();
 								const subMenu_i = menu.newMenu(idx, subMenuName);
 								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 									const playlist = inPlaylist[j];
-									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist == playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist == playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist == playlist.index ? MF_GRAYED : MF_STRING)});
+									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
 						} else { // Or just show all
 							for (const playlist of inPlaylist) {
-								menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist == playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist == playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist == playlist.index ? MF_GRAYED : MF_STRING)});
+								menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 							}
 						}
 					} else {
@@ -1095,12 +1095,12 @@ const menu = new _menu();
 								const subMenu_i = menu.newMenu(idx, subMenuName);
 								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 									const playlist = inPlaylist[j];
-									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist == playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist == playlist.index ? MF_GRAYED : MF_STRING)});
+									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
 						} else { // Or just show all
 							for (const playlist of inPlaylist) {
-								menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist == playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist == playlist.index ? MF_GRAYED : MF_STRING)});
+								menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 							}
 						}
 					} else {
@@ -1137,13 +1137,13 @@ const menu = new _menu();
 								const subMenu_i = menu.newMenu(idx, subMenuName);
 								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 									const playlist = inPlaylist[j];
-									const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist == playlist.index ? ' (current playlist)' : '')
+									const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
 									menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index)}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 								}
 							}
 						} else { // Or just show all
 							for (const playlist of inPlaylist) {
-								const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist == playlist.index ? ' (current playlist)' : '')
+								const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
 								menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index)}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 							}
 						}
@@ -1202,7 +1202,7 @@ const menu = new _menu();
 					const options = [5, 10, 20, 30, 'Other...'];
 					const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
 					options.forEach( (val, index) => { // Creates menu entries for all options
-						if (index == 0) {
+						if (index === 0) {
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of entries:', func: null, flags: MF_GRAYED});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						}
@@ -1219,7 +1219,7 @@ const menu = new _menu();
 							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 								const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', window.Name, args.properties['findRemoveSplitSize'][1]));
-								if (args.properties['findRemoveSplitSize'][1] == input) {return;}
+								if (args.properties['findRemoveSplitSize'][1] === input) {return;}
 								if (!Number.isSafeInteger(input)) {return;}
 								args.properties['findRemoveSplitSize'][1] = input;
 								overwriteProperties(args.properties); // Updates panel
@@ -1238,7 +1238,7 @@ const menu = new _menu();
 					const options = [5, 10, 20, 25, 'Other...'];
 					const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
 					options.forEach( (val, index) => { // Creates menu entries for all options
-						if (index == 0) {
+						if (index === 0) {
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of tracks:', func: null, flags: MF_GRAYED});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						}
@@ -1255,7 +1255,7 @@ const menu = new _menu();
 							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 								const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', window.Name, args.properties['maxSelCount'][1]));
-								if (args.properties['maxSelCount'][1] == input) {return;}
+								if (args.properties['maxSelCount'][1] === input) {return;}
 								if (!Number.isSafeInteger(input)) {return;}
 								args.properties['maxSelCount'][1] = input;
 								overwriteProperties(args.properties); // Updates panel
@@ -1323,7 +1323,7 @@ const menu = new _menu();
 				menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', window.Name, args.properties['simThreshold'][1]));
-					if (args.properties['simThreshold'][1] == input) {return;}
+					if (args.properties['simThreshold'][1] === input) {return;}
 					if (!Number.isFinite(input)) {return;}
 					if (input < 0 || input > 1) {return;}
 					args.properties['simThreshold'][1] = input;
@@ -1345,7 +1345,7 @@ const menu = new _menu();
 		menu.newEntry({menuName: configMenu, entryText: 'Set Global Playlist Length... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 			args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 			const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', window.Name, args.properties['playlistLength'][1]));
-			if (args.properties['playlistLength'][1] == input) {return;}
+			if (args.properties['playlistLength'][1] === input) {return;}
 			if (!Number.isSafeInteger(input)) {return;}
 			args.properties['playlistLength'][1] = input;
 			overwriteProperties(args.properties); // Updates panel
@@ -1356,7 +1356,7 @@ const menu = new _menu();
 		menu.newEntry({menuName: configMenu, entryText: 'Set Global Forced Query... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 			args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 			const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', window.Name, args.properties['forcedQuery'][1]);
-			if (args.properties['forcedQuery'][1] == input) {return;}
+			if (args.properties['forcedQuery'][1] === input) {return;}
 			try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 			catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
 			args.properties['forcedQuery'][1] = input;
@@ -1369,7 +1369,7 @@ const menu = new _menu();
 		menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 			args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 			let answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, window.Name, popup.question + popup.yes_no);
-			if (answer == popup.yes) {
+			if (answer === popup.yes) {
 				// For the current instance
 				for (let key in args.properties) {
 					args.properties[key][1] = menu_properties[key][1];
@@ -1459,7 +1459,7 @@ function updateMenuProperties(propObject) {
 		// if (menu_properties.hasOwnProperty(key)) {menu_properties[key] = value;}
 		// if (menu_panelProperties.hasOwnProperty(key)) {menu_panelProperties[key] = value;}
 			// Specific
-		if (key == 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
+		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
 	});
 }
 

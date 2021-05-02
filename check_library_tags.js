@@ -289,7 +289,7 @@ function checkTags({
 		reportTagsText += tag + ':\n';
 		let rightPairsText = '', reportPairsText = '';
 		if (countArrayFiltered.length){
-			countArrayFiltered[index].forEach( (pair, indexB) => {
+			countArrayFiltered[index].forEach( (pair) => {
 				const tagKey = tag + keySplit + pair[0];
 				if (alternativesMap.has(tagKey)) {
 					reportPairsText += (reportPairsText.length ? ';' : '') + tag + ',' + pair[0];

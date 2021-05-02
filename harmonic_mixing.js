@@ -15,7 +15,6 @@ include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\camelot_wheel_xxx.
 function do_harmonic_mixing({
 								selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 								playlistLength = selItems.Count, 
-								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
 								playlistName = 'Harmonic mix from ' + plman.GetPlaylistName(plman.ActivePlaylist),
 								keyTag = 'key',
 								bSendToPls = true,
@@ -46,7 +45,7 @@ function do_harmonic_mixing({
 	});
 	pattern.sort(() => Math.random() - 0.5);
 	if (pattern.length > playlistLength) {pattern.length = playlistLength;} // finalPlaylistLength is always <= PlaylistLength
-	if (bDebug) {console.log(pattern)};
+	if (bDebug) {console.log(pattern);}
 	let nextKeyObj;
 	let keyCache = new Map();
 	let keyDebug = [];
@@ -60,7 +59,7 @@ function do_harmonic_mixing({
 		let camelotKeyCurrent;
 		if (!keyCache.has(i)) {
 			const keyCurrent = keyHandle[index][0];
-			if (bDebug && i == 0) {keyDebug.push(keyCurrent);}
+			if (bDebug && i === 0) {keyDebug.push(keyCurrent);}
 			// camelotKeyCurrent = keyCurrent.length ? {...camelotWheel.keyNotationObject.get(keyCurrent)} : null;
 			camelotKeyCurrent = keyCurrent.length ? camelotWheel.getKeyNotationObject(keyCurrent) : null;
 			keyCache.set(i, camelotKeyCurrent);
@@ -79,7 +78,7 @@ function do_harmonic_mixing({
 						keyCache.set(toCheck_k, camelotKeyNew);
 					} else {camelotKeyNew = keyCache.get(toCheck_k);}
 					if (camelotKeyNew) {
-						if (nextKeyObj.hour == camelotKeyNew.hour && nextKeyObj.letter == camelotKeyNew.letter) {
+						if (nextKeyObj.hour === camelotKeyNew.hour && nextKeyObj.letter === camelotKeyNew.letter) {
 							nextIndex = indexNew; // Which will be used for next movement
 							selectedHandlesArray.push(selItems[indexNew]);
 							alreadySelected.add(toCheck_k); // And not be selected again
@@ -94,7 +93,7 @@ function do_harmonic_mixing({
 			}
 			if (!bFound) { // If nothing is found, then continue next movement with current track
 				nextIndex = index;
-				if (j == 1) {j = 0; continue;}  // try once retrying this step with default movement
+				if (j === 1) {j = 0; continue;}  // try once retrying this step with default movement
 				else {
 					pattern[i] = 'perfectMatch';
 					i--;
@@ -104,7 +103,7 @@ function do_harmonic_mixing({
 		} else {
 			i--;
 			toCheck.delete(index); // If there is no tag, it can be deleted
-			if (toCheck.size) {nextIndex = [...toCheck][0]} // If tag was not found, then use next handle
+			if (toCheck.size) {nextIndex = [...toCheck][0];} // If tag was not found, then use next handle
 		}
 	}
 	if (bDebug) {console.log(keyDebug);}
@@ -117,14 +116,14 @@ function do_harmonic_mixing({
 			let i = 0;
 			let plc = plman.PlaylistCount;
 			while (i < plc) {
-				if (plman.GetPlaylistName(i) == playlistName) {
+				if (plman.GetPlaylistName(i) === playlistName) {
 					plman.ActivePlaylist = i;
 					break;
 				} else {
 					i++;
 				}
 			}
-			if (i == plc) { //if no playlist was found before
+			if (i === plc) { //if no playlist was found before
 				plman.CreatePlaylist(plc, playlistName);
 				plman.ActivePlaylist = plc;
 			}
