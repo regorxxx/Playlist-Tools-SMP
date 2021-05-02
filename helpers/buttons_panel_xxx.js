@@ -48,19 +48,19 @@ let cur_btn = null;
 function calcNextButtonCoordinates(buttonCoordinates,  buttonOrientation = 'x' , recalc = true) {
 	let newCoordinates;
 	// This requires a panel reload after resizing
-	// if (buttonOrientation == 'x') {
+	// if (buttonOrientation === 'x') {
 		// newCoordinates = {x: oldButtonCoordinates.x + buttonCoordinates.x , y: buttonCoordinates.y, w: buttonCoordinates.w, h: buttonCoordinates.h};
 		// if (recalc) {oldButtonCoordinates.x += buttonCoordinates.x + buttonCoordinates.w;}
-	// } else if (buttonOrientation == 'y') {
+	// } else if (buttonOrientation === 'y') {
 		// newCoordinates = {x: buttonCoordinates.x, y: oldButtonCoordinates.y + buttonCoordinates.y, w: buttonCoordinates.w, h: buttonCoordinates.h};
 		// if (recalc) {oldButtonCoordinates.y += buttonCoordinates.y  + buttonCoordinates.h;}
 	// }
 	// This requires on_size_buttn() within on_size callback. Is equivalent to calculate the coordinates directly with inlined functions... but maintained here for compatibility purporse
-	const isFunc = (_isFunction(buttonCoordinates.x) || _isFunction(buttonCoordinates.y) || _isFunction(buttonCoordinates.w) || _isFunction(buttonCoordinates.h))
-	if (buttonOrientation == 'x') {
+	const isFunc = (_isFunction(buttonCoordinates.x) || _isFunction(buttonCoordinates.y) || _isFunction(buttonCoordinates.w) || _isFunction(buttonCoordinates.h));
+	if (buttonOrientation === 'x') {
 		newCoordinates = {x: (_isFunction(buttonCoordinates.x) ? () => {return oldButtonCoordinates.x + buttonCoordinates.x()} : oldButtonCoordinates.x + buttonCoordinates.x) , y: (_isFunction(buttonCoordinates.y) ? () => {return buttonCoordinates.y()} : buttonCoordinates.y), w: (_isFunction(buttonCoordinates.w) ? () => {return buttonCoordinates.w()} : buttonCoordinates.w), h: (_isFunction(buttonCoordinates.h) ? () => {return buttonCoordinates.h()} : buttonCoordinates.h)};
 		if (recalc) {oldButtonCoordinates.x += (_isFunction(buttonCoordinates.x) ? buttonCoordinates.x() : buttonCoordinates.x) + (_isFunction(buttonCoordinates.w) ? buttonCoordinates.w() : buttonCoordinates.w);}
-	} else if (buttonOrientation == 'y') {
+	} else if (buttonOrientation === 'y') {
 		newCoordinates = {x: (_isFunction(buttonCoordinates.x) ? () => {return buttonCoordinates.x()} : buttonCoordinates.x), y: (_isFunction(buttonCoordinates.y) ? () => {return oldButtonCoordinates.y + buttonCoordinates.y()} : oldButtonCoordinates.y + buttonCoordinates.y), w: (_isFunction(buttonCoordinates.w) ? () => {return buttonCoordinates.w()} : buttonCoordinates.w), h: (_isFunction(buttonCoordinates.h) ? () => {return buttonCoordinates.h()} : buttonCoordinates.h)};
 		if (recalc) {oldButtonCoordinates.y += (_isFunction(buttonCoordinates.y) ? buttonCoordinates.y() : buttonCoordinates.y)  + (_isFunction(buttonCoordinates.h) ? buttonCoordinates.h() : buttonCoordinates.h);}
 	}
@@ -190,7 +190,7 @@ function on_mouse_move_buttn(x, y) {
 	if (old !== null) {
 		if (cur_btn === null) {tooltipButton.Deactivate();} // Needed because tooltip is only activated/deactivated on redrawing... 
 															// otherwise it shows on empty spaces after leaving a button.
-		else if (old !== cur_btn && old.description == cur_btn.description) { 	// This forces redraw even if buttons have the same text!
+		else if (old !== cur_btn && old.description === cur_btn.description) { 	// This forces redraw even if buttons have the same text!
 			tooltipButton.Deactivate();											// Updates position but tooltip becomes slower since it sets delay time to initial... 
 			tooltipButton.SetDelayTime(3, 0); //TTDT_INITIAL
 		} else {tooltipButton.SetDelayTime(3, tooltipButton.oldDelay);} 
@@ -231,13 +231,13 @@ function on_mouse_lbtn_up_buttn(x, y) {
 }
 
 function on_size_buttn() {
-	if (buttonOrientation == 'x') {oldButtonCoordinates.x = 0;}
+	if (buttonOrientation === 'x') {oldButtonCoordinates.x = 0;}
 	else {oldButtonCoordinates.y = 0;}
 }
 
 
 function getUniquePrefix(string, sep = "_"){
-	if (string === null || string == "") {return "";}
+	if (string === null || string === "") {return "";}
 	let newPrefix = string.replace(sep,"") + 0;  // First ID
 	let i = 1;
 	while (propertiesPrefixes.has(newPrefix)) { // The rest

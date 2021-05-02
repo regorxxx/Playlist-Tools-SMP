@@ -105,35 +105,35 @@ const menu = new _menu();
 		include(scriptPath);
 		readmes['Most Played Tracks from Date'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\top_tracks_from_date.txt';
 		const menuName = menu.newMenu('Most played Tracks from...');
-		menu.newEntry({menuName: menuName, entryText: 'Based on play counts within a period:', func: null, flags: MF_GRAYED});
-		menu.newEntry({menuName: menuName, entryText: 'sep'});
+		menu.newEntry({menuName, entryText: 'Based on play counts within a period:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName, entryText: 'sep'});
 		{	// Static menus
 			const currentYear = new Date().getFullYear();
 			const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
 			selYearArr.forEach( (selYear) => {
 				let args = {year: selYear};
-				menu.newEntry({menuName: menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...args}) => {do_top_tracks_from_date(args)}});
+				menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...args}) => {do_top_tracks_from_date(args)}});
 				});
 		}
-		menu.newEntry({menuName: menuName, entryText: 'sep'});
+		menu.newEntry({menuName, entryText: 'sep'});
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, "e")){
 			// All years
 			include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks.js');
-			menu.newEntry({menuName: menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {do_top_tracks(args);}});
-			menu.newEntry({menuName: menuName, entryText: 'sep'});
+			menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {do_top_tracks(args);}});
+			menu.newEntry({menuName, entryText: 'sep'});
 		}
 		{	// Input menu: x year
-			menu.newEntry({menuName: menuName, entryText: 'From year... ', func: () => {
+			menu.newEntry({menuName, entryText: 'From year... ', func: () => {
 				const selYear = new Date().getFullYear();
 				let input;
 				try {input = Number(utils.InputBox(window.ID, 'Enter year', window.Name, selYear, true));}
 				catch (e) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
-				do_top_tracks_from_date({...defaultArgs,  year: input})
+				do_top_tracks_from_date({...defaultArgs,  year: input});
 				}});
 		}
 		{	// Input menu: last x time
-			menu.newEntry({menuName: menuName, entryText: 'From last... ', func: () => {
+			menu.newEntry({menuName, entryText: 'From last... ', func: () => {
 				let input;
 				try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), window.Name, '4 WEEKS', true).trim();}
 				catch (e) {return;}
@@ -159,8 +159,8 @@ const menu = new _menu();
 		include(scriptPath);
 		readmes['Top Rated Tracks'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\top_rated_tracks.txt';
 		const menuName = menu.newMenu('Top rated Tracks from...');
-		menu.newEntry({menuName: menuName, entryText: 'Based on ratings: ' + defaultArgs.ratingLimits.join(' to '), func: null, flags: MF_GRAYED});
-		menu.newEntry({menuName: menuName, entryText: 'sep'});
+		menu.newEntry({menuName, entryText: 'Based on ratings: ' + defaultArgs.ratingLimits.join(' to '), func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName, entryText: 'sep'});
 		const currentYear = new Date().getFullYear();
 		const selYearArr = [ [currentYear], [2000, currentYear], [1990, 2000], [1980, 1990], [1970, 1980], [1960, 1970], [1950, 1940]];
 		selYearArr.forEach( (selYear) => {
@@ -173,11 +173,11 @@ const menu = new _menu();
 			}
 			selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
 			selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
-			menu.newEntry({menuName: menuName, entryText: 'Top rated from ' + selYear.join('-'), func: (args = selArgs) => {do_top_rated_tracks(args);}});
+			menu.newEntry({menuName, entryText: 'Top rated from ' + selYear.join('-'), func: (args = selArgs) => {do_top_rated_tracks(args);}});
 		});
-		menu.newEntry({menuName: menuName, entryText: 'sep'});
+		menu.newEntry({menuName, entryText: 'sep'});
 		{	// Input menu
-			menu.newEntry({menuName: menuName, entryText: 'From year... ', func: () => {
+			menu.newEntry({menuName, entryText: 'From year... ', func: () => {
 				let selYear = new Date().getFullYear();
 				try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', window.Name, selYear, true);}
 				catch (e) {return;}
@@ -224,8 +224,8 @@ const menu = new _menu();
 			menu_properties['sameByCustomArg'] = ['\'Search same by tags...\' Dynamic menu custom args', convertObjectToString(selArg.args.sameBy)];
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Menus
-			menu.newEntry({menuName: menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED});
-			menu.newEntry({menuName: menuName, entryText: 'sep'});
+			menu.newEntry({menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName, entryText: 'sep'});
 			menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				// Entry list
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -247,12 +247,12 @@ const menu = new _menu();
 						text = text.length > 40 ? text.substring(0,40) + ' ...' : text;
 						queryObj.name = text;
 						// Entries
-						menu.newEntry({menuName: menuName, entryText: 'By ' + text, func: () => {do_search_same_by(queryObj.query);}, flags: focusFlags});
+						menu.newEntry({menuName, entryText: 'By ' + text, func: () => {do_search_same_by(queryObj.query);}, flags: focusFlags});
 					}
 				});
-				menu.newEntry({menuName: menuName, entryText: 'sep'});
+				menu.newEntry({menuName, entryText: 'sep'});
 				{ // Static menu: user configurable
-					menu.newEntry({menuName: menuName, entryText: 'By... (pairs of tags)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
+					menu.newEntry({menuName, entryText: 'By... (pairs of tags)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
 						// On first execution, must update from property
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						args.sameBy = selArg.args.sameBy = convertStringToObject(args.properties['sameByCustomArg'][1], 'number', ',');
@@ -268,10 +268,10 @@ const menu = new _menu();
 						do_search_same_by(selArg.args)
 					}, flags: focusFlags});
 					// Menu to configure property
-					menu.newEntry({menuName: menuName, entryText: 'sep'});
+					menu.newEntry({menuName, entryText: 'sep'});
 				}
 				{	// Add / Remove
-					menu.newEntry({menuName: menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						// Input all variables
 						let input;
 						let name = '';
@@ -380,8 +380,8 @@ const menu = new _menu();
 			menu_properties['dynamicQueriesCustomArg'] = ['\'Dynamic Queries...\' Dynamic menu custom args', selArg.args];
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Menus
-			menu.newEntry({menuName: menuName, entryText: 'Based on Queries evaluated with sel:', func: null, flags: MF_GRAYED});
-			menu.newEntry({menuName: menuName, entryText: 'sep'});
+			menu.newEntry({menuName, entryText: 'Based on Queries evaluated with sel:', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName, entryText: 'sep'});
 			menu.newCondEntry({entryText: 'Dynamic Queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				// Entry list
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -395,15 +395,15 @@ const menu = new _menu();
 						// Create names for all entries
 						queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
 						// Entries
-						menu.newEntry({menuName: menuName, entryText: queryObj.name, func: () => {
+						menu.newEntry({menuName, entryText: queryObj.name, func: () => {
 							if (!fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.args, scriptName); return;}
 							do_dynamic_query({query: queryObj.args});
 						}, flags: focusFlags});
 					}
 				});
-				menu.newEntry({menuName: menuName, entryText: 'sep'});
+				menu.newEntry({menuName, entryText: 'sep'});
 				{ // Static menu: user configurable
-					menu.newEntry({menuName: menuName, entryText: 'By... (query)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+					menu.newEntry({menuName, entryText: 'By... (query)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 						// On first execution, must update from property
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						args.args = selArg.args = args.properties['dynamicQueriesCustomArg'][1];
@@ -423,10 +423,10 @@ const menu = new _menu();
 						overwriteProperties(args.properties); // Updates panel
 					}, flags: focusFlags});
 					// Menu to configure property
-					menu.newEntry({menuName: menuName, entryText: 'sep'});
+					menu.newEntry({menuName, entryText: 'sep'});
 				}
 				{	// Add / Remove
-					menu.newEntry({menuName: menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						// Input all variables
 						let input;
 						let name = '';
@@ -507,7 +507,7 @@ const menu = new _menu();
 		// Graph
 			let menuName = menu.newMenu('Search similar by Graph...');
 			{	// Static menus
-				menu.newEntry({menuName: menuName, entryText: 'Links similar genre/styles using complex relations:', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName, entryText: 'Links similar genre/styles using complex relations:', func: null, flags: MF_GRAYED});
 				const entryArgs = [
 					{title: 'Nearest Tracks', args: {sbd_max_graph_distance: 50, method: 'GRAPH'}},
 					{title: 'Similar Genre mix, within a decade', args: {sbd_max_graph_distance: 85, method: 'GRAPH'}},
@@ -521,7 +521,7 @@ const menu = new _menu();
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
-						menu.newEntry({menuName: menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+						menu.newEntry({menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							do_searchby_distance(args);
 						}, flags: focusFlags});
@@ -532,7 +532,7 @@ const menu = new _menu();
 		{	// Dyngenre...
 			let menuName = menu.newMenu('Search similar by DynGenre...');
 			{	// Static menus
-				menu.newEntry({menuName: menuName, entryText: 'Links similar genre/styles using simple grouping:', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName, entryText: 'Links similar genre/styles using simple grouping:', func: null, flags: MF_GRAYED});
 				const entryArgs = [
 					{title: 'Nearest Tracks', args: {dyngenreWeight: 20, dyngenreRange: 1, method: 'DYNGENRE'}},
 					{title: 'Similar Genre mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: 1, method: 'DYNGENRE'}},
@@ -546,7 +546,7 @@ const menu = new _menu();
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
-						menu.newEntry({menuName: menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+						menu.newEntry({menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							do_searchby_distance(args);
 						}, flags: focusFlags});
@@ -557,7 +557,7 @@ const menu = new _menu();
 		{	// Weight...
 			let menuName = menu.newMenu('Search similar by Weight...');
 			{	// Static menus
-				menu.newEntry({menuName: menuName, entryText: 'Applies scoring according to tag similarity:', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName, entryText: 'Applies scoring according to tag similarity:', func: null, flags: MF_GRAYED});
 				const entryArgs = [
 					{title: 'Nearest Tracks', args: {method: 'WEIGHT'}},
 					{title: 'Similar Genre mix, within a decade', args: {method: 'WEIGHT'}},
@@ -571,7 +571,7 @@ const menu = new _menu();
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
-						menu.newEntry({menuName: menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+						menu.newEntry({menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							do_searchby_distance(args);
 						}, flags: focusFlags});
@@ -844,7 +844,7 @@ const menu = new _menu();
 			});
 		}
 	}
-	menu.newEntry({menuName: menuName, entryText: 'sep'});
+	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Scatter
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\scatter_by_tags.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
@@ -874,7 +874,7 @@ const menu = new _menu();
 			});
 		}
 	}
-	menu.newEntry({menuName: menuName, entryText: 'sep'});
+	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Check tags
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\check_library_tags.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
@@ -1007,7 +1007,7 @@ const menu = new _menu();
 			menu.newEntry({menuName: subMenuName, entryText:'Add tags on batch to selected tracks', func: tagsAutomation, flags: focusFlags});
 		}
 	}
-	menu.newEntry({menuName: menuName, entryText: 'sep'});
+	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Remove and find in playlists
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\find_remove_from_playlists.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
@@ -1272,7 +1272,7 @@ const menu = new _menu();
 			}
 		}
 	}
-	menu.newEntry({menuName: menuName, entryText: 'sep'});
+	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Playlist revive
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\playlist_revive.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
