@@ -1,7 +1,7 @@
 # Playlist-Tools-SMP
 [![version][version_badge]][changelog]
 [![CodeFactor][codefactor_badge]](https://www.codefactor.io/repository/github/regorxxx/Playlist-Tools-SMP/overview/main)
-[![Codacy Badge][codacy_badge]](https://www.codacy.com/gh/regorxxx/Playlist-Tools-SMP/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=regorxxx/Playlist-Tools-SMP&amp;utm_campaign=Badge_Grade)
+[![CodacyBadge][codacy_badge]](https://www.codacy.com/gh/regorxxx/Playlist-Tools-SMP/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=regorxxx/Playlist-Tools-SMP&amp;utm_campaign=Badge_Grade)
 ![GitHub](https://img.shields.io/github/license/regorxxx/Playlist-Tools-SMP)  
 A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel) Scripts for [foobar2000](https://www.foobar2000.org), built within a menu, which serves as a hub for 'usage examples' and shortcuts to the most requested foobar missing functionalities: remove duplicates by tags, revive dead items, check errors on tags, spotify-like playlist creation, advanced queries, etc.
 
@@ -72,6 +72,6 @@ Then load any button script into a SMP panel within foobar.
 There are buttons bars and independent buttons for each script and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu seen on the gifs, while '_buttons_merged.js' is the entire bar.
 
 [changelog]: CHANGELOG.md
-[version_badge]: https://img.shields.io/github/release/regorxxx/SPlaylist-Tools-SMP.svg
+[version_badge]: https://img.shields.io/github/release/regorxxx/Playlist-Tools-SMP.svg
 [codacy_badge]: https://api.codacy.com/project/badge/Grade/e04be28637dd40d99fae7bd92f740677
 [codefactor_badge]: https://www.codefactor.io/repository/github/regorxxx/Playlist-Tools-SMP/badge/main
