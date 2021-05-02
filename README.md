@@ -1,9 +1,13 @@
 # Playlist-Tools-SMP
+[![version][version_badge]][changelog]
+[![CodeFactor][codefactor_badge]](https://www.codefactor.io/repository/github/regorxxx/Playlist-Tools-SMP/overview/main)
+[![Codacy Badge][codacy_badge]](https://www.codacy.com/gh/regorxxx/Playlist-Tools-SMP/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=regorxxx/Playlist-Tools-SMP&amp;utm_campaign=Badge_Grade)
+![GitHub](https://img.shields.io/github/license/regorxxx/Playlist-Tools-SMP)  
 A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel) Scripts for [foobar200](https://www.foobar2000.org), built within a menu, which serves as a hub for 'usage examples' and shortcuts to the most requested foobar missing functionalities: remove duplicates by tags, revive dead items, check errors on tags, spotify-like playlist creation, advanced queries, etc.
 
 ![Animation7](https://user-images.githubusercontent.com/83307074/116756221-471e8500-a9fb-11eb-96c9-2c269bf91fef.gif)
 
-# Features: 
+## Features: 
 
 ![Animation9](https://user-images.githubusercontent.com/83307074/116756215-44239480-a9fb-11eb-8489-b56a178c70f4.gif)
 
@@ -50,16 +54,21 @@ The menus are highly customizable. They are created on demand according to the s
 
 ![Animation10](https://user-images.githubusercontent.com/83307074/116756219-4685ee80-a9fb-11eb-80be-413f0e691dd4.gif)
 
-## Also integrates
+### Also integrates
 1. [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP): creates intelligent "spotify-like" playlist using high-level data from tracks and computing their similarity using genres/styles.
 2. [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation): Javascript implementation of the Camelot Wheel, ready to use "harmonic mixing" rules and translations for standard key notations.
 
 ![playlist_tools_menu_05](https://user-images.githubusercontent.com/83307074/116759000-cebac280-aa00-11eb-8a81-9a450e13205a.gif)
 
-# Installation: 
+## Installation: 
 Copy all files from the zip into YOUR_FOOBAR_PROFILE_PATH\scripts\SMP\xxx-scripts  
 Any other path WILL NOT work without editing the scripts.  
 For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
 For portable installations: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
 Then load any button script into a SMP panel within foobar.  
 There are buttons bars and independent buttons for the individual scripts and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu.
+
+[changelog]: CHANGELOG.md
+[version_badge]: https://img.shields.io/github/release/regorxxx/SPlaylist-Tools-SMP.svg
+[codacy_badge]: https://api.codacy.com/project/badge/Grade/1677d2b0dee54548bf44614fcf808529
+[codefactor_badge]: https://www.codefactor.io/repository/github/regorxxx/Playlist-Tools-SMP/badge/main
