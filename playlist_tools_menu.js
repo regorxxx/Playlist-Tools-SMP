@@ -296,7 +296,7 @@ const menu = new _menu();
 								let answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
 								if (answer === popup.yes) {bOnlyRemap = true;}
 							}
-							input = {name: name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: convertStringToObject(remap, 'string', ',', ';'), bOnlyRemap}};
+							input = {name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: convertStringToObject(remap, 'string', ',', ';'), bOnlyRemap}};
 							// Final check
 							try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
 							catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
@@ -307,7 +307,7 @@ const menu = new _menu();
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						args.properties['sameByQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 						overwriteProperties(args.properties); // Updates panel
-					;}})
+					}});
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
 						queryFilter.forEach( (queryObj, index) => {
@@ -334,13 +334,13 @@ const menu = new _menu();
 				{title: 'sep', menu: specialMenu},
 				{title: 'Same artist(s) or featured artist(s)', menu: specialMenu, args: {sameBy: {artist: 1, involvedpeople: 1}, remapTags: {artist: ['involvedpeople'], involvedpeople: ['artist']}, bOnlyRemap: false, logic: 'OR'}},  // Finds tracks where artist or involved people matches any from selection
 				{title: 'Find collaborations along other artists', menu: specialMenu, args: {sameBy: {artist: 1}, remapTags: {artist: ['involvedpeople']}, bOnlyRemap: true, logic: 'OR'}},  // Finds tracks where involved people matches artist from selection (remap)
-				{title: 'Music by same composer(s) as artist(s)', menu: specialMenu, args: {sameBy: {composer: 1}, remapTags: {composer: ['involvedpeople'], composer: ['artist']}, bOnlyRemap: true, logic: 'OR'}}, // Finds tracks where artist or involvedpeople matches composer from selection (remap)
+				{title: 'Music by same composer(s) as artist(s)', menu: specialMenu, args: {sameBy: {composer: 1}, remapTags: {composer: ['involvedpeople', 'artist']}, bOnlyRemap: true, logic: 'OR'}}, // Finds tracks where artist or involvedpeople matches composer from selection (remap)
 				{title: 'sep', menu: specialMenu},
 			];
 			selArgs.forEach( (selArg) => {
 				if (selArg.title === 'sep') {
 					let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-					menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
+					menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
 				} else {
 					let entryText = '';
 					if (!selArg.hasOwnProperty('title')) {
@@ -350,7 +350,7 @@ const menu = new _menu();
 							});
 					} else {entryText = selArg.title;}
 					let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-					menu.newEntry({menuName: entryMenuName, entryText: entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
+					menu.newEntry({menuName: entryMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
 				}
 			});
 		}
@@ -414,7 +414,7 @@ const menu = new _menu();
 						if (!query.length) {return;}
 						if (!fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, scriptName); return;}
 						// Playlist
-						let handleList = do_dynamic_query({query: query});
+						let handleList = do_dynamic_query({query});
 						if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 						// For internal use original object
 						selArg.args = query; 
@@ -433,13 +433,13 @@ const menu = new _menu();
 						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
 						catch (e) {return;}
 						if (!name.length) {return;}
-						if (name === 'sep') {input = {name: name};} // Add separator
+						if (name === 'sep') {input = {name};} // Add separator
 						else { // or new entry
 							let query = '';
 							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, selArg.args, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
-							input = {name: name, args: query};
+							input = {name, args: query};
 							// Final check
 							try {if (!do_dynamic_query({query: input.args, bPlaylist: false})) {throw 'error';}}
 							catch (e) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return;}
@@ -450,7 +450,7 @@ const menu = new _menu();
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 						overwriteProperties(args.properties); // Updates panel
-					;}});
+					}});
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
 						queryFilter.forEach( (queryObj, index) => {
@@ -489,7 +489,7 @@ const menu = new _menu();
 				toMerge[key] = [...SearchByDistance_properties[key]];
 				toMerge[key][0] = '\'Search similar\' ' + toMerge[key][0];
 			}
-		;});
+		});
 		// And merge
 		menu_properties = {...menu_properties, ...toMerge};
 		// Set default args
@@ -521,7 +521,7 @@ const menu = new _menu();
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
-						menu.newEntry({menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+						menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							do_searchby_distance(args);
 						}, flags: focusFlags});
@@ -599,10 +599,10 @@ const menu = new _menu();
 					];
 				selArgs.forEach( (selArg) => {
 					if (selArg.title === 'sep') {
-						menu.newEntry({menuName: specialMenu, entryText: 'sep'})
+						menu.newEntry({menuName: specialMenu, entryText: 'sep'});
 					} else {
 						let entryText = selArg.title;
-						menu.newEntry({menuName: specialMenu, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
+						menu.newEntry({menuName: specialMenu, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							const globQuery = args.properties['forcedQuery'][1];
 							if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
@@ -792,7 +792,7 @@ const menu = new _menu();
 			}});
 		}
 	}
-	menu.newEntry({menuName: menuName, entryText: 'sep'});
+	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Create harmonic mix from playlist
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\harmonic_mixing.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){

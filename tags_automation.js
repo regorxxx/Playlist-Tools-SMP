@@ -30,9 +30,9 @@ function on_metadb_changed(handle_list) {
 		if (sel_items !== undefined && sel_items !== null && count_items !== null) {
 			handle_list.Sort();
 			handle_list.MakeIntersection(sel_items);
-			if (handle_list.Count != 0 && count_items != 0) {
+			if (handle_list.Count !== 0 && count_items !== 0) {
 				count_items -= handle_list.Count;
-				if (count_items == 0) {
+				if (count_items === 0) {
 					count_items = sel_items.Count;
 					debouncedStep(iStep);
 				}
@@ -54,7 +54,7 @@ function tagsAutomation() {
 	if (sel_items !== undefined && sel_items !== null) {
 		sel_items.Sort();
 		count_items = sel_items.Count;
-		if (count_items == 0) {
+		if (count_items === 0) {
 			console.log('No tracks selected.');
 			return;
 		}
@@ -62,7 +62,7 @@ function tagsAutomation() {
 	
 	// Safety check for accidental button pressing
 	let answer = WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.', 0, window.Name, popup.question + popup.yes_no);
-	if (answer == popup.no) {
+	if (answer === popup.no) {
 		iStep = null;
 		sel_items = null;
 		count_items = null;
@@ -81,9 +81,9 @@ function tagsAutomation() {
 		let album, bitDepth, bitRate, sampleRate, codec;
 		let albumNext, bitDepthNext, bitRateNext, sampleRateNext, codecNext;
 		for (let i = 0; i < strArray.length - 1; i++) {
-			[album, bitDepth, bitRate, sampleRate, codec] = (i == 0) ? strArray[i].split('##') : [albumNext, bitDepthNext, bitRateNext, sampleRateNext, codecNext];
+			[album, bitDepth, bitRate, sampleRate, codec] = (i === 0) ? strArray[i].split('##') : [albumNext, bitDepthNext, bitRateNext, sampleRateNext, codecNext];
 			[albumNext, bitDepthNext, bitRateNext, sampleRateNext, codecNext] = strArray[i+1].split('##');
-			if (album == albumNext) {
+			if (album === albumNext) {
 				albumCache++;
 				if (albumCache > greatestAlbumSize) {greatestAlbumSize = albumCache;}
 			} else {albumCache = 1;}
