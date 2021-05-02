@@ -454,7 +454,7 @@ function updateCache(otherCache) {
 
 function on_notify_data(name, info) {
 	if (name.indexOf('SearchByDistance: requires cacheLink') !== -1 && cacheLink !== undefined) { // When asked to share cache, delay 1 sec. to allow script loading
-		debounce(() => {if (cacheLink !== undefined) {window.NotifyOthers(window.Name + ' SearchByDistance: cacheLink', cacheLink)}}, 1000)();
+		debounce(() => {if (cacheLink !== undefined) {window.NotifyOthers(window.Name + ' SearchByDistance: cacheLink', cacheLink);}}, 1000)();
 		console.log('SearchByDistance: Requested Cache.');
 	} 
 	if (name.indexOf('SearchByDistance: cacheLink') !== -1 && info) {
@@ -605,7 +605,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 			originaldistance += styleWeight;
 			if ( styleWeight / totalweight >= totalweight / countweights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				query[queryl] += query_combinations(style, styleTag, "OR");
 			}
 		}

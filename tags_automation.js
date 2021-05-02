@@ -44,7 +44,7 @@ function on_metadb_changed(handle_list) {
 function getTagsAutomationDescription() {
 	const boolArr = [bBiometric, bMassTag, bAudioMd5, bRgScan, bDynamicRange];
 	const descArr = ['Fingerprinting', 'MD5', 'AUDIOMD5', 'ReplayGain', 'DR'];
-	return boolArr.reduce((text, bVal, index) => {return (bVal ? (text.length ? text + ', ' + descArr[index]: descArr[index]) : text)}, ''); // Initial value is '';
+	return boolArr.reduce((text, bVal, index) => {return (bVal ? (text.length ? text + ', ' + descArr[index]: descArr[index]) : text);}, ''); // Initial value is '';
 }
 
 function tagsAutomation() {
@@ -69,7 +69,7 @@ function tagsAutomation() {
 		currentTime = null;
 	} else {
 		// Calcs the max required processing time between albums
-		let codecTimes = {MP3: 2, FLAC: 1}
+		let codecTimes = {MP3: 2, FLAC: 1};
 		let tfo = fb.TitleFormat('%album artist% | %date% | %album%##%__bitspersample%##%__bitrate%##%__samplerate%##%codec%');
 		let strArray = tfo.EvalWithMetadbs(sel_items);
 		let greatestAlbumSize = 1;

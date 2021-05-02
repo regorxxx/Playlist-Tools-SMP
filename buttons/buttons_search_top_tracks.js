@@ -33,7 +33,7 @@ var newButtons  = {
 		let t0 = Date.now();
 		let t1 = 0;
 		const [playlistLength, forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
-		do_top_tracks({playlistLength: Number(playlistLength), forcedQuery: forcedQuery});
+		do_top_tracks({playlistLength: Number(playlistLength), forcedQuery});
 		t1 = Date.now();
 		console.log("Call to do_top_tracks took " + (t1 - t0) + " milliseconds.");
 	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates).\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties),

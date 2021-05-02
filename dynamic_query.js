@@ -7,7 +7,7 @@
 
 function do_dynamic_query({query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusItem(true), playlistName = 'Search...', bSendToPls = true} = {}) {
 	if (!query || !query.length) {return null;}
-	if (!handle) {return null}
+	if (!handle) {return null;}
 	
 	if (query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, handle);}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), query);}

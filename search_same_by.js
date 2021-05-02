@@ -216,7 +216,7 @@ function do_search_same_by({
 							subQuery.push(query_combinations(tagQuery, tag, 'OR', 'AND'));
 						});
 						query[ql] += query_join(subQuery, 'OR');
-					} else {query[ql] += query_combinations(tagQuery, tagName, 'OR', 'AND')}
+					} else {query[ql] += query_combinations(tagQuery, tagName, 'OR', 'AND');}
 				}
 			}
 			i++;

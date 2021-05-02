@@ -138,7 +138,7 @@ const debounce = (func, delay, immediate) => {
 		}
 		const calleeFunc = immediate ? () => {timerId = null;} : boundFunc;
 		timerId = setTimeout(calleeFunc, delay);
-	}
+	};
 };
 
 // Limit the rate at which a function can fire to delay (ms).

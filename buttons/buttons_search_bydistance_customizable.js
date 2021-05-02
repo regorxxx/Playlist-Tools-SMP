@@ -43,7 +43,7 @@ var newButtons = {
 				window.Reload(); // Forces redraw with new name
 			}
 		} else {
-			do_searchby_distance({properties: properties}); // All set according to properties panel!
+			do_searchby_distance({properties}); // All set according to properties panel!
 		}
 		t1 = Date.now();
 		console.log("Call to do_searchby_distance " + getProperties(this.buttonsProperties, this.prefix)['customName'] + " took " + (t1 - t0) + " milliseconds.");
