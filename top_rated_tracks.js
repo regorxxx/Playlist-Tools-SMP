@@ -62,7 +62,7 @@ function do_top_rated_tracks({
 			handleList.AddRange(handleList_i);
 			currRating--;
 		}
-		 // Output n tracks
+		// Output n tracks
 		handleList.RemoveRange(playlistLength, handleList.Count);
 		
 		// Clear playlist if needed. Preferred to removing it, since then we could undo later...

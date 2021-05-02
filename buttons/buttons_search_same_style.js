@@ -15,7 +15,7 @@ try { //May be loaded along other buttons
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation == 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation == 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Search Same Button loaded.');
 }
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
@@ -30,10 +30,10 @@ var newButtonsProperties = { //You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 // we change the default coordinates here to accommodate text
-if (buttonOrientation == 'x') {buttonCoordinates.w -= 18;}
+if (buttonOrientation === 'x') {buttonCoordinates.w -= 18;}
 
 var newButtons = {
-	SameStyles: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Same Styles', function () {
+	SameStyles: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Same Styles', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [playlistLength , forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once

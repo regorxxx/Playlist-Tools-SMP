@@ -25,7 +25,7 @@ try { //May be loaded along other buttons
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation == 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation == 'y' ? 22 : buttonCoordinates.h}; // Reset properties
+	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset properties
 	console.log('Remove Duplicates Button loaded.');
 }
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
@@ -40,10 +40,10 @@ var newButtonsProperties = { //You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
-if (buttonOrientation == 'x') {buttonCoordinates.w += 25;}
+if (buttonOrientation === 'x') {buttonCoordinates.w += 25;}
 
 var newButtons = {
-	RemoveDuplicates: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Remove Duplicates', function () {
+	RemoveDuplicates: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Remove Duplicates', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix, undefined, 4); //This gets all the panel properties at once but 4th
@@ -53,7 +53,7 @@ var newButtons = {
 		console.log("Call to do_remove_duplicatesV2 took " + (t1 - t0) + " milliseconds.");
 	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, undefined, undefined, 4), prefix, newButtonsProperties), //Skips 4th descriptor
 	
-	RemoveDuplicatesV3: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Filter playlist', function () {
+	RemoveDuplicatesV3: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Filter playlist', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once

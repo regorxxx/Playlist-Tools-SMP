@@ -656,19 +656,19 @@ const menu = new _menu();
 				try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputDuplic.join(','), true);}
 				catch (e) {return;}
 				if (!tags.length) {return;}
-				tags = tags.split(',').filter(val => val);
+				tags = tags.split(',').filter((val) => val);
 				let n;
 				try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name, nAllowed, true));}
 				catch (e) {return;}
 				if (!Number.isSafeInteger(n)) {return;}
 				do_remove_duplicatesV3(null, null, tags, n);
-			;}, flags: playlistCountFlags});
+			}, flags: playlistCountFlags});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)... ', func: (args = {...scriptDefaultArgs}) => {
 				const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputDuplic.join(','));
 				if (sortInputDuplic.join(',') === input) {return;}
 				if (!input.length) {return;}
-				sortInputDuplic = input.split(',').filter(n => n);
+				sortInputDuplic = input.split(',').filter((n) => n);
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				args.properties['sortInputDuplic'][1] = sortInputFilter.join(',');
 				overwriteProperties(args.properties); // Updates panel
@@ -677,7 +677,7 @@ const menu = new _menu();
 				const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputFilter.join(','));
 				if (sortInputFilter.join(',') === input) {return;}
 				if (!input.length) {return;}
-				sortInputFilter = input.split(',').filter(n => n);
+				sortInputFilter = input.split(',').filter((n) => n);
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				args.properties['sortInputFilter'][1] = sortInputFilter.join(',');
 				overwriteProperties(args.properties); // Updates panel
@@ -771,7 +771,7 @@ const menu = new _menu();
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
 					overwriteProperties(args.properties); // Updates panel
-				;}});
+				}});
 				{
 					const subMenuSecondName = menu.newMenu('Remove query from list...', subMenuName);
 					queryFilter.forEach( (queryObj, index) => {
@@ -889,7 +889,7 @@ const menu = new _menu();
 					toMerge[key] = [...checkTags_properties[key]];
 					toMerge[key][0] = '\'Tools\\Check tags\' ' + toMerge[key][0];
 				}
-			;});
+			});
 			// And merge
 			menu_properties = {...menu_properties, ...toMerge};
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}], bUseDic: false};

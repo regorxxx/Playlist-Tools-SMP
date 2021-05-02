@@ -14,7 +14,7 @@ try { //May be loaded along other buttons
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation == 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation == 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Remove EDIT loaded.');
 }
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
@@ -26,8 +26,8 @@ var newButtonsProperties = { //You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
-// if (buttonOrientation == 'x') {buttonCoordinates.w += 0;}
-// if (buttonOrientation == 'y') {buttonCoordinates.h += 0;}
+// if (buttonOrientation === 'x') {buttonCoordinates.w += 0;}
+// if (buttonOrientation === 'y') {buttonCoordinates.h += 0;}
 
 var newButtons = {
 	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'EDIT', function () {

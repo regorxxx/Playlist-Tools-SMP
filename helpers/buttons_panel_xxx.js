@@ -149,18 +149,21 @@ function SimpleButton(x, y, w, h, text, fonClick, state, g_font = _gdiFont('Sego
 }
 
 function drawAllButtons(gr) {
-	for (let i in buttons) {
-		buttons[i].draw(gr);
+	for (let key in buttons) {
+		if (Object.prototype.hasOwnProperty.call(buttons, key)) {
+			buttons[key].draw(gr);
+		}
 	}
 }
 
 function chooseButton(x, y) {
-	for (let i in buttons) {
-		if (buttons[i].containXY(x, y) && buttons[i].state !== ButtonStates.hide) {
-			return buttons[i];
+	for (let key in buttons) {
+		if (Object.prototype.hasOwnProperty.call(buttons, key)) {
+			if (buttons[key].containXY(x, y) && buttons[key].state !== ButtonStates.hide) {
+				return buttons[key];
+			}
 		}
 	}
-
 	return null;
 }
 

@@ -110,7 +110,7 @@ function do_search_same_by({
 			console.log('do_search_same_by: sameBy [' + checkDuplicatesBy + '] some keys are not String objects');
 			return false;
 		}
-		if (tags.length != k_tagsCombs.length) {
+		if (tags.length !== k_tagsCombs.length) {
 			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some keys (tags) are missing values');
 			return false;
 		}
@@ -122,7 +122,7 @@ function do_search_same_by({
 		}
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
-		if (logicDic.indexOf(logic) == -1) {
+		if (logicDic.indexOf(logic) === -1) {
 			console.log("do_search_same_by(): logic (" + logic + ") is wrong");
 			return false;
 		}
@@ -140,10 +140,10 @@ function do_search_same_by({
 		let i = 0;
 		while (i < nTags) { // Check all tags
 			const tagName = tags[i].toLowerCase(); // To match sets!
-			const tagNameTF = (tagName.indexOf('$') == -1) ? '%' + tagName + '%' : tagName; // It's a function? Then at eval as is, and at queries use '"' + tagNameTF + '"'
+			const tagNameTF = (tagName.indexOf('$') === -1) ? '%' + tagName + '%' : tagName; // It's a function? Then at eval as is, and at queries use '"' + tagNameTF + '"'
 			const tagIdx = sel_info.MetaFind(tags[i]);
-			const tagNumber = (tagIdx != -1) ? sel_info.MetaValueCount(tagIdx) : 0;
-			if (tagNumber == 0 && !dynamicTags.has(tagName)) {
+			const tagNumber = (tagIdx !== -1) ? sel_info.MetaValueCount(tagIdx) : 0;
+			if (tagNumber === 0 && !dynamicTags.has(tagName)) {
 				console.log('Track selected has no ' + tags[i] + ' tag');
 			} else { // For selected tag
 				if (numericTags.has(tagName)) { // may be a numeric tag
@@ -153,7 +153,7 @@ function do_search_same_by({
 					const valueLower = valueRange > tagValue ? 0 : tagValue - valueRange; // Safety check
 					ql = query.length;
 					query[ql] = '';
-					if (valueUpper != valueLower) {query[ql] += (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' GREATER ' + valueLower + ' AND ' + (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' LESS ' + valueUpper;} 
+					if (valueUpper !== valueLower) {query[ql] += (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' GREATER ' + valueLower + ' AND ' + (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' LESS ' + valueUpper;} 
 					else {query[ql] += (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' EQUAL ' + tagValue;}
 				} else if (cyclicTags.has(tagName)) { // a ciclic numeric tag
 					const tagValue = Number(sel_info.MetaValue(tagIdx, 0));
@@ -161,7 +161,7 @@ function do_search_same_by({
 					const [valueLower, valueUpper, lowerLimit, upperLimit] = cyclicTagsDescriptor[tagName](tagValue, valueRange, true);
 					ql = query.length;
 					query[ql] = '';
-					if (valueUpper != valueLower) {
+					if (valueUpper !== valueLower) {
 						let tempQuery = [];
 						if (valueLower > tagValue) { // we reached the limits and swapped values (x - y ... upperLimit + 1 = lowerLimit ... x ... x + y ... upperLimit)
 							tempQuery[0] = tagName + ' GREATER ' + lowerLimit + ' AND ' + tagName + ' LESS ' + tagValue; // (lowerLimit , x)
@@ -182,13 +182,13 @@ function do_search_same_by({
 						j++;
 					}
 					let k;
-					if (k_tagsCombs[i] != 0) { // Value may be != 0
+					if (k_tagsCombs[i] !== 0) { // Value may be !== 0
 						if (k_tagsCombs[i] < 0) {
 							let k_tagsNegativeCombs;
 							if (isFloat(k_tagsCombs[i])) { // negative Float number -> match (tagNumber - tagNumber * value) # of tags
 								k_tagsCombs[i] = Math.abs(k_tagsCombs[i]);
 								k_tagsNegativeCombs = round(tagNumber * k_tagsCombs[i], 0);
-								if (k_tagsNegativeCombs == 0) {k_tagsNegativeCombs = 1;} // rounded to nearest integer number, but maximum must be -1
+								if (k_tagsNegativeCombs === 0) {k_tagsNegativeCombs = 1;} // rounded to nearest integer number, but maximum must be -1
 								if (tagNumber <= k_tagsNegativeCombs) {k_tagsNegativeCombs = tagNumber - 1;} // and maximum must be tagnumber - 1
 							} else {  // negative -> match (tagNumber - value) # of tags
 								k_tagsCombs[i] = Math.abs(k_tagsCombs[i]);
@@ -198,7 +198,7 @@ function do_search_same_by({
 						} else {
 							if (isFloat(k_tagsCombs[i])) { // positive Float number -> match (tagNumber * value) # of tags anything
 								k = round(tagNumber * k_tagsCombs[i], 0);
-								if (k == 0) {k = 1;} // rounded to nearest integer number, but minimum must be 1
+								if (k === 0) {k = 1;} // rounded to nearest integer number, but minimum must be 1
 								if (tagNumber < k) {k = tagNumber;} // and maximum must be tagnumber
 							} else { // positive integer -> match value # of tags
 								k = (tagNumber > k_tagsCombs[i]) ? k_tagsCombs[i] : tagNumber; //on combinations of K or the maximum number possible
@@ -253,14 +253,14 @@ function do_search_same_by({
 			i = 0;
 			let plc = plman.PlaylistCount;
 			while (i < plc) {
-				if (plman.GetPlaylistName(i) == playlistName) {
+				if (plman.GetPlaylistName(i) === playlistName) {
 					plman.ActivePlaylist = i;
 					break;
 				} else {
 					i++;
 				}
 			}
-			if (i == plc) { //if no playlist was found before
+			if (i === plc) { //if no playlist was found before
 				plman.CreatePlaylist(plc, playlistName);
 				plman.ActivePlaylist = plc;
 			}

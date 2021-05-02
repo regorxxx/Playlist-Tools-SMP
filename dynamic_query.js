@@ -20,14 +20,14 @@ function do_dynamic_query({query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusIte
 		let i = 0;
 		let plc = plman.PlaylistCount;
 		while (i < plc) {
-			if (plman.GetPlaylistName(i) == playlistName) {
+			if (plman.GetPlaylistName(i) === playlistName) {
 				plman.ActivePlaylist = i;
 				break;
 			} else {
 				i++;
 			}
 		}
-		if (i == plc) { //if no playlist was found before
+		if (i === plc) { //if no playlist was found before
 			plman.CreatePlaylist(plc, playlistName);
 			plman.ActivePlaylist = plc;
 		}

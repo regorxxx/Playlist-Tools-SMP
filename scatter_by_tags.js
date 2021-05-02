@@ -46,7 +46,7 @@ function do_scatter_by_tags({
 		removed.forEach((handle, index) => {
 			const i_scatterInterval = index * scatterInterval;
 			let j = Math.floor(Math.random() * (scatterInterval - 1)) + i_scatterInterval;
-			if (j == 0 && scatterInterval > 2) {j = 1;} // Don't put first track as instrumental if possible
+			if (j === 0 && scatterInterval > 2) {j = 1;} // Don't put first track as instrumental if possible
 			selItemsArray.splice(j, 0, handle); // (at, 0, item)
 		});
 	} else {return selItems;}

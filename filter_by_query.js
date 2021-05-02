@@ -6,7 +6,7 @@
 */	
 
 function do_filter_by_query(handleList = null, query = 'ALL') {
-	if (!query || !query.length || query == 'ALL') {
+	if (!query || !query.length || query === 'ALL') {
 		return handleList;
 	}
 	

@@ -50,7 +50,7 @@ function do_top_tracks({
 			handleList = do_remove_duplicatesV2(handleList, sortBy, checkDuplicatesBy);
 		}
 		
-		 // Output n tracks
+		// Output n tracks
 		handleList.RemoveRange(playlistLength, handleList.Count);
 		
 		// Clear playlist if needed. Preferred to removing it, since then we could undo later...

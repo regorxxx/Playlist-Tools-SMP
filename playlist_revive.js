@@ -25,7 +25,7 @@ function playlistRevive({
 					simThreshold = 1, // 1 only allows exact matches, lower allows some tag differences, but at least the main tag must be the same!
 					bSimulate = false,
 					} = {}) {
-	if (selItems === undefined || selItems === null || selItems.Count == 0) {
+	if (selItems === undefined || selItems === null || selItems.Count === 0) {
 		return;
 	}
 
@@ -36,15 +36,15 @@ function playlistRevive({
 	selItems.Convert().forEach( (handle) => {
 		if (cache.has(handle.RawPath)) {return;}
 		if (utils.FileExists(handle.Path)) {cache.add(handle.RawPath);return;}
-		if (handle.RawPath.indexOf('file://') == -1) {cache.add(handle.RawPath);return;} // Exclude streams and title-only tracks
+		if (handle.RawPath.indexOf('file://') === -1) {cache.add(handle.RawPath);return;} // Exclude streams and title-only tracks
 		items.Insert(items.Count, handle);
 	});
-	console.log('Found ' + items.Count + ' dead item(s) on ' + (plman.ActivePlaylist == playlist ? 'active' : '')+ ' playlist: ' + plman.GetPlaylistName(playlist));
+	console.log('Found ' + items.Count + ' dead item(s) on ' + (plman.ActivePlaylist === playlist ? 'active' : '')+ ' playlist: ' + plman.GetPlaylistName(playlist));
 	if (!items.Count) {return;}
 	// Filter library with items with same tags
 	const tagsToCheck = ['title', 'audiomd5']; // First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match
 	const tags = getTagsValuesV4(items, tagsToCheck);
-	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length == 0) {return;}
+	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
 	tagsToCheck.forEach( (tagName, index) => {
 		queryArr.push(query_combinations(tags[index].filter(String), tagName, 'OR'));
@@ -75,21 +75,21 @@ function playlistRevive({
 			const infoLibr = handleLibr.GetFileInfo();
 			let count = 0;
 			let md5Idx = info.InfoFind('md5'), md5LibrIdx = infoLibr.InfoFind('md5'); // With same MD5, it's an exact match
-			if (md5Idx != -1 && md5LibrIdx != -1 && info.InfoValue(info.InfoFind('md5')) == infoLibr.InfoValue(infoLibr.InfoFind('md5'))) {count = numTags; bExact = true;}
+			if (md5Idx != -1 && md5LibrIdx != -1 && info.InfoValue(info.InfoFind('md5')) === infoLibr.InfoValue(infoLibr.InfoFind('md5'))) {count = numTags; bExact = true;}
 			if (new Set(tags[0][index]).intersectionSize(new Set(tagsLibrary[0][indexLibr]))) { // Instead of checking equality, tracks may have more than one title (?)
-				if (handle.Length == handleLibr.Length) {
+				if (handle.Length === handleLibr.Length) {
 					count++; // Bonus score if it changed tags and thus size but length is the same
-					if (handle.FileSize == handleLibr.FileSize) {count = numTags; bExact = true;}  // Or may have changed nothing, being exact match
+					if (handle.FileSize === handleLibr.FileSize) {count = numTags; bExact = true;}  // Or may have changed nothing, being exact match
 				}
 				for (let i = 0; i < info.MetaCount; i++) {
-					if (numTags == count) {break;}
+					if (numTags === count) {break;}
 					for (let j = 0; j < infoLibr.MetaCount; j++) {
-						if (numTags == count) {break;}
+						if (numTags === count) {break;}
 						const numVal = info.MetaValueCount(i);
 						const numValLibr = infoLibr.MetaValueCount(j);
 						for (let ii = 0; ii < numVal; ii++) {
 							for (let jj = 0; jj < numValLibr; jj++) {
-								if (info.MetaValue(i, ii) == infoLibr.MetaValue(j, jj)) {
+								if (info.MetaValue(i, ii) === infoLibr.MetaValue(j, jj)) {
 									count++;
 									break;
 								}
@@ -141,13 +141,14 @@ function playlistRevive({
 
 function findDeadItems() {
 	let deadItems = [];
+	const bComp = isCompatible('1.4.0') ;
 	for (let i = 0; i < plman.PlaylistCount; i++) {
 		if (!plman.IsAutoPlaylist(i)) { // Autoplaylist are created on startup, no need to check for dead items
 			const selItems = plman.GetPlaylistItems(i);
 			let count = 0;
 			selItems.Convert().forEach( (handle) => {
-				if (isCompatible('1.4.0') ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, "e")) {return;}
-				if (handle.RawPath.indexOf('file://') == -1) {return;} // Exclude streams and title-only tracks
+				if (bComp ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, "e")) {return;}
+				if (handle.RawPath.indexOf('file://') === -1) {return;} // Exclude streams and title-only tracks
 				count++;
 			});
 			if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count})}
@@ -173,7 +174,7 @@ function playlistReviveAll() {
 	const deadItems = findDeadItems();
 	if (deadItems.length) {
 		deadItems.forEach( (playlistObj) => {
-			if (playlistObj.name == plman.GetPlaylistName(playlistObj.idx)) { // Safety check
+			if (playlistObj.name === plman.GetPlaylistName(playlistObj.idx)) { // Safety check
 				playlistRevive({playlist: playlistObj.idx, selItems: plman.GetPlaylistItems(playlistObj.idx), simThreshold: 1})
 			}
 		});

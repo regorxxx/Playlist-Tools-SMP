@@ -52,7 +52,7 @@ try { //May be loaded along other buttons
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation == 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation == 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Playlist Tools Menu Button loaded.');
 }
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\playlist_tools_menu.js');
@@ -69,7 +69,7 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 updateMenuProperties(getPropertiesPairs(newButtonsProperties, prefix)); // Update manually the default args
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation == 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Playlist Tools", function () {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Playlist Tools", function () {
 		menu.btn_up(this.x, this.y + this.h)
 	}, null, g_font, menuTooltip, null, null, '\uf149', _gdiFont('FontAwesome', 10)),
 };

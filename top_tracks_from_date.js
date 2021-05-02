@@ -66,7 +66,7 @@ function do_top_tracks_from_date({
 				if (dateArray_i.length) { // Every entry is also an array of dates
 					dateArray_i.forEach( (date) => {
 						const temp = date.substring(0, 10).split('-');
-						if (temp.length == 3 && timeKeys[timeKey](currentDate, new Date(temp[0],temp[1],temp[2])) <= timePeriod) {count++}
+						if (temp.length === 3 && timeKeys[timeKey](currentDate, new Date(temp[0],temp[1],temp[2])) <= timePeriod) {count++}
 					});
 				} else { // For tracks without advanced statistics
 					const tempFirst = firstPlayedArray[i].substring(0, 10).split('-');
@@ -119,7 +119,7 @@ function do_top_tracks_from_date({
 		dataPool.forEach((item) => pool.push(handleList[item.idx]))
 		handleList = new FbMetadbHandleList(pool);
 		
-		 // Output n tracks
+		// Output n tracks
 		handleList.RemoveRange(playlistLength, handleList.Count);
 		
 		// Look if target playlist already exists
@@ -127,14 +127,14 @@ function do_top_tracks_from_date({
 		const plc = plman.PlaylistCount;
 		let i = 0;
 		while (i < plc) {
-			if (plman.GetPlaylistName(i) == playlist_name) {
+			if (plman.GetPlaylistName(i) === playlist_name) {
 				plman.ActivePlaylist = i;
 				break;
 			} else {
 				i++;
 			}
 		}
-		if (i == plc) { //if no playlist was found before
+		if (i === plc) { //if no playlist was found before
 			plman.CreatePlaylist(plc, playlist_name);
 			plman.ActivePlaylist = plc;
 		}

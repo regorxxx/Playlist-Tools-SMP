@@ -519,15 +519,15 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 		// if (bProfile) {test.Print('\nTask #1:', false);}
 		
 		
-		if (method == "DYNGENRE") {  // Warn users if they try wrong settings
-			if (dyngenreWeight == 0) {
+		if (method === "DYNGENRE") {  // Warn users if they try wrong settings
+			if (dyngenreWeight === 0) {
 				console.log('Check "' + properties['dyngenreWeight'][0] + '" value (' + dyngenreWeight + '). Must be greater than zero if you want to use DYNGENRE method!.');
 				return;
 			} else {method = "WEIGHT";} // For calcs they are the same!
 		} else {dyngenreWeight = 0;}
 	
 		let minFilter;
-		if (method == "GRAPH") {
+		if (method === "GRAPH") {
 			dyngenreWeight = 0;
 			minFilter = scoreFilter - sbd_distanceFilter_graph_below;
 		} else {minFilter = scoreFilter - sbd_distanceFilter_dyngenre_below;}
@@ -557,7 +557,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 		let i = 0;
 		const plc = plman.PlaylistCount;
         while (i < plc) {
-            if (plman.GetPlaylistName(i) == playlist_name) {
+            if (plman.GetPlaylistName(i) === playlist_name) {
 				plman.ActivePlaylist = i;
 				plman.UndoBackup(plman.ActivePlaylist);
 				plman.ClearPlaylist(plman.ActivePlaylist);
@@ -566,7 +566,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
                 i++;
 			}
         }
-		if (i == plc) { //if no playlist was found before
+		if (i === plc) { //if no playlist was found before
 			plman.CreatePlaylist(plc, playlist_name);
 			plman.ActivePlaylist = plc;
 		}
@@ -578,10 +578,10 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 		// These should be music characteristics not genre/styles. Like "electric blues" o "acoustic", which could be any blues style... those things are not connected by graph, but considered as weight variables instead.
 		const map_distance_exclusions = music_graph_descriptors.map_distance_exclusions; // Set
 		
-		const [keyArr, dateArr, bpmArr] = getTagsValuesV4(new FbMetadbHandleList(sel), ['key','date','bpm']).flat(); 	//We use flat since it's only 1 track. i.e. genre[0][i] == genre.flat()[i]
-		const genre = getTagsValuesV3(new FbMetadbHandleList(sel), [genreTag], true).flat().filter(Boolean); 	//We use flat since it's only 1 track. i.e. genre[0][i] == genre.flat()[i]
-		const style = getTagsValuesV3(new FbMetadbHandleList(sel), [styleTag], true).flat().filter(Boolean); 	//We use flat since it's only 1 track. i.e. genre[0][i] == genre.flat()[i]
-		const mood = getTagsValuesV3(new FbMetadbHandleList(sel), [moodTag], true).flat().filter(Boolean); 	//We use flat since it's only 1 track. i.e. genre[0][i] == genre.flat()[i]
+		const [keyArr, dateArr, bpmArr] = getTagsValuesV4(new FbMetadbHandleList(sel), ['key','date','bpm']).flat(); 	//We use flat since it's only 1 track. i.e. genre[0][i] === genre.flat()[i]
+		const genre = getTagsValuesV3(new FbMetadbHandleList(sel), [genreTag], true).flat().filter(Boolean); 	//We use flat since it's only 1 track. i.e. genre[0][i] === genre.flat()[i]
+		const style = getTagsValuesV3(new FbMetadbHandleList(sel), [styleTag], true).flat().filter(Boolean); 	//We use flat since it's only 1 track. i.e. genre[0][i] === genre.flat()[i]
+		const mood = getTagsValuesV3(new FbMetadbHandleList(sel), [moodTag], true).flat().filter(Boolean); 	//We use flat since it's only 1 track. i.e. genre[0][i] === genre.flat()[i]
 		const key = keyArr[0];
 		const date = Number(dateArr[0]);
 		const bpm = Number(bpmArr[0]);
@@ -688,17 +688,17 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 		// So a variable pre-filter would be needed, calculated according to the input weight values and later score filter.
 		// Also an input track missing some tags would break the pre-filter logic if not adjusted.
         queryl = query.length;
-		if (queryl == 0) {
+		if (queryl === 0) {
 			if (!moodNumber && !styleNumber && !genreNumber) {
 				console.log("No query available for selected track. Probably missing tags!");
 				return;
 			} else {query[queryl] = ""} // Pre-Filter may not be relevant according to weights...
 		}
 		const querylength = query.length;
-		if (method == "WEIGHT" && dyngenreWeight == 0) { // Weight method. Pre-filtering is really simple...
-			if (querylength == 1 && query[0] == "") {query[querylength] = "";}
+		if (method === "WEIGHT" && dyngenreWeight === 0) { // Weight method. Pre-filtering is really simple...
+			if (querylength === 1 && query[0] === "") {query[querylength] = "";}
 			else {query[querylength] = query_join(query, "OR");} //join previous query's
-		} else if (method == "WEIGHT" && dyngenreWeight != 0) { //Dyngenre method.
+		} else if (method === "WEIGHT" && dyngenreWeight != 0) { //Dyngenre method.
 			query[querylength] = "";
 		} else { // Graph Method
 			query[querylength] = "";
@@ -727,7 +727,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
         let distance = [];
 		let cacheLink = [];
 		
-		if (method == "GRAPH") { // Sort by the things we will look for at the graph! -> Cache speedup
+		if (method === "GRAPH") { // Sort by the things we will look for at the graph! -> Cache speedup
 			let tfo = fb.TitleFormat("%genre%|%style%");
 			handle_list.OrderByFormat(tfo, 1);
 		}
@@ -788,14 +788,14 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 			}
 			
 			if (keyWeight != 0 && key != "") {
-				if (key == keyNew) {
+				if (key === keyNew) {
 					keyDistance += keyWeight;
 				}
 			}
 			
 			if (dateWeight != 0 && date != 0) {
 				if (dateNew != 0) {
-					if (date == dateNew){
+					if (date === dateNew){
 						dateDistance += dateWeight;
 					} else 	if (dateRange != 0) {
 						const datedifference = dateRange - Math.abs(date -  dateNew);
@@ -806,7 +806,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 			
 			if (bpmWeight != 0 && bpm != 0) {
 				if (bpmNew != 0) {
-					if (bpm == bpmNew){
+					if (bpm === bpmNew){
 						bpmDistance += bpmWeight;
 					} else if (bpmRange != 0) {
 						const irange = bpm * bpmRange / 100;
@@ -852,7 +852,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 			const weightValue = round(((genreDistance + styleDistance + dyngenreDistance + moodDistance + keyDistance + dateDistance + bpmDistance) * 100) / originaldistance / totalweight, 3);
 			const score = round(weightValue * 100, 1);
 			
-			if (method == "GRAPH") {
+			if (method === "GRAPH") {
 				// Weight filtering excludes most of the tracks before other calcs -> Much Faster than later! (40k tracks can be reduced to just ~1k)
 				if (score < minFilter) {
 					map_distance = -1;
@@ -870,7 +870,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 					while (j < style_genre_length) {
 						let h = 0;
 						while (h < style_genre_new_length) {
-							if (style_genre[j] == style_genre_new[h]) {  // Same style/genre, no need to continue
+							if (style_genre[j] === style_genre_new[h]) {  // Same style/genre, no need to continue
 									map_distance_setB.add(0);
 									break;
 							} else {
@@ -879,12 +879,12 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 								let bfoundcache = 0;
 								let k = cacheLink.length;
 								while (k--){  //Look first at cache. Having the list already sorted by genre/style it gets even faster...
-									if (cacheLink[k].styleB == style_genre_new[h] && cacheLink[k].styleA == style_genre[j]) { //style_genre_new changes more, so first one...
+									if (cacheLink[k].styleB === style_genre_new[h] && cacheLink[k].styleA === style_genre[j]) { //style_genre_new changes more, so first one...
 										jh_distance = cacheLink[k].distance;
 										jh_influenceDistance = cacheLink[k].influenceDistance;
 										bfoundcache = 1;
 										break;
-									} else if (cacheLink[k].styleA == style_genre_new[h] && cacheLink[k].styleB == style_genre[j]) { //idem, but reversed
+									} else if (cacheLink[k].styleA === style_genre_new[h] && cacheLink[k].styleB === style_genre[j]) { //idem, but reversed
 										jh_distance = cacheLink[k].distance;
 										jh_influenceDistance = cacheLink[k].influenceDistance;
 										bfoundcache = 1;
@@ -904,7 +904,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 							h++;
 						}
 						if (map_distance_setB.size) { //Get the minimum distance of the entire set
-							if (map_distance == -1) {
+							if (map_distance === -1) {
 								if (map_distance_setB.has(0)) {
 									map_distance = 0;
 								} else {
@@ -926,7 +926,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 					}
 				}
 			} // Distance / style_genre_new_length < sbd_max_graph_distance / style_genre_length ?
-			if (method == "GRAPH") {
+			if (method === "GRAPH") {
 				if (map_distance != -1 && map_distance <= sbd_max_graph_distance) { //	We are checking that the  mean distance of every genre/style
 					// Save computed distance and index									from new track is below graph distance
 					const newtrack = handle_list[i];
@@ -936,7 +936,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 					distance.push({ index: i, name: title, value: score, mapdistance: map_distance });
 				}
 			}
-			if (method == "WEIGHT") {
+			if (method === "WEIGHT") {
 				if (weightValue != -1 && score > minFilter) {
 					// Save computed distance and index
 					const newtrack = handle_list[i];
@@ -951,7 +951,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 		if (bProfile) {test.Print('\nTask #4: Score and Distance', false);}
 		// console.log(distance);
 		let poollength = distance.length
-		if (method == "WEIGHT") {
+		if (method === "WEIGHT") {
 			distance.sort(function (a, b) {return b.value - a.value;});
 			let i = 0;
 			while (i < poollength) {
@@ -1009,7 +1009,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 				let title = (titleIdx != -1) ? newtrack_info.MetaValue(titleIdx,0) : "";
 				let j = 0;
 				while (j < poollength) { 
-					if (distance[j].name == title) {
+					if (distance[j].name === title) {
 						distanceCopy[i] = distance[j]; //It's an object! only copy references
 					}
 					j++;
@@ -1044,7 +1044,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 					while (indexSelectionArray.length < playlistLength) {
 						randomSeed = Math.floor((Math.random() * 100) + 1);
 						if (randomSeed < probPick) {
-							if (indexSelectionArray.indexOf(distance[i].index) == -1) { //No duplicate selection
+							if (indexSelectionArray.indexOf(distance[i].index) === -1) { //No duplicate selection
 								indexSelectionArray.push(distance[i].index);
 								handleSelectionArray.push(handle_list[distance[i].index]);
 								SelectionArray.push(distance[i]);
@@ -1169,8 +1169,8 @@ function do_searchby_distance({
 		// May be more than one tag so we use split(). Use filter() to remove "" values. For ex:
 		// styleTag: 'tagName,, ,tagName2' => ['tagName','Tagname2']
 		// We check if weights are zero first
-		const genreTag = (genreWeight != 0 || dyngenreWeight != 0 || method == 'GRAPH') ? properties['genreTag'][1].split(',').filter(Boolean) : [];
-		const styleTag = (styleWeight != 0 || dyngenreWeight != 0 || method == 'GRAPH') ? properties['styleTag'][1].split(',').filter(Boolean) : [];
+		const genreTag = (genreWeight != 0 || dyngenreWeight != 0 || method === 'GRAPH') ? properties['genreTag'][1].split(',').filter(Boolean) : [];
+		const styleTag = (styleWeight != 0 || dyngenreWeight != 0 || method === 'GRAPH') ? properties['styleTag'][1].split(',').filter(Boolean) : [];
 		const moodTag = (moodWeight != 0) ? properties['moodTag'][1].split(',').filter(Boolean) : [];
 		const dateTag = (dateWeight != 0) ? properties['dateTag'][1].split(',').filter(Boolean) : []; // This one only allows 1 value, but we put it into an array
 		const composerTag = (composerWeight != 0) ? properties['composerTag'][1].split(',').filter(Boolean) : [];
@@ -1187,29 +1187,29 @@ function do_searchby_distance({
 			if (bBasicLogging) {console.log('Check "' + properties['customNumTag'][0] + '" value (' + properties['customNumTag'][1] + '). Must be only one tag name!.');}
 			return;
 		}
-		if (genreTag.length == 0 && styleTag.length == 0 && (method == "GRAPH" || method == "DYNGENRE")) { // Can not use those methods without genre/style tags at all
+		if (genreTag.length === 0 && styleTag.length === 0 && (method === "GRAPH" || method === "DYNGENRE")) { // Can not use those methods without genre/style tags at all
 			if (bBasicLogging) {console.log('Check "' + properties['genreTag'][0] + '" and "'  + properties['styleTag'][0] + '". Both can not be empty when using GRAPH or DYNGENRE methods.');}
 			return;
 		}
 		
 		// Zero weights if there are no tag names to look for
-		if (genreTag.length == 0) {genreWeight = 0;}
-		if (styleTag.length == 0) {styleWeight = 0;}
-		if (moodTag.length == 0) {moodWeight = 0;}
-		if (dateTag.length == 0) {dateWeight = 0;}
-		if (composerTag.length == 0) {composerWeight = 0;}
-		if (customStrTag.length == 0) {customStrWeight = 0;}
-		if (customNumTag.length == 0) {customNumWeight = 0;}
+		if (genreTag.length === 0) {genreWeight = 0;}
+		if (styleTag.length === 0) {styleWeight = 0;}
+		if (moodTag.length === 0) {moodWeight = 0;}
+		if (dateTag.length === 0) {dateWeight = 0;}
+		if (composerTag.length === 0) {composerWeight = 0;}
+		if (customStrTag.length === 0) {customStrWeight = 0;}
+		if (customNumTag.length === 0) {customNumWeight = 0;}
 				
-		if (method == "DYNGENRE") {  // Warn users if they try wrong settings
-			if (dyngenreWeight == 0) {
+		if (method === "DYNGENRE") {  // Warn users if they try wrong settings
+			if (dyngenreWeight === 0) {
 				if (bBasicLogging) {console.log('Check "' + properties['dyngenreWeight'][0] + '" value (' + dyngenreWeight + '). Must be greater than zero if you want to use DYNGENRE method!.');}
 				return;
 			} else {method = "WEIGHT";} // For calcs they are the same!
 		} else {dyngenreWeight = 0;}
 	
 		let minFilter;
-		if (method == "GRAPH") {minFilter = scoreFilter - sbd_distanceFilter_graph_below;} 
+		if (method === "GRAPH") {minFilter = scoreFilter - sbd_distanceFilter_graph_below;} 
 		else {minFilter = scoreFilter - sbd_distanceFilter_dyngenre_below;}
 		if (minFilter < 0) {minFilter = 0;}
 		
@@ -1220,7 +1220,7 @@ function do_searchby_distance({
 			if (bBasicLogging) {console.log('Check "Playlist Mix length" value (' + playlistLength + '). Must be greater than zero.');}
             return;
 		}
-		if (!totalWeight && method == "WEIGHT") {
+		if (!totalWeight && method === "WEIGHT") {
 			if (bBasicLogging) {
 				if (properties['dyngenreWeight'][1] != 0) {console.log('Check weight values, all are set to zero and ' + properties['dyngenreWeight'][0] + ' is not used for WEIGHT method.');}
 				else {console.log('Check weight values, all are set to zero.');}
@@ -1243,12 +1243,12 @@ function do_searchby_distance({
 		const bTagFilter = genreStyleFilter ? true : false; // Only use filter when required
 		
 		// Get the tag value. Skip those with weight 0 and get num of values per tag right (they may be arrays, single values, etc.)
-		// We use flat since it's only 1 track: genre[0][i] == genre.flat()[i]
+		// We use flat since it's only 1 track: genre[0][i] === genre.flat()[i]
 		// Also filter using boolean to remove "" values within an array, so [""] becomes [] with 0 length.
 		// Using only boolean filter it's 3x faster than filtering by set
 		const selHandleList = new FbMetadbHandleList(sel);
-		const genre = (genreTag.length != 0 && (genreWeight != 0 || dyngenreWeight != 0 || method == 'GRAPH')) ? (bTagFilter ? getTagsValuesV3(selHandleList, genreTag, true).flat().filter(tag => !genreStyleFilter.has(tag)) : getTagsValuesV3(selHandleList, genreTag, true).flat().filter(Boolean)): [];
-		const style = (styleTag.length != 0 && (styleWeight != 0 || dyngenreWeight != 0 || method == 'GRAPH')) ? (bTagFilter ? getTagsValuesV3(selHandleList, styleTag, true).flat().filter(tag => !genreStyleFilter.has(tag)) : getTagsValuesV3(selHandleList, styleTag, true).flat().filter(Boolean)) : [];
+		const genre = (genreTag.length != 0 && (genreWeight != 0 || dyngenreWeight != 0 || method === 'GRAPH')) ? (bTagFilter ? getTagsValuesV3(selHandleList, genreTag, true).flat().filter(tag => !genreStyleFilter.has(tag)) : getTagsValuesV3(selHandleList, genreTag, true).flat().filter(Boolean)): [];
+		const style = (styleTag.length != 0 && (styleWeight != 0 || dyngenreWeight != 0 || method === 'GRAPH')) ? (bTagFilter ? getTagsValuesV3(selHandleList, styleTag, true).flat().filter(tag => !genreStyleFilter.has(tag)) : getTagsValuesV3(selHandleList, styleTag, true).flat().filter(Boolean)) : [];
 		const mood = (moodWeight != 0) ? getTagsValuesV3(selHandleList, moodTag, true).flat().filter(Boolean) : [];
 		const composer = (composerWeight != 0) ? getTagsValuesV3(selHandleList, composerTag, true).flat().filter(Boolean) : [];
 		const customStr = (customStrWeight != 0) ? getTagsValuesV3(selHandleList, customStrTag, true).flat().filter(Boolean) : [];
@@ -1394,7 +1394,7 @@ function do_searchby_distance({
 				query[queryl] = "";
 				const dateUpper = date + dateRange;
 				const dateLower = date - dateRange;
-				const tagNameTF = ((dateTag[0].indexOf('$') == -1) ? dateTag[0] : '"' + dateTag[0] + '"') // May be a tag or a function...
+				const tagNameTF = ((dateTag[0].indexOf('$') === -1) ? dateTag[0] : '"' + dateTag[0] + '"') // May be a tag or a function...
 				if (dateUpper != dateLower) {query[queryl] += tagNameTF + ' GREATER ' + dateLower + ' AND ' + tagNameTF + ' LESS ' + dateUpper;} 
 				else {query[queryl] += tagNameTF + ' EQUAL ' + date;}
 			}
@@ -1444,7 +1444,7 @@ function do_searchby_distance({
 				// If it worked like bpm in %...
 				// let customNumUpper = round(customNum * (100 + customNumRange) / 100, 0);
 				// let customNumLower = round(customNum * (100 - customNumRange) / 100, 0);
-				const tagNameTF = ((customNumTag[0].indexOf('$') == -1) ? customNumTag[0] : '"' + customNumTag[0] + '"') // May be a tag or a function...
+				const tagNameTF = ((customNumTag[0].indexOf('$') === -1) ? customNumTag[0] : '"' + customNumTag[0] + '"') // May be a tag or a function...
 				if (customNumUpper != customNumLower) {query[queryl] += tagNameTF + ' GREATER ' + customNumLower + ' AND ' + tagNameTF + ' LESS ' + customNumUpper;}
 				else {query[queryl] += tagNameTF + ' EQUAL ' + customNum;}
 			}
@@ -1460,17 +1460,17 @@ function do_searchby_distance({
 		// So a variable pre-filter would be needed, calculated according to the input weight values and -estimated- later filters scoring.
 		// Also an input track missing some tags could break the pre-filter logic if not adjusted.
         queryl = query.length;
-		if (queryl == 0) {
+		if (queryl === 0) {
 			if (!originalScore) {
 				console.log("No query available for selected track. Probably missing tags!");
 				return;
 			} else {query[queryl] = ''} // Pre-Filter may not be relevant according to weights...
 		}
 		const querylength = query.length;
-		if (method == "WEIGHT" && dyngenreWeight == 0) { // Weight method. Pre-filtering is really simple...
-			if (querylength == 1 && query[0] == '') {query[querylength] = '';}
+		if (method === "WEIGHT" && dyngenreWeight === 0) { // Weight method. Pre-filtering is really simple...
+			if (querylength === 1 && !query[0].length) {query[querylength] = '';}
 			else {query[querylength] = query_join(query, "OR");} //join previous query's
-		} else if (method == "WEIGHT" && dyngenreWeight != 0) { //Dyngenre method.
+		} else if (method === "WEIGHT" && dyngenreWeight != 0) { //Dyngenre method.
 			query[querylength] = ''; // TODO: Add weight query, now is dynamically set
 		} else { // Graph Method
 			let influencesQuery = [];
@@ -1524,7 +1524,7 @@ function do_searchby_distance({
         let scoreData = [];
 		// let cacheLink = new Map();
 		
-		if (method == "GRAPH") { // Sort by the things we will look for at the graph! -> Cache speedup
+		if (method === "GRAPH") { // Sort by the things we will look for at the graph! -> Cache speedup
 			let tfo = fb.TitleFormat(genreTag.concat(styleTag).join('|'));
 			handle_list.OrderByFormat(tfo, 1);
 		}
@@ -1535,8 +1535,8 @@ function do_searchby_distance({
 		// Now flat is not needed, we have 1 array of tags per track [i][j]
 		// Also filter using boolean to remove "" values within an array, so [""] becomes [] with 0 length, but it's done per track.
 		// Using only boolean filter it's 3x faster than filtering by set, here bTagFilter becomes useful since we may skip +40K evaluations 
-		const genreHandle = (genreTag.length != 0 && (genreWeight != 0 || dyngenreWeight != 0 || method == 'GRAPH')) ? getTagsValuesV3(handle_list, genreTag, true) : null;
-		const styleHandle = (styleTag.length != 0 && (styleWeight != 0 || dyngenreWeight != 0 || method == 'GRAPH')) ? getTagsValuesV3(handle_list, styleTag, true) : null;
+		const genreHandle = (genreTag.length != 0 && (genreWeight != 0 || dyngenreWeight != 0 || method === 'GRAPH')) ? getTagsValuesV3(handle_list, genreTag, true) : null;
+		const styleHandle = (styleTag.length != 0 && (styleWeight != 0 || dyngenreWeight != 0 || method === 'GRAPH')) ? getTagsValuesV3(handle_list, styleTag, true) : null;
 		const moodHandle = (moodWeight != 0) ? getTagsValuesV3(handle_list, moodTag, true) : null;
 		const composerHandle = (composerWeight != 0) ? getTagsValuesV3(handle_list, composerTag, true) : null;
 		const customStrHandle = (customStrWeight != 0) ? getTagsValuesV3(handle_list, customStrTag, true) : null;
@@ -1594,13 +1594,13 @@ function do_searchby_distance({
 			}
 			
 			if (keyWeight != 0 && key.length != 0 && keyNew.length != 0) {
-				if (key == keyNew) { // Not only fastest but also allows for arbitrary key notations (although only using simple matching)
+				if (key === keyNew) { // Not only fastest but also allows for arbitrary key notations (although only using simple matching)
 					weightValue += keyWeight;
 				} else if (keyRange != 0){
 					const camelotKeyNew = camelotWheel.keyNotationObject.get(keyNew);
 					const camelotKey = camelotWheel.keyNotationObject.get(key);
 					if (camelotKey && camelotKeyNew) {
-						const bLetterEqual = (camelotKey.letter == camelotKeyNew.letter);
+						const bLetterEqual = (camelotKey.letter === camelotKeyNew.letter);
 						const hourDifference = keyRange - Math.abs(camelotKey.hour - camelotKeyNew.hour);
 						// Cross on wheel with length keyRange + 1, can change hour or letter, but not both without a penalty
 						if ((hourDifference < 0 && bNegativeWeighting) || hourDifference > 0) {
@@ -1612,7 +1612,7 @@ function do_searchby_distance({
 			
 			if (dateWeight != 0 && date != 0) {
 				if (dateNew != 0) {
-					if (date == dateNew){
+					if (date === dateNew){
 						weightValue += dateWeight;
 					} else if (dateRange != 0) {
 						const dateDifference = dateRange - Math.abs(date -  dateNew);
@@ -1625,7 +1625,7 @@ function do_searchby_distance({
 			
 			if (bpmWeight != 0 && bpm != 0) {
 				if (bpmNew != 0) {
-					if (bpm == bpmNew){
+					if (bpm === bpmNew){
 						weightValue += bpmWeight;
 					} else if (bpmRange != 0) {
 						const iRange = bpm * bpmRange / 100;
@@ -1653,7 +1653,7 @@ function do_searchby_distance({
 			
 			if (customNumWeight != 0 && customNum != 0) {
 				if (customNumNew != 0) {
-					if (customNum == customNumNew){
+					if (customNum === customNumNew){
 						weightValue += customNumWeight;
 					} else if (customNumRange != 0) {
 						const customNumdifference = customNumRange - Math.abs(customNum - customNumNew);
@@ -1681,7 +1681,7 @@ function do_searchby_distance({
 					while (j < dyngenreNumber) {
 						let h = 0;
 							while (h < dyngenreNumberNew) {
-								if (dyngenreNew[h] == dyngenre[j]) {
+								if (dyngenreNew[h] === dyngenre[j]) {
 									weightValue += dyngenreWeight / dyngenreNumber;
 									break;
 								} else if (dyngenreRange != 0) {
@@ -1714,7 +1714,7 @@ function do_searchby_distance({
 			}
 			const score = round(weightValue * 10000 / originalScore / totalWeight, 1); // The original track will get a 100 score, even if it has tags missing (original Distance != totalWeight)
 			
-			if (method == "GRAPH") {
+			if (method === "GRAPH") {
 				// Weight filtering excludes most of the tracks before other calcs -> Much Faster than later! (40k tracks can be reduced to just ~1k)
 				if (score >= minFilter) {
 					// Get the minimum distance of the entire set of tags (track B, i) to every style of the original track (A, j): 
@@ -1731,12 +1731,12 @@ function do_searchby_distance({
 					}
 				}
 			} // Distance / style_genre_new_length < sbd_max_graph_distance / style_genre_length ?
-			if (method == "GRAPH") {
+			if (method === "GRAPH") {
 				if (map_distance <= sbd_max_graph_distance) {
 					scoreData.push({ index: i, name: titleHandle[i][0], score: score, mapdistance: map_distance });
 				}
 			}
-			if (method == "WEIGHT") {
+			if (method === "WEIGHT") {
 				if (score > minFilter) {
 					scoreData.push({ index: i, name: titleHandle[i][0], score: score });
 				}
@@ -1745,7 +1745,7 @@ function do_searchby_distance({
         }
 		if (bProfile) {test.Print('Task #4: Score and Distance', false);}
 		let poolLength = scoreData.length
-		if (method == "WEIGHT") {
+		if (method === "WEIGHT") {
 			scoreData.sort(function (a, b) {return b.score - a.score;});
 			let i = 0;
 			while (i < poolLength) {
@@ -1801,7 +1801,7 @@ function do_searchby_distance({
 			while (i < handlePool.Count) {
 				let j = 0;
 				while (j < poolLength) { 
-					if (titleHandlePool[i][0] == scoreData[j].name) {
+					if (titleHandlePool[i][0] === scoreData[j].name) {
 						filteredScoreData[i] = scoreData[j]; // Copies references
 					}
 					j++;
@@ -1864,7 +1864,7 @@ function do_searchby_distance({
 					var camelotKeyCurrent;
 					if (!keyCache.has(i)) {
 						const keyCurrent = keyHandle[index][0];
-						if (bSearchDebug && i == 0) {keyDebug.push(keyCurrent);}
+						if (bSearchDebug && i === 0) {keyDebug.push(keyCurrent);}
 						camelotKeyCurrent = keyCurrent.length ? {...camelotWheel.keyNotationObject.get(keyCurrent)} : null;
 						keyCache.set(i, camelotKeyCurrent);
 					} else {camelotKeyCurrent = keyCache.get(i);}
@@ -1881,7 +1881,7 @@ function do_searchby_distance({
 									keyCache.set(toCheck_k, camelotKeyNew);
 								} else {camelotKeyNew = keyCache.get(toCheck_k);}
 								if (camelotKeyNew) {
-									if (nextKeyObj.hour == camelotKeyNew.hour && nextKeyObj.letter == camelotKeyNew.letter) {
+									if (nextKeyObj.hour === camelotKeyNew.hour && nextKeyObj.letter === camelotKeyNew.letter) {
 										nextIndex = indexNew; // Which will be used for next movement
 										selectedHandlesArray.push(handle_list[indexNew]);
 										selectedHandlesData.push(scoreData[toCheck_k]);
@@ -1896,7 +1896,7 @@ function do_searchby_distance({
 						}
 						if (!bFound) { // If nothing is found, then continue next movement with current track
 							nextIndex = index;
-							if (j == 1) {j = 0; continue;}  // try once retrying this step with default movement
+							if (j === 1) {j = 0; continue;}  // try once retrying this step with default movement
 							else {
 								pattern[i] = 'perfectMatch';
 								i--;
@@ -1959,7 +1959,7 @@ function do_searchby_distance({
 					selectedHandlesData.push(scoreData[i]);
 					i++;
 				}
-				if (method == "GRAPH") {
+				if (method === "GRAPH") {
 					if (bBasicLogging) {
 						let propertyText = properties.hasOwnProperty('sbd_max_graph_distance') ? properties['sbd_max_graph_distance'][0] : SearchByDistance_properties['sbd_max_graph_distance'][0];
 						console.log('Warning: Final Playlist selection length (= ' + i + ') lower/equal than ' + playlistLength + ' tracks. You may want to check "' + propertyText + '" parameter (= ' + sbd_max_graph_distance + ').');
@@ -1992,11 +1992,11 @@ function do_searchby_distance({
 			if (bSortRandom) {console.log('Warning: bProgressiveListOrder is overriding random sorting when used along bSortRandom.');}
 			selectedHandlesData.sort(function (a, b) {return b.score - a.score;});
 			selectedHandlesArray.sort(function (a, b) {return b.score - a.score;});
-			if (method == "GRAPH") { // First sorted by graph distance, then by score
+			if (method === "GRAPH") { // First sorted by graph distance, then by score
 				selectedHandlesData.sort(function (a, b) {return a.mapdistance - b.mapdistance;});
 				selectedHandlesArray.sort(function (a, b) {return a.mapdistance - b.mapdistance;}); 
 			}
-		} else if (!bRandomPick && probPick == 100) {console.log('Warning: bProgressiveListOrder has no use if tracks are already choosen by scoring order from pool.')}
+		} else if (!bRandomPick && probPick === 100) {console.log('Warning: bProgressiveListOrder has no use if tracks are already choosen by scoring order from pool.')}
 		// Tries to intercalate vocal & instrumental tracks, breaking clusters of instrumental tracks. 
 		// May override previous sorting methods (only for instrumental tracks). 
 		// Finds instrumental track indexes, and move them to a random range without overlapping.
@@ -2026,7 +2026,7 @@ function do_searchby_distance({
 				removed.forEach((handle, index) => {
 					const i_scatterInterval = index * scatterInterval;
 					let j = Math.floor(Math.random() * (scatterInterval - 1)) + i_scatterInterval;
-					if (j == 0 && scatterInterval > 2) {j = 1;} // Don't put first track as instrumental if possible
+					if (j === 0 && scatterInterval > 2) {j = 1;} // Don't put first track as instrumental if possible
 					if (bSearchDebug) {console.log('bScatterInstrumentals: ' + index + '->' + j)};
 					selectedHandlesArray.splice(j, 0, handle); // (at, 0, item)
 					selectedHandlesData.splice(j, 0, removedData[index]); // (at, 0, item)
@@ -2077,7 +2077,7 @@ function do_searchby_distance({
 			let i = 0;
 			const plc = plman.PlaylistCount;
 			while (i < plc) {
-				if (plman.GetPlaylistName(i) == playlist_name) {
+				if (plman.GetPlaylistName(i) === playlist_name) {
 					plman.ActivePlaylist = i;
 					plman.UndoBackup(i);
 					plman.ClearPlaylist(i);
@@ -2085,7 +2085,7 @@ function do_searchby_distance({
 				}
 				i++;
 			}
-			if (i == plc) { //if no playlist was found before
+			if (i === plc) { //if no playlist was found before
 				plman.CreatePlaylist(plc, playlist_name);
 				plman.ActivePlaylist = plc;
 			}
@@ -2108,7 +2108,7 @@ function do_searchby_distance({
 function calcMeanDistance(mygraph, style_genre_reference, style_genre_new) {
 	let map_distance = Infinity;
 	const difference = style_genre_reference.difference(style_genre_new);
-	if (style_genre_reference.size == 0 || style_genre_new.size == 0) { // When no tags are available, sets are empty & tracks are not connected
+	if (style_genre_reference.size === 0 || style_genre_new.size === 0) { // When no tags are available, sets are empty & tracks are not connected
 		map_distance = Infinity;
 	} else { // With non-empty sets
 		if (!difference.size) { // If style_genre_new is superset of style_genre_reference.
@@ -2186,7 +2186,7 @@ function calcCacheLinkSGV2(mygraph, limit = -1) {
 		let j = i + 1;
 		while (j < node_list_length){
 			let [ij_distance, ij_antinfluenceDistance] = calc_map_distance(mygraph, node_list[i], node_list[j], true);
-			if (limit == -1 || ij_distance <= limit) {
+			if (limit === -1 || ij_distance <= limit) {
 				// Sorting removes the need to check A-B and B-A later...
 				cache.set([node_list[i], node_list[j]].sort().join('-'), {distance: ij_distance, influenceDistance: ij_antinfluenceDistance});
 			}
