@@ -67,9 +67,9 @@ Any other path WILL NOT work without editing the scripts. (see images\_Installat
 For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
 For portable installations >= 1.6: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
 For portable installations <= 1.5: .\foobar2000\scripts\SMP\xxx-scripts\...  
-
 Then load any button script into a SMP panel within foobar.  
-There are buttons bars and independent buttons for the individual scripts and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu.
+
+There are buttons bars and independent buttons for each script and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu seen on the gifs, while '_buttons_merged.js' is the entire bar.
 
 [changelog]: CHANGELOG.md
 [version_badge]: https://img.shields.io/github/release/regorxxx/SPlaylist-Tools-SMP.svg
