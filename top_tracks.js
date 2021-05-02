@@ -25,14 +25,14 @@ function do_top_tracks({
 		let i = 0;
 		let plc = plman.PlaylistCount;
         while (i < plc) {
-            if (plman.GetPlaylistName(i) == playlist_name) {
+            if (plman.GetPlaylistName(i) === playlist_name) {
 				plman.ActivePlaylist = i;
 				break;
             } else {
                 i++;
 			}
         }
-		if (i == plc) { //if no playlist was found before
+		if (i === plc) { //if no playlist was found before
 			plman.CreatePlaylist(plc, playlist_name);
 			plman.ActivePlaylist = plc;
 		}

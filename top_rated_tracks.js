@@ -27,21 +27,21 @@ function do_top_rated_tracks({
 		let i = 0;
 		let plc = plman.PlaylistCount;
         while (i < plc) {
-            if (plman.GetPlaylistName(i) == playlistName) {
+            if (plman.GetPlaylistName(i) === playlistName) {
 				plman.ActivePlaylist = i;
 				break;
             } else {
                 i++;
 			}
         }
-		if (i == plc) { //if no playlist was found before
+		if (i === plc) { //if no playlist was found before
 			plman.CreatePlaylist(plc, playlistName);
 			plman.ActivePlaylist = plc;
 		}
 		// Check date tag
 		let bFunc = false;
-		if (ratingTag.indexOf('$') == -1) {
-			if (ratingTag.indexOf('%') == -1) {ratingTag = '%' + ratingTag + '%';}
+		if (ratingTag.indexOf('$') === -1) {
+			if (ratingTag.indexOf('%') === -1) {ratingTag = '%' + ratingTag + '%';}
 		} else {bFunc = true;}
 		let handleList = new FbMetadbHandleList();
 		let currRating = ratingLimits[1];

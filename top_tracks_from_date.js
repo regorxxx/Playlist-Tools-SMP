@@ -33,7 +33,7 @@ function do_top_tracks_from_date({
 		let timeKey = '';
 		let timePeriod = Number(last.split(' ')[0]);
 		if (!Number.isSafeInteger(timePeriod)) {fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'do_top_tracks_from_date'); return;}
-		if (!Object.keys(timeKeys).some( (key) => {if (last.toLowerCase().indexOf(key.toLowerCase()) != -1) {timeKey = key; return true;} else {return false;}})) {
+		if (!Object.keys(timeKeys).some( (key) => {if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) {timeKey = key; return true;} else {return false;}})) {
 				fb.ShowPopupMessage('Time-unit not valid (must be' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'do_top_tracks_from_date');
 				return;
 		}
@@ -70,10 +70,10 @@ function do_top_tracks_from_date({
 					});
 				} else { // For tracks without advanced statistics
 					const tempFirst = firstPlayedArray[i].substring(0, 10).split('-');
-					if (tempFirst.length != 3) {continue;}
+					if (tempFirst.length !== 3) {continue;}
 					const diffFirst = timeKeys[timeKey](currentDate, new Date(tempFirst[0],tempFirst[1],tempFirst[2]));
 					const tempLast = lastPlayedArray[i].substring(0, 10).split('-');
-					if (tempLast.length != 3) {continue;}
+					if (tempLast.length !== 3) {continue;}
 					const diffLast = timeKeys[timeKey](currentDate, new Date(tempLast[0],tempLast[1],tempLast[2]));
 					// If first and last plays were from selected year, then all play counts too
 					if (diffFirst <= timePeriod && diffLast <= timePeriod) {count += playCountArray[i];}
