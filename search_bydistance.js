@@ -382,7 +382,7 @@ Object.keys(SearchByDistance_properties).forEach( (key) => { // Checks
 	} else if (key.toLowerCase().endsWith('length')) {
 		SearchByDistance_properties[key].push({greaterEq: 0, func: Number.isSafeInteger}, SearchByDistance_properties[key][1]);
 	} else if (key.toLowerCase().endsWith('query')) {
-		SearchByDistance_properties[key].push({func: (query) => {return checkQuery(query, true)}}, SearchByDistance_properties[key][1]);
+		SearchByDistance_properties[key].push({func: (query) => {return checkQuery(query, true);}}, SearchByDistance_properties[key][1]);
 	}
 });
 SearchByDistance_properties['scoreFilter'].push({range: [[0,100]], func: Number.isSafeInteger}, SearchByDistance_properties['scoreFilter'][1]);
@@ -414,7 +414,7 @@ if (typeof buttons === 'undefined' && typeof bNotProperties === 'undefined') { /
 	if (!panelProperties['firstPopup'][1]) {
 		panelProperties['firstPopup'][1] = true;
 		overwriteProperties(panelProperties); // Updates panel
-		const readmePath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt'
+		const readmePath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt';
 		if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, "e"))) {
 			const readme = utils.ReadTextFile(readmePath, 65001);
 			if (readme.length) {fb.ShowPopupMessage(readme, 'Search by Distance');}
@@ -454,7 +454,7 @@ function updateCache(otherCache) {
 
 function on_notify_data(name, info) {
 	if (name.indexOf('SearchByDistance: requires cacheLink') != -1 && cacheLink !== undefined) { // When asked to share cache, delay 1 sec. to allow script loading
-		debounce(() => {if (cacheLink !== undefined) {window.NotifyOthers(window.Name + ' SearchByDistance: cacheLink', cacheLink)}}, 1000)()
+		debounce(() => {if (cacheLink !== undefined) {window.NotifyOthers(window.Name + ' SearchByDistance: cacheLink', cacheLink)}}, 1000)();
 		console.log('SearchByDistance: Requested Cache.');
 	} 
 	if (name.indexOf('SearchByDistance: cacheLink') != -1 && info) {
@@ -595,7 +595,7 @@ function do_searchby_distanceV2(genreWeight				= Number(getProperties(SearchByDi
 			originaldistance += genreWeight;
 			if (genreWeight / totalweight >= totalweight / countweights / 100) {
 				queryl = query.length;
-				query[queryl] = ""
+				query[queryl] = "";
 				query[queryl] += query_combinations(genre, genreTag, "OR");
 			}
 		}

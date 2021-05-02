@@ -87,7 +87,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	playlistName: ["Playlist name","Search..."]
 };
 newButtonsProperties['playlistLength'].push({greater: 0, func: Number.isSafeInteger}, newButtonsProperties['playlistLength'][1]);
-newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true)}}, newButtonsProperties['forcedQuery'][1]);
+newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
 newButtonsProperties['checkDuplicatesBy'].push({func: isString}, newButtonsProperties['checkDuplicatesBy'][1]);
 newButtonsProperties['sameBy'].push({func: isString}, newButtonsProperties['sameBy'][1]);
 newButtonsProperties['playlistName'].push({func: isString}, newButtonsProperties['playlistName'][1]);

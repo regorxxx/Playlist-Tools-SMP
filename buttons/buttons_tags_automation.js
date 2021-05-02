@@ -26,7 +26,7 @@ try { //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
 
 var newButtonsProperties = {	//You can simply add new properties here
-}
+};
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 

@@ -390,7 +390,7 @@ const menu = new _menu();
 					// Add separators
 					if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 						let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
-						menu.newEntry({menuName: entryMenuName, entryText: 'sep'})
+						menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
 					} else { 
 						// Create names for all entries
 						queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
@@ -546,7 +546,7 @@ const menu = new _menu();
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
-						menu.newEntry({menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+						menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							do_searchby_distance(args);
 						}, flags: focusFlags});
@@ -571,7 +571,7 @@ const menu = new _menu();
 					} else {
 						const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
 						let entryText = selArg.title;
-						menu.newEntry({menuName, entryText: entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+						menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							do_searchby_distance(args);
 						}, flags: focusFlags});
@@ -722,7 +722,7 @@ const menu = new _menu();
 				queryFilter = JSON.parse(args.properties['queryFilter'][1]);
 				queryFilter.forEach( (queryObj) => {
 					if (queryObj.name === 'sep') { // Create separators
-						menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					} else { 
 						// Create names for all entries
 						const text = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
@@ -747,7 +747,7 @@ const menu = new _menu();
 					try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 					do_filter_by_query(null, query);
-				;}, flags: playlistCountFlags});
+				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					let input;
@@ -755,7 +755,7 @@ const menu = new _menu();
 					try {name = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', window.Name, '', true);}
 					catch (e) {return;}
 					if (!name.length) {return;}
-					if (name === 'sep') {input = {name: name};} // Add separator
+					if (name === 'sep') {input = {name};} // Add separator
 					else {
 						let query;
 						try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, '', true);}
@@ -765,7 +765,7 @@ const menu = new _menu();
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 						}
-						input = {name: name, query: query};
+						input = {name, query: query};
 					}
 					queryFilter.push(input);
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -811,7 +811,7 @@ const menu = new _menu();
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				} else {
 					let entryText = selArg.title;
-					menu.newEntry({menuName: subMenuName, entryText: entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
+					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 						args.selItems = args.selItems();
 						do_harmonic_mixing(args);
 					}, flags: selArg.flags ? selArg.flags : undefined});
@@ -837,7 +837,7 @@ const menu = new _menu();
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				} else {
 					let entryText = selArg.title;
-					menu.newEntry({menuName: subMenuName, entryText: entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
+					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 						do_sort_by_key();
 					}, flags: multipleSelectedFlags});
 				}
@@ -867,7 +867,7 @@ const menu = new _menu();
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				} else {
 					let entryText = selArg.title;
-					menu.newEntry({menuName: subMenuName, entryText: entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
+					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 						do_scatter_by_tags(args);
 					}, flags: multipleSelectedFlags});
 				}

@@ -66,7 +66,7 @@ function do_top_tracks_from_date({
 				if (dateArray_i.length) { // Every entry is also an array of dates
 					dateArray_i.forEach( (date) => {
 						const temp = date.substring(0, 10).split('-');
-						if (temp.length === 3 && timeKeys[timeKey](currentDate, new Date(temp[0],temp[1],temp[2])) <= timePeriod) {count++}
+						if (temp.length === 3 && timeKeys[timeKey](currentDate, new Date(temp[0],temp[1],temp[2])) <= timePeriod) {count++;}
 					});
 				} else { // For tracks without advanced statistics
 					const tempFirst = firstPlayedArray[i].substring(0, 10).split('-');
@@ -95,15 +95,15 @@ function do_top_tracks_from_date({
 				let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i])); 
 				if (dateArray_i.length) { // Every entry is also an array of dates
 					dateArray_i.forEach( (date) => {
-						if (date.substring(0, 4) == year) {count++}
+						if (date.substring(0, 4) == year) {count++;}
 					});
 				} else { // For tracks without advanced statistics
 					// If first and last plays were from selected year, then all play counts too
-					if (firstPlayedArray[i].substring(0, 4) == year && lastPlayedArray[i].substring(0, 4) == year) {count += playCountArray[i]}
+					if (firstPlayedArray[i].substring(0, 4) == year && lastPlayedArray[i].substring(0, 4) == year) {count += playCountArray[i];}
 					// Or the first play
-					else if (firstPlayedArray[i].substring(0, 4) == year) {count++}
+					else if (firstPlayedArray[i].substring(0, 4) == year) {count++;}
 					// Or the last play
-					else if (lastPlayedArray[i].substring(0, 4) == year) {count++}
+					else if (lastPlayedArray[i].substring(0, 4) == year) {count++;}
 					// Note any track known to have been played at selected year will be added to the pool, and since the handle List is already
 					// sorted by play Count, it will output tracks with higher total counts when they have not advanced statistics
 					// being almost equivalent to 'top_tracks.js' in that case
@@ -116,7 +116,7 @@ function do_top_tracks_from_date({
 		
 		// Order by Play Count
 		dataPool.sort(function (a, b) {return b.playCount - a.playCount;});
-		dataPool.forEach((item) => pool.push(handleList[item.idx]))
+		dataPool.forEach((item) => pool.push(handleList[item.idx]));
 		handleList = new FbMetadbHandleList(pool);
 		
 		// Output n tracks

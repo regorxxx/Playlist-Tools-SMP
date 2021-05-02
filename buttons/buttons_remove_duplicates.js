@@ -47,7 +47,7 @@ var newButtons = {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix, undefined, 4); //This gets all the panel properties at once but 4th
-		let sortInput = badSortInput.filter(n => n); //Filter the holes, since they can appear at any place!
+		let sortInput = badSortInput.filter((n) => n); //Filter the holes, since they can appear at any place!
         do_remove_duplicatesV2(null, null, sortInput);
 		t1 = Date.now();
 		console.log("Call to do_remove_duplicatesV2 took " + (t1 - t0) + " milliseconds.");
@@ -58,7 +58,7 @@ var newButtons = {
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
 		let nAllowed = badSortInput.splice(3, 1); // But we take away 4th variable for later
-		let sortInput = badSortInput.filter(n => n); //Filter the holes, since they can appear at any place!
+		let sortInput = badSortInput.filter((n) => n); //Filter the holes, since they can appear at any place!
         do_remove_duplicatesV3(null, null, sortInput, nAllowed);
 		t1 = Date.now();
 		console.log("Call to do_remove_duplicatesV3 took " + (t1 - t0) + " milliseconds.");

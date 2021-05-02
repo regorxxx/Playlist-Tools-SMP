@@ -43,7 +43,7 @@ function focusInPlaylist(selList, playlistIndex) {
 	let idx = -1;
 	const handle_list = plman.GetPlaylistItems(playlistIndex);
 	plman.ActivePlaylist = playlistIndex;
-	plman.ClearPlaylistSelection(playlistIndex)
+	plman.ClearPlaylistSelection(playlistIndex);
 	for (const sel of selListArr) {
 		idx = handle_list.Find(sel);
 		if (idx != -1) {plman.SetPlaylistSelection(plman.ActivePlaylist, [idx], true);}

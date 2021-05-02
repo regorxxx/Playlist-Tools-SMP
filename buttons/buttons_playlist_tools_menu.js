@@ -70,7 +70,7 @@ updateMenuProperties(getPropertiesPairs(newButtonsProperties, prefix)); // Updat
 
 var newButtons = {
 	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Playlist Tools", function () {
-		menu.btn_up(this.x, this.y + this.h)
+		menu.btn_up(this.x, this.y + this.h);
 	}, null, g_font, menuTooltip, null, null, '\uf149', _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID

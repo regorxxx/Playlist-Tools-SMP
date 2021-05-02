@@ -52,7 +52,7 @@ function playlistRevive({
 	// instead of using this, which would combine the different tags too
 	// const query =  query_join(query_combinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');
 	const query = query_join(queryArr, "OR");
-	if (bSimulate) {console.log('Filtered library by: ' + query)}
+	if (bSimulate) {console.log('Filtered library by: ' + query);}
 	try {fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	const libraryItems = fb.GetQueryItems(fb.GetLibraryItems(), query);
@@ -100,7 +100,7 @@ function playlistRevive({
 			}
 			if (bExact || isFinite(numTags) && numTags != 0 && count / numTags >= simThreshold && !alternativesSet.has(indexLibr)) {
 				alternativesSet.add(indexLibr);
-				alternativesObj.push({idx: indexLibr, simil: Math.round(count / numTags * 100), bExact: bExact});
+				alternativesObj.push({idx: indexLibr, simil: Math.round(count / numTags * 100), bExact});
 			}
 		});
 		if (alternativesSet.size != 0) {alternatives.set(index, alternativesObj.sort(function (a, b) {return b.simil - a.simil;}));}
@@ -151,7 +151,7 @@ function findDeadItems() {
 				if (handle.RawPath.indexOf('file://') === -1) {return;} // Exclude streams and title-only tracks
 				count++;
 			});
-			if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count})}
+			if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count});}
 		}
 	}
 	if (deadItems.length) {
@@ -160,7 +160,7 @@ function findDeadItems() {
 		let list = '';
 		deadItems.forEach( (playlistObj) => {
 			list += playlistObj.name + ': ' + playlistObj.items + '\n';
-			console.log(playlistObj.name + ': ' + playlistObj.items)
+			console.log(playlistObj.name + ': ' + playlistObj.items);
 		});
 		fb.ShowPopupMessage(header + '\n' + list, 'Dead Playlists');
 	} else {
@@ -175,7 +175,7 @@ function playlistReviveAll() {
 	if (deadItems.length) {
 		deadItems.forEach( (playlistObj) => {
 			if (playlistObj.name === plman.GetPlaylistName(playlistObj.idx)) { // Safety check
-				playlistRevive({playlist: playlistObj.idx, selItems: plman.GetPlaylistItems(playlistObj.idx), simThreshold: 1})
+				playlistRevive({playlist: playlistObj.idx, selItems: plman.GetPlaylistItems(playlistObj.idx), simThreshold: 1});
 			}
 		});
 	}

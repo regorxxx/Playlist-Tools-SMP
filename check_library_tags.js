@@ -69,9 +69,9 @@ var checkTags_prefix = 'ct_';
 const dictSettings = {
 	dictName: checkTags_properties['dictName'][1], 
 	dictPath: checkTags_properties['dictPath'][1],
-	affPath() {return this.dictPath + '\\' + this.dictName + '\\' + this.dictName + '.aff'},
-	dicPath() {return this.dictPath + '\\' + this.dictName + '\\' + this.dictName + '.dic'},
-}
+	affPath() {return this.dictPath + '\\' + this.dictName + '\\' + this.dictName + '.aff';},
+	dicPath() {return this.dictPath + '\\' + this.dictName + '\\' + this.dictName + '.dic';},
+};
 var dictionary;
 
 if (typeof buttons === 'undefined' && typeof bNotProperties === 'undefined') { // Merge all properties when not loaded along buttons
@@ -107,7 +107,7 @@ function checkTags({
 	}
 	// Constants
 	const popupTitle = 'Tags Report'; // Window title for the popups
-	const keySplit = '***' // For the map
+	const keySplit = '***'; // For the map
 	
 	// Skipped values at pre-filter
 	let tagValuesExcluded = {}; // i x k
@@ -151,7 +151,7 @@ function checkTags({
 	if (countArray.length) {
 		tagsToCheck.forEach( (tag, index) => {
 			if (tagValuesExcluded.hasOwnProperty(tag)) {
-				countArrayPre[index] = countArray[index].filter((pair) => {return !tagValuesExcluded[tag].has(pair[0])});
+				countArrayPre[index] = countArray[index].filter((pair) => {return !tagValuesExcluded[tag].has(pair[0]);});
 			} else {countArrayPre[index] = countArray[index];}
 		});
 	}
@@ -277,8 +277,8 @@ function checkTags({
 		}
 		textA += '\n\n';
 	});
-	textA += '------------------------------------------------------\n'
-	textA += '------------------------------------------------------\n'
+	textA += '------------------------------------------------------\n';
+	textA += '------------------------------------------------------\n';
 	// Second part - Pairs of tags
 	let textB =	'List of pairs of tags from the report (tag,value;...).\n' +
 				'Ready to be copied to exclusions window or properties panel.\n' +
@@ -301,11 +301,11 @@ function checkTags({
 		rightTagsText += rightPairsText + '\n\n';
 		reportTagsText += reportPairsText + '\n\n';
 	});	
-	rightTagsText = '(1) Values without problems identified:\n' + rightTagsText
-	reportTagsText = '(2) Values with problems reported:\n' + reportTagsText
+	rightTagsText = '(1) Values without problems identified:\n' + rightTagsText;
+	reportTagsText = '(2) Values with problems reported:\n' + reportTagsText;
 	textB += rightTagsText + '\n\n' + reportTagsText;
-	textB += '------------------------------------------------------\n'
-	textB += '------------------------------------------------------\n'
+	textB += '------------------------------------------------------\n';
+	textB += '------------------------------------------------------\n';
 	// Third part - Queries to find the tracks and tips
 	let textC =	'Queries needed to find the tracks with errors.\n' +
 				'You may use them in search or facets panels.\n\n';
@@ -317,26 +317,26 @@ function checkTags({
 		} else {
 			queryText += tagName + ' - ' + tagVal + ' --> ' + tagName.toUpperCase() + ' IS ' + '"' + tagVal + '"\n';
 			if (!tagVal.length && tipsText.indexOf(tagName) === -1) { // Only add the tip once per tag name
-				if (!tipsText.length) {tipsText += 'You can use these TF on facets to differentiate\nbetween empty valued and non set tags on columns:\n\n'}
+				if (!tipsText.length) {tipsText += 'You can use these TF on facets to differentiate\nbetween empty valued and non set tags on columns:\n\n';}
 				tipsText += '$if(%' + tagName + '%,$ifgreater($len(%' + tagName + '%),0,%<' + tagName + '>%,\'(Empty)\'),\'(\'Unknown\')\')';
 				tipsText += '\n';
 			}
 		}
 	});
 	tipsText += (tipsText.length ? '\n\n' : '') + 'Empty valued tags or tags with redundant spaces\n' +
-												  'can be cleaned up using the tag editor within foobar\n' +
-												  'on selected tracks (\'Right Button/Properties\').\n' +
-												  'Then select the tags with errors and use\n' +
-												  'right button\'s menu entry named \'Clean Up\'.';
-												  
+												'can be cleaned up using the tag editor within foobar\n' +
+												'on selected tracks (\'Right Button/Properties\').\n' +
+												'Then select the tags with errors and use\n' +
+												'right button\'s menu entry named \'Clean Up\'.';
+												
 	tipsText += (tipsText.length ? '\n\n' : '') + 'Queries also work on mp3Tag as is, so they can be\n' +
-												  'used in its filter panel too! (\'View/Filter\')\n' +
-												  'mp3Tag can also display when a tag is empty valued\n' +
-												  '(something foobar can\'t do without queries),\n' +
-												  'use \'Right Button/Extended Tags...\' and you will\n' +
-												  'see on the panel the tags present without a value\n.' +
-												  'Those tags can be sanitized just saving the tags again\n' +
-												  'without any changes, select all and force saving (ctrl+s).';
+												'used in its filter panel too! (\'View/Filter\')\n' +
+												'mp3Tag can also display when a tag is empty valued\n' +
+												'(something foobar can\'t do without queries),\n' +
+												'use \'Right Button/Extended Tags...\' and you will\n' +
+												'see on the panel the tags present without a value\n.' +
+												'Those tags can be sanitized just saving the tags again\n' +
+												'without any changes, select all and force saving (ctrl+s).';
 	tipsText = 'Other tips:\n' + tipsText;
 	textC += queryText + '\n\n' + tipsText + '\n\n';
 	// Popup with all texts
