@@ -330,10 +330,10 @@ function checkTags({
 												  'right button\'s menu entry named \'Clean Up\'.';
 												  
 	tipsText += (tipsText.length ? '\n\n' : '') + 'Queries also work on mp3Tag as is, so they can be\n' +
-												  'used in its filter panel too! (\'View\Filter\')\n' +
+												  'used in its filter panel too! (\'View/Filter\')\n' +
 												  'mp3Tag can also display when a tag is empty valued\n' +
 												  '(something foobar can\'t do without queries),\n' +
-												  'use \'Right Button\Extended Tags...\' and you will\n' +
+												  'use \'Right Button/Extended Tags...\' and you will\n' +
 												  'see on the panel the tags present without a value\n.' +
 												  'Those tags can be sanitized just saving the tags again\n' +
 												  'without any changes, select all and force saving (ctrl+s).';
