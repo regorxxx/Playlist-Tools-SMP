@@ -814,7 +814,9 @@ const menu = new _menu();
 					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 						args.selItems = args.selItems();
 						args.playlistLength = args.selItems.Count; // Max allowed
-						do_harmonic_mixing(args);
+						let test = new FbProfiler('do_harmonic_mixing');
+						do_harmonic_mixing();
+						test.Print();
 					}, flags: selArg.flags ? selArg.flags : undefined});
 				}
 			});

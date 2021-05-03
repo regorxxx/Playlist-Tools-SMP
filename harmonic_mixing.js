@@ -25,76 +25,72 @@ function do_harmonic_mixing({
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_harmonic_mixing: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return false;}
 	if (!selItems || !selItems.Count) {return;}
 	if (selItems.Count < playlistLength) {playlistLength = selItems.Count;}
+	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
+	const pattern = createHarmonicMixingPattern(playlistLength); // On camelot_wheel_xxx.js
+	if (bDebug) {
+		console.log('Original pattern:');
+		console.log(pattern);
+	}
+	const {selectedHandlesArray, error} = findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebug});
+	if (!error) {
+		const handleList = new FbMetadbHandleList(selectedHandlesArray);
+		if (bSendToPls) {return sendToPlaylist(handleList, playlistName);}
+		else {return handleList;}
+		
+	} else {
+		console.log('do_harmonic_mixing: ' + error);
+		console.log(pattern);
+		return null;
+	}
+}
+
+function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebug = false}) {
 	// Tags and constants
 	const keyHandle = getTagsValuesV3(selItems, [keyTag], true);
 	const poolLength = selItems.Count;
-	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
-	const movements = {
-		perfectMatch: 	35	, // perfectMatch (=)
-		energyBoost	: 	10	, // energyBoost (+1)
-		energyDrop	:	10	, // energyDrop (-1)
-		energySwitch:	10	, // energySwitch (B/A)
-		moodBoost	:	5	, // moodBoost (+3)
-		moodDrop	:	5	, // moodDrop (-3)
-		energyRaise	:	5	, // energyRaise (+7)
-		domKey		:	10	, // domKey (+1 & B/A) = energyBoost & energySwitch
-		subDomKey	:	10	, // subDomKey (-1 & B/A) = energyDrop & energySwitch
-	}; // Sum must be 100%
-	let pattern = [];
-	Object.keys(movements).forEach((key) => {
-		pattern = pattern.concat(Array(Math.ceil(playlistLength * movements[key] / 100)).fill(key));
-	});
-	pattern.sort(() => Math.random() - 0.5);
-	if (pattern.length > playlistLength) {pattern.length = playlistLength;} // finalPlaylistLength is always <= PlaylistLength
-	if (bDebug) {console.log(pattern);}
 	let nextKeyObj;
 	let keyCache = new Map();
 	let keyDebug = [];
+	let keySharpDebug = [];
+	let patternDebug = [];
 	let selectedHandlesArray = [];
-	let alreadySelected = new Set([0]); // equal to the desired order
 	let toCheck = new Set(Array(poolLength).fill().map((_, index) => index).sort(() => Math.random() - 0.5));
 	let nextIndex = 0; // Initial track, it will match most times the last reference track when using progressive playlists
-	selectedHandlesArray.push(selItems[nextIndex]);
+	let camelotKeyCurrent, camelotKeyNew;
 	for (let i = 0, j = 0; i < playlistLength - 1; i++) {
-		if (!toCheck.size) {break;}
+		// Search key
 		const index = nextIndex;
-		let camelotKeyCurrent;
-		if (!keyCache.has(i)) {
+		if (!keyCache.has(index)) {
 			const keyCurrent = keyHandle[index][0];
-			if (bDebug && i === 0) {keyDebug.push(keyCurrent);}
-			// camelotKeyCurrent = keyCurrent.length ? {...camelotWheel.keyNotationObject.get(keyCurrent)} : null;
 			camelotKeyCurrent = keyCurrent.length ? camelotWheel.getKeyNotationObject(keyCurrent) : null;
-			keyCache.set(i, camelotKeyCurrent);
-		} else {camelotKeyCurrent = keyCache.get(i);}
-		nextKeyObj = camelotKeyCurrent ? camelotWheel[pattern[i]](camelotKeyCurrent) : null; // Applies movement to current key
+			if (camelotKeyCurrent) {keyCache.set(index, camelotKeyCurrent);}
+		} else {camelotKeyCurrent = keyCache.get(index);}
+		// Delete from check selection
+		toCheck.delete(index);
+		if (!toCheck.size) {break;}
+		// Find next key
+		nextKeyObj = camelotKeyCurrent ? camelotWheel[pattern[i]]({...camelotKeyCurrent}) : null; // Applies movement to current key
 		if (nextKeyObj) { // Finds next track, but traverse pool with random indexes...
 			let bFound = false;
-			for (const toCheck_k of toCheck) {
-				if (!alreadySelected.has(toCheck_k)){
-					var camelotKeyNew;
-					const indexNew = toCheck_k;
-					if (!keyCache.has(toCheck_k)) {
-						const keyNew = keyHandle[indexNew][0];
-						// camelotKeyNew = (keyNew.length) ? {...camelotWheel.keyNotationObject.get(keyNew)} : null;
-						camelotKeyNew = (keyNew.length) ? camelotWheel.getKeyNotationObject(keyNew) : null;
-						keyCache.set(toCheck_k, camelotKeyNew);
-					} else {camelotKeyNew = keyCache.get(toCheck_k);}
-					if (camelotKeyNew) {
-						if (nextKeyObj.hour === camelotKeyNew.hour && nextKeyObj.letter === camelotKeyNew.letter) {
-							nextIndex = indexNew; // Which will be used for next movement
-							selectedHandlesArray.push(selItems[indexNew]);
-							alreadySelected.add(toCheck_k); // And not be selected again
-							toCheck.delete(toCheck_k);
-							bFound = true;
-							// if (bDebug && nextKeyObj) {keyDebug.push(camelotWheel.wheelNotationSharp.get(nextKeyObj.hour)[nextKeyObj.letter]);}
-							if (bDebug && nextKeyObj) {keyDebug.push(camelotWheel.getKeyNotationSharp(nextKeyObj));}
-							break;
-						}
+			for (const indexNew of toCheck) {
+				if (!keyCache.has(indexNew)) {
+					const keyNew = keyHandle[indexNew][0];
+					camelotKeyNew = (keyNew.length) ? camelotWheel.getKeyNotationObject(keyNew) : null;
+					if (camelotKeyNew) {keyCache.set(indexNew, camelotKeyNew);}
+					else {toCheck.delete(indexNew);}
+				} else {camelotKeyNew = keyCache.get(indexNew);}
+				if (camelotKeyNew) {
+					if (nextKeyObj.hour === camelotKeyNew.hour && nextKeyObj.letter === camelotKeyNew.letter) {
+						selectedHandlesArray.push(selItems[index]);
+						if (bDebug) {keyDebug.push(camelotKeyCurrent); keySharpDebug.push(camelotWheel.getKeyNotationSharp(camelotKeyCurrent)); patternDebug.push(pattern[i]);}
+						nextIndex = indexNew; // Which will be used for next movement
+						bFound = true;
+						break;
 					}
 				}
 			}
 			if (!bFound) { // If nothing is found, then continue next movement with current track
-				nextIndex = index;
+				camelotKeyNew = camelotKeyCurrent; // For debug console on last item
 				if (j === 1) {j = 0; continue;}  // try once retrying this step with default movement
 				else {
 					pattern[i] = 'perfectMatch';
@@ -102,41 +98,22 @@ function do_harmonic_mixing({
 					j++;
 				}
 			} else {j = 0;} // Reset retry counter if found 
-		} else {
+		} else { // No tag or bad tag
 			i--;
-			toCheck.delete(index); // If there is no tag, it can be deleted
 			if (toCheck.size) {nextIndex = [...toCheck][0];} // If tag was not found, then use next handle
 		}
 	}
-	if (bDebug) {console.log(keyDebug);}
-	if (selectedHandlesArray.length > 1) { // Otherwise it has failed
-		// And output
-		selectedHandlesArray = new FbMetadbHandleList(selectedHandlesArray);
-		if (bSendToPls) {
-			// Clear playlist if needed. Preferred to removing it, since then we could undo later...
-			// Look if target playlist already exists
-			let i = 0;
-			let plc = plman.PlaylistCount;
-			while (i < plc) {
-				if (plman.GetPlaylistName(i) === playlistName) {
-					plman.ActivePlaylist = i;
-					break;
-				} else {
-					i++;
-				}
-			}
-			if (i === plc) { //if no playlist was found before
-				plman.CreatePlaylist(plc, playlistName);
-				plman.ActivePlaylist = plc;
-			}
-			if (plman.PlaylistItemCount(plman.ActivePlaylist)) {
-				plman.UndoBackup(plman.ActivePlaylist);
-				plman.ClearPlaylist(plman.ActivePlaylist);
-			}
-			// Create playlist
-			console.log('Final selection: ' +  selectedHandlesArray.Count  + ' tracks');
-			plman.InsertPlaylistItems(plman.ActivePlaylist, 0, selectedHandlesArray);
-		}
-		return selectedHandlesArray;
-	} return null;
-}
+	// Add tail
+	selectedHandlesArray.push(selItems[nextIndex]); 
+	if (bDebug) {keyDebug.push(camelotKeyNew); keySharpDebug.push(camelotWheel.getKeyNotationSharp(camelotKeyNew));}
+	// Debug console
+	if (bDebug) {
+		console.log('Keys from selection:');
+		console.log(keyDebug);
+		console.log(keySharpDebug);
+		console.log('Pattern applied:');
+		console.log(patternDebug); // Always has one item less thankey arrays
+	}
+	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag.') : null;
+	return {selectedHandlesArray, error};
+};
