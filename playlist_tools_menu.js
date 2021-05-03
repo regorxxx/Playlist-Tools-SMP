@@ -1,7 +1,7 @@
 'use strict';
 
 /* 
-	Playlist Tools Menu v 0.3 06/04/21
+	Playlist Tools Menu 03/05/21
 	-----------------------------------
 	Merges different playlist tools in one menu, called when pressing the button.
 	If any script or plugin is missing, then the menu gets created without those entries.
