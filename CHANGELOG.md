@@ -7,11 +7,14 @@
 
 ## [Unreleased][]
 ### Added
-- Harmonic mixing: multiple debug additions,
+- Harmonic mixing: multiple debug additions.
+
 ### Changed
 - Harmonic mixing: small changes and optimizations.
 - Harmonic mixing: code for pattern creation moved to camelot_wheel.js.
 - Harmonic mixing: code for sending to playlist moved to helpers and reused in multiple scripts.
+- Buttons framework: icon bugfix.
+
 ### Removed
 
 ## [1.0.1] - 2021-05-02
