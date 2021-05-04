@@ -33,6 +33,6 @@
 
 ### Removed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v.1.0.1...HEAD
-[1.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v.1.0.0...v.1.0.1
-[1.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/9df4560...v.1.0.0
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/9df4560...v1.0.0
