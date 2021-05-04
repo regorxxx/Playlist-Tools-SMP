@@ -21,7 +21,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	.\xxx*scripts\top_rated_tracks.js  
 * Same by...  
 	.\xxx*scripts\search_same_by.js
-* Similar by... (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP/blob/main/README.md))  
+* Similar by... (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
 	.\xxx*scripts\search_bydistance.js
 * Special Playlists... (contains functionality from the other scripts)  
 	.\xxx*scripts\search_bydistance.js  
@@ -31,9 +31,9 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx*scripts\remove_duplicates.js
 	* Query filtering  
 		.\xxx*scripts\filter_by_query.js
-	* Harmonic mix  
+	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation) 
 		.\xxx*scripts\harmonic_mixing.js
-	* Sort by key  
+	* Sort by key  ('')
 		.\xxx*scripts\sort_by_key.js
 	* Scatter by tags  
 		.\xxx*scripts\scatter_by_tags.js
