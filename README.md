@@ -33,7 +33,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx*scripts\filter_by_query.js
 	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
-	* Sort by key  ('')
+	* Sort by key (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\sort_by_key.js
 	* Scatter by tags  
 		.\xxx*scripts\scatter_by_tags.js
