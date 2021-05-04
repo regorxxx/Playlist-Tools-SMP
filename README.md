@@ -31,7 +31,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx*scripts\remove_duplicates.js
 	* Query filtering  
 		.\xxx*scripts\filter_by_query.js
-	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation) 
+	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
 	* Sort by key  ('')
 		.\xxx*scripts\sort_by_key.js
