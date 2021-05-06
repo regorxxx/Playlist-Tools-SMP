@@ -116,4 +116,4 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebu
 	}
 	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag.') : null;
 	return {selectedHandlesArray, error};
-};
+}
