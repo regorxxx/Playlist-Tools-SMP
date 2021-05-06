@@ -101,7 +101,7 @@ const menu = new _menu();
 {
 	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks_from_date.js';
 	const scriptPathElse = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks.js';
-	if (utils.CheckComponent("foo_enhanced_playcount") && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e"))) {
+	if (utils.CheckComponent('foo_enhanced_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e'))) {
 		include(scriptPath);
 		readmes['Most Played Tracks from Date'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\top_tracks_from_date.txt';
 		const menuName = menu.newMenu('Most played Tracks from...');
@@ -116,7 +116,7 @@ const menu = new _menu();
 				});
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, 'e')){
 			// All years
 			include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks.js');
 			menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {do_top_tracks(args);}});
@@ -142,7 +142,7 @@ const menu = new _menu();
 				}});
 		}
 		menu.newEntry({entryText: 'sep'});
-	} else if (utils.CheckComponent("foo_playcount") && (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, "e"))) { //TODO: Deprecated
+	} else if (utils.CheckComponent('foo_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, 'e'))) { //TODO: Deprecated
 		readmes['Most Played Tracks'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\top_tracks.txt';
 		{	// All years
 			include(scriptPathElse);
@@ -155,7 +155,7 @@ const menu = new _menu();
 // Top rated Tracks from year
 {
 	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_rated_tracks.js';
-	if (utils.CheckComponent("foo_playcount") && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e"))) {
+	if (utils.CheckComponent('foo_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e'))) {
 		include(scriptPath);
 		readmes['Top Rated Tracks'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\top_rated_tracks.txt';
 		const menuName = menu.newMenu('Top rated Tracks from...');
@@ -206,7 +206,7 @@ const menu = new _menu();
 // Same by...
 {
 	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\search_same_by.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		include(scriptPath);
 		readmes['Search Same by Tags'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_same_by.txt';
 		const menuName = menu.newMenu('Search same by tags...');
@@ -361,7 +361,7 @@ const menu = new _menu();
 // Dynamic queries...
 {
 	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\dynamic_query.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		include(scriptPath);
 		readmes['Dynamic Queries'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\dynamic_query.txt';
 		const menuName = menu.newMenu('Dynamic Queries...');
@@ -478,7 +478,7 @@ const menu = new _menu();
 // Similar by...
 {
 	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\search_bydistance.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		include(scriptPath);
 		readmes['Search by Distance'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt';
 		// Delete unused properties
@@ -614,6 +614,60 @@ const menu = new _menu();
 				});
 			}
 		}
+		{	// -> Config menu
+			{
+				const submenu = menu.newMenu('Search by Distance', configMenu);
+				{ // Find genre/styles not on graph
+					menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: (args = {...scriptDefaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the pan
+						// Skipped values at pre-filter
+						const tagValuesExcluded = new Set(args.properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
+						// Get all tags and their frequency
+						const tagsToCheck = [...new Set(args.properties['genreTag'][1].concat(',', args.properties['styleTag'][1]).split(',').filter(Boolean))]; // Merge and filter
+						if (!tagsToCheck.length) {
+							fb.ShowPopupMessage('There are no tags to check set at properties panel:\n' + args.properties['genreTag'][0], scriptName);
+							return;
+						}
+						// Get tags
+						const tags = new Set(getTagsValuesV4(fb.GetLibraryItems(), tagsToCheck, false, true).flat(Infinity));
+						// Get node list (+ weak substitutions + substitutions + style cluster)
+						const nodeList = new Set(music_graph_descriptors.style_supergenre.flat(Infinity)).union(new Set(music_graph_descriptors.style_weak_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_cluster.flat(Infinity)));
+						// Compare (- user exclusions - graph exclusions)
+						const missing = tags.difference(nodeList).difference(tagValuesExcluded).difference(music_graph_descriptors.map_distance_exclusions);
+						// Report
+						const userFile = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx_user.js';
+						const UserFileFound = (isCompatible('1.4.0') ? utils.IsFile(userFile) : utils.FileTest(userFile, 'e')) ? '' : ' (not found)';
+						const UserFileEmpty = UserFileFound &&  Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
+						const report = 'Graph descriptors:\n' +
+										'.\helpers\music_graph_descriptors_xxx.js\n' +
+										'.\helpers\music_graph_descriptors_xxx_user.js' + UserFileFound + UserFileEmpty + '\n\n' +
+										'List of tags not present on the graph descriptors:\n' +
+										[...missing].sort().join(', ');
+						fb.ShowPopupMessage(report, scriptName);
+					}});
+				}
+				menu.newEntry({menuName: submenu, entryText: 'sep'});
+				{ // Open descriptors
+					menu.newEntry({menuName: submenu, entryText: 'Open main descriptor', func: () => {
+						const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx.js';
+						if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
+					}});
+					menu.newEntry({menuName: submenu, entryText: 'Open user descriptor', func: () => {
+						const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx_user.js';
+						if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
+					}});
+				}
+				menu.newEntry({menuName: submenu, entryText: 'sep'});
+				{ // Open graph html file
+					menu.newEntry({menuName: submenu, entryText: 'Show Music Graph on Browser', func: () => {
+						const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\Draw Graph.html';
+						if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run(file);}
+					}});
+				}
+			}
+			menu.newEntry({menuName: configMenu, entryText: 'sep'});
+		}
+		
 	}
 }
 
@@ -630,7 +684,7 @@ const menu = new _menu();
 	let menuName = menu.newMenu('Tools');
 	{	// Remove Duplicates
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\remove_duplicates.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Remove Duplicates'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\remove_duplicates.txt';
 			let subMenuName = menu.newMenu('Duplicates and tag filtering', menuName);
@@ -695,7 +749,7 @@ const menu = new _menu();
 	}
 	{	// Filter by Query
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\filter_by_query.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Filter by Query'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\filter_by_query.txt';
 			const subMenuName = menu.newMenu('Query filtering', menuName);
@@ -795,7 +849,7 @@ const menu = new _menu();
 	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Create harmonic mix from playlist
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\harmonic_mixing.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Harmonic Mix'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\harmonic_mixing.txt';
 			let subMenuName = menu.newMenu('Harmonic mix', menuName);
@@ -824,7 +878,7 @@ const menu = new _menu();
 	}
 	{	// Sort by key
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_key.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
 			let subMenuName = menu.newMenu('Sort by key', menuName);
@@ -850,7 +904,7 @@ const menu = new _menu();
 	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Scatter
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\scatter_by_tags.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			let subMenuName = menu.newMenu('Scatter by tags', menuName);
 			const selArgs = [
@@ -880,7 +934,7 @@ const menu = new _menu();
 	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Check tags
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\check_library_tags.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Check Tags'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\check_library_tags.txt';
 			const subMenuName = menu.newMenu('Check tags', menuName);
@@ -984,7 +1038,7 @@ const menu = new _menu();
 					if (args.properties['dictName'][1] === input) {return;}
 					if (!input.length) {return;}
 					const dictPath = args.properties['dictPath'][1] + '\\' + input;
-					if (isCompatible('1.4.0') ? !utils.IsDirectory(dictPath) : !utils.FileTest(dictPath, "d")) {fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return;}
+					if (isCompatible('1.4.0') ? !utils.IsDirectory(dictPath) : !utils.FileTest(dictPath, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return;}
 					args.properties['dictName'][1] = input;
 					overwriteProperties(args.properties); // Updates panel
 				}});
@@ -993,7 +1047,7 @@ const menu = new _menu();
 					const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', window.Name, args.properties['dictPath'][1]);
 					if (args.properties['dictPath'][1] === input) {return;}
 					if (!input.length) {return;}
-					if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, "d")) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
+					if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
 					args.properties['dictPath'][1] = input;
 					overwriteProperties(args.properties); // Updates panel
 				}});
@@ -1002,7 +1056,7 @@ const menu = new _menu();
 	}
 	{	// Automate tags
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\tags_automation.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			const subMenuName = menu.newMenu('Write tags', menuName);
 			menu.newEntry({menuName: subMenuName, entryText: getTagsAutomationDescription, func: null, flags: MF_GRAYED});
@@ -1013,7 +1067,7 @@ const menu = new _menu();
 	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Remove and find in playlists
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\find_remove_from_playlists.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Find in and Remove from Playlists'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\find_remove_from_playlists.txt';
 			// Add properties
@@ -1278,7 +1332,7 @@ const menu = new _menu();
 	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Playlist revive
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\playlist_revive.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, "e")){
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Playlist Revive'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_revive.txt';
 			{	// Submenu
@@ -1398,11 +1452,11 @@ const menu = new _menu();
 		let iCount = 0;
 		if (Object.keys(readmes).length) {
 			Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
-				if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, "e"))) {
+				if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
 					const readme = utils.ReadTextFile(value, 65001);
 					if (readme.length) {
 						menu.newEntry({menuName: subMenuName, entryText: key, func: () => {
-							if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, "e"))) {
+							if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
 								const readme = utils.ReadTextFile(value, 65001);
 								if (readme.length) {fb.ShowPopupMessage(readme, key);}
 							}
@@ -1451,7 +1505,7 @@ function updateMenuProperties(propObject) {
 		panelPropObject['firstPopup'][1] = true;
 		overwriteProperties(panelPropObject); // Updates panel
 		const readmePath = readmes['Playlist Tools Menu'];
-		if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, "e"))) {
+		if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
 			const readme = utils.ReadTextFile(readmePath, 65001);
 			if (readme.length) {fb.ShowPopupMessage(readme, 'Playlist Tools Menu');}
 		}
