@@ -87,6 +87,7 @@ const defaultArgs = {
 					ratingLimits: menu_properties['ratingLimits'][1].split(','),
 };
 loadProperties();
+const bProfile = true;
 // Menu
 const specialMenu = 'Special Playlists...';
 const configMenu = 'Configuration';
@@ -645,6 +646,19 @@ const menu = new _menu();
 										[...missing].sort().join(', ');
 						fb.ShowPopupMessage(report, scriptName);
 					}});
+					// Graph debug
+					menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
+						if (bProfile) {var profiler = new FbProfiler('graphDebug');}
+						graphDebug(all_music_graph);
+						if (bProfile) {profiler.Print();}
+					}});
+					// Graph test
+					menu.newEntry({menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
+						if (bProfile) {var profiler = new FbProfiler('testGraph');}
+						testGraph(all_music_graph);
+						testGraphV2(all_music_graph);
+						if (bProfile) {profiler.Print();}
+					}});	
 				}
 				menu.newEntry({menuName: submenu, entryText: 'sep'});
 				{ // Open descriptors
@@ -868,9 +882,9 @@ const menu = new _menu();
 					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 						args.selItems = args.selItems();
 						args.playlistLength = args.selItems.Count; // Max allowed
-						let test = new FbProfiler('do_harmonic_mixing');
+						if (bProfile) {var profiler = new FbProfiler('do_harmonic_mixing');}
 						do_harmonic_mixing();
-						test.Print();
+						if (bProfile) {profiler.Print();}
 					}, flags: selArg.flags ? selArg.flags : undefined});
 				}
 			});
@@ -1085,6 +1099,7 @@ const menu = new _menu();
 				const subMenuName = menu.newMenu('Find now playing track in...', menuName);
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newCondEntry({entryText: 'Find now playing track in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					if (bProfile) {var profiler = new FbProfiler('Find now playing in');}
 					menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with now playing track', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -1121,12 +1136,14 @@ const menu = new _menu();
 					} else {
 						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
 					}
+					if (bProfile) {profiler.Print();}
 				}});
 			}
 			{	// Find in Playlists
 				const subMenuName = menu.newMenu('Find track(s) in...', menuName);
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newCondEntry({entryText: 'Find track(s) in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					if (bProfile) {var profiler = new FbProfiler('Find in Playlists');}
 					menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with same track(s)', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -1157,18 +1174,20 @@ const menu = new _menu();
 							}
 						} else { // Or just show all
 							for (const playlist of inPlaylist) {
-								menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index)}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+								menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
 							}
 						}
 					} else {
 						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
 					}
+					if (bProfile) {profiler.Print();}
 				}});
 			}
 			{	// Remove from Playlists
 				const subMenuName = menu.newMenu('Remove track(s) from...', menuName);
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newCondEntry({entryText: 'Remove track(s) from... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					if (bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
 					menu.newEntry({menuName: subMenuName, entryText: 'Remove track(s) from selected playlist', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -1195,18 +1214,19 @@ const menu = new _menu();
 								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 									const playlist = inPlaylist[j];
 									const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
-									menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index)}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+									menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 								}
 							}
 						} else { // Or just show all
 							for (const playlist of inPlaylist) {
 								const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
-								menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index)}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+								menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 							}
 						}
 					} else {
 						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
 					}
+					if (bProfile) {profiler.Print();}
 				}});
 			}
 			{	// Configure properties

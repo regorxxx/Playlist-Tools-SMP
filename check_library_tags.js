@@ -62,7 +62,7 @@ const checkTags_properties = {
 };
 checkTags_properties['tagNamesToCheck'].push({func: isString}, checkTags_properties['tagNamesToCheck'][1]);
 checkTags_properties['dictName'].push({func: isString}, checkTags_properties['dictName'][1]);
-checkTags_properties['dictPath'].push({func: isString}, checkTags_properties['dictPath'][1]);
+checkTags_properties['dictPath'].push({func: isString, portable: true}, checkTags_properties['dictPath'][1]); // No need for a poput since the default dic will always be there
 var checkTags_prefix = 'ct_';
 
 // Load dictionary
@@ -79,7 +79,9 @@ if (typeof buttons === 'undefined' && typeof bNotProperties === 'undefined') { /
 	setProperties(checkTags_properties, checkTags_prefix);
 	var bUseDic = getPropertyByKey(checkTags_properties, bUseDic, checkTags_prefix);
 	if (bUseDic) {
-		dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
+		if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
+			dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
+		} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.name);}
 	}
 } else {  // With buttons, set these properties only once per panel
 	dictionary = new Typo(); // Load dict later at first use
@@ -100,10 +102,17 @@ function checkTags({
 	if (stringSimilThreshold > 1 || stringSimilThreshold < 0) {stringSimilThreshold = 1;}
 	if (maxSizePerTag < 0) {maxSizePerTag = Infinity;}
 	// Load dictionary if required (and not loaded previously)
-	if (bUseDic && dictionary.dictionary !== properties['dictName'][1]) {
-		dictSettings['dictName'] = properties['dictName'][1];
-		dictSettings['dictPath'] = properties['dictPath'][1];
-		dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
+	if (bUseDic) {
+		if (dictionary.dictionary !== properties['dictName'][1]) {
+			dictSettings['dictName'] = properties['dictName'][1];
+			dictSettings['dictPath'] = properties['dictPath'][1];
+			if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
+				dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
+		// Warn if not found
+			} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.name);return;}
+		} else if (!_isFile(dictSettings.dicPath()) || !_isFile(dictSettings.affPath())) {
+			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.name);return;
+		}
 	}
 	// Constants
 	const popupTitle = 'Tags Report'; // Window title for the popups
