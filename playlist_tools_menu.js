@@ -242,7 +242,7 @@ const menu = new _menu();
 						if (!queryObj.hasOwnProperty('name') || !queryObj.name.length) {
 							Object.keys(queryObj.args.sameBy).forEach((key, index, array) => {
 								text += (!text.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
-								text += capitalizeFirstLetter(key) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
+								text += capitalize(key) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
 								});
 						} else {text = queryObj.name;}
 						text = text.length > 40 ? text.substring(0,40) + ' ...' : text;
@@ -347,7 +347,7 @@ const menu = new _menu();
 					if (!selArg.hasOwnProperty('title')) {
 						Object.keys(selArg.args.sameBy).forEach((key, index, array) => {
 							entryText += (!entryText.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
-							entryText += capitalizeFirstLetter(key) + (selArg.args.sameBy[key] > 1 ? 's' : '') + ' (=' + selArg.args.sameBy[key] + ')';
+							entryText += capitalize(key) + (selArg.args.sameBy[key] > 1 ? 's' : '') + ' (=' + selArg.args.sameBy[key] + ')';
 							});
 					} else {entryText = selArg.title;}
 					let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
@@ -658,7 +658,15 @@ const menu = new _menu();
 						testGraph(all_music_graph);
 						testGraphV2(all_music_graph);
 						if (bProfile) {profiler.Print();}
-					}});	
+					}});
+					// Graph cache reset
+					menu.newEntry({menuName: submenu, entryText: 'Reset link cache', func: () => {
+						_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
+						_deleteFile(folders.data + 'searchByDistance_cacheLinkSet.json');
+						cacheLink = void(0);
+						cacheLinkSet = void(0);
+						updateCache(); // Creates new one and also notifies other panels to discard their cache
+					}});
 				}
 				menu.newEntry({menuName: submenu, entryText: 'sep'});
 				{ // Open descriptors

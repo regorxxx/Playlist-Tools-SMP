@@ -14,6 +14,7 @@
 - Search by Distance: New tool to find genre or styles not set on the graph (descriptors).
 - Search by Distance: New entry to test the Graph on demand for errors.
 - Search by Distance: New entry to test the Graph on demand against a set of paths predefined on 'music_graph_test_xxx.js'.
+- Search by Distance: New entry to reset the Graph cache on demand.
 - Search by Distance Cache: is now saved to a json file and reused between different sessions. Cuts loading time by 4 secs for 70K tracks on startup (!).
 - Search by Distance Cache: gets automatically refreshed whenever the descriptors crc change. i.e. it will be recalculated with any change by the user too.
 - Search by Distance Descriptors: Multiple new additions.
