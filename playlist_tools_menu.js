@@ -509,11 +509,12 @@ const menu = new _menu();
 			let menuName = menu.newMenu('Search similar by Graph...');
 			{	// Static menus
 				menu.newEntry({menuName, entryText: 'Links similar genre/styles using complex relations:', func: null, flags: MF_GRAYED});
+				const distanceUnit = music_graph_descriptors.intra_supergenre; // 100
 				const entryArgs = [
-					{title: 'Nearest Tracks', args: {sbd_max_graph_distance: 50, method: 'GRAPH'}},
-					{title: 'Similar Genre mix, within a decade', args: {sbd_max_graph_distance: 85, method: 'GRAPH'}},
-					{title: 'Varied Styles/Genres mix, within a decade', args: {sbd_max_graph_distance: 150, method: 'GRAPH'}},
-					{title: 'Random Styles/Genres mix, same Mood', args: {sbd_max_graph_distance: 400, method: 'GRAPH'}}
+					{title: 'Nearest Tracks', args: {sbd_max_graph_distance: distanceUnit / 2, method: 'GRAPH'}}, // 50
+					{title: 'Similar Genre mix, within a decade', args: {sbd_max_graph_distance: music_graph_descriptors.cluster, method: 'GRAPH'}}, // 85
+					{title: 'Varied Styles/Genres mix, within a decade', args: {sbd_max_graph_distance: distanceUnit * 3/2, method: 'GRAPH'}}, //150
+					{title: 'Random Styles/Genres mix, same Mood', args: {sbd_max_graph_distance: distanceUnit * 4, method: 'GRAPH'}} //400
 				];
 				selArgs.forEach( (selArg) => {
 					if (selArg.title === 'sep') {
@@ -534,11 +535,12 @@ const menu = new _menu();
 			let menuName = menu.newMenu('Search similar by DynGenre...');
 			{	// Static menus
 				menu.newEntry({menuName, entryText: 'Links similar genre/styles using simple grouping:', func: null, flags: MF_GRAYED});
+				const distanceUnit = 1;
 				const entryArgs = [
-					{title: 'Nearest Tracks', args: {dyngenreWeight: 20, dyngenreRange: 1, method: 'DYNGENRE'}},
-					{title: 'Similar Genre mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: 1, method: 'DYNGENRE'}},
-					{title: 'Varied Styles/Genres mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: 2, method: 'DYNGENRE'}},
-					{title: 'Random Styles/Genres mix, same Mood', args: {dyngenreWeight: 20, dyngenreRange: 2, method: 'DYNGENRE'}}
+					{title: 'Nearest Tracks', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
+					{title: 'Similar Genre mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
+					{title: 'Varied Styles/Genres mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit * 2, method: 'DYNGENRE'}},
+					{title: 'Random Styles/Genres mix, same Mood', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit * 2, method: 'DYNGENRE'}}
 				];
 				selArgs.forEach( (selArg) => {
 					if (selArg.title === 'sep') {

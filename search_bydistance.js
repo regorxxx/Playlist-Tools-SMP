@@ -2219,23 +2219,23 @@ function calcMeanDistanceV2(mygraph, style_genre_reference, style_genre_new) {
 // Finds distance between all SuperGenres present on foobar library. Returns a map with {distance, influenceDistance} and keys 'nodeA-nodeB'.
 function calcCacheLinkSGV2(mygraph, limit = -1) {
 	let cache = new Map();
-	let node_list = [];
+	let nodeList = [];
 	
 	// Filter SGs with those on library
-	node_list = new Set(music_graph_descriptors.style_supergenre.flat(2)); // all values without duplicates
+	nodeList = new Set(music_graph_descriptors.style_supergenre.flat(Infinity)).union(new Set(music_graph_descriptors.style_weak_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_cluster.flat(Infinity))); // all values without duplicates
 	let tfo = fb.TitleFormat('%genre%|%style%'); // TODO: Use properties!
 	const styleGenres = new Set(tfo.EvalWithMetadbs(fb.GetLibraryItems()).join('|').split('|')); // All styles/genres from library without duplicates
-	node_list = [...node_list.intersection(styleGenres)];
+	nodeList = [...nodeList.intersection(styleGenres)];
 	
-	let node_list_length = node_list.length;
+	let nodeListLength = nodeList.length;
 	let i = 0;
-	while (i < node_list_length){
+	while (i < nodeListLength){
 		let j = i + 1;
-		while (j < node_list_length){
-			let [ij_distance, ij_antinfluenceDistance] = calc_map_distance(mygraph, node_list[i], node_list[j], true);
+		while (j < nodeListLength){
+			let [ij_distance, ij_antinfluenceDistance] = calc_map_distance(mygraph, nodeList[i], nodeList[j], true);
 			if (limit === -1 || ij_distance <= limit) {
 				// Sorting removes the need to check A-B and B-A later...
-				cache.set([node_list[i], node_list[j]].sort().join('-'), {distance: ij_distance, influenceDistance: ij_antinfluenceDistance});
+				cache.set([nodeList[i], nodeList[j]].sort().join('-'), {distance: ij_distance, influenceDistance: ij_antinfluenceDistance});
 			}
 			j++;
 		}
@@ -2253,7 +2253,9 @@ function loadCache(path) {
 	let cacheMap = new Map();
 	if (utils.IsFile(path)) {
 		let obj = Object.entries(_jsonParseFile(path));
-		obj.forEach((pair) => {if (pair[1].distance === null) {pair[1].distance = Infinity;}}); // stringify converts Infinity to null, this reverts the change
+		obj.forEach((pair) => {
+		if (pair[1].distance === null) {pair[1].distance = Infinity;}
+		}); // stringify converts Infinity to null, this reverts the change
 		cacheMap = new Map(obj);
 	}
 	return cacheMap;
