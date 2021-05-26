@@ -13,6 +13,8 @@ A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_
 
 It's impossible to offer a complete list of the things that can be done with these tools, in a few words: anything related to playlist creation, sorting, library maintenance, automation, etc. But a readme for every utility can be found using the corresponding menu.
 
+* Macros: allows to record and save the menus entries used as a macro to be called later. Works with all tools. (only limitation are popups, which still require user input)
+
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
 * Most played tracks from...  
 	.\xxx*scripts\top_tracks.js  
@@ -26,25 +28,44 @@ The sky is the limit once you use the current scripts to create your own buttons
 * Special Playlists... (contains functionality from the other scripts)  
 	.\xxx*scripts\search_bydistance.js  
 	.\xxx*scripts\search_same_by.js  
-* Tools...  
+* Playlist manipulation
 	* Remove duplicates  
 		.\xxx*scripts\remove_duplicates.js
 	* Query filtering  
 		.\xxx*scripts\filter_by_query.js
 	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
+	* Find or create playlist
+	* Cut playlist length
+	* Send playlist's tracks to
+	* Go to playlist
+	* Close playlist
+* Selection manipulation 
+	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
+		.\xxx*scripts\harmonic_mixing.js
 	* Sort by key (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\sort_by_key.js
+	* Sort by Dyngenre (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
+		.\xxx*scripts\search_bydistance.js
 	* Scatter by tags  
 		.\xxx*scripts\scatter_by_tags.js
-	* Check tags  
-		.\xxx*scripts\check_library_tags.js
-	* Write tags  
-		.\xxx*scripts\tags_automation.js
 	* Find track(s) in...  
 		.\xxx*scripts\find_remove_from_playlists.js
 	* Remove track(s) from...  
 		.\xxx*scripts\find_remove_from_playlists.js
+	* Send selection to
+	* Select
+		* By halves
+		* By thirds
+		* By quarters
+		* First / Last track
+		* Random track / Random # tracks
+		* Delete selected / non selected tracks
+* Other tools  
+	* Check tags  
+		.\xxx*scripts\check_library_tags.js
+	* Write tags  
+		.\xxx*scripts\tags_automation.js
 	* Playlist Revive  
 		.\xxx*scripts\playlist_revive.js
 
