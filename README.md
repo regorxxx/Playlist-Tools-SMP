@@ -36,25 +36,33 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
 	* Find or create playlist
-	* Cut playlist length
-	* Send playlist's tracks to
-	* Go to playlist
-	* Close playlist
+	* Cut playlist length (for macros) 
+	* Send playlist's tracks to (for macros) 
+	* Go to playlist (for macros) 
+	* Close playlist (for macros) 
 * Selection manipulation 
 	* Harmonic mix (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
-	* Sort by key (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
-		.\xxx*scripts\sort_by_key.js
-	* Sort by Dyngenre (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
-		.\xxx*scripts\search_bydistance.js
+	* Sort  
+		* Randomize  
+		* Reverse  
+		* By Mood  
+		* By Date  
+		* By BPM  
+		* By key (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
+			.\xxx*scripts\sort_by_key.js
+		* By Dyngenre (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
+			.\xxx*scripts\search_bydistance.js
 	* Scatter by tags  
 		.\xxx*scripts\scatter_by_tags.js
+	* Find now playling track in...  
+		.\xxx*scripts\find_remove_from_playlists.js
 	* Find track(s) in...  
 		.\xxx*scripts\find_remove_from_playlists.js
 	* Remove track(s) from...  
 		.\xxx*scripts\find_remove_from_playlists.js
-	* Send selection to
-	* Select
+	* Send selection to playlist... (for macros)  
+	* Select (for macros)  
 		* By halves
 		* By thirds
 		* By quarters
