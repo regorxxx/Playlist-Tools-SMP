@@ -112,8 +112,8 @@ const menu = new _menu();
 			const currentYear = new Date().getFullYear();
 			const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
 			selYearArr.forEach( (selYear) => {
-				let args = {year: selYear};
-				menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...args}) => {do_top_tracks_from_date(args);}});
+				let selArgs = {year: selYear};
+				menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {do_top_tracks_from_date(args);}});
 				});
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
@@ -183,7 +183,7 @@ const menu = new _menu();
 				try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', window.Name, selYear, true);}
 				catch (e) {return;}
 				if (!selYear.length) {return;}
-				selYear = selYear.split(',').split('-'); // May be a range or a number
+				selYear = selYear.split(','); // May be a range or a number
 				for (let i = 0; i < selYear.length; i++) {
 					selYear[i] = Number(selYear[i]);
 					if (!Number.isSafeInteger(selYear[i])) {return;}
@@ -319,6 +319,7 @@ const menu = new _menu();
 								overwriteProperties(args.properties); // Updates panel
 							}});
 						});
+						if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 							queryFilter = [...queryFilterDefaults];
@@ -462,6 +463,7 @@ const menu = new _menu();
 								overwriteProperties(args.properties); // Updates panel
 							}});
 						});
+						if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 							queryFilter = [...queryFilterDefaults];
@@ -703,9 +705,9 @@ const menu = new _menu();
 	menu.newEntry({entryText: 'sep'});
 }
 
-// Tools...
+// Playlist manipulation...
 {
-	let menuName = menu.newMenu('Tools');
+	let menuName = menu.newMenu('Playlist manipulation');
 	{	// Remove Duplicates
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\remove_duplicates.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
@@ -724,7 +726,7 @@ const menu = new _menu();
 			// Merge
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Menus
-			menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using tags or TF', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			menu.newEntry({menuName: subMenuName, entryText: () => {return 'Remove duplicates by ' + sortInputDuplic.join(', ');}, func: () => {do_remove_duplicatesV2(null, null, sortInputDuplic);}, flags: playlistCountFlags});
 			menu.newEntry({menuName: subMenuName, entryText: () => {return 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')';}, func: () => {do_remove_duplicatesV3(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlags});
@@ -793,7 +795,7 @@ const menu = new _menu();
 			menu_properties['queryFilter'] = ['\'Tools\\Query filtering\' queries', JSON.stringify(queryFilter)];
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Menus
-			menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			menu.newCondEntry({entryText: 'Filter playlists using queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -860,6 +862,7 @@ const menu = new _menu();
 							overwriteProperties(args.properties); // Updates panel
 						}});
 					});
+					if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 						queryFilter = [...queryFilterDefaults];
@@ -876,7 +879,7 @@ const menu = new _menu();
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
 			readmes['Harmonic Mix'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\harmonic_mixing.txt';
-			let subMenuName = menu.newMenu('Harmonic mix', menuName);
+			const subMenuName = menu.newMenu('Harmonic mix', menuName);
 			const selArgs = [
 				{title: 'Harmonic mix from playlist'	, args: {selItems: () => {return plman.GetPlaylistItems(plman.ActivePlaylist);}}, flags: playlistCountFlags},
 				{title: 'Harmonic mix from selection'	, args: {selItems: () => {return plman.GetPlaylistSelectedItems(plman.ActivePlaylist);}}, flags: multipleSelectedFlags},
@@ -900,37 +903,171 @@ const menu = new _menu();
 			});
 		}
 	}
-	{	// Sort by key
-		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_key.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
-			include(scriptPath);
-			readmes['Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
-			let subMenuName = menu.newMenu('Sort by key', menuName);
+	menu.newEntry({menuName, entryText: 'sep'});
+	{	// Find / New Playlist
+		menu.newEntry({menuName, entryText: 'Find or create playlist...', func: () => {
+			let input;
+			try {input = utils.InputBox(window.ID, 'Enter name:', window.Name, '', true);}
+			catch (e) {return;}
+			if (!input.length) {return;}
+			plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
+		}});
+	}
+	{	// Crop playlist length (for use with macros!!)
+		const subMenuName = menu.newMenu('Cut playlist length to...', menuName);
+		const selArgs = [
+			{title: '25 tracks', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, 25);}},
+			{title: '50 tracks', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, 50);}},
+			{title: '75 tracks', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, 75);}},
+			{title: '100 tracks', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, 100);}},
+			{title: 'sep'},
+			{title: '25 tracks from end', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, -25);}},
+			{title: '50 tracks from end', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, -50);}},
+			{title: '75 tracks from end', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, -75);}},
+			{title: '100 tracks from end', func: () => {removeNotSelectedTracks(plman.ActivePlaylist, -100);}},
+		];
+		menu.newEntry({menuName: subMenuName, entryText: 'Set playlist length to desired #:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		// Menus
+		selArgs.forEach( (selArg) => {
+			if (selArg.title === 'sep') {
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+			} else {
+				let entryText = selArg.title;
+				menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: playlistCountFlags});
+			}
+		});
+	}
+	menu.newEntry({menuName, entryText: 'sep'});
+	{	// Send Playlist to Playlist / Close playlist / Go to Playlist
+		if (!menu_properties.hasOwnProperty('playlistSplitSize')) {
+			menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
+			// Checks
+			menu_properties['playlistSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['playlistSplitSize'][1]);
+		}
+		// Menus
+		const subMenuNameSend = menu.newMenu('Send playlist\'s tracks to...', menuName);
+		menu.newEntry({menuName: subMenuNameSend, entryText: 'Sends all tracks from current playlist to:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuNameSend, entryText: 'sep'});
+		const subMenuNameGo = menu.newMenu('Go to playlist...', menuName);
+		menu.newEntry({menuName: subMenuNameGo, entryText: 'Switch to another playlist:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuNameGo, entryText: 'sep'});
+		const subMenuNameClose = menu.newMenu('Close playlist...', menuName);
+		menu.newEntry({menuName: subMenuNameClose, entryText: 'Close another playlist:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuNameClose, entryText: 'sep'});
+		// Buil submenus
+		const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+		menu.newCondEntry({entryText: 'Send/Go/Close to Playlists...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+			if (bProfile) {var profiler = new FbProfiler('Send/Go/Close to Playlists...');}
+			args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+			const playlistsNum = plman.PlaylistCount;
+			if (playlistsNum && plman.PlaylistItemCount(plman.ActivePlaylist)) {
+				// Split entries in sub-menus if there are too many playlists...
+				let ss = args.properties['playlistSplitSize'][1];
+				const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+				if (playlistsNum > splitBy) {
+					const subMenusCount = Math.ceil(playlistsNum / splitBy);
+					for (let i = 0; i < subMenusCount; i++) {
+						const bottomIdx =  i * splitBy;
+						const topIdx = (i + 1) * splitBy - 1;
+						// Prefix ID is required to avoid collisions with same sub menu names
+						// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+						// Send
+						const idxSend = '(Send all to) Playlists ' + bottomIdx + ' - ' + topIdx;
+						const subMenu_i_send = menu.newMenu(idxSend, subMenuNameSend);
+						// Go to
+						const idxGo = '(Go to) Playlists ' + bottomIdx + ' - ' + topIdx;
+						const subMenu_i_go = menu.newMenu(idxGo, subMenuNameGo);
+						// Close
+						const idxClose = '(Close) Playlists ' + bottomIdx + ' - ' + topIdx;
+						const subMenu_i_close = menu.newMenu(idxClose, subMenuNameClose);
+						for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
+							const playlist = {name: plman.GetPlaylistName(j), index : j};
+							menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+								plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(plman.ActivePlaylist));
+							}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+							menu.newEntry({menuName: subMenu_i_go, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+								plman.ActivePlaylist = playlist.index;
+							}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+							menu.newEntry({menuName: subMenu_i_close, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+								plman.RemovePlaylist(playlist.index);
+							}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+						}
+					}
+				} else { // Or just show all
+					for (let i = 0; i < playlistsNum; i++) {
+						const playlist = {name: plman.GetPlaylistName(i), index : i};
+						menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+							plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(plman.ActivePlaylist));
+						}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+					}
+				}
+			} else if (!playlistsNum) {
+				menu.newEntry({menuName: subMenuNameGo, entryText: 'No items.', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName: subMenuNameClose, entryText: 'No items.', func: null, flags: MF_GRAYED});
+			} else if (!plman.PlaylistItemCount(plman.ActivePlaylist)) {
+				menu.newEntry({menuName: subMenuNameSend, entryText: 'No items.', func: null, flags: MF_GRAYED});
+			}
+			if (bProfile) {profiler.Print();}
+		}});
+	}
+}
+
+// Selection manipulation...
+{
+	let menuName = menu.newMenu('Selection manipulation');
+	{	// Sort
+		const subMenuName = menu.newMenu('Sort...', menuName);
+		menu.newEntry({menuName: subMenuName, entryText: 'Sort selection:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		{	// Legacy Sort (for use with macros!!)
 			const selArgs = [
-				{title: 'Incremental key', 	args: {sortOrder: 1}},
-				{title: 'Decremental key',	args: {sortOrder: -1}},
+				{title: 'Randomize', func: () => {plman.SortByFormat(plman.ActivePlaylist, '', true);}},
+				{title: 'Reverse', func: () => {fb.RunMainMenuCommand('Edit/Selection/Sort/Reverse');}},
+				{title: 'sep'},
+				{title: 'Sort by Mood', func: () => {plman.SortByFormat(plman.ActivePlaylist, '%mood%', true);}},
+				{title: 'Sort by Date', func: () => {plman.SortByFormat(plman.ActivePlaylist, '%date%', true);}},
+				{title: 'Sort by BPM', func: () => {plman.SortByFormat(plman.ActivePlaylist, '%bpm%', true);}},
 			];
+			{	// Sort by key
+				const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_key.js';
+				if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+					include(scriptPath);
+					readmes['Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
+					[
+						{title: 'sep'},
+						{title: 'Incremental key (Camelot Wheel)', 	func: do_sort_by_key, args: {sortOrder: 1}},
+						{title: 'Decremental key (Camelot Wheel)',	func: do_sort_by_key, args: {sortOrder: -1}},
+					].forEach((val) => {selArgs.push(val);});
+				}
+			}
+			{	// Sort by DynGenre
+				const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_dyngenre.js';
+				if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+					include(scriptPath);
+					readmes['Sort by DynGenre'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_dyngenre.txt';
+					[
+						{title: 'sep'},
+						{title: 'Incremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: 1}},
+					].forEach((val) => {selArgs.push(val);});
+				}
+			}
 			// Menus
-			menu.newEntry({menuName: subMenuName, entryText: 'Using Camelot Wheel\'s notation:', func: null, flags: MF_GRAYED});
-			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			selArgs.forEach( (selArg) => {
 				if (selArg.title === 'sep') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				} else {
 					let entryText = selArg.title;
-					menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
-						do_sort_by_key();
-					}, flags: multipleSelectedFlags});
+					menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: multipleSelectedFlags});
 				}
 			});
 		}
 	}
-	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Scatter
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\scatter_by_tags.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 			include(scriptPath);
-			let subMenuName = menu.newMenu('Scatter by tags', menuName);
+			const subMenuName = menu.newMenu('Scatter by tags', menuName);
 			const selArgs = [
 				{title: 'Scatter instrumental tracks'	, 	args: {tagName: 'genre,style', tagValue: 'Instrumental,Jazz,Instrumental Rock'}},
 				{title: 'Scatter acoustic tracks'		, 	args: {tagName: 'genre,style,mood', tagValue: 'Acoustic'}},
@@ -956,6 +1093,402 @@ const menu = new _menu();
 		}
 	}
 	menu.newEntry({menuName, entryText: 'sep'});
+	{	// Remove and find in playlists
+		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\find_remove_from_playlists.js';
+		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			include(scriptPath);
+			readmes['Find in and Remove from Playlists'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\find_remove_from_playlists.txt';
+			// Add properties
+			menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in...\' show current playlist?', true];
+			menu_properties['bRemoveShowLocked'] = ['\'Tools\\Remove track(s) from...\' show autoplaylists?', true];
+			menu_properties['findRemoveSplitSize'] = ['\'Tools\\Find track(s) in...\' list submenu size', 10];
+			menu_properties['maxSelCount'] = ['\'Tools\\Find  & Remove track(s)...\' max. track selection', 25];
+			// Checks
+			menu_properties['bFindShowCurrent'].push({func: isBoolean}, menu_properties['bFindShowCurrent'][1]);
+			menu_properties['bRemoveShowLocked'].push({func: isBoolean}, menu_properties['bRemoveShowLocked'][1]);
+			menu_properties['findRemoveSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['findRemoveSplitSize'][1]);
+			menu_properties['maxSelCount'].push({greater: 0, func: Number.isSafeInteger}, menu_properties['maxSelCount'][1]);
+			// Menus
+			{	// Find now playing in
+				const subMenuName = menu.newMenu('Find now playing track in...', menuName);
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				menu.newCondEntry({entryText: 'Find now playing track in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					if (bProfile) {var profiler = new FbProfiler('Find now playing in');}
+					menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with now playing track:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					const nowPlay = fb.GetNowPlaying();
+					if (!nowPlay) {menu.newEntry({menuName: subMenuName, entryText: 'Playback is stopped (no playing track)', func: null, flags: MF_GRAYED}); return;}
+					const sel = new FbMetadbHandleList(nowPlay);
+					var inPlaylist = findInPlaylists(sel);
+					const bShowCurrent = args.properties['bFindShowCurrent'][1];
+					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
+					const playlistsNum = inPlaylist.length;
+					if (playlistsNum) {
+						// Split entries in sub-menus if there are too many playlists...
+						let ss = args.properties['findRemoveSplitSize'][1];
+						const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+						if (playlistsNum > splitBy) {
+							const subMenusCount = Math.ceil(playlistsNum / splitBy);
+							for (let i = 0; i < subMenusCount; i++) {
+								const bottomIdx =  i * splitBy;
+								const topIdx = (i + 1) * splitBy - 1;
+								const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
+								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
+								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+								const subMenu_i = menu.newMenu(idx, subMenuName);
+								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
+									const playlist = inPlaylist[j];
+									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+								}
+							}
+						} else { // Or just show all
+							for (const playlist of inPlaylist) {
+								menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+							}
+						}
+					} else {
+						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
+					}
+					if (bProfile) {profiler.Print();}
+				}});
+			}
+			{	// Find in Playlists
+				const subMenuName = menu.newMenu('Find track(s) in...', menuName);
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				menu.newCondEntry({entryText: 'Find track(s) in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					if (bProfile) {var profiler = new FbProfiler('Find in Playlists');}
+					menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with same track(s):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+					const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
+					if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
+					var inPlaylist = findInPlaylists(sel);
+					const bShowCurrent = args.properties['bFindShowCurrent'][1];
+					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
+					const playlistsNum = inPlaylist.length;
+					if (playlistsNum) {
+						// Split entries in sub-menus if there are too many playlists...
+						let ss = args.properties['findRemoveSplitSize'][1];
+						const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+						if (playlistsNum > splitBy) {
+							const subMenusCount = Math.ceil(playlistsNum / splitBy);
+							for (let i = 0; i < subMenusCount; i++) {
+								const bottomIdx =  i * splitBy;
+								const topIdx = (i + 1) * splitBy - 1;
+								const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
+								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
+								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+								const subMenu_i = menu.newMenu(idx, subMenuName);
+								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
+									const playlist = inPlaylist[j];
+									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+								}
+							}
+						} else { // Or just show all
+							for (const playlist of inPlaylist) {
+								menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+							}
+						}
+					} else {
+						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
+					}
+					if (bProfile) {profiler.Print();}
+				}});
+			}
+			{	// Remove from Playlists
+				const subMenuName = menu.newMenu('Remove track(s) from...', menuName);
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				menu.newCondEntry({entryText: 'Remove track(s) from... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					if (bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
+					menu.newEntry({menuName: subMenuName, entryText: 'Remove track(s) from selected playlist:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+					const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
+					if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
+					var inPlaylist = findInPlaylists(sel);
+					const bShowLocked = args.properties['bRemoveShowLocked'][1];
+					if (!bShowLocked) {inPlaylist = inPlaylist.filter((playlist) => {return !playlist.bLocked})}
+					const playlistsNum = inPlaylist.length ;
+					if (playlistsNum) {
+						// Split entries in sub-menus if there are too many playlists...
+						let ss = args.properties['findRemoveSplitSize'][1];
+						const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+						if (playlistsNum > splitBy) {
+							const subMenusCount = Math.ceil(playlistsNum / splitBy);
+							for (let i = 0; i < subMenusCount; i++) {
+								const bottomIdx =  i * splitBy;
+								const topIdx = (i + 1) * splitBy - 1;
+								const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
+								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
+								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+								const subMenu_i = menu.newMenu(idx, subMenuName);
+								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
+									const playlist = inPlaylist[j];
+									const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
+									menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+								}
+							}
+						} else { // Or just show all
+							for (const playlist of inPlaylist) {
+								const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
+								menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+							}
+						}
+					} else {
+						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
+					}
+					if (bProfile) {profiler.Print();}
+				}});
+			}
+			{	// Configure properties
+				const subMenuName = menu.newMenu('Tools\\Find in and Remove from...', configMenu);
+				{	// bFindShowCurrent (Find in Playlists)
+					const subMenuSecondName = menu.newMenu('Show current playlist?', subMenuName);
+					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+					const options = ['Yes (greyed entry)', 'No (omit it)'];	
+					menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+					menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties['bFindShowCurrent'][1] = true;
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties['bFindShowCurrent'][1] = false;
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						return (args.properties['bFindShowCurrent'][1] ? 0 : 1);
+					});
+				}
+				{	// bRemoveShowLocked (Remove from Playlists)
+					const subMenuSecondName = menu.newMenu('Show locked playlist (autoplaylists, etc.)?', subMenuName);
+					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+					const options = ['Yes (locked, greyed entries)', 'No (omit them)'];	
+					menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+					menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties['bRemoveShowLocked'][1] = true;
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties['bRemoveShowLocked'][1] = false;
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						return (args.properties['bRemoveShowLocked'][1] ? 0 : 1);
+					});
+				}
+				{	// findRemoveSplitSize ( Find in / Remove from Playlists)
+					const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
+					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+					const options = [5, 10, 20, 30, 'Other...'];
+					const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
+					options.forEach( (val, index) => { // Creates menu entries for all options
+						if (index === 0) {
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of entries:', func: null, flags: MF_GRAYED});
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+						}
+						const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
+						optionsIdx[index] = idx; // For later use
+						if (index !== options.length - 1) { // Predefined sizes
+							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties['findRemoveSplitSize'][1] = val;
+								overwriteProperties(args.properties); // Updates panel
+							}});
+						} else { // Last one is user configurable
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', window.Name, args.properties['findRemoveSplitSize'][1]));
+								if (args.properties['findRemoveSplitSize'][1] === input) {return;}
+								if (!Number.isSafeInteger(input)) {return;}
+								args.properties['findRemoveSplitSize'][1] = input;
+								overwriteProperties(args.properties); // Updates panel
+							}});
+						}
+					});
+					menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+						const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
+						return (size !== -1 ? size : options.length - 1);
+					});
+				}
+ 				{	// maxSelCount ( Find in / Remove from Playlists)
+					const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
+					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+					const options = [5, 10, 20, 25, 'Other...'];
+					const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
+					options.forEach( (val, index) => { // Creates menu entries for all options
+						if (index === 0) {
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of tracks:', func: null, flags: MF_GRAYED});
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+						}
+						const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
+						optionsIdx[index] = idx; // For later use
+						if (index !== options.length - 1) { // Predefined sizes
+							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties['maxSelCount'][1] = val;
+								overwriteProperties(args.properties); // Updates panel
+							}});
+						} else { // Last one is user configurable
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', window.Name, args.properties['maxSelCount'][1]));
+								if (args.properties['maxSelCount'][1] === input) {return;}
+								if (!Number.isSafeInteger(input)) {return;}
+								args.properties['maxSelCount'][1] = input;
+								overwriteProperties(args.properties); // Updates panel
+							}});
+						}
+					});
+					menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+						const size = options.indexOf(args.properties['maxSelCount'][1]);
+						return (size !== -1 ? size : options.length - 1);
+					});
+				}
+				menu.newEntry({menuName: configMenu, entryText: 'sep'});
+			}
+		}
+	}
+	{	// Send Selection to Playlist
+		// Add properties
+		if (!menu_properties.hasOwnProperty('playlistSplitSize')) {
+			menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
+			// Checks
+			menu_properties['playlistSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['playlistSplitSize'][1]);
+		}
+		// Menus
+		const subMenuNameSend = menu.newMenu('Send selection to...', menuName);
+		menu.newEntry({menuName: subMenuNameSend, entryText: 'Sends all tracks from current playlist to:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuNameSend, entryText: 'sep'});
+		// Buil submenus
+		const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+		menu.newCondEntry({entryText: 'Send selection to...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+			if (bProfile) {var profiler = new FbProfiler('Send selection to...');}
+			args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+			const playlistsNum = plman.PlaylistCount;
+			const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+			if (playlistsNum && handleList.Count) {
+				// Split entries in sub-menus if there are too many playlists...
+				let ss = args.properties['playlistSplitSize'][1];
+				const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+				if (playlistsNum > splitBy) {
+					const subMenusCount = Math.ceil(playlistsNum / splitBy);
+					for (let i = 0; i < subMenusCount; i++) {
+						const bottomIdx =  i * splitBy;
+						const topIdx = (i + 1) * splitBy - 1;
+						// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
+						// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+						// Send
+						const idxSend = '(Send sel. to) Playlists ' + bottomIdx + ' - ' + topIdx;
+						const subMenu_i_send = menu.newMenu(idxSend, subMenuNameSend);
+						for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
+							const playlist = {name: plman.GetPlaylistName(j), index : j};
+							menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+								plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
+							}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+						}
+					}
+				} else { // Or just show all
+					for (let i = 0; i < playlistsNum; i++) {
+						const playlist = {name: plman.GetPlaylistName(i), index : i};
+						menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+							plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
+						}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+					}
+				}
+			} else {
+				menu.newEntry({menuName: subMenuNameSend, entryText: 'No items.', func: null, flags: MF_GRAYED});
+			}
+			if (bProfile) {profiler.Print();}
+		}});
+	}
+	menu.newEntry({menuName, entryText: 'sep'});
+	{	// Select (for use with macros!!)
+		const subMenuName = menu.newMenu('Select...', menuName);
+		menu.newEntry({menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		menu.newEntry({menuName: subMenuName, entryText: 'Select All', func: () => {
+			const start = 0;
+			const end = plman.PlaylistItemCount(plman.ActivePlaylist);
+			plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			plman.SetPlaylistSelection(plman.ActivePlaylist, range(start, end, 1), true);
+		}, flags: playlistCountFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'Clear selection', func: () => {plman.ClearPlaylistSelection(plman.ActivePlaylist);}, flags: selectedFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		menu.newEntry({menuName: subMenuName, entryText: 'Select first track', func: () => {
+			plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			plman.SetPlaylistSelection(plman.ActivePlaylist, [0], true);
+		}, flags: playlistCountFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'Select last track', func: () => {
+			plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			plman.SetPlaylistSelection(plman.ActivePlaylist, [plman.PlaylistItemCount(plman.ActivePlaylist) - 1], true);
+		}, flags: playlistCountFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		menu.newEntry({menuName: subMenuName, entryText: 'Select random track', func: () => {
+			const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).sort(() => Math.random() - 0.5); // Get indexes randomly sorted
+			plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			plman.SetPlaylistSelection(plman.ActivePlaylist, [numbers[0]], true); // Take first one
+		}, flags: playlistCountFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'Select random # tracks', func: () => {
+			const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).sort(() => Math.random() - 0.5); // Get indexes randomly sorted
+			const selLength = numbers[0] ? numbers[0] : numbers[1]; // There is only a single zero...
+			plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
+		}, flags: playlistCountFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		menu.newEntry({menuName: subMenuName, entryText: 'Delete selected tracks', func: () => {plman.RemovePlaylistSelection(plman.ActivePlaylist);}, flags: selectedFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'Delete Non selected tracks', func: () => {plman.RemovePlaylistSelection(plman.ActivePlaylist, true);}, flags: playlistCountFlags});
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		const subMenuHalf = menu.newMenu('By halves', subMenuName);
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		const subMenuThird = menu.newMenu('By thirds', subMenuName);
+		menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+		const subMenuQuarter = menu.newMenu('By quarters', subMenuName);
+		const selArgs = [
+			{title: 'Select first Half',		menu: subMenuHalf,		args: {start: 0, end: 1/2}},
+			{title: 'Select second Half',		menu: subMenuHalf,		args: {start: 1/2, end: 1}},
+			{title: 'Select first Quarter',		menu: subMenuQuarter, 	args: {start: 0, end: 1/4}},
+			{title: 'Select first Third',		menu: subMenuThird,		args: {start: 0, end: 1/3}},
+			{title: 'Select second Third',		menu: subMenuThird, 	args: {start: 1/3, end: 2/3}},
+			{title: 'Select third Third',		menu: subMenuThird,  	args: {start: 2/3, end: 1}},
+			{title: 'Select second Quarter',	menu: subMenuQuarter,	args: {start: 1/4, end: 1/2}},
+			{title: 'Select third Quarter',		menu: subMenuQuarter,	args: {start: 1/2, end: 3/4}},
+			{title: 'Select fourth Quarter',	menu: subMenuQuarter,	args: {start: 3/4, end: 1}}
+		];
+		selArgs.forEach( (selArg) => {
+			if (selArg.title === 'sep') {
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+			} else {
+				let entryText = selArg.title;
+				menu.newEntry({menuName: selArg.menu, entryText, func: (args = selArg.args) => {
+					const count = plman.PlaylistItemCount(plman.ActivePlaylist);
+					const start = count * args.start;
+					const end = Math.floor(count * args.end);
+					plman.ClearPlaylistSelection(plman.ActivePlaylist);
+					plman.SetPlaylistSelection(plman.ActivePlaylist, range(start, end, 1), true);
+				}, flags: playlistCountFlags});
+			}
+		});
+	}
+}
+
+// Other tools
+{
+	let menuName = menu.newMenu('Other tools');
 	{	// Check tags
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\check_library_tags.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
@@ -986,7 +1519,7 @@ const menu = new _menu();
 				{tag: 'composer,artist,albumartist'	, dscrpt: 'Composer + Artist'			, bUseDic: false},
 			];
 			// Menus
-			menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection)', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
@@ -1010,7 +1543,7 @@ const menu = new _menu();
 				});
 			}
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-			menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection)', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
@@ -1089,277 +1622,6 @@ const menu = new _menu();
 		}
 	}
 	menu.newEntry({menuName, entryText: 'sep'});
-	{	// Remove and find in playlists
-		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\find_remove_from_playlists.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
-			include(scriptPath);
-			readmes['Find in and Remove from Playlists'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\find_remove_from_playlists.txt';
-			// Add properties
-			menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in...\' show current playlist?', true];
-			menu_properties['bRemoveShowLocked'] = ['\'Tools\\Remove track(s) from...\' show autoplaylists?', true];
-			menu_properties['findRemoveSplitSize'] = ['\'Tools\\Find track(s) in...\' list submenu size', 10];
-			menu_properties['maxSelCount'] = ['\'Tools\\Find  & Remove track(s)...\' max. track selection', 25];
-			// Checks
-			menu_properties['bFindShowCurrent'].push({func: isBoolean}, menu_properties['bFindShowCurrent'][1]);
-			menu_properties['bRemoveShowLocked'].push({func: isBoolean}, menu_properties['bRemoveShowLocked'][1]);
-			menu_properties['findRemoveSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['findRemoveSplitSize'][1]);
-			menu_properties['maxSelCount'].push({greater: 0, func: Number.isSafeInteger}, menu_properties['maxSelCount'][1]);
-			// Menus
-			{	// Find now playing in
-				const subMenuName = menu.newMenu('Find now playing track in...', menuName);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'Find now playing track in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					if (bProfile) {var profiler = new FbProfiler('Find now playing in');}
-					menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with now playing track', func: null, flags: MF_GRAYED});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const nowPlay = fb.GetNowPlaying();
-					if (!nowPlay) {menu.newEntry({menuName: subMenuName, entryText: 'Playback is stopped (no playing track)', func: null, flags: MF_GRAYED}); return;}
-					const sel = new FbMetadbHandleList(nowPlay);
-					var inPlaylist = findInPlaylists(sel);
-					const bShowCurrent = args.properties['bFindShowCurrent'][1];
-					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
-					const playlistsNum = inPlaylist.length;
-					if (playlistsNum) {
-						// Split entries in sub-menus if there are too many playlists...
-						let ss = args.properties['findRemoveSplitSize'][1];
-						const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
-						if (playlistsNum > splitBy) {
-							const subMenusCount = Math.ceil(playlistsNum / splitBy);
-							for (let i = 0; i < subMenusCount; i++) {
-								const bottomIdx =  i * splitBy;
-								const topIdx = (i + 1) * splitBy - 1;
-								const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
-								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
-								const subMenu_i = menu.newMenu(idx, subMenuName);
-								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
-									const playlist = inPlaylist[j];
-									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
-								}
-							}
-						} else { // Or just show all
-							for (const playlist of inPlaylist) {
-								menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
-							}
-						}
-					} else {
-						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
-					}
-					if (bProfile) {profiler.Print();}
-				}});
-			}
-			{	// Find in Playlists
-				const subMenuName = menu.newMenu('Find track(s) in...', menuName);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'Find track(s) in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					if (bProfile) {var profiler = new FbProfiler('Find in Playlists');}
-					menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with same track(s)', func: null, flags: MF_GRAYED});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-					const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
-					if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
-					var inPlaylist = findInPlaylists(sel);
-					const bShowCurrent = args.properties['bFindShowCurrent'][1];
-					if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
-					const playlistsNum = inPlaylist.length;
-					if (playlistsNum) {
-						// Split entries in sub-menus if there are too many playlists...
-						let ss = args.properties['findRemoveSplitSize'][1];
-						const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
-						if (playlistsNum > splitBy) {
-							const subMenusCount = Math.ceil(playlistsNum / splitBy);
-							for (let i = 0; i < subMenusCount; i++) {
-								const bottomIdx =  i * splitBy;
-								const topIdx = (i + 1) * splitBy - 1;
-								const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
-								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
-								const subMenu_i = menu.newMenu(idx, subMenuName);
-								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
-									const playlist = inPlaylist[j];
-									menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
-								}
-							}
-						} else { // Or just show all
-							for (const playlist of inPlaylist) {
-								menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
-							}
-						}
-					} else {
-						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
-					}
-					if (bProfile) {profiler.Print();}
-				}});
-			}
-			{	// Remove from Playlists
-				const subMenuName = menu.newMenu('Remove track(s) from...', menuName);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'Remove track(s) from... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					if (bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
-					menu.newEntry({menuName: subMenuName, entryText: 'Remove track(s) from selected playlist', func: null, flags: MF_GRAYED});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-					const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
-					if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
-					var inPlaylist = findInPlaylists(sel);
-					const bShowLocked = args.properties['bRemoveShowLocked'][1];
-					if (!bShowLocked) {inPlaylist = inPlaylist.filter((playlist) => {return !playlist.bLocked})}
-					const playlistsNum = inPlaylist.length ;
-					if (playlistsNum) {
-						// Split entries in sub-menus if there are too many playlists...
-						let ss = args.properties['findRemoveSplitSize'][1];
-						const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
-						if (playlistsNum > splitBy) {
-							const subMenusCount = Math.ceil(playlistsNum / splitBy);
-							for (let i = 0; i < subMenusCount; i++) {
-								const bottomIdx =  i * splitBy;
-								const topIdx = (i + 1) * splitBy - 1;
-								const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
-								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
-								const subMenu_i = menu.newMenu(idx, subMenuName);
-								for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
-									const playlist = inPlaylist[j];
-									const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
-									menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
-								}
-							}
-						} else { // Or just show all
-							for (const playlist of inPlaylist) {
-								const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
-								menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
-							}
-						}
-					} else {
-						menu.newEntry({menuName: subMenuName, entryText: 'Not found', func: null, flags: MF_GRAYED});
-					}
-					if (bProfile) {profiler.Print();}
-				}});
-			}
-			{	// Configure properties
-				const subMenuName = menu.newMenu('Tools\\Find in and Remove from...', configMenu);
-				{	// bFindShowCurrent (Find in Playlists)
-					const subMenuSecondName = menu.newMenu('Show current playlist?', subMenuName);
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-					const options = ['Yes (greyed entry)', 'No (omit it)'];	
-					menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED});
-					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['bFindShowCurrent'][1] = true;
-						overwriteProperties(args.properties); // Updates panel
-					}});
-					menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['bFindShowCurrent'][1] = false;
-						overwriteProperties(args.properties); // Updates panel
-					}});
-					menu.checkMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
-						return (args.properties['bFindShowCurrent'][1] ? 0 : 1);
-					});
-				}
-				{	// bRemoveShowLocked (Remove from Playlists)
-					const subMenuSecondName = menu.newMenu('Show locked playlist (autoplaylists, etc.)?', subMenuName);
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-					const options = ['Yes (locked, greyed entries)', 'No (omit them)'];	
-					menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED});
-					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['bRemoveShowLocked'][1] = true;
-						overwriteProperties(args.properties); // Updates panel
-					}});
-					menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['bRemoveShowLocked'][1] = false;
-						overwriteProperties(args.properties); // Updates panel
-					}});
-					menu.checkMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
-						return (args.properties['bRemoveShowLocked'][1] ? 0 : 1);
-					});
-				}
-				{	// findRemoveSplitSize ( Find in / Remove from Playlists)
-					const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-					const options = [5, 10, 20, 30, 'Other...'];
-					const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
-					options.forEach( (val, index) => { // Creates menu entries for all options
-						if (index === 0) {
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of entries:', func: null, flags: MF_GRAYED});
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-						}
-						const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
-						optionsIdx[index] = idx; // For later use
-						if (index !== options.length - 1) { // Predefined sizes
-							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-								args.properties['findRemoveSplitSize'][1] = val;
-								overwriteProperties(args.properties); // Updates panel
-							}});
-						} else { // Last one is user configurable
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-								const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', window.Name, args.properties['findRemoveSplitSize'][1]));
-								if (args.properties['findRemoveSplitSize'][1] === input) {return;}
-								if (!Number.isSafeInteger(input)) {return;}
-								args.properties['findRemoveSplitSize'][1] = input;
-								overwriteProperties(args.properties); // Updates panel
-							}});
-						}
-					});
-					menu.checkMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
-						const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
-						return (size !== -1 ? size : options.length - 1);
-					});
-				}
- 				{	// maxSelCount ( Find in / Remove from Playlists)
-					const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-					const options = [5, 10, 20, 25, 'Other...'];
-					const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
-					options.forEach( (val, index) => { // Creates menu entries for all options
-						if (index === 0) {
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of tracks:', func: null, flags: MF_GRAYED});
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-						}
-						const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
-						optionsIdx[index] = idx; // For later use
-						if (index !== options.length - 1) { // Predefined sizes
-							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-								args.properties['maxSelCount'][1] = val;
-								overwriteProperties(args.properties); // Updates panel
-							}});
-						} else { // Last one is user configurable
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-							menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-								const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', window.Name, args.properties['maxSelCount'][1]));
-								if (args.properties['maxSelCount'][1] === input) {return;}
-								if (!Number.isSafeInteger(input)) {return;}
-								args.properties['maxSelCount'][1] = input;
-								overwriteProperties(args.properties); // Updates panel
-							}});
-						}
-					});
-					menu.checkMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
-						const size = options.indexOf(args.properties['maxSelCount'][1]);
-						return (size !== -1 ? size : options.length - 1);
-					});
-				}
-				menu.newEntry({menuName: configMenu, entryText: 'sep'});
-			}
-		}
-	}
-	menu.newEntry({menuName, entryText: 'sep'});
 	{	// Playlist revive
 		const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\playlist_revive.js';
 		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
@@ -1370,7 +1632,7 @@ const menu = new _menu();
 				// Create new properties with previous args
 				menu_properties['simThreshold'] = ['\'Tools\\Playlist Revive\' similarity', 0.50];
 				// Checks
-				menu_properties['maxSelCount'].push({range: [[0,1]], func: !Number.isNaN}, menu_properties['maxSelCount'][1]);
+				menu_properties['simThreshold'].push({range: [[0,1]], func: !Number.isNaN}, menu_properties['simThreshold'][1]);
 				// Merge
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
@@ -1378,7 +1640,7 @@ const menu = new _menu();
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					return args.properties['simThreshold'][1];
 				};
-				menu.newEntry({menuName: subMenuName, entryText: 'Replaces dead items with ones in library', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName: subMenuName, entryText: 'Replaces dead items with ones in library:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Find dead items in all playlists', func: findDeadItems});
 				menu.newEntry({menuName: subMenuName, entryText: 'Replace dead items in all playlists', func: playlistReviveAll});
@@ -1419,8 +1681,94 @@ const menu = new _menu();
 			}
 		}
 	}
+}
+
+// Macros
+{
+	let menuName = menu.newMenu('Macros');
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\playlist_tools_menu_macros.js';
+	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+		include(scriptPath);
+		readmes['Macros'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu_macros.txt';
+		// Create new properties
+		const macrosDefaults = [
+			{name: 'Test', entry: [
+				'Most played Tracks\\Most played from 2021',
+				'Most played Tracks\\Most played from (all years)',
+				'Top rated Tracks from...\\Top rated from 2021',
+				'Select...\\Select first track',
+				'Search same by tags...\\By Moods (=6)',
+				'Select...\\Select last track',
+				'Dynamic Queries...\\Same title (any artist)',
+				'Select...\\Select random track',
+				'Special Playlists...\\Influences from any date'
+			]}
+		]; //{name, entry: []}
+		menu_properties['macros'] = ['Saved macros', JSON.stringify(macrosDefaults)];
+		const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+		// Menus
+		menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', func: null, flags: MF_GRAYED});
+		menu.newEntry({menuName, entryText: 'sep'});
+		menu.newCondEntry({entryText: 'Macros', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+			args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+			const propMacros = JSON.parse(args.properties['macros'][1]);
+			if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
+			// List
+			propMacros.forEach((macro) => {
+				if (macro.name === 'sep') { // Create separators
+					menu.newEntry({menuName, entryText: 'sep'});
+				} else {
+					menu.newEntry({menuName, entryText: macro.name, func: () => {
+						macro.entry.forEach( (entry, idx, arr) => {
+							menu.btn_up(void(0), void(0), void(0), entry); // Don't clear menu on last call
+						});
+					}});
+				}
+			});
+			if (!propMacros.length) {menu.newEntry({menuName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
+			menu.newEntry({menuName, entryText: 'sep'});
+			// Save
+			menu.newEntry({menuName, entryText: 'Start recording a macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				const macro = initMacro(menu);
+				if (macro.name === 'sep') { // Just add a separator
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					saveMacro();
+					args.properties['macros'][1] = JSON.stringify(macros);
+					overwriteProperties(args.properties); // Updates panel
+				}
+			}});
+			menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				saveMacro();
+				args.properties['macros'][1] = JSON.stringify(macros);
+				overwriteProperties(args.properties); // Updates panel
+			}});
+			// Delete
+			{
+				const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
+				propMacros.forEach( (macro, index) => {
+					const text = (macro.name === 'sep' ? '------(separator)------' : (macro.name.length > 40 ? macro.name.substring(0,40) + ' ...' : macro.name));
+					menu.newEntry({menuName: subMenuSecondName, entryText: text, func: () => {
+						propMacros.splice(index, 1);
+						args.properties['macros'][1] = JSON.stringify(propMacros);
+						overwriteProperties(args.properties); // Updates panel
+						macros = propMacros; // Discards any non saved macro
+					}});
+				});
+				if (!macros.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
+				menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+				menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
+					propMacros = [...macrosDefaults];
+					args.properties['macros'][1] = JSON.stringify(propMacros);
+					overwriteProperties(args.properties); // Updates panel
+					macros = []; // Discards any non saved macro
+				}});
+			}
+		}});
+	}
 	menu.newEntry({entryText: 'sep'});
 }
+
 // Configuration...
 {
 	// Create it if it was not already created. Contains entries from multiple scripts
@@ -1493,7 +1841,7 @@ const menu = new _menu();
 						}});
 						iCount++;
 					}
-				}
+				} else {console.log('Readme not found: ' + value);}
 			});
 		} 
 		if (!iCount) {menu.newEntry({menuName: subMenuName, entryText: '- no files - ', func: null, flags: MF_GRAYED});}
@@ -1534,11 +1882,14 @@ function updateMenuProperties(propObject) {
 	if (!panelPropObject['firstPopup'][1]) {
 		panelPropObject['firstPopup'][1] = true;
 		overwriteProperties(panelPropObject); // Updates panel
-		const readmePath = readmes['Playlist Tools Menu'];
-		if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
-			const readme = utils.ReadTextFile(readmePath, 65001);
-			if (readme.length) {fb.ShowPopupMessage(readme, 'Playlist Tools Menu');}
-		}
+		const readmeKeys= ['Playlist Tools Menu', 'Macros']; // Must read files on first execution
+		readmeKeys.forEach( (key) => {
+			const readmePath = readmes[key];
+			if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
+				const readme = utils.ReadTextFile(readmePath, 65001);
+				if (readme.length) {fb.ShowPopupMessage(readme, key);}
+			}
+		});
 	}
 	// And update
 	Object.entries(propObject).forEach(([key, value]) => {
@@ -1553,6 +1904,7 @@ function updateMenuProperties(propObject) {
 function focusFlags() {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}
 function playlistCountFlags() {return (plman.PlaylistItemCount(plman.ActivePlaylist) ? MF_STRING : MF_GRAYED);}
 function multipleSelectedFlags() {return (plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count >= 3 ? MF_STRING : MF_GRAYED);}
+function selectedFlags() {return (plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count ? MF_STRING : MF_GRAYED);}
 
 /* 
 	Tooltip

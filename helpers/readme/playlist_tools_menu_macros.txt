@@ -1,0 +1,21 @@
+Macros are pre-recorded multiple calls to different menu entries.
+It works in conjunction with the menu framework (Menu-Framework-SMP),
+and used in Playlist Tools for saving sets of tools.
+
+Usage:
+	- Start recording a macro (and give it a name).
+	- (Playlist Tools tip: Using sep as name, will add a separator on the list)
+	- Use any menu entry as desired.
+	- ...
+	- Stop recording and save.
+	
+Limitations:
+	- Saves clicked entries by name. i.e. They must be unique.
+	- Entries which use invisible IDs to not duplicate submenus can not be used. Currently:
+		- Selection \ Find now playing track in... (only when sublists are created)
+		- Selection \ Find track(s) in... (only when sublists are created)
+		- Selection \ Remove track(s) from... (only when sublists are created)
+		- (ALL) \ Remove entry from list... (no need to delete menu entries with macros anyway!)
+		- Configuration \ ... (no need to set those with macros anyway!)
+	- Can not save user input on popups. Using entries which make use of those
+	  on macros will require user input every time they are called later.

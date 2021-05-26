@@ -1,0 +1,4 @@
+﻿Sorts tracks by genre/style considering a continuous line from Industrial
+music to Downtempo music. Thus similar styles/genres are grouped together.
+
+Uses notation described at 'dyngenre_map' on dyngenre_map_xxx.js.
