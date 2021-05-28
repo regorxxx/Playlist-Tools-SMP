@@ -408,13 +408,13 @@ console.log(forcedQueryMenusEnabled)
 					{name: 'Recently played'	, query: '%last_played% DURING LAST 1 WEEK'		, sort: {tfo: '%last_played%', direction: -1}},
 					{name: 'Recently added'		, query: '%added% DURING LAST 1 WEEK'			, sort: {tfo: '%added%', direction: -1}},
 					{name: 'sep'},
-					{name: 'Rock playlist'		, query: '(GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll) AND (%rating% GREATER 2)', sort: {tfo: '$rand()%', direction: 1}},
-					{name: 'Psychedelic playlist', query: '(GENRE IS Psychedelic Rock OR GENRE IS Psychedelic OR STYLE IS Neo-Psychedelia) AND (%rating% GREATER 2)', sort: {tfo: '$rand()%', direction: 1}},
-					{name: 'Folk \\ Country playlist', query: '(GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Country) AND (%rating% GREATER 2)', sort: {tfo: '$rand()%', direction: 1}},
-					{name: 'Blues playlist'		, query: '(GENRE IS Blues', sort: {tfo: '$rand()%', direction: 1}},
-					{name: 'Jazz playlist'		, query: '(GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()%', direction: 1}},
-					{name: 'Soul \\ RnB playlist', query: '(GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()%', direction: 1}},
-					{name: 'Hip-Hop playlist', query: '(GENRE IS Hip-Hop', sort: {tfo: '$rand()%', direction: 1}}
+					{name: 'Rock playlist'		, query: 'GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Psychedelic playlist', query: 'GENRE IS Psychedelic Rock OR GENRE IS Psychedelic OR STYLE IS Neo-Psychedelia', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Folk \\ Country playlist', query: 'GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Country', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Blues playlist'		, query: 'GENRE IS Blues', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Jazz playlist'		, query: 'GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Soul \\ RnB playlist', query: 'GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Hip-Hop playlist', query: 'GENRE IS Hip-Hop', sort: {tfo: '$rand()', direction: 1}}
 				];
 				let selArg = {name: 'Custom', query: '%rating% EQUAL 5'};
 				const queryFilterDefaults = [...queryFilter];
