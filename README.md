@@ -29,17 +29,17 @@ The sky is the limit once you use the current scripts to create your own buttons
 	.\xxx*scripts\dynamic_query.js
 * Dynamic Queries: queries with placeholders evaluated with selection.  
 	.\xxx*scripts\dynamic_query.js
-* Similar by...: aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP)  
+* Similar by...: spotify-like playlist generation. (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
 	.\xxx*scripts\search_bydistance.js
 * Special Playlists...: contains functionality from the other scripts  
 	.\xxx*scripts\search_bydistance.js  
 	.\xxx*scripts\search_same_by.js  
 * Playlist manipulation: multiple tools for playlist edits.  
-	* Remove duplicates: using configurable tags
+	* Remove duplicates: using configurable tags.  
 		.\xxx*scripts\remove_duplicates.js
 	* Query filtering: filters current playlist with a query.  
 		.\xxx*scripts\filter_by_query.js
-	* Harmonic mix: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)  
+	* Harmonic mix: Dj-like playlist generation by key. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
 	* Find or create playlist
 	* Cut playlist length (for macros) 
@@ -47,7 +47,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* Go to playlist (for macros) 
 	* Close playlist (for macros) 
 * Selection manipulation 
-	* Harmonic mix: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)  
+	* Harmonic mix: Dj-like selection ordering by key. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx*scripts\harmonic_mixing.js
 	* Sort  
 		* Randomize  
@@ -55,9 +55,9 @@ The sky is the limit once you use the current scripts to create your own buttons
 		* By Mood  
 		* By Date  
 		* By BPM  
-		* By key: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)  
+		* By key: translates keys (Fm) into something usable and sorts them. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 			.\xxx*scripts\sort_by_key.js
-		* By Dyngenre: aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP)  
+		* By Dyngenre: by genre/style, where similar ones are grouped together. (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
 			.\xxx*scripts\search_bydistance.js
 	* Scatter by tags: reorders selection to avoid consecutive tracks with the same configurable tag.  
 		.\xxx*scripts\scatter_by_tags.js
