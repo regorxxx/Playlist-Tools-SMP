@@ -5,11 +5,13 @@
 	Filters library using query evaluated with selection
 */	
 
-function do_dynamic_query({query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusItem(true), playlistName = 'Search...', bSendToPls = true} = {}) {
+function do_dynamic_query({query = 'ARTIST IS #ARTIST#', sort = {tfo: null, direction: 1}, handle = fb.GetFocusItem(true), playlistName = 'Search...', bSendToPls = true} = {}) {
 	if (!query || !query.length) {return null;}
-	if (!handle) {return null;}
 	
-	if (query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, handle);}
+	if (query.indexOf('#') !== -1) {
+		if (!handle) {return null;} // May pass a standard query which doesn't need a handle to evaluate
+		query = queryReplaceWithCurrent(query, handle);
+	}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'do_dynamic_query'); return null;}
 	let handleList = fb.GetQueryItems(fb.GetLibraryItems(), query);
@@ -38,6 +40,7 @@ function do_dynamic_query({query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusIte
 		// Create playlist
 		console.log('Query: ' +  query);
 		console.log('Final selection: ' +  handleList.Count  + ' tracks');
+		if (sort !== null && sort.tfo !== null) {handleList.OrderByFormat(fb.TitleFormat(sort.tfo), sort.direction || 1)}
 		plman.InsertPlaylistItems(plman.ActivePlaylist, 0, handleList);
 	}
 	return handleList;

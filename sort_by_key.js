@@ -31,5 +31,6 @@ function do_sort_by_key({
 	});
 	camelotWheel.keyNotation.forEach ( () => {tfo += ')';}); // Add closures!
 	if (bDebug) {console.log(tfo);}
+	plman.UndoBackup(plman.ActivePlaylist);
 	return plman.SortByFormat(playlistIdx, tfo, bSelection);
 }

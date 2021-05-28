@@ -227,7 +227,7 @@ function do_search_same_by({
 		if (!ql) {return false;}
 		query[ql] = query_join(query, logic); //join previous query's
 		if (forcedQuery) {
-			query[ql] = '(' + query[ql] + ') AND ' + forcedQuery;
+			query[ql] = '(' + query[ql] + ') AND (' + forcedQuery + ')';
 		}
 
 		// Load query

@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [1.2.0](#110---2021-05-28)
 - [1.1.0](#110---2021-05-26)
 - [1.0.1](#101---2021-05-02)
 - [1.0.0](#100---2021-05-02)
@@ -11,6 +12,29 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [1.2.0] - 2021-05-28
+### Added
+- Dynamic Queries: sorting can be set (on user configured entries).
+- Alt Menu: Shift + L. Click on menu button allows to switch some entries functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
+- Standard Queries: new menu to apply standard queries and save user configured entries. Sorting too. (meant to be used along macros as an "autoplaylist" tool combined with other tools)
+- Selection: added Global Playlist length as random # selection.
+- Cut playlist length: added Global Playlist length as option (from start and end).
+- Configuration: can set to which entries forced query is applied: Standad Queries, Dynamic Queries, Search same by tags. In any other case, it's always applied.
+### Changed
+- Macros: Entry name for last call and forced entries now omits ('main\' or the main menu name) when the entry resides on the main menu. i.e. just use the entry name for main menu entries, and submenu\entry name for the rest.
+- Menu framework: updated.
+- Legacy Sort: arbitrary sort entries can be added / removed. Standard foobar sorting. Can be undone.
+- Advanced Sort: Can be undone.
+### Removed
+### Fixed
+- Dynamic Queries: adding a new entry no longer executes it (thus creating a playlist too).
+- Search same by tags: didn't apply user set playlistLength and forcedQuery to created playlists (using functions defaults instead).
+- Standard Queries: didn't work when current playlist was empty.
+- Cut playlist length: didn't allow undo.
+- Send playlist's tracks to...: didn't allow undo.
+- Remove tracks from...: didn't allow undo.
+- Send selection to...: didn't allow undo.
 
 ## [1.1.0] - 2021-05-26
 ### Added
@@ -64,7 +88,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.2.0...HEAD
+[1.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/9df4560...v1.0.0
