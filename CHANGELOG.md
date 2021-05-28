@@ -26,6 +26,7 @@
 - Menu framework: updated.
 - Legacy Sort: arbitrary sort entries can be added / removed. Standard foobar sorting. Can be undone.
 - Advanced Sort: Can be undone.
+
 ### Removed
 ### Fixed
 - Dynamic Queries: adding a new entry no longer executes it (thus creating a playlist too).
