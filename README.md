@@ -15,15 +15,15 @@ It's impossible to offer a complete list of the things that can be done with the
 
 The collection of scripts provided here are not only a direct replacement of [Random Pools](https://www.foobar2000.org/components/view/foo_random_pools) or [MusicIp](https://www.spicefly.com/section.php?section=musicip) but an improvement and generalization in many aspects of those tools.
 
-* Macros: allows to record and save the menus entries used as a macro to be called later. Works with all tools. (only limitation are popups, which still require user input)
-* Fully configurable submenu entries: shift + left click on menu button allows to switch tools functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
-* User configurable presets: many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality.
+* **Macros:** allows to record and save the menus entries used as a macro to be called later. Works with all tools. (only limitation are popups, which still require user input)
+* **Fully configurable submenu entries:** shift + left click on menu button allows to switch tools functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
+* **User configurable presets:** many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality.
 
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
-* **Most played tracks from...:**  
+* **Most played tracks from...:** most played tracks from a given date or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))
 	.\xxx*scripts\top_tracks.js  
 	.\xxx*scripts\top_tracks_from_date.js  
-* **Top Rated tracks from...:** date or range of dates.  
+* **Top Rated tracks from...:** top rated tracks from a date.  
 	.\xxx*scripts\top_rated_tracks.js  
 * **Search same by tags...:** dynamic queries matching X tags from selection.  
 	.\xxx*scripts\search_same_by.js
