@@ -21,25 +21,25 @@ The sky is the limit once you use the current scripts to create your own buttons
 * Most played tracks from... :
 	.\xxx*scripts\top_tracks.js  
 	.\xxx*scripts\top_tracks_from_date.js  
-* Top Rated tracks from...: date or range of dates.
+* Top Rated tracks from...: date or range of dates.  
 	.\xxx*scripts\top_rated_tracks.js  
-* Search same by tags...: dynamic queries matching X tags from selection.
+* Search same by tags...: dynamic queries matching X tags from selection.  
 	.\xxx*scripts\search_same_by.js
-* Standard Queries: like foobar search but allowing presets.
+* Standard Queries: like foobar search but allowing presets.  
 	.\xxx*scripts\dynamic_query.js
-* Dynamic Queries: queries with placeholders evaluated with selection.
+* Dynamic Queries: queries with placeholders evaluated with selection.  
 	.\xxx*scripts\dynamic_query.js
-* Similar by...: aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP)
+* Similar by...: aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP)  
 	.\xxx*scripts\search_bydistance.js
-* Special Playlists...: contains functionality from the other scripts
+* Special Playlists...: contains functionality from the other scripts  
 	.\xxx*scripts\search_bydistance.js  
 	.\xxx*scripts\search_same_by.js  
-* Playlist manipulation: multiple tools for playlist edits
+* Playlist manipulation: multiple tools for playlist edits.  
 	* Remove duplicates: using configurable tags
 		.\xxx*scripts\remove_duplicates.js
-	* Query filtering: filters current playlist with a query
+	* Query filtering: filters current playlist with a query.  
 		.\xxx*scripts\filter_by_query.js
-	* Harmonic mix: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)
+	* Harmonic mix: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)  
 		.\xxx*scripts\harmonic_mixing.js
 	* Find or create playlist
 	* Cut playlist length (for macros) 
@@ -47,7 +47,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* Go to playlist (for macros) 
 	* Close playlist (for macros) 
 * Selection manipulation 
-	* Harmonic mix: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)
+	* Harmonic mix: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)  
 		.\xxx*scripts\harmonic_mixing.js
 	* Sort  
 		* Randomize  
@@ -55,11 +55,11 @@ The sky is the limit once you use the current scripts to create your own buttons
 		* By Mood  
 		* By Date  
 		* By BPM  
-		* By key: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)
+		* By key: aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation)  
 			.\xxx*scripts\sort_by_key.js
-		* By Dyngenre: aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP)
+		* By Dyngenre: aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP)  
 			.\xxx*scripts\search_bydistance.js
-	* Scatter by tags: reorders selection to avoid consecutive tracks with the same configurable tag.
+	* Scatter by tags: reorders selection to avoid consecutive tracks with the same configurable tag.  
 		.\xxx*scripts\scatter_by_tags.js
 	* Find now playling track in...  
 		.\xxx*scripts\find_remove_from_playlists.js
@@ -76,11 +76,11 @@ The sky is the limit once you use the current scripts to create your own buttons
 		* Random track / Random # tracks
 		* Delete selected / non selected tracks
 * Other tools  
-	* Check tags: checks selection to find errors on tags (useful on entire library).
+	* Check tags: checks selection to find errors on tags (useful on entire library).  
 		.\xxx*scripts\check_library_tags.js
-	* Write tags: "macro" to write some tags.
+	* Write tags: "macro" to write some tags.  
 		.\xxx*scripts\tags_automation.js
-	* Playlist Revive: replaces and expands playlist revive component.
+	* Playlist Revive: replaces and expands playlist revive component.  
 		.\xxx*scripts\playlist_revive.js
 * Pools (WIP)  
 * Macros  
