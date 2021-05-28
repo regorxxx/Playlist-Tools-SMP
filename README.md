@@ -20,10 +20,10 @@ The collection of scripts provided here are not only a direct replacement of [Ra
 * **User configurable presets:** many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality.
 
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
-* **Most played tracks from...:** most played tracks from a given date or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))
+* **Most played tracks from...:** from a year or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))
 	.\xxx*scripts\top_tracks.js  
 	.\xxx*scripts\top_tracks_from_date.js  
-* **Top Rated tracks from...:** top rated tracks from a date.  
+* **Top Rated tracks from...:** from a year or range of years.  
 	.\xxx*scripts\top_rated_tracks.js  
 * **Search same by tags...:** dynamic queries matching X tags from selection.  
 	.\xxx*scripts\search_same_by.js
@@ -36,7 +36,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 * **Special Playlists...:** contains functionality from the other scripts  
 	.\xxx*scripts\search_bydistance.js  
 	.\xxx*scripts\search_same_by.js  
-* **Playlist manipulation: multiple tools for playlist edits.  
+* **Playlist manipulation:** multiple tools for playlist edits.  
 	* **Remove duplicates:** using configurable tags.  
 		.\xxx*scripts\remove_duplicates.js
 	* **Query filtering:** filters current playlist with a query.  
