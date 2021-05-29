@@ -9,28 +9,28 @@
 
 ## [Unreleased][]
 ### Added
+- Pools: playlist creation similar to Random Pools component. Multiple source playlists can be set, to fill a destination Playlist. Configurable selection length per playlist, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
 ### Changed
 ### Removed
 ### Fixed
 
 ## [1.2.0] - 2021-05-28
 ### Added
-- Dynamic Queries: sorting can be set (on user configured entries).
+- Dynamic Queries: sorting can be set (on user configured presets).
 - Alt Menu: Shift + L. Click on menu button allows to switch some entries functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
-- Standard Queries: new menu to apply standard queries and save user configured entries. Sorting too. (meant to be used along macros as an "autoplaylist" tool combined with other tools)
+- Standard Queries: new menu to apply standard queries and save user configured presets. Sorting too. (meant to be used along macros as an "autoplaylist" tool combined with other tools)
 - Selection: added Global Playlist length as random # selection.
 - Cut playlist length: added Global Playlist length as option (from start and end).
-- Configuration: can set to which entries forced query is applied: Standad Queries, Dynamic Queries, Search same by tags. In any other case, it's always applied.
+- Configuration: can set to which tools Forced Query is applied: Standad Queries, Dynamic Queries, Search same by tags. In any other case, it's always applied (if not empty).
 ### Changed
 - Macros: Entry name for last call and forced entries now omits ('main\' or the main menu name) when the entry resides on the main menu. i.e. just use the entry name for main menu entries, and submenu\entry name for the rest.
 - Menu framework: updated.
-- Legacy Sort: arbitrary sort entries can be added / removed. Standard foobar sorting. Can be undone.
+- Legacy Sort: arbitrary sort presets can be added / removed. Standard foobar sorting. Can be undone.
 - Advanced Sort: Can be undone.
 ### Removed
 ### Fixed
 - Dynamic Queries: adding a new entry no longer executes it (thus creating a playlist too).
 - Search same by tags: didn't apply user set playlistLength and forcedQuery to created playlists (using functions defaults instead).
-- Standard Queries: didn't work when current playlist was empty.
 - Cut playlist length: didn't allow undo.
 - Send playlist's tracks to...: didn't allow undo.
 - Remove tracks from...: didn't allow undo.
