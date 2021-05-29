@@ -9,10 +9,22 @@
 
 ## [Unreleased][]
 ### Added
-- Pools: playlist creation similar to Random Pools component. Multiple source playlists can be set, to fill a destination Playlist. Configurable selection length per playlist, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
+- Pools: playlist creation similar to Random Pools component. Multiple source playlists (pools) can be set to fill a destination playlist. Configurable selection length per playlist, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
+- Presets: entire user preset list can be exported, for editing on a text editor or later importing in another Playlist Tools panel. (Only works for presets added from this release version and future ones)
+- Presets:a preset json file can be imported, merging them with current ones (without overwritting).
+- Readmes: Sscatter by tags readme added.
 ### Changed
+- Query filtering: some new default presets.
+- Dynamic Queries...: now allow working with multivalue tags by default. i.e. GENRE IS #GENRE# translates into (GENRE IS Folk) AND (GENRE IS World) automatically. When using using TF expressions, multivalue tags are not converted, thus the expression is executed 'as is'.
+- Query filtering\Filter playlist by... (query): also converts multivalue tags when using dynamic queries.
+- Reset all configuration: resetting all no longer deletes all user presets, but asks to merge them with the default ones (or discards them). Presets can also be exported (previous change) before resetting and later re-imported to do essentially the same.
+- Readmes: all readmes entries now follow the same name of the menus automatically.
 ### Removed
 ### Fixed
+- Search same by tags...\By... (pairs of tags): was using default search paramaters no matter the input.
+- Search same by tags...\Add new entry: error when remap tags was empty.
+- Query filtering\Filter playlist by... (query): last argument used was not being saved.
+- Configuration: setting global forced query or playlist length only updated the properties panel, thus not applying the changes until next script reload.
 
 ## [1.2.0] - 2021-05-28
 ### Added

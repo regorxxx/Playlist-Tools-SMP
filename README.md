@@ -15,34 +15,34 @@ It's impossible to offer a complete list of the things that can be done with the
 
 The collection of scripts provided here are not only a direct replacement of [Random Pools](https://www.foobar2000.org/components/view/foo_random_pools) or [MusicIp](https://www.spicefly.com/section.php?section=musicip) but an improvement and generalization in many aspects of those tools.
 
-* **Macros:** allows to record and save the menus entries used as a macro to be called later. Works with all tools. (only limitation are popups, which still require user input)
+* **Macros:** allows to record and save the menus entries used, as a macro, to be called later. Automatic custom playlist creation and edits without limits. Works with all tools. (only limitation are popups, which still require user input)
 * **Fully configurable submenu entries:** shift + left click on menu button allows to switch tools functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
 * **User configurable presets:** many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality.
 
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
 * **Most played tracks from...:** from a year or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))
-	.\xxx*scripts\top_tracks.js  
-	.\xxx*scripts\top_tracks_from_date.js  
+	.\xxx-scripts\top_tracks.js  
+	.\xxx-scripts\top_tracks_from_date.js  
 * **Top Rated tracks from...:** from a year or range of years.  
-	.\xxx*scripts\top_rated_tracks.js  
+	.\xxx-scripts\top_rated_tracks.js  
 * **Search same by tags...:** dynamic queries matching X tags from selection.  
-	.\xxx*scripts\search_same_by.js
+	.\xxx-scripts\search_same_by.js
 * **Standard Queries:** like foobar search but allowing presets.  
-	.\xxx*scripts\dynamic_query.js
+	.\xxx-scripts\dynamic_query.js
 * **Dynamic Queries:** queries with placeholders evaluated with selection.  
-	.\xxx*scripts\dynamic_query.js
+	.\xxx-scripts\dynamic_query.js
 * **Similar by...:** spotify-like playlist generation. (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
-	.\xxx*scripts\search_bydistance.js
+	.\xxx-scripts\search_bydistance.js
 * **Special Playlists...:** contains functionality from the other scripts  
-	.\xxx*scripts\search_bydistance.js  
-	.\xxx*scripts\search_same_by.js  
+	.\xxx-scripts\search_bydistance.js  
+	.\xxx-scripts\search_same_by.js  
 * **Playlist manipulation:** multiple tools for playlist edits.  
 	* **Remove duplicates:** using configurable tags.  
-		.\xxx*scripts\remove_duplicates.js
+		.\xxx-scripts\remove_duplicates.js
 	* **Query filtering:** filters current playlist with a query.  
-		.\xxx*scripts\filter_by_query.js
+		.\xxx-scripts\filter_by_query.js
 	* **Harmonic mix:** Dj-like playlist generation by key. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
-		.\xxx*scripts\harmonic_mixing.js
+		.\xxx-scripts\harmonic_mixing.js
 	* Find or create playlist
 	* Cut playlist length (for macros) 
 	* Send playlist's tracks to (for macros) 
@@ -50,7 +50,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* Close playlist (for macros) 
 * **Selection manipulation:**  
 	* **Harmonic mix:** Dj-like selection ordering by key. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
-		.\xxx*scripts\harmonic_mixing.js
+		.\xxx-scripts\harmonic_mixing.js
 	* **Sort**  
 		* Randomize  
 		* Reverse  
@@ -58,17 +58,17 @@ The sky is the limit once you use the current scripts to create your own buttons
 		* By Date  
 		* By BPM  
 		* **By key:** translates keys (Fm  -> 4A) and sorts them. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
-			.\xxx*scripts\sort_by_key.js
+			.\xxx-scripts\sort_by_key.js
 		* **By Dyngenre:** similar genres/styles are grouped together. (aka [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP))  
-			.\xxx*scripts\search_bydistance.js
+			.\xxx-scripts\search_bydistance.js
 	* **Scatter by tags:** reorders selection to avoid consecutive tracks with the same configurable tag.  
-		.\xxx*scripts\scatter_by_tags.js
+		.\xxx-scripts\scatter_by_tags.js
 	* Find now playling track in...  
-		.\xxx*scripts\find_remove_from_playlists.js
+		.\xxx-scripts\find_remove_from_playlists.js
 	* Find track(s) in...  
-		.\xxx*scripts\find_remove_from_playlists.js
+		.\xxx-scripts\find_remove_from_playlists.js
 	* Remove track(s) from...  
-		.\xxx*scripts\find_remove_from_playlists.js
+		.\xxx-scripts\find_remove_from_playlists.js
 	* Send selection to playlist... (for macros)  
 	* Select (for macros)  
 		* By halves
@@ -79,13 +79,14 @@ The sky is the limit once you use the current scripts to create your own buttons
 		* Delete selected / non selected tracks
 * **Other tools:**  
 	* **Check tags:** checks selection to find errors on tags (useful on entire library).  
-		.\xxx*scripts\check_library_tags.js
+		.\xxx-scripts\check_library_tags.js
 	* **Write tags:** "macro" to write some tags.  
-		.\xxx*scripts\tags_automation.js
+		.\xxx-scripts\tags_automation.js
 	* **Playlist Revive:** replaces and expands playlist revive component.  
-		.\xxx*scripts\playlist_revive.js
-* **Pools (WIP)**  
-* **Macros**  
+		.\xxx-scripts\playlist_revive.js
+* **Pools (wip):** use playlist(s) as source pool(s) for a destination playlist.  
+* **Macros:** record and save menus entries used, as a macro, to be called later.  
+	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
 
 The menus are highly customizable. They are created on demand according to the selected tracks or current playlist, and many entries can be added, removed or edited to suit your needs. Also if some scripts are missing, the menu is rebuilt skipping those entries (letting you to install selectively what you need).
 

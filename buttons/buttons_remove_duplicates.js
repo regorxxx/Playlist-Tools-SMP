@@ -33,7 +33,7 @@ prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
 var newButtonsProperties = { //You can simply add new properties here
 	sortInputA:	["Tag or titleformat expression to check", "artist"	],
 	sortInputB:	["Tag or titleformat expression to check", "date"	],
-	sortInputC:	["Tag or titleformat expression to check", ""		],
+	sortInputC:	["Tag or titleformat expression to check", "title"		],
 	nAllowed:	["Number of duplicates allowed (n + 1)"	 , 0		],
 };
 

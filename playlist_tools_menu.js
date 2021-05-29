@@ -70,6 +70,7 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	forcedQuery:				['Global forced query', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
 	forcedQueryMenusEnabled:	['Menus with forced query enabled', '{}'],
 	ratingLimits:				['Set ratings extremes (ex. from 1 to 10 -> 1,10)', '1,5'],
+	presets:					['Saved presets', '{}'],
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
@@ -107,8 +108,9 @@ var disabledCount = 0;
 
 // forcedQuery menus
 var forcedQueryMenusEnabled = {};
-console.log(forcedQueryMenusEnabled)
 
+// presets menus
+var presets = {};
 
 /* 
 	Menus
@@ -244,20 +246,27 @@ console.log(forcedQueryMenusEnabled)
 					{name: 'sep'},
 					{args: {sameBy: {style: 2, mood: 6}}}, {args: {sameBy: {style: 2, date: 10}}},
 				];
-				let selArg = {args: {sameBy: {genre: 1, style: 2, mood: 5}}};
+				let selArg = {...sameByQueries[0]};
 				const sameByQueriesDefaults = [...sameByQueries];
 				// Create new properties with previous args
-				menu_properties['sameByQueries'] = ['\'Search same by tags...\' queries', JSON.stringify(sameByQueries)];
-				menu_properties['sameByCustomArg'] = ['\'Search same by tags...\' Dynamic menu custom args', convertObjectToString(selArg.args.sameBy)];
+				menu_properties['sameByQueries'] = [name + ' queries', JSON.stringify(sameByQueries)];
+				menu_properties['sameByCustomArg'] = [name + ' Dynamic menu custom args', convertObjectToString(selArg.args.sameBy)];
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+			/* 		// Add to presets
+					if (!presets.hasOwnProperty('sameByQueries')) {presets.sameByQueries = [];}
+					const defaults = [];
+					sameByQueriesDefaults.forEach( (queryObjDef) => {defaults.push(JSON.stringify(queryObjDef))}); */
 					// Entry list
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					sameByQueries = JSON.parse(args.properties['sameByQueries'][1]);
 					sameByQueries.forEach( (queryObj) => {
+/* 						// Add to presets
+						const {name, ...copy} = queryObj;
+						if (defaults.indexOf(JSON.stringify(copy)) === -1) {presets.sameByQueries.push(queryObj)} */
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 							let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
@@ -294,7 +303,8 @@ console.log(forcedQueryMenusEnabled)
 							selArg.args.sameBy = convertStringToObject(input, 'number', ',');
 							args.properties['sameByCustomArg'][1] = convertObjectToString(selArg.args.sameBy); // And update property with new value
 							overwriteProperties(args.properties); // Updates panel
-							const sameByArgs = {...selArg.args.args, playlistLength: args.playlistLength, forcedQuery: args.forcedQuery};
+							const sameByArgs = {...selArg.args, playlistLength: args.playlistLength, forcedQuery: args.forcedQuery};
+							console.log(sameByArgs);
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
 							do_search_same_by(sameByArgs);
 						}, flags: focusFlags});
@@ -302,7 +312,7 @@ console.log(forcedQueryMenusEnabled)
 						menu.newEntry({menuName, entryText: 'sep'});
 					}
 					{	// Add / Remove
-						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
 							// Input all variables
 							let input;
 							let name = '';
@@ -327,7 +337,7 @@ console.log(forcedQueryMenusEnabled)
 									let answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
 									if (answer === popup.yes) {bOnlyRemap = true;}
 								}
-								input = {name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: convertStringToObject(remap, 'string', ',', ';'), bOnlyRemap}};
+								input = {name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap}};
 								// Final check
 								try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
 								catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
@@ -337,6 +347,10 @@ console.log(forcedQueryMenusEnabled)
 							// Save as property
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries); // And update property with new value
+							// Presets
+							if (!presets.hasOwnProperty('sameByQueries')) {presets.sameByQueries = [];}
+							presets.sameByQueries.push(input);
+							args.properties['presets'][1] = JSON.stringify(presets);
 							overwriteProperties(args.properties); // Updates panel
 						}});
 						{
@@ -346,6 +360,12 @@ console.log(forcedQueryMenusEnabled)
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									sameByQueries.splice(index, 1);
 									args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries);
+									// Presets
+									if (presets.hasOwnProperty('sameByQueries')) {
+										presets.sameByQueries.splice(presets.sameByQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
+										if (!presets.sameByQueries.length) {delete presets.sameByQueries;}
+										args.properties['presets'][1] = JSON.stringify(presets);
+									}
 									overwriteProperties(args.properties); // Updates panel
 								}});
 							});
@@ -354,6 +374,11 @@ console.log(forcedQueryMenusEnabled)
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								sameByQueries = [...sameByQueriesDefaults];
 								args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries);
+								// Presets
+								if (presets.hasOwnProperty('sameByQueries')) {
+									delete presets.sameByQueries;
+									args.properties['presets'][1] = JSON.stringify(presets);
+								}
 								overwriteProperties(args.properties); // Updates panel
 							}});
 						}
@@ -416,11 +441,11 @@ console.log(forcedQueryMenusEnabled)
 					{name: 'Soul \\ RnB playlist', query: 'GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()', direction: 1}},
 					{name: 'Hip-Hop playlist', query: 'GENRE IS Hip-Hop', sort: {tfo: '$rand()', direction: 1}}
 				];
-				let selArg = {name: 'Custom', query: '%rating% EQUAL 5'};
+				let selArg = {name: 'Custom', query: queryFilter[0].query};
 				const queryFilterDefaults = [...queryFilter];
 				// Create new properties with previous args
-				menu_properties['searchQueries'] = [name + '\\ queries', JSON.stringify(queryFilter)];
-				menu_properties['searchCustomArg'] = [name + '\\ Dynamic menu custom args', JSON.stringify(selArg)];
+				menu_properties['searchQueries'] = [name + ' queries', JSON.stringify(queryFilter)];
+				menu_properties['searchCustomArg'] = [name + ' Dynamic menu custom args', JSON.stringify(selArg)];
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Standard search with queries:', func: null, flags: MF_GRAYED});
@@ -498,6 +523,10 @@ console.log(forcedQueryMenusEnabled)
 							// Save as property
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.properties['searchQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
+							// Presets
+							if (!presets.hasOwnProperty('searchQueries')) {presets.searchQueries = [];}
+							presets.searchQueries.push(input);
+							args.properties['presets'][1] = JSON.stringify(presets);
 							overwriteProperties(args.properties); // Updates panel
 						}});
 						{
@@ -507,6 +536,12 @@ console.log(forcedQueryMenusEnabled)
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									queryFilter.splice(index, 1);
 									args.properties['searchQueries'][1] = JSON.stringify(queryFilter);
+									// Presets
+									if (presets.hasOwnProperty('searchQueries')) {
+										presets.searchQueries.splice(presets.searchQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
+										if (!presets.searchQueries.length) {delete presets.searchQueries;}
+										args.properties['presets'][1] = JSON.stringify(presets);
+									}
 									overwriteProperties(args.properties); // Updates panel
 								}});
 							});
@@ -515,6 +550,11 @@ console.log(forcedQueryMenusEnabled)
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								queryFilter = [...queryFilterDefaults];
 								args.properties['searchQueries'][1] = JSON.stringify(queryFilter);
+								// Presets
+								if (presets.hasOwnProperty('searchQueries')) {
+									delete presets.searchQueries;
+									args.properties['presets'][1] = JSON.stringify(presets);
+								}
 								overwriteProperties(args.properties); // Updates panel
 							}});
 						}
@@ -544,10 +584,10 @@ console.log(forcedQueryMenusEnabled)
 					{name: 'Live versions of same song'	, query: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
 				];
 				const queryFilterDefaults = [...queryFilter];
-				let selArg = {query: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST#'};
+				let selArg = {query: queryFilter[0].query};
 				// Create new properties with previous args
-				menu_properties['dynamicQueries'] = ['\'Dynamic Queries...\' queries', JSON.stringify(queryFilter)];
-				menu_properties['dynamicQueriesCustomArg'] = ['\'Dynamic Queries...\' Dynamic menu custom args', selArg.query];
+				menu_properties['dynamicQueries'] = [name + ' queries', JSON.stringify(queryFilter)];
+				menu_properties['dynamicQueriesCustomArg'] = [name + ' Dynamic menu custom args', selArg.query];
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED});
@@ -590,7 +630,6 @@ console.log(forcedQueryMenusEnabled)
 							if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 							// For internal use original object
 							selArg.query = query; 
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.properties['dynamicQueriesCustomArg'][1] = query; // And update property with new value
 							overwriteProperties(args.properties); // Updates panel
 						}, flags: focusFlags});
@@ -629,6 +668,10 @@ console.log(forcedQueryMenusEnabled)
 							// Save as property
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
+							// Presets
+							if (!presets.hasOwnProperty('dynamicQueries')) {presets.dynamicQueries = [];}
+							presets.dynamicQueries.push(input);
+							args.properties['presets'][1] = JSON.stringify(presets);
 							overwriteProperties(args.properties); // Updates panel
 						}});
 						{
@@ -638,6 +681,12 @@ console.log(forcedQueryMenusEnabled)
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									queryFilter.splice(index, 1);
 									args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
+									// Presets
+									if (presets.hasOwnProperty('dynamicQueries')) {
+										presets.dynamicQueries.splice(presets.dynamicQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
+										if (!presets.dynamicQueries.length) {delete presets.dynamicQueries;}
+										args.properties['presets'][1] = JSON.stringify(presets);
+									}
 									overwriteProperties(args.properties); // Updates panel
 								}});
 							});
@@ -646,6 +695,11 @@ console.log(forcedQueryMenusEnabled)
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								queryFilter = [...queryFilterDefaults];
 								args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
+								// Presets
+								if (presets.hasOwnProperty('dynamicQueries')) {
+									delete presets.dynamicQueries;
+									args.properties['presets'][1] = JSON.stringify(presets);
+								}
 								overwriteProperties(args.properties); // Updates panel
 							}});
 						}
@@ -666,7 +720,7 @@ console.log(forcedQueryMenusEnabled)
 		const nameWeight = 'Search similar by Weight...';
 		if (!menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true) {
 			include(scriptPath);
-			readmes['Search by Graph/Dyngenre/Weight'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt';
+			readmes['Search similar by Graph\\Dyngenre\\Weight'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt';
 			// Delete unused properties
 			const toDelete = ['genreWeight', 'styleWeight', 'dyngenreWeight', 'dyngenreRange', 'moodWeight', 'keyWeight', 'keyRange', 'dateWeight', 'dateRange', 'bpmWeight', 'bpmRange', 'composerWeight', 'customStrWeight', 'customNumWeight', 'customNumRange', 'forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'sbd_max_graph_distance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN'];
 			let toMerge = {}; // Deep copy
@@ -693,7 +747,7 @@ console.log(forcedQueryMenusEnabled)
 				if (!menusEnabled.hasOwnProperty(nameGraph) || menusEnabled[nameGraph] === true) {
 					let menuName = menu.newMenu(nameGraph);
 					{	// Static menus
-						menu.newEntry({menuName, entryText: 'Links similar genre/styles using complex relations:', func: null, flags: MF_GRAYED});
+						menu.newEntry({menuName, entryText: 'Similar tracks by genre/style complex relations:', func: null, flags: MF_GRAYED});
 						const distanceUnit = music_graph_descriptors.intra_supergenre; // 100
 						const entryArgs = [
 							{title: 'Nearest Tracks', args: {sbd_max_graph_distance: distanceUnit / 2, method: 'GRAPH'}}, // 50
@@ -721,7 +775,7 @@ console.log(forcedQueryMenusEnabled)
 				if (!menusEnabled.hasOwnProperty(nameDynGenre) || menusEnabled[nameDynGenre] === true) {
 					let menuName = menu.newMenu(nameDynGenre);
 					{	// Static menus
-						menu.newEntry({menuName, entryText: 'Links similar genre/styles using simple grouping:', func: null, flags: MF_GRAYED});
+						menu.newEntry({menuName, entryText: 'Similar tracks by genre/style simple grouping:', func: null, flags: MF_GRAYED});
 						const distanceUnit = 1;
 						const entryArgs = [
 							{title: 'Nearest Tracks', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
@@ -749,7 +803,7 @@ console.log(forcedQueryMenusEnabled)
 				if (!menusEnabled.hasOwnProperty(nameWeight) || menusEnabled[nameWeight] === true) {
 					let menuName = menu.newMenu(nameWeight);
 					{	// Static menus
-						menu.newEntry({menuName, entryText: 'Applies scoring according to tag similarity:', func: null, flags: MF_GRAYED});
+						menu.newEntry({menuName, entryText: 'Similar tracks by tag similarity scoring:', func: null, flags: MF_GRAYED});
 						const entryArgs = [
 							{title: 'Nearest Tracks', args: {method: 'WEIGHT'}},
 							{title: 'Similar Genre mix, within a decade', args: {method: 'WEIGHT'}},
@@ -909,15 +963,15 @@ console.log(forcedQueryMenusEnabled)
 				const name = 'Duplicates and tag filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
-					readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\remove_duplicates.txt';
+					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\remove_duplicates.txt';
 					let subMenuName = menu.newMenu(name, menuName);
 					var sortInputDuplic = ['title', 'artist', 'date'];
 					var sortInputFilter = ['title', 'artist', 'date'];
 					var nAllowed = 2;
 					// Create new properties with previous args
-					menu_properties['sortInputDuplic'] = ['\'Tools\\Duplicates & Filtering\' Tags to remove duplicates', sortInputDuplic.join(',')];
-					menu_properties['sortInputFilter'] = ['\'Tools\\Duplicates & Filtering\' Tags to filter playlists', sortInputFilter.join(',')];
-					menu_properties['nAllowed'] = ['\'Tools\\Duplicates & Filtering\' Number of duplicates allowed (n + 1)', nAllowed];
+					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
+					menu_properties['sortInputFilter'] = [menuName + '\\' + name + ' Tags to filter playlists', sortInputFilter.join(',')];
+					menu_properties['nAllowed'] = [menuName + '\\' + name + ' Filtering number allowed (n + 1)', nAllowed];
 					// Checks
 					menu_properties['nAllowed'].push({greaterEq: 0, func: Number.isSafeInteger}, menu_properties['nAllowed'][1]);
 					// Merge
@@ -977,7 +1031,7 @@ console.log(forcedQueryMenusEnabled)
 				const name = 'Query filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
-					readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\filter_by_query.txt';
+					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\filter_by_query.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
 							{name: 'Rating > 2', query: 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'}, 
@@ -989,10 +1043,15 @@ console.log(forcedQueryMenusEnabled)
 							{name: 'Same song than sel', query: 'ARTIST IS #ARTIST# AND TITLE IS #TITLE# AND DATE IS #DATE#'},
 							{name: 'Same genre than sel', query: 'GENRE IS #GENRE#'},
 							{name: 'Same key than sel', query: 'KEY IS #KEY#'},
+							{name: 'sep'},
+							{name: 'Different genre than sel', query: 'NOT GENRE IS #GENRE#'},
+							{name: 'Different style than sel', query: 'NOT STYLE IS #STYLE#'}
 					];
+					let selArg = {name: 'Custom', query: queryFilter[0].query};
 					const queryFilterDefaults = [...queryFilter];
 					// Create new properties with previous args
-					menu_properties['queryFilter'] = ['\'Tools\\Query filtering\' queries', JSON.stringify(queryFilter)];
+					menu_properties['queryFilter'] = [menuName + '\\' + name + ' queries', JSON.stringify(queryFilter)];
+					menu_properties['queryFilterCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', selArg.query];
 					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
@@ -1017,9 +1076,11 @@ console.log(forcedQueryMenusEnabled)
 							}
 						});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (query)' , func: () => {
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (query)' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.query = selArg.query = args.properties['queryFilterCustomArg'][1];
 							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, '', true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							let focusHandle = fb.GetFocusItem(true);
@@ -1027,6 +1088,10 @@ console.log(forcedQueryMenusEnabled)
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 							do_filter_by_query(null, query);
+							// For internal use original object
+							selArg.query = query; 
+							args.properties['queryFilterCustomArg'][1] = query; // And update property with new value
+							overwriteProperties(args.properties); // Updates panel
 						}, flags: playlistCountFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
@@ -1050,6 +1115,10 @@ console.log(forcedQueryMenusEnabled)
 							queryFilter.push(input);
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
+							// Presets
+							if (!presets.hasOwnProperty('queryFilter')) {presets.queryFilter = [];}
+							presets.queryFilter.push(input);
+							args.properties['presets'][1] = JSON.stringify(presets);
 							overwriteProperties(args.properties); // Updates panel
 						}});
 						{
@@ -1059,6 +1128,12 @@ console.log(forcedQueryMenusEnabled)
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									queryFilter.splice(index, 1);
 									args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
+									// Presets
+									if (presets.hasOwnProperty('queryFilter')) {
+										presets.queryFilter.splice(presets.queryFilter.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
+										if (!presets.queryFilter.length) {delete presets.queryFilter;}
+										args.properties['presets'][1] = JSON.stringify(presets);
+									}
 									overwriteProperties(args.properties); // Updates panel
 								}});
 							});
@@ -1067,6 +1142,11 @@ console.log(forcedQueryMenusEnabled)
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								queryFilter = [...queryFilterDefaults];
 								args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
+								// Presets
+								if (presets.hasOwnProperty('queryFilter')) {
+									delete presets.queryFilter;
+									args.properties['presets'][1] = JSON.stringify(presets);
+								}
 								overwriteProperties(args.properties); // Updates panel
 							}});
 						}
@@ -1081,7 +1161,7 @@ console.log(forcedQueryMenusEnabled)
 				const name = 'Harmonic mix';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
-					readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\harmonic_mixing.txt';
+					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\harmonic_mixing.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
 						{title: 'Harmonic mix from playlist'	, args: {selItems: () => {return plman.GetPlaylistItems(plman.ActivePlaylist);}}, flags: playlistCountFlags},
@@ -1286,11 +1366,11 @@ console.log(forcedQueryMenusEnabled)
 						{name: 'Sort by Date', tfo: '%date%'},
 						{name: 'Sort by BPM', tfo: '%bpm%'}
 					];
-					let selArg = {name: 'Custom', tfo: '%date%'};
+					let selArg = {name: 'Custom', tfo: sortLegacy[0].tfo};
 					const sortLegacyDefaults = [...sortLegacy];
 					// Create new properties with previous args
-					menu_properties['sortLegacy'] = [name + '\\ Sort entries', JSON.stringify(sortLegacy)];
-					menu_properties['sortLegacyCustomArg'] = [name + '\\ Dynamic menu custom args', JSON.stringify(selArg)];
+					menu_properties['sortLegacy'] = [menuName + '\\' + name + '  entries', JSON.stringify(sortLegacy)];
+					menu_properties['sortLegacyCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', JSON.stringify(selArg)];
 					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Sort selection (legacy):', func: null, flags: MF_GRAYED});
@@ -1366,6 +1446,10 @@ console.log(forcedQueryMenusEnabled)
 								// Save as property
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 								args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy); // And update property with new value
+								// Presets
+								if (!presets.hasOwnProperty('sortLegacy')) {presets.sortLegacy = [];}
+								presets.sortLegacy.push(input);
+								args.properties['presets'][1] = JSON.stringify(presets);
 								overwriteProperties(args.properties); // Updates panel
 							}});
 							{
@@ -1375,6 +1459,12 @@ console.log(forcedQueryMenusEnabled)
 									menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 										sortLegacy.splice(index, 1);
 										args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
+										// Presets
+										if (presets.hasOwnProperty('sortLegacy')) {
+											presets.sortLegacy.splice(presets.sortLegacy.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(sortObj);}), 1);
+											if (!presets.sortLegacy.length) {delete presets.sortLegacy;}
+											args.properties['presets'][1] = JSON.stringify(presets);
+										}
 										overwriteProperties(args.properties); // Updates panel
 									}});
 								});
@@ -1383,6 +1473,11 @@ console.log(forcedQueryMenusEnabled)
 								menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 									sortLegacy = [...sortLegacyDefaults];
 									args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
+									// Presets
+									if (presets.hasOwnProperty('sortLegacy')) {
+										delete presets.sortLegacy;
+										args.properties['presets'][1] = JSON.stringify(presets);
+									}
 									overwriteProperties(args.properties); // Updates panel
 								}});
 							}
@@ -1402,7 +1497,7 @@ console.log(forcedQueryMenusEnabled)
 					const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_key.js';
 					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 						include(scriptPath);
-						readmes['Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
+						readmes[name + '\\' + 'Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
 						if (selArgs.length) {selArgs.push({title: 'sep'});}
 						[
 							{title: 'Incremental key (Camelot Wheel)', 	func: do_sort_by_key, args: {sortOrder: 1}},
@@ -1414,7 +1509,7 @@ console.log(forcedQueryMenusEnabled)
 					const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_dyngenre.js';
 					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 						include(scriptPath);
-						readmes['Sort by DynGenre'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_dyngenre.txt';
+						readmes[name + '\\' + 'Sort by DynGenre'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_dyngenre.txt';
 						if (selArgs.length) {selArgs.push({title: 'sep'});}
 						[
 							{title: 'Incremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: 1}},
@@ -1438,6 +1533,7 @@ console.log(forcedQueryMenusEnabled)
 				const name = 'Scatter by tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
+					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
 						{title: 'Scatter instrumental tracks'	, 	args: {tagName: 'genre,style', tagValue: 'Instrumental,Jazz,Instrumental Rock'}},
@@ -1473,7 +1569,7 @@ console.log(forcedQueryMenusEnabled)
 				const nameRemove = 'Remove track(s) from...';
 				if (!menusEnabled.hasOwnProperty(nameNowFind) || !menusEnabled.hasOwnProperty(nameFind) || !menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameNowFind] === true || menusEnabled[nameFind] === true || menusEnabled[nameRemove] === true) {
 					include(scriptPath);
-					readmes['Find in and Remove from Playlists'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\find_remove_from_playlists.txt';
+					readmes[menuName + '\\' + 'Find in and Remove from'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\find_remove_from_playlists.txt';
 					// Add properties
 					menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in...\' show current playlist?', true];
 					menu_properties['bRemoveShowLocked'] = ['\'Tools\\Remove track(s) from...\' show autoplaylists?', true];
@@ -1904,7 +2000,7 @@ console.log(forcedQueryMenusEnabled)
 				const name = 'Check tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
-					readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\check_library_tags.txt';
+					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\check_library_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					// Delete unused properties
 					const toDelete = ['bUseDic'];
@@ -2043,7 +2139,7 @@ console.log(forcedQueryMenusEnabled)
 				const name = 'Playlist Revive';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
-					readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_revive.txt';
+					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_revive.txt';
 					{	// Submenu
 						const subMenuName = menu.newMenu(name, menuName);
 						// Create new properties with previous args
@@ -2099,19 +2195,66 @@ console.log(forcedQueryMenusEnabled)
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		}
+		menu.newEntry({entryText: 'sep'});
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 }
 
 // Pool
 {
 	const name = 'Pools';
-	menusEnabled[name] = false;
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+		readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu_pools.txt';
 		let menuName = menu.newMenu(name);
 		{	// Automate tags
-			menu.newEntry({menuName, entryText: 'Create new playlists using others:', func: null, flags: MF_GRAYED});
-			menu.newEntry({menuName, entryText: 'sep'});
-			menu.newEntry({menuName, entryText: 'Custom pool...', func: () => {
+			const staticPools = [
+			];
+			let pools = [
+				{name: 'A+B -> C', pool: {
+					fromPls: {'Playlist A': 10, 'Playlist B': 20}, 
+					toPls: 'Playlist C', 
+					sort: '%playlist_index%',
+					pickMethod: {'Playlist A': 'random', 'Playlist B': 'random'}
+					}}
+			];
+			let selArg = {...pools[0]};
+			const poolsDefaults = [...pools];
+			// Create new properties with previous args
+			menu_properties['pools'] = [name + ' entries', JSON.stringify(pools)];
+			menu_properties['poolsCustomArg'] = [name + '\\Custom pool args', JSON.stringify(selArg)];
+			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+			// Functions
+			const pickMethods = {
+				random: (handleListFrom, num, count) => {
+						const numbers = range(0, count, 1).sort(() => Math.random() - 0.5).slice(0, count > num ? num : count); // Get n indexes randomly sorted
+						const handleListFromClone = handleListFrom.Clone().Convert();
+						return new FbMetadbHandleList(numbers.flatMap((i) => {return handleListFromClone.slice(i, i + 1)}));
+					},
+				start: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(num - 1, count);} return handleListFrom;},
+				end: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(0, count - num);} return handleListFrom;},
+			};
+			const do_pool = (pool) => {
+				let handleListTo = new FbMetadbHandleList();
+				Object.keys(pool.fromPls).forEach((plsName) => {
+					const idxFrom = plman.FindPlaylist(plsName);
+					if (idxFrom === -1) {
+						// Ask playlist manager instances for playlists with that name!
+						// Don't use callbacks (to ask for pls name) since they are async, instead look for playlist files with that name directly here
+						// And get playlist paths with callbacks at script init + custom folder
+						return;
+					}
+					let handleListFrom = plman.GetPlaylistItems(idxFrom);
+					const num = pool.fromPls[plsName];
+					handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, handleListFrom.Count);
+					handleListTo.InsertRange(handleListTo.Count, handleListFrom);
+				});
+				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
+				if (plman.IsPlaylistLocked(true)) {return;}
+				plman.ClearPlaylist(idxTo);
+				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
+				plman.SortByFormat(idxTo, pool.sort);
+				plman.ActivePlaylist = idxTo;
+			}
+			const inputPool = () => {
 				let fromPls;
 				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\n(playlist,# tracks;playlist,# tracks)', window.Name, 'Playlist A,10;Playlist B,20', true);}
 				catch (e) {return;}
@@ -2127,15 +2270,6 @@ console.log(forcedQueryMenusEnabled)
 				if (fromPls.some((pair) => {return isNaN(pair[1])})) {return;}
 				fromPls = Object.fromEntries(fromPls);
 				let pickMethod;
-				const pickMethods = {
-					random: (handleListFrom, num, count) => {
-							const numbers = range(0, count, 1).sort(() => Math.random() - 0.5).slice(0, count > num ? num : count); // Get n indexes randomly sorted
-							const handleListFromClone = handleListFrom.Clone().Convert();
-							return new FbMetadbHandleList(numbers.flatMap((i) => {return handleListFromClone.slice(i, i + 1)}));
-						},
-					start: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(num - 1, count);} return handleListFrom;},
-					end: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(0, count - num);} return handleListFrom;},
-				};
 				const pickMethodsKeys = Object.keys(pickMethods);
 				try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
 				catch (e) {return;}
@@ -2157,28 +2291,110 @@ console.log(forcedQueryMenusEnabled)
 				let sort = '';
 				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', window.Name, '%playlist_index%', true);}
 				catch (e) {return;}
-				const pool = {fromPls, toPls, sort, pickMethod};
-				console.log(pool);
-				let handleListTo = new FbMetadbHandleList();
-				Object.keys(pool.fromPls).forEach((plsName) => {
-					const idxFrom = plman.FindPlaylist(plsName);
-					if (idxFrom === -1) {
-						// Ask playlist manager instances for playlists with that name!
-						// Don't use callbacks (to ask for pls name) since they are async, instead look for playlist files with that name directly here
-						// And get playlist paths with callbacks at script init + custom folder
-						return;
+				return {fromPls, toPls, sort, pickMethod};
+			}
+			// Menus
+			menu.newEntry({menuName, entryText: 'Use playlist(s) as pool(s) for final playlist:', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName, entryText: 'sep'});
+			// Static menus
+			staticPools.forEach( (poolObj) => {
+				if (poolObj.name === 'sep') {
+					menu.newEntry({menuName, entryText: 'sep'});
+				} else {
+					let entryText = poolObj.name;
+					menu.newEntry({menuName, entryText, func: (pool = poolObj.pool) => {do_pool(pool);}});
+				}
+			});
+			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				// Entry list
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				pools = JSON.parse(args.properties['pools'][1]);
+				pools.forEach( (poolObj) => {
+					// Add separators
+					if (poolObj.hasOwnProperty('name') && poolObj.name === 'sep') {
+						menu.newEntry({menuName, entryText: 'sep'});
+					} else { 
+						// Create names for all entries
+						let poolName = poolObj.name;
+						poolName = poolName.length > 40 ? poolName.substring(0,40) + ' ...' : poolName;
+						// Entries
+						menu.newEntry({menuName, entryText: poolName, func: (pool = poolObj.pool) => {do_pool(pool);}});
 					}
-					let handleListFrom = plman.GetPlaylistItems(idxFrom);
-					const num = pool.fromPls[plsName];
-					handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, handleListFrom.Count);
-					handleListTo.InsertRange(handleListTo.Count, handleListFrom);
 				});
-				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
-				if (plman.IsPlaylistLocked(true)) {return;}
-				plman.ClearPlaylist(idxTo);
-				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
-				plman.SortByFormat(idxTo, pool.sort);
-				plman.ActivePlaylist = idxTo;
+				menu.newEntry({menuName, entryText: 'sep'});
+				{ // Static menu: user configurable
+					menu.newEntry({menuName, entryText: 'Custom pool...', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+						// On first execution, must update from property
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.tfo = selArg.tfo = JSON.parse(args.properties['poolsCustomArg'][1]).tfo;
+						// Input
+						const pool = inputPool();
+						if (!pool) {return;}
+						// Execute
+						do_pool(pool);
+						// For internal use original object
+						selArg.pool = pool;
+						args.properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					// Menu to configure property
+					menu.newEntry({menuName, entryText: 'sep'});
+				}
+				{	// Add / Remove
+					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+						// Input all variables
+						let input;
+						let name = '';
+						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+						catch (e) {return;}
+						if (!name.length) {return;}
+						if (name === 'sep') {input = {name};} // Add separator
+						else { // or new entry
+							const pool = inputPool();
+							if (!pool) {return;}
+							input = {name, pool}
+						}
+						// Add entry
+						pools.push(input);
+						// Save as property
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties['pools'][1] = JSON.stringify(pools); // And update property with new value
+						// Presets
+						if (!presets.hasOwnProperty('pools')) {presets.pools = [];}
+						presets.pools.push(input);
+						args.properties['presets'][1] = JSON.stringify(presets);
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					{
+						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
+						pools.forEach( (pool, index) => {
+							const entryText = (pool.name === 'sep' ? '------(separator)------' : (pool.name.length > 40 ? pool.name.substring(0,40) + ' ...' : pool.name));
+							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
+								pools.splice(index, 1);
+								args.properties['pools'][1] = JSON.stringify(pools);
+								// Presets
+								if (presets.hasOwnProperty('pools')) {
+									presets.macros.splice(presets.pools.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(pool);}), 1);
+									if (!presets.pools.length) {delete presets.pools;}
+									args.properties['presets'][1] = JSON.stringify(presets);
+								}
+								overwriteProperties(args.properties); // Updates panel
+							}});
+						});
+						if (!pools.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
+							pools = [...poolsDefaults];
+							args.properties['pools'][1] = JSON.stringify(pools);
+							// Presets
+							if (presets.hasOwnProperty('pools')) {
+								delete presets.pools;
+								args.properties['presets'][1] = JSON.stringify(presets);
+							}
+							overwriteProperties(args.properties); // Updates panel
+						}});
+					}
+				}
 			}});
 		}
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
@@ -2237,13 +2453,21 @@ console.log(forcedQueryMenusEnabled)
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						saveMacro();
 						args.properties['macros'][1] = JSON.stringify(macros);
+						// Presets
+						if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
+						presets.macros.push(macro);
+						args.properties['presets'][1] = JSON.stringify(presets);
 						overwriteProperties(args.properties); // Updates panel
 					}
 				}});
 				menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					saveMacro();
+					const macro = saveMacro();
 					args.properties['macros'][1] = JSON.stringify(macros);
+					// Presets
+					if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
+					presets.macros.push(macro);
+					args.properties['presets'][1] = JSON.stringify(presets);
 					overwriteProperties(args.properties); // Updates panel
 				}});
 				// Delete
@@ -2254,6 +2478,12 @@ console.log(forcedQueryMenusEnabled)
 						menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 							propMacros.splice(index, 1);
 							args.properties['macros'][1] = JSON.stringify(propMacros);
+							// Presets
+							if (presets.hasOwnProperty('macros')) {
+								presets.macros.splice(presets.macros.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(macro);}), 1);
+								if (!presets.macros.length) {delete presets.macros;}
+								args.properties['presets'][1] = JSON.stringify(presets);
+							}
 							overwriteProperties(args.properties); // Updates panel
 							macros = propMacros; // Discards any non saved macro
 						}});
@@ -2263,6 +2493,10 @@ console.log(forcedQueryMenusEnabled)
 					menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 						propMacros = [...macrosDefaults];
 						args.properties['macros'][1] = JSON.stringify(propMacros);
+						if (presets.hasOwnProperty('macros')) {
+							delete presets.macros;
+							args.properties['presets'][1] = JSON.stringify(presets);
+						}
 						overwriteProperties(args.properties); // Updates panel
 						macros = []; // Discards any non saved macro
 					}});
@@ -2287,6 +2521,7 @@ console.log(forcedQueryMenusEnabled)
 				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', window.Name, args.properties['playlistLength'][1]));
 				if (args.properties['playlistLength'][1] === input) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
+				defaultArgs.playlistLength = input;
 				args.properties['playlistLength'][1] = input;
 				overwriteProperties(args.properties); // Updates panel
 			}});
@@ -2301,6 +2536,7 @@ console.log(forcedQueryMenusEnabled)
 					if (args.properties['forcedQuery'][1] === input) {return;}
 					try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
+					defaultArgs.playlistLength = input;
 					args.properties['forcedQuery'][1] = input;
 					overwriteProperties(args.properties); // Updates panel
 				}});
@@ -2323,7 +2559,48 @@ console.log(forcedQueryMenusEnabled)
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
-		{	// Menu to configure properties: reset all
+		{	// Import presets
+			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				let file;
+				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', window.Name, folders.data + 'playlistTools_presets.json', true);}
+				catch (e) {return;}
+				if (!file.length) {return;}
+				if (!_isFile(file)) {fb.ShowPopupMessage('File does not exist: \n' + file, scriptName)}
+				const fileText = _open(file);
+				if (fileText.length) {
+					const newPresets = JSON.parse(fileText);
+					Object.keys(newPresets).forEach((key) => {
+						// Merge with current presets
+						if (presets.hasOwnProperty(key)) {presets[key] = [...presets[key], ...newPresets[key]];}
+						else {presets[key] = newPresets[key];}
+						// Add menus
+						let currentMenu = JSON.parse(args.properties[key][1]);
+						currentMenu = currentMenu.concat(presets[key]);
+						args.properties[key][1] = JSON.stringify(currentMenu);
+					});
+					// Save all
+					args.properties['presets'][1] = JSON.stringify(presets);
+					overwriteProperties(args.properties); // Updates panel
+				}
+			}});
+		}
+		{	// Export all presets
+			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				let answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, window.Name, popup.question + popup.yes_no);
+				if (answer === popup.yes) {
+					const path = folders.data + 'playlistTools_presets.json'
+					_recycleFile(path);
+					if (_save(path, JSON.stringify(presets))) {
+						_explorer(path);
+					}
+				}
+			}});
+		}
+		{	// Reset all config
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -2467,6 +2744,8 @@ function updateMenuProperties(propObject) {
 			// Specific
 		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
 	});
+	// Presets
+	presets = JSON.parse(propObject['presets'][1]);
 }
 
 function focusFlags() {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}

@@ -1,0 +1,5 @@
+﻿Reorders selection to avoid consecutive tracks with the same configurable tag.
+Can be used to scatter instrumental tracks, an specific genre, mood, etc.
+
+Whenever the selection has so many tracks with that tag value, than scattering them
+would not allow having at least one different valued track between them, it's left as is.
