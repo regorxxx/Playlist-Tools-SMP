@@ -25,6 +25,8 @@
 - Search same by tags...\Add new entry: error when remap tags was empty.
 - Query filtering\Filter playlist by... (query): last argument used was not being saved.
 - Configuration: setting global forced query or playlist length only updated the properties panel, thus not applying the changes until next script reload.
+- Missing font fontawesome-webfont (just cosmetic arrow on button).
+- Advanced Sort...\Incremental genre/style (DynGenre): Missing sort_by_dyngenre.js file, so menu entry was not missing on previous release.
 
 ## [1.2.0] - 2021-05-28
 ### Added
