@@ -1,8 +1,9 @@
-Playlist creation similar to Random Pools component. Multiple source playlists (pools) can be set to fill a destination playlist. 
-Configurable selection length per playlist, picking method (random, from start, from end) and final sorting of destination playlist. 
+Playlist creation similar to Random Pools component. Multiple playlists \ library sources (pools) can be set to fill a destination playlist. 
+Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist. 
 
 Usage:
 	- Set source playlist(s) and other parameters.
 	- (Playlists matching the source names must exist to be used)
-	- (Playlist(s) with less tracks than pool(s) size use all tracks)
+	- (As source name, _LIBRARY_#, where # is a number, may be used)
+	- (Source(s) with less tracks than pool(s) size will use all tracks)
 	- Final playlist is created with tracks from pools. 

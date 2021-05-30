@@ -334,7 +334,7 @@ var presets = {};
 								catch (e) {return;}
 								let bOnlyRemap = false;
 								if (remap.length) {
-									let answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
+									const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
 									if (answer === popup.yes) {bOnlyRemap = true;}
 								}
 								input = {name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap}};
@@ -2235,15 +2235,26 @@ var presets = {};
 			const do_pool = (pool) => {
 				let handleListTo = new FbMetadbHandleList();
 				Object.keys(pool.fromPls).forEach((plsName) => {
-					const idxFrom = plman.FindPlaylist(plsName);
-					if (idxFrom === -1) {
-						// Ask playlist manager instances for playlists with that name!
-						// Don't use callbacks (to ask for pls name) since they are async, instead look for playlist files with that name directly here
-						// And get playlist paths with callbacks at script init + custom folder
-						return;
+					let handleListFrom;
+					if (!plsName.startsWith('_LIBRARY_')) { // Playlist Source
+						const idxFrom = plman.FindPlaylist(plsName);
+						if (idxFrom === -1) {
+							// Ask playlist manager instances for playlists with that name!
+							// Don't use callbacks (to ask for pls name) since they are async, instead look for playlist files with that name directly here
+							// And get playlist paths with callbacks at script init + custom folder
+							return;
+						}
+						handleListFrom = plman.GetPlaylistItems(idxFrom);
+					} else { // Library Source
+						handleListFrom = fb.GetLibraryItems();
 					}
-					let handleListFrom = plman.GetPlaylistItems(idxFrom);
-					const num = pool.fromPls[plsName];
+					 // Filter
+					const query = pool.query ? pool.query[plsName] : '';
+					if (query.length && query.toUpperCase() !== 'ALL') {
+						handleListFrom = fb.GetQueryItems(handleListFrom, query);
+					}
+					// Pick
+					const num = pool.fromPls[plsName] || Infinity;
 					handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, handleListFrom.Count);
 					handleListTo.InsertRange(handleListTo.Count, handleListFrom);
 				});
@@ -2251,47 +2262,72 @@ var presets = {};
 				if (plman.IsPlaylistLocked(true)) {return;}
 				plman.ClearPlaylist(idxTo);
 				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
-				plman.SortByFormat(idxTo, pool.sort);
+				if (pool.sort && pool.sort.length) {
+					plman.SortByFormat(idxTo, pool.sort);
+				}
 				plman.ActivePlaylist = idxTo;
 			}
 			const inputPool = () => {
+				// Sources
 				let fromPls;
-				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\n(playlist,# tracks;playlist,# tracks)', window.Name, 'Playlist A,10;Playlist B,20', true);}
+				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', window.Name, 'Playlist A,10;Playlist B,20', true);}
 				catch (e) {return;}
-				if (!fromPls.length) {return;}
-				if (!fromPls.indexOf(',')) {return;}
+				if (!fromPls.length) {console.log('Input was empty'); return;}
+				if (fromPls.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
 				fromPls = fromPls.split(';');
-				fromPls = fromPls.map((pair) => {
+				fromPls = fromPls.map((pair, index) => {
 					pair = pair.split(',');
+					if (!pair[0].length) {pair[0] = '_LIBRARY_' + index}
 					pair[1] = Number(pair[1]);
 					return pair;
 				});
-				if (fromPls.some((pair) => {return pair.length % 2 !== 0})) {return;}
-				if (fromPls.some((pair) => {return isNaN(pair[1])})) {return;}
+				if (fromPls.some((pair) => {return pair.length % 2 !== 0})) {console.log('Input was not a list of pairs separated \';\''); return;}
+				if (fromPls.some((pair) => {return isNaN(pair[1])})) {console.log('# tracks was not a number'); return;}
 				fromPls = Object.fromEntries(fromPls);
+				// Queries
+				let query;
+				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL'}, ''), true);}
+				catch (e) {return;}
+				if (!query.length) {console.log('Input was empty'); return;}
+				if (query.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
+				query = query.split(';');
+				query = query.map((pair) => {
+					pair = pair.split(',');
+					if (!pair[1].length) {pair[1] = 'ALL'}
+					return pair;
+				});
+				// TODO Check queries
+				if (query.some((pair) => {return pair.length % 2 !== 0})) {console.log('Input was not a list of pairs separated \';\''); return;}
+				if (query.some((pair) => {return !fromPls.hasOwnProperty(pair[0])})) {console.log('Playlist named did not match with sources'); return;}
+				query = Object.fromEntries(query);
+				// Picking Method
 				let pickMethod;
 				const pickMethodsKeys = Object.keys(pickMethods);
 				try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
 				catch (e) {return;}
-				if (!pickMethod.length) {return;}
-				if (!pickMethod.indexOf(',')) {return;}
+				if (!pickMethod.length) {console.log('Input was empty'); return;}
+				if (pickMethod.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
 				pickMethod = pickMethod.split(';');
 				pickMethod = pickMethod.map((pair) => {
 					pair = pair.split(',');
 					pair[1] = pair[1].toLowerCase();
 					return pair;
 				});
-				if (pickMethod.some((pair) => {return pair.length % 2 !== 0})) {return;}
-				if (pickMethod.some((pair) => {return pickMethodsKeys.indexOf(pair[1]) === -1})) {return;}
+				if (pickMethod.some((pair) => {return pair.length % 2 !== 0})) {console.log('Input was not a list of pairs separated \';\''); return;}
+				if (pickMethod.some((pair) => {return pickMethodsKeys.indexOf(pair[1]) === -1})) {console.log('Picking method not recognized'); return;}
 				pickMethod = Object.fromEntries(pickMethod);
+				// Destination
 				let toPls;
 				try {toPls = utils.InputBox(window.ID, 'Enter playlist destination:', window.Name, 'Playlist C', true);}
 				catch (e) {return;}
-				if (!toPls.length) {return;}
+				if (!toPls.length) {console.log('Input was empty'); return;}
+				// Sort
 				let sort = '';
 				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', window.Name, '%playlist_index%', true);}
 				catch (e) {return;}
-				return {fromPls, toPls, sort, pickMethod};
+				// TODO: Test sorting
+				// Object
+				return {fromPls, query, toPls, sort, pickMethod};
 			}
 			// Menus
 			menu.newEntry({menuName, entryText: 'Use playlist(s) as pool(s) for final playlist:', func: null, flags: MF_GRAYED});
@@ -2568,7 +2604,7 @@ var presets = {};
 				catch (e) {return;}
 				if (!file.length) {return;}
 				if (!_isFile(file)) {fb.ShowPopupMessage('File does not exist: \n' + file, scriptName)}
-				const fileText = _open(file);
+				const fileText = _open(file, 65001);
 				if (fileText.length) {
 					const newPresets = JSON.parse(fileText);
 					Object.keys(newPresets).forEach((key) => {
@@ -2590,12 +2626,13 @@ var presets = {};
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				let answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, window.Name, popup.question + popup.yes_no);
+				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, window.Name, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
 					const path = folders.data + 'playlistTools_presets.json'
 					_recycleFile(path);
 					if (_save(path, JSON.stringify(presets))) {
 						_explorer(path);
+						console.log('Playlist tools: presets backup saved at ' + path);
 					}
 				}
 			}});
@@ -2604,8 +2641,19 @@ var presets = {};
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				let answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, window.Name, popup.question + popup.yes_no);
+				const path = folders.data + 'playlistTools_presets.json';
+				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, window.Name, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
+					const answerPresets = WshShell.Popup('Do you want to maintain your own presets?\n(\'No\' will create a backup file in ' + path + ')', 0, window.Name, popup.question + popup.yes_no);
+					let copy;
+					if (answerPresets === popup.yes) {
+						copy = {...presets};
+					} else {
+						_recycleFile(path);
+						if (_save(path, JSON.stringify(presets))) {
+							console.log('Playlist tools: presets backup saved at ' + path);
+						}
+					}
 					// For the current instance
 					for (let key in args.properties) {
 						args.properties[key][1] = menu_properties[key][1];
@@ -2620,6 +2668,19 @@ var presets = {};
 						overwriteProperties(panelProperties); // Updates panel
 					}
 					loadProperties(); // Refresh
+					// Restore presets
+					if (answerPresets === popup.yes) {
+						presets = copy;
+						Object.keys(presets).forEach((key) => {
+							// Add menus
+							let currentMenu = JSON.parse(args.properties[key][1]);
+							currentMenu = currentMenu.concat(presets[key]);
+							args.properties[key][1] = JSON.stringify(currentMenu);
+						});
+						// Save all
+						args.properties['presets'][1] = JSON.stringify(presets);
+						overwriteProperties(args.properties); // Updates panel
+					}
 				}
 			}});
 		}
@@ -2631,10 +2692,10 @@ var presets = {};
 			let iCount = 0;
 			if (Object.keys(readmes).length) {
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
-					if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
-						const readme = utils.ReadTextFile(value, 65001);
+					if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) { 
+						const readme = utils.ReadTextFile(value, 65001); // Executed on script load
 						if (readme.length) {
-							menu.newEntry({menuName: subMenuName, entryText: key, func: () => {
+							menu.newEntry({menuName: subMenuName, entryText: key, func: () => { // Executed on menu click
 								if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
 									const readme = utils.ReadTextFile(value, 65001);
 									if (readme.length) {fb.ShowPopupMessage(readme, key);}

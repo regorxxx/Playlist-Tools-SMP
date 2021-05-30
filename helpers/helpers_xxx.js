@@ -291,9 +291,9 @@ function _restoreFile(file) {
 	}
 }
 
-function _open(file) {
+function _open(file, codePage = 0) {
 	if (_isFile(file)) {
-		return utils.ReadTextFile(file);
+		return utils.ReadTextFile(file, codePage);
 	} else {
 		return '';
 	}

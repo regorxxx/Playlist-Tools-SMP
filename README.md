@@ -16,6 +16,7 @@ It's impossible to offer a complete list of the things that can be done with the
 The collection of scripts provided here are not only a direct replacement of [Random Pools](https://www.foobar2000.org/components/view/foo_random_pools) or [MusicIp](https://www.spicefly.com/section.php?section=musicip) but an improvement and generalization in many aspects of those tools.
 
 * **Macros:** allows to record and save the menus entries used, as a macro, to be called later. Automatic custom playlist creation and edits without limits. Works with all tools. (only limitation are popups, which still require user input)
+* **Pools:** playlist creation similar to Random Pools component. Multiple playlists \ library sources (pools) can be set to fill a destination playlist. Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist.
 * **Fully configurable submenu entries:** shift + left click on menu button allows to switch tools functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
 * **User configurable presets:** many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality.
 
@@ -84,7 +85,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx-scripts\tags_automation.js
 	* **Playlist Revive:** replaces and expands playlist revive component.  
 		.\xxx-scripts\playlist_revive.js
-* **Pools (wip):** use playlist(s) as source pool(s) for a destination playlist.  
+* **Pools:** use playlist(s) as source pool(s) for a destination playlist.  
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
 

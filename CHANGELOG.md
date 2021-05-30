@@ -9,15 +9,16 @@
 
 ## [Unreleased][]
 ### Added
-- Pools: playlist creation similar to Random Pools component. Multiple source playlists (pools) can be set to fill a destination playlist. Configurable selection length per playlist, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
+- Pools: playlist creation similar to Random Pools component. Multiple playlists sources (pools) can be set to fill a destination playlist. Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
+- Pools: the library becomes a source when no playlist name is given. In that case the query is used to retrieve items from the library. At that point is equivalent to using a playlist as a source. i.e. you can mix sources using playlists and library, or even using multiple times the library as source. (this is obviously a shorthand to recreate first the source playlists with macros using queries)
 - Presets: entire user preset list can be exported, for editing on a text editor or later importing in another Playlist Tools panel. (Only works for presets added from this release version and future ones)
-- Presets:a preset json file can be imported, merging them with current ones (without overwritting).
+- Presets: a presets json file can be imported, merging them with current ones (without overwritting).
 - Readmes: Sscatter by tags readme added.
 ### Changed
 - Query filtering: some new default presets.
 - Dynamic Queries...: now allow working with multivalue tags by default. i.e. GENRE IS #GENRE# translates into (GENRE IS Folk) AND (GENRE IS World) automatically. When using using TF expressions, multivalue tags are not converted, thus the expression is executed 'as is'.
 - Query filtering\Filter playlist by... (query): also converts multivalue tags when using dynamic queries.
-- Reset all configuration: resetting all no longer deletes all user presets, but asks to merge them with the default ones (or discards them). Presets can also be exported (previous change) before resetting and later re-imported to do essentially the same.
+- Reset all configuration: resetting all no longer deletes all user presets, but asks to merge them with the default ones (or discards them). Presets can also be exported (previous change) before resetting and later re-imported to do essentially the same. If merging is not chosen, then a backup is automatically created.
 - Readmes: all readmes entries now follow the same name of the menus automatically.
 ### Removed
 ### Fixed
