@@ -14,7 +14,6 @@
 ### Removed
 ### Fixed
 
-
 ## [1.3.0] - 2021-05-31
 ### Added
 - Pools: playlist creation similar to Random Pools component. Multiple playlists sources (pools) can be set to fill a destination playlist. Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
@@ -40,7 +39,7 @@
 - Query filtering\Filter playlist by... (query): last argument used was not being saved.
 - Configuration: setting global forced query or playlist length only updated the properties panel, thus not applying the changes until next script reload.
 - Missing font fontawesome-webfont (just cosmetic arrow on button).
-- Advanced Sort...\Incremental genre/style (DynGenre): Missing sort_by_dyngenre.js file, so menu entry was not missing on previous release.
+- Advanced Sort...\Incremental genre/style (DynGenre): Missing sort_by_dyngenre.js file, so menu entry was missing on previous release.
 - Changing Global Forced Query via menus also changed Global Playlist Length.
 
 ## [1.2.0] - 2021-05-28
