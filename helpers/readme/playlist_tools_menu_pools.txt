@@ -1,9 +1,19 @@
-Playlist creation similar to Random Pools component. Multiple playlists \ library sources (pools) can be set to fill a destination playlist. 
-Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist. 
+Playlist creation similar to Random Pools component.
+Multiple playlists \ library sources (pools) can be set to fill a destination playlist. 
+Configurable selection length per source, query filtering, 
+picking method (random, from start, from end) and final sorting of destination playlist. 
 
 Usage:
 	- Set source playlist(s) and other parameters.
-	- (Playlists matching the source names must exist to be used)
-	- (As source name, _LIBRARY_#, where # is a number, may be used)
-	- (Source(s) with less tracks than pool(s) size will use all tracks)
-	- Final playlist is created with tracks from pools. 
+		- Playlists matching the source names must exist to be used
+		- As source name, _LIBRARY_#, where # is a number, may be used.
+		- The query will be applied to the current source to get elegible tracks.
+		- Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (*)
+		- Duplicates are removed after query (by artist|title|date).
+		- Any track already selected for final playlist in previous steps is removed.
+		- Finally tracks are choosen using the picking method set.
+		- Source(s) with less tracks than pool(s) size will use all tracks.
+	- Final playlist is created with tracks from all pools. 
+	
+(*) For a selected rock track, 'GENRE IS #GENRE#' would translate into 'GENRE IS Rock'.
+Thus using the currently selected track to define the pool behavior. See 'Dynamic Query'.

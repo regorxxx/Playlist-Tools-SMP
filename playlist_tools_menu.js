@@ -6,42 +6,7 @@
 	Merges different playlist tools in one menu, called when pressing the button.
 	If any script or plugin is missing, then the menu gets created without those entries.
 	So the menu is created dynamically according to the foobar user's config.
-	
-	Currently contains pre-defined use-cases for these scripts:
-	- Most played tracks from...
-		.\xxx-scripts\top_tracks.js
-		.\xxx-scripts\top_tracks_from_date.js
-	- Top Rated tracks from..
-		.\xxx-scripts\top_rated_tracks.js
-	- Same by...
-		.\xxx-scripts\search_same_by.js
-	- Similar by... 
-		.\xxx-scripts\search_bydistance.js
-	- Special Playlists... (contains functionality from the other scripts)
-		.\xxx-scripts\search_bydistance.js
-		.\xxx-scripts\search_same_by.js
-	- Tools...
-		+ Remove duplicates
-			.\xxx-scripts\remove_duplicates.js
-		+ Query filtering
-			.\xxx-scripts\filter_by_query.js
-		+ Harmonic mix
-			.\xxx-scripts\harmonic_mixing.js
-		+ Sort by key
-			.\xxx-scripts\sort_by_key.js
-		+ Scatter by tags
-			.\xxx-scripts\scatter_by_tags.js
-		+ Check tags
-			.\xxx-scripts\check_library_tags.js
-		+ Write tags
-			.\xxx-scripts\tags_automation.js
-		+ Find track(s) in...
-			.\xxx-scripts\find_remove_from_playlists.js
-		+ Remove track(s) from...
-			.\xxx-scripts\find_remove_from_playlists.js
-		+ Playlist Revive
-			.\xxx-scripts\playlist_revive.js
-	
+		
 	NOTE: menus are enclosed within {} scopes, so they can be easily rearranged, added or removed
 	without affecting the other menus. Only exception to this rule are the menus named 'specialMenu'
 	and 'configMenu', sub-menu collecting different entries from multiple scripts; They can be moved the 
@@ -2128,7 +2093,7 @@ var presets = {};
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({menuName: subMenuName, entryText: getTagsAutomationDescription, func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText:'Add tags on batch to selected tracks', func: tagsAutomation, flags: focusFlags});
+					menu.newEntry({menuName: subMenuName, entryText: 'Add tags on batch to selected tracks', func: tagsAutomation, flags: focusFlags});
 					menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
@@ -2192,6 +2157,45 @@ var presets = {};
 							overwriteProperties(args.properties); // Updates panel
 						}});
 					}
+					menu.newEntry({menuName, entryText: 'sep'});
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			}
+		}
+		{	// Playlist History
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\playlist_history.js';
+			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+				const name = 'Playlist History';
+				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+					include(scriptPath);
+					const subMenuName = menu.newMenu(name, menuName);
+					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist', func: () => {
+						const idx = getPlaylistIndexArray(plsHistory[1].name);
+						if (idx.length) {
+							if (idx.length === 1 && idx[0] !== -1) {
+								plman.ActivePlaylist = idx[0];
+							} else if (idx.indexOf(plsHistory[1].idx) !== -1) {
+								plman.ActivePlaylist = plsHistory[1].idx;
+							}
+						}
+					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newCondEntry({entryText: 'Playlist History... (cond)', condFunc: () => {
+						const [, ...list] = plsHistory;
+						list.forEach( (pls) => {
+							menu.newEntry({menuName: subMenuName, entryText: pls.name, func: () => {
+								const idx = getPlaylistIndexArray(pls.name);
+								if (idx.length) {
+									if (idx.length === 1 && idx[0] !== -1) {
+										plman.ActivePlaylist = idx[0];
+									} else if (idx.indexOf(pls.idx) !== -1) {
+										plman.ActivePlaylist = pls.idx;
+									}
+								}
+							}});
+						});
+					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		}
@@ -2208,14 +2212,33 @@ var presets = {};
 		{	// Automate tags
 			const staticPools = [
 			];
+			const plLen = defaultArgs.playlistLength;
+			const plLenHalf = Math.ceil(plLen / 2);
+			const plLenQuart = Math.ceil(plLen / 4);
 			let pools = [
-				{name: 'A+B -> C', pool: {
-					fromPls: {'Playlist A': 10, 'Playlist B': 20}, 
-					toPls: 'Playlist C', 
-					sort: '%playlist_index%',
-					pickMethod: {'Playlist A': 'random', 'Playlist B': 'random'}
+				{name: 'Top tracks mix', pool: {
+					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
+					query: {_LIBRARY_0: '%rating% EQUAL 3', _LIBRARY_1: '%rating% EQUAL 4', _LIBRARY_2: '%rating% EQUAL 5'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Top tracks mix', 
+					sort: '',
+					}},
+				{name: 'Current genre/style and top tracks', pool: {
+					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
+					query: {_LIBRARY_0: 'GENRE IS #GENRE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_1: 'STYLE IS #STYLE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_2: '%rating% EQUAL 5'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Current genre/style and top tracks', 
+					sort: '',
+					}},
+				{name: 'Current genre/style and instrumentals', pool: {
+					fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
+					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %rating% EQUAL 5)', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Current genre/style and instrumentals', 
+					sort: '',
 					}}
 			];
+			
 			let selArg = {...pools[0]};
 			const poolsDefaults = [...pools];
 			// Create new properties with previous args
@@ -2242,17 +2265,28 @@ var presets = {};
 							// Ask playlist manager instances for playlists with that name!
 							// Don't use callbacks (to ask for pls name) since they are async, instead look for playlist files with that name directly here
 							// And get playlist paths with callbacks at script init + custom folder
+							console.log('Playlist tools Pools: source -> Not found');
 							return;
 						}
+						console.log('Playlist tools Pools: source -> ' + plsName);
 						handleListFrom = plman.GetPlaylistItems(idxFrom);
 					} else { // Library Source
 						handleListFrom = fb.GetLibraryItems();
+						console.log('Playlist tools Pools: source -> Library');
 					}
-					 // Filter
-					const query = pool.query ? pool.query[plsName] : '';
+					// Filter
+					const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
 					if (query.length && query.toUpperCase() !== 'ALL') {
-						handleListFrom = fb.GetQueryItems(handleListFrom, query);
+						const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
+						if (checkQuery(processedQuery, true)) {
+							console.log('Playlist tools Pools: filter -> ' + processedQuery);
+							handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
+						} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); return;}
 					}
+					// Remove duplicates
+					handleListFrom = do_remove_duplicatesV2(handleListFrom);
+					// Remove tracks on destination list
+					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});
 					// Pick
 					const num = pool.fromPls[plsName] || Infinity;
 					handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, handleListFrom.Count);
@@ -2260,9 +2294,10 @@ var presets = {};
 				});
 				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
 				if (plman.IsPlaylistLocked(true)) {return;}
+				plman.UndoBackup(idxTo);
 				plman.ClearPlaylist(idxTo);
 				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
-				if (pool.sort && pool.sort.length) {
+				if (typeof pool.sort !== 'undefined') {
 					plman.SortByFormat(idxTo, pool.sort);
 				}
 				plman.ActivePlaylist = idxTo;
@@ -2270,7 +2305,7 @@ var presets = {};
 			const inputPool = () => {
 				// Sources
 				let fromPls;
-				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', window.Name, 'Playlist A,10;Playlist B,20', true);}
+				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', window.Name, Object.keys(pools[0].pool.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pools[0].pool.fromPls[key];}, ''), true);}
 				catch (e) {return;}
 				if (!fromPls.length) {console.log('Input was empty'); return;}
 				if (fromPls.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2286,7 +2321,7 @@ var presets = {};
 				fromPls = Object.fromEntries(fromPls);
 				// Queries
 				let query;
-				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL'}, ''), true);}
+				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
 				catch (e) {return;}
 				if (!query.length) {console.log('Input was empty'); return;}
 				if (query.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2383,6 +2418,7 @@ var presets = {};
 						let name = '';
 						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
 						catch (e) {return;}
+						if (!name.length) {return;}
 						if (!name.length) {return;}
 						if (name === 'sep') {input = {name};} // Add separator
 						else { // or new entry
@@ -2572,7 +2608,7 @@ var presets = {};
 					if (args.properties['forcedQuery'][1] === input) {return;}
 					try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
-					defaultArgs.playlistLength = input;
+					defaultArgs.forcedQuery = input;
 					args.properties['forcedQuery'][1] = input;
 					overwriteProperties(args.properties); // Updates panel
 				}});

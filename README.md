@@ -85,6 +85,8 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx-scripts\tags_automation.js
 	* **Playlist Revive:** replaces and expands playlist revive component.  
 		.\xxx-scripts\playlist_revive.js
+	* **Playlist History:** history of previously active playlists (for macros).  
+		.\xxx-scripts\helpers\playlist_history.js
 * **Pools:** use playlist(s) as source pool(s) for a destination playlist.  
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js

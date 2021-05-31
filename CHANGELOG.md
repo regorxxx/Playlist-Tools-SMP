@@ -2,24 +2,37 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [1.2.0](#110---2021-05-28)
+- [1.3.0](#130---2021-05-31)
+- [1.2.0](#120---2021-05-28)
 - [1.1.0](#110---2021-05-26)
 - [1.0.1](#101---2021-05-02)
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+
+## [1.3.0] - 2021-05-31
+### Added
 - Pools: playlist creation similar to Random Pools component. Multiple playlists sources (pools) can be set to fill a destination playlist. Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist. Arbitrary presets can be added / removed.
-- Pools: the library becomes a source when no playlist name is given. In that case the query is used to retrieve items from the library. At that point is equivalent to using a playlist as a source. i.e. you can mix sources using playlists and library, or even using multiple times the library as source. (this is obviously a shorthand to recreate first the source playlists with macros using queries)
+- Pools: the library becomes a source when no playlist name is given. In that case the query is used to retrieve items from the library. At that point is equivalent to using a playlist as a source. i.e. you can mix sources using playlists and library, or even using multiple times the library as source. (This is obviously a shorthand to recreate first the source playlists with macros using queries)
+- Pools: queries can also use dynamic queries format, where #TAG# is replaced with value for the currently focused track. i.e. it can create dinamic pools where the query changes according to the selection, thus not forcing an specific playlist type. A 'GENRE IS #GENRE#' source would translate into a rock, jazz, ... playlist according to current selecion. (This is obviously a shorthand to recreate first the source playlists with macros using dynamic queries)
 - Presets: entire user preset list can be exported, for editing on a text editor or later importing in another Playlist Tools panel. (Only works for presets added from this release version and future ones)
 - Presets: a presets json file can be imported, merging them with current ones (without overwritting).
 - Readmes: Sscatter by tags readme added.
+- Playlist history: New tool to traverse through the last active playlists by name or simply previous one (useful for macros since you can go back and forth between 2 arbitrary playlists without knowing their names). The tool tries to track playlists even if they are reordered after saving them to the history, only possible if names are unique.
 ### Changed
 - Query filtering: some new default presets.
-- Dynamic Queries...: now allow working with multivalue tags by default. i.e. GENRE IS #GENRE# translates into (GENRE IS Folk) AND (GENRE IS World) automatically. When using using TF expressions, multivalue tags are not converted, thus the expression is executed 'as is'.
+- Dynamic Queries...: now allow working with multivalue tags by default. i.e. 'GENRE IS #GENRE#' translates into '(GENRE IS Folk) AND (GENRE IS World)' automatically. When using using TF expressions, multivalue tags are not converted, thus the expression is executed 'as is'.
+- Dynamic Queries...: standard queries may be added -only- to the end of a dynamic query expression. i.e. 'GENRE IS #GENRE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)' translates into '(GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock) AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'. Merging both types of expressions in other positions will not work as intended.
+- Dynamic Queries...: to work reliably with multiple dynamic queries on the same expression they must be enclosed on parenthesis, that way the code knows up to what point it must expand the queries. i.e. '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#))' translates into '(((GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock)) OR ((STYLE IS Acid Rock) AND (STYLE IS Live)))'. Doing it in any other way will not work as intended.
 - Query filtering\Filter playlist by... (query): also converts multivalue tags when using dynamic queries.
 - Reset all configuration: resetting all no longer deletes all user presets, but asks to merge them with the default ones (or discards them). Presets can also be exported (previous change) before resetting and later re-imported to do essentially the same. If merging is not chosen, then a backup is automatically created.
 - Readmes: all readmes entries now follow the same name of the menus automatically.
+- Readmes: Dynamic Queries's readme updated with examples and usage rules.
 ### Removed
 ### Fixed
 - Search same by tags...\By... (pairs of tags): was using default search paramaters no matter the input.
@@ -28,6 +41,7 @@
 - Configuration: setting global forced query or playlist length only updated the properties panel, thus not applying the changes until next script reload.
 - Missing font fontawesome-webfont (just cosmetic arrow on button).
 - Advanced Sort...\Incremental genre/style (DynGenre): Missing sort_by_dyngenre.js file, so menu entry was not missing on previous release.
+- Changing Global Forced Query via menus also changed Global Playlist Length.
 
 ## [1.2.0] - 2021-05-28
 ### Added
@@ -103,8 +117,9 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.2.0...HEAD
-[1.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.1.0...v1.2.0
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/9df4560...v1.0.0
