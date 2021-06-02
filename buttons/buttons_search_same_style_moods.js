@@ -5,7 +5,7 @@
 	You can configure the number of tracks at properties panel. Also forced query to prefilter tracks.
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\search_same_style_moods.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_same_style_moods.js');
 var prefix = "ss_";
  
 try { //May be loaded along other buttons

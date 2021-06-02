@@ -11,7 +11,7 @@
  */
 
 var prefix = "";
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\tags_automation.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\tags_automation.js');
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Automate Tags', {author:'xxx'});

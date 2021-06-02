@@ -71,19 +71,32 @@ const menusEnabled = JSON.parse(getPropertiesPairs(menu_panelProperties, menu_pr
 const menuDisabled = [];
 var disabledCount = 0;
 
-// forcedQuery menus
+// ForcedQuery menus
 var forcedQueryMenusEnabled = {};
 
-// presets menus
+// Presets menus
 var presets = {};
+
+// Key shortcuts
+// Menu names strip anything after \t
+// Adding new entries here automatically adds them to the associated menu
+window.DlgCode = DLGC_WANTALLKEYS;
+const shortcuts = {
+	searchSame: {keys: 'Shift + S',	mod: 16, val: 83, menu: 'Search same by tags...\\By... (pairs of tags)', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	prevPls: 	{keys: 'Ctrl + R',	mod: 17, val: 82, menu: 'Called: Playlist History\\Previous playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	remDupl: 	{keys: 'Ctrl + D',	mod: 17, val: 68, menu: 'Duplicates and tag filtering\\Remove duplicates by ', func: (s) => {menu.btn_up(void(0), void(0), void(0), s + sortInputDuplic.join(', '))}},
+	quFilter:	{keys: 'Shift + F',	mod: 16, val: 70, menu: 'Query filtering\\Filter playlist by Global forced query', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	harmMix:	{keys: 'Ctrl + H',	mod: 17, val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	deadItm:	{keys: 'Shift + D',	mod: 16, val: 68, menu: 'Playlist Revive\\Find dead items in all playlists', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+}
 
 /* 
 	Menus
 */
 // Top Tracks from year
 {
-	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks_from_date.js';
-	const scriptPathElse = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks.js';
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\top_tracks_from_date.js';
+	const scriptPathElse = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\top_tracks.js';
 	if (utils.CheckComponent('foo_enhanced_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e'))) {
 		const name = 'Most played Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -103,7 +116,7 @@ var presets = {};
 			menu.newEntry({menuName, entryText: 'sep'});
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, 'e')){
 				// All years
-				include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks.js');
+				include(scriptPathElse);
 				menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {do_top_tracks(args);}});
 				menu.newEntry({menuName, entryText: 'sep'});
 			}
@@ -111,7 +124,7 @@ var presets = {};
 				menu.newEntry({menuName, entryText: 'From year... ', func: () => {
 					const selYear = new Date().getFullYear();
 					let input;
-					try {input = Number(utils.InputBox(window.ID, 'Enter year', window.Name, selYear, true));}
+					try {input = Number(utils.InputBox(window.ID, 'Enter year:', window.Name + ': ' + name, selYear, true));}
 					catch (e) {return;}
 					if (!Number.isSafeInteger(input)) {return;}
 					do_top_tracks_from_date({...defaultArgs,  year: input});
@@ -120,7 +133,7 @@ var presets = {};
 			{	// Input menu: last x time
 				menu.newEntry({menuName, entryText: 'From last... ', func: () => {
 					let input;
-					try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), window.Name, '4 WEEKS', true).trim();}
+					try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), window.Name + ': ' + name, '4 WEEKS', true).trim();}
 					catch (e) {return;}
 					if (!input.length) {return;}
 					do_top_tracks_from_date({...defaultArgs,  last: input, bUseLast: true});
@@ -142,7 +155,7 @@ var presets = {};
 
 // Top rated Tracks from year
 {
-	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_rated_tracks.js';
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\top_rated_tracks.js';
 	if (utils.CheckComponent('foo_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e'))) {
 		const name = 'Top rated Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -169,7 +182,7 @@ var presets = {};
 			{	// Input menu
 				menu.newEntry({menuName, entryText: 'From year... ', func: () => {
 					let selYear = new Date().getFullYear();
-					try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', window.Name, selYear, true);}
+					try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', window.Name + ': ' + name, selYear, true);}
 					catch (e) {return;}
 					if (!selYear.length) {return;}
 					selYear = selYear.split(','); // May be a range or a number
@@ -196,7 +209,7 @@ var presets = {};
 
 // Same by...
 {
-	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\search_same_by.js';
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_same_by.js';
 	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		const name = 'Search same by tags...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -261,7 +274,7 @@ var presets = {};
 							args.sameBy = selArg.args.sameBy = convertStringToObject(args.properties['sameByCustomArg'][1], 'number', ',');
 							// Input
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name, convertObjectToString(args.sameBy, ','), true);}
+							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
 							catch (e) {return;}
 							if (!input.length) {return;}
 							// For internal use original object
@@ -280,29 +293,29 @@ var presets = {};
 						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
 							// Input all variables
 							let input;
-							let name = '';
-							try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+							let entryName = '';
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
 							catch (e) {return;}
-							if (name === 'sep') {input = {name};} // Add separator
+							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
-								try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name, convertObjectToString(args.sameBy, ','), true);}
+								try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
 								catch (e) {return;}
 								if (!input.length) {return;}
 								if (input.indexOf(',') === -1) {return;}
 								if (input.indexOf(';') !== -1) {return;}
 								let logic = 'AND';
-								try {logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', window.Name, logic, true);}
+								try {logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', window.Name + ': ' + name, logic, true);}
 								catch (e) {return;}
 								if (!logic.length) {return;}
 								let remap;
-								try {remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', window.Name, '', true);}
+								try {remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', window.Name + ': ' + name, '', true);}
 								catch (e) {return;}
 								let bOnlyRemap = false;
 								if (remap.length) {
-									const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name, popup.question + popup.yes_no);
+									const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name + ': ' + name, popup.question + popup.yes_no);
 									if (answer === popup.yes) {bOnlyRemap = true;}
 								}
-								input = {name, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap}};
+								input = {name: entryName, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap}};
 								// Final check
 								try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
 								catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
@@ -444,7 +457,7 @@ var presets = {};
 							args.query = selArg.query = JSON.parse(args.properties['searchCustomArg'][1]).query;
 							// Input
 							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:', window.Name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:', window.Name + ': ' + name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							// Playlist
@@ -462,26 +475,26 @@ var presets = {};
 						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 							// Input all variables
 							let input;
-							let name = '';
-							try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+							let entryName = '';
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
 							catch (e) {return;}
-							if (!name.length) {return;}
-							if (name === 'sep') {input = {name};} // Add separator
+							if (!entryName.length) {return;}
+							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
 								let query = '';
-								try {query = utils.InputBox(window.ID, 'Enter query:', window.Name, args.query, true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:', window.Name + ': ' + name, args.query, true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return}
 								let tfo = '';
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', window.Name, '', true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', window.Name + ': ' + name, '', true);}
 								catch (e) {return;}
 								let direction = 1;
-								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', window.Name, 1, true));}
+								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', window.Name + ': ' + name, 1, true));}
 								catch (e) {return;}
 								if (isNaN(direction)) {return;}
 								direction = direction > 0 ? 1 : -1;
-								input = {name, query, sort: {tfo, direction}};
+								input = {name: entryName, query, sort: {tfo, direction}};
 							}
 							// Add entry
 							queryFilter.push(input);
@@ -532,7 +545,7 @@ var presets = {};
 
 // Dynamic queries...
 {
-	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\dynamic_query.js';
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\dynamic_query.js';
 	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		const name = 'Dynamic Queries...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -586,7 +599,7 @@ var presets = {};
 							args.query = selArg.query = args.properties['dynamicQueriesCustomArg'][1];
 							// Input
 							let query = '';
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							if (!fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, scriptName); return;}
@@ -605,25 +618,25 @@ var presets = {};
 						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							// Input all variables
 							let input;
-							let name = '';
-							try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+							let entryName = '';
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
 							catch (e) {return;}
-							if (!name.length) {return;}
-							if (name === 'sep') {input = {name};} // Add separator
+							if (!entryName.length) {return;}
+							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
 								let query = '';
-								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, selArg.query, true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, selArg.query, true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								let tfo = '';
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', window.Name, '', true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', window.Name + ': ' + name, '', true);}
 								catch (e) {return;}
 								let direction = 1;
-								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', window.Name, 1, true));}
+								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', window.Name + ': ' + name, 1, true));}
 								catch (e) {return;}
 								if (isNaN(direction)) {return;}
 								direction = direction > 0 ? 1 : -1;
-								input = {name, query, sort: {tfo, direction}};
+								input = {name: entryName, query, sort: {tfo, direction}};
 								// Final check
 								try {if (!do_dynamic_query({query, bSendToPls: false})) {throw 'error';}}
 								catch (e) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return;}
@@ -678,7 +691,7 @@ var presets = {};
 
 // Similar by...
 {
-	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\search_bydistance.js';
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js';
 	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		const nameGraph = 'Search similar by Graph...';
 		const nameDynGenre = 'Search similar by DynGenre...';
@@ -923,7 +936,7 @@ var presets = {};
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		let menuName = menu.newMenu(name);
 		{	// Remove Duplicates
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\remove_duplicates.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Duplicates and tag filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -933,6 +946,8 @@ var presets = {};
 					var sortInputDuplic = ['title', 'artist', 'date'];
 					var sortInputFilter = ['title', 'artist', 'date'];
 					var nAllowed = 2;
+					// const shortcut = (shortcuts.hasOwnProperty('remDupl') && shortcuts.remDupl.keys.length ? '\t' + shortcuts.remDupl.keys : '');
+					const shortcut = '';
 					// Create new properties with previous args
 					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
 					menu_properties['sortInputFilter'] = [menuName + '\\' + name + ' Tags to filter playlists', sortInputFilter.join(',')];
@@ -944,24 +959,24 @@ var presets = {};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Remove duplicates by ' + sortInputDuplic.join(', ');}, func: () => {do_remove_duplicatesV2(null, null, sortInputDuplic);}, flags: playlistCountFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Remove duplicates by ' + sortInputDuplic.join(', ') + shortcut;}, func: () => {do_remove_duplicatesV2(null, null, sortInputDuplic);}, flags: playlistCountFlags});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')';}, func: () => {do_remove_duplicatesV3(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
 						let tags;
-						try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputDuplic.join(','), true);}
+						try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name + ': ' + name, sortInputDuplic.join(','), true);}
 						catch (e) {return;}
 						if (!tags.length) {return;}
 						tags = tags.split(',').filter((val) => val);
 						let n;
-						try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name, nAllowed, true));}
+						try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name + ': ' + name, nAllowed, true));}
 						catch (e) {return;}
 						if (!Number.isSafeInteger(n)) {return;}
 						do_remove_duplicatesV3(null, null, tags, n);
 					}, flags: playlistCountFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputDuplic.join(','));
+						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name + ': ' + name, sortInputDuplic.join(','));
 						if (sortInputDuplic.join(',') === input) {return;}
 						if (!input.length) {return;}
 						sortInputDuplic = input.split(',').filter((n) => n);
@@ -970,7 +985,7 @@ var presets = {};
 						overwriteProperties(args.properties); // Updates panel
 					}});
 					menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name, sortInputFilter.join(','));
+						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name + ': ' + name, sortInputFilter.join(','));
 						if (sortInputFilter.join(',') === input) {return;}
 						if (!input.length) {return;}
 						sortInputFilter = input.split(',').filter((n) => n);
@@ -979,7 +994,7 @@ var presets = {};
 						overwriteProperties(args.properties); // Updates panel
 					}});
 					menu.newEntry({menuName: subMenuName, entryText: 'Set number allowed (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name, nAllowed));
+						const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name + ': ' + name, nAllowed));
 						if (nAllowed === input) {return;}
 						if (!Number.isSafeInteger(input)) {return;}
 						nAllowed = input;
@@ -991,7 +1006,7 @@ var presets = {};
 			}
 		}
 		{	// Filter by Query
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\filter_by_query.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\	filter_by_query.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Query filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -1045,7 +1060,7 @@ var presets = {};
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = args.properties['queryFilterCustomArg'][1];
 							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							let focusHandle = fb.GetFocusItem(true);
@@ -1061,21 +1076,21 @@ var presets = {};
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							let input;
-							let name;
-							try {name = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', window.Name, '', true);}
+							let entryName;
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
 							catch (e) {return;}
-							if (!name.length) {return;}
-							if (name === 'sep') {input = {name};} // Add separator
+							if (!entryName.length) {return;}
+							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else {
 								let query;
-								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name, '', true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, '', true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
 									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 								}
-								input = {name, query};
+								input = {name: entryName, query};
 							}
 							queryFilter.push(input);
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -1121,7 +1136,7 @@ var presets = {};
 			}
 		}
 		{	// Create harmonic mix from playlist
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\harmonic_mixing.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\harmonic_mixing.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Harmonic mix';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -1158,7 +1173,7 @@ var presets = {};
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 				menu.newEntry({menuName, entryText: name, func: () => {
 					let input;
-					try {input = utils.InputBox(window.ID, 'Enter name:', window.Name, '', true);}
+					try {input = utils.InputBox(window.ID, 'Enter name:', window.Name + ': ' + name, '', true);}
 					catch (e) {return;}
 					if (!input.length) {return;}
 					plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
@@ -1376,7 +1391,7 @@ var presets = {};
 								args.tfo = selArg.tfo = JSON.parse(args.properties['sortLegacyCustomArg'][1]).tfo;
 								// Input
 								let tfo;
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', window.Name, args.tfo, true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', window.Name + ': ' + name, args.tfo, true);}
 								catch (e) {return;}
 								if (!tfo.length) {return;}
 								// Execute
@@ -1394,17 +1409,17 @@ var presets = {};
 							menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 								// Input all variables
 								let input;
-								let name = '';
-								try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+								let entryName = '';
+								try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
 								catch (e) {return;}
-								if (!name.length) {return;}
-								if (name === 'sep') {input = {name};} // Add separator
+								if (!entryName.length) {return;}
+								if (entryName === 'sep') {input = {name: entryName};} // Add separator
 								else { // or new entry
 									let tfo = '';
-									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', window.Name, args.tfo, true);}
+									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', window.Name + ': ' + name, args.tfo, true);}
 									catch (e) {return;}
 									if (!tfo.length) {return;}
-									input = {name, tfo};
+									input = {name: entryName, tfo};
 								}
 								// Add entry
 								sortLegacy.push(input);
@@ -1459,7 +1474,7 @@ var presets = {};
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				const selArgs = [];
 				{	// Sort by key
-					const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_key.js';
+					const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\sort_by_key.js';
 					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 						include(scriptPath);
 						readmes[name + '\\' + 'Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
@@ -1471,7 +1486,7 @@ var presets = {};
 					}
 				}
 				{	// Sort by DynGenre
-					const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\sort_by_dyngenre.js';
+					const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\sort_by_dyngenre.js';
 					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 						include(scriptPath);
 						readmes[name + '\\' + 'Sort by DynGenre'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_dyngenre.txt';
@@ -1493,7 +1508,7 @@ var presets = {};
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
 		{	// Scatter
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\scatter_by_tags.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\scatter_by_tags.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Scatter by tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -1527,7 +1542,7 @@ var presets = {};
 			}
 		}
 		{	// Remove and find in playlists
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\find_remove_from_playlists.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\find_remove_from_playlists.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const nameNowFind = 'Find now playing track in...';
 				const nameFind = 'Find track(s) in...';
@@ -1756,7 +1771,7 @@ var presets = {};
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 									menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-										const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', window.Name, args.properties['findRemoveSplitSize'][1]));
+										const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', window.Name + ': ' + subMenuName, args.properties['findRemoveSplitSize'][1]));
 										if (args.properties['findRemoveSplitSize'][1] === input) {return;}
 										if (!Number.isSafeInteger(input)) {return;}
 										args.properties['findRemoveSplitSize'][1] = input;
@@ -1792,7 +1807,7 @@ var presets = {};
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 									menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-										const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', window.Name, args.properties['maxSelCount'][1]));
+										const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', window.Name + ': ' + subMenuName, args.properties['maxSelCount'][1]));
 										if (args.properties['maxSelCount'][1] === input) {return;}
 										if (!Number.isSafeInteger(input)) {return;}
 										args.properties['maxSelCount'][1] = input;
@@ -1960,7 +1975,7 @@ var presets = {};
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		let menuName = menu.newMenu(name);
 		{	// Check tags
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\check_library_tags.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\check_library_tags.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Check tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -2041,7 +2056,7 @@ var presets = {};
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Configure tags to check...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', window.Name, args.properties['tagNamesToCheck'][1]);
+						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', window.Name + ': ' + name, args.properties['tagNamesToCheck'][1]);
 						if (args.properties['tagNamesToCheck'][1] === input) {return;}
 						if (!input.length) {return;}
 						args.properties['tagNamesToCheck'][1] = [...new Set(input.split(',').filter(Boolean))].join(','); // filter holes and remove duplicates
@@ -2055,7 +2070,7 @@ var presets = {};
 						const subMenuSecondName = menu.newMenu('Configure dictionary...', subMenuName);
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', window.Name, args.properties['tagNamesExcludedDic'][1]);
+							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', window.Name + ': ' + name, args.properties['tagNamesExcludedDic'][1]);
 							if (args.properties['tagNamesExcludedDic'][1] === input) {return;}
 							if (!input.length) {return;}
 							args.properties['tagNamesExcludedDic'][1] = [...new Set(input.split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
@@ -2063,7 +2078,7 @@ var presets = {};
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Set dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', window.Name, args.properties['dictName'][1]);
+							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', window.Name + ': ' + name, args.properties['dictName'][1]);
 							if (args.properties['dictName'][1] === input) {return;}
 							if (!input.length) {return;}
 							const dictPath = args.properties['dictPath'][1] + '\\' + input;
@@ -2073,7 +2088,7 @@ var presets = {};
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', window.Name, args.properties['dictPath'][1]);
+							const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', window.Name + ': ' + name, args.properties['dictPath'][1]);
 							if (args.properties['dictPath'][1] === input) {return;}
 							if (!input.length) {return;}
 							if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
@@ -2085,7 +2100,7 @@ var presets = {};
 			}
 		}
 		{	// Automate tags
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\tags_automation.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\tags_automation.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Write tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -2099,7 +2114,7 @@ var presets = {};
 			}
 		}
 		{	// Playlist revive
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\playlist_revive.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\playlist_revive.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Playlist Revive';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -2149,7 +2164,7 @@ var presets = {};
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', window.Name, args.properties['simThreshold'][1]));
+							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', window.Name + ': ' + name, args.properties['simThreshold'][1]));
 							if (args.properties['simThreshold'][1] === input) {return;}
 							if (!Number.isFinite(input)) {return;}
 							if (input < 0 || input > 1) {return;}
@@ -2168,10 +2183,12 @@ var presets = {};
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					const subMenuName = menu.newMenu(name, menuName);
+					// const shortcut = (shortcuts.hasOwnProperty('prevPls') && shortcuts.prevPls.keys.length ? '\t' + shortcuts.prevPls.keys : '');
+					const shortcut = '';
 					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist', func: () => {
-						const idx = getPlaylistIndexArray(plsHistory[1].name);
+					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist' + shortcut, func: () => {
+						const idx = plsHistory.length >= 1 ? getPlaylistIndexArray(plsHistory[1].name) : -1;
 						if (idx.length) {
 							if (idx.length === 1 && idx[0] !== -1) {
 								plman.ActivePlaylist = idx[0];
@@ -2180,10 +2197,10 @@ var presets = {};
 							}
 						}
 					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Playlist History... (cond)', condFunc: () => {
 						const [, ...list] = plsHistory;
-						list.forEach( (pls) => {
+						list.forEach( (pls, idx) => {
+							if (!idx) {menu.newEntry({menuName: subMenuName, entryText: 'sep'});}
 							menu.newEntry({menuName: subMenuName, entryText: pls.name, func: () => {
 								const idx = getPlaylistIndexArray(pls.name);
 								if (idx.length) {
@@ -2305,7 +2322,7 @@ var presets = {};
 			const inputPool = () => {
 				// Sources
 				let fromPls;
-				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', window.Name, Object.keys(pools[0].pool.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pools[0].pool.fromPls[key];}, ''), true);}
+				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', window.Name + ': ' + name, Object.keys(pools[0].pool.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pools[0].pool.fromPls[key];}, ''), true);}
 				catch (e) {return;}
 				if (!fromPls.length) {console.log('Input was empty'); return;}
 				if (fromPls.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2321,7 +2338,7 @@ var presets = {};
 				fromPls = Object.fromEntries(fromPls);
 				// Queries
 				let query;
-				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
+				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', window.Name + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
 				catch (e) {return;}
 				if (!query.length) {console.log('Input was empty'); return;}
 				if (query.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2338,7 +2355,7 @@ var presets = {};
 				// Picking Method
 				let pickMethod;
 				const pickMethodsKeys = Object.keys(pickMethods);
-				try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', window.Name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
+				try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', window.Name + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
 				catch (e) {return;}
 				if (!pickMethod.length) {console.log('Input was empty'); return;}
 				if (pickMethod.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2353,12 +2370,12 @@ var presets = {};
 				pickMethod = Object.fromEntries(pickMethod);
 				// Destination
 				let toPls;
-				try {toPls = utils.InputBox(window.ID, 'Enter playlist destination:', window.Name, 'Playlist C', true);}
+				try {toPls = utils.InputBox(window.ID, 'Enter playlist destination:', window.Name + ': ' + name, 'Playlist C', true);}
 				catch (e) {return;}
 				if (!toPls.length) {console.log('Input was empty'); return;}
 				// Sort
 				let sort = '';
-				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', window.Name, '%playlist_index%', true);}
+				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', window.Name + ': ' + name, '%playlist_index%', true);}
 				catch (e) {return;}
 				// TODO: Test sorting
 				// Object
@@ -2415,16 +2432,15 @@ var presets = {};
 					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 						// Input all variables
 						let input;
-						let name = '';
-						try {name = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+						let entryName = '';
+						try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
 						catch (e) {return;}
-						if (!name.length) {return;}
-						if (!name.length) {return;}
-						if (name === 'sep') {input = {name};} // Add separator
+						if (!entryName.length) {return;}
+						if (entryName === 'sep') {input = {name: entryName};} // Add separator
 						else { // or new entry
 							const pool = inputPool();
 							if (!pool) {return;}
-							input = {name, pool}
+							input = {name: entryName, pool}
 						}
 						// Add entry
 						pools.push(input);
@@ -2590,7 +2606,7 @@ var presets = {};
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Set Global Playlist Length... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', window.Name, args.properties['playlistLength'][1]));
+				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', window.Name + ': ' + configMenu, args.properties['playlistLength'][1]));
 				if (args.properties['playlistLength'][1] === input) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
 				defaultArgs.playlistLength = input;
@@ -2604,7 +2620,7 @@ var presets = {};
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Set Global Forced Query... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', window.Name, args.properties['forcedQuery'][1]);
+					const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', window.Name + ': ' + configMenu, args.properties['forcedQuery'][1]);
 					if (args.properties['forcedQuery'][1] === input) {return;}
 					try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
@@ -2636,7 +2652,7 @@ var presets = {};
 			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				let file;
-				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', window.Name, folders.data + 'playlistTools_presets.json', true);}
+				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', window.Name + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
 				catch (e) {return;}
 				if (!file.length) {return;}
 				if (!_isFile(file)) {fb.ShowPopupMessage('File does not exist: \n' + file, scriptName)}
@@ -2662,7 +2678,7 @@ var presets = {};
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, window.Name, popup.question + popup.yes_no);
+				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
 					const path = folders.data + 'playlistTools_presets.json'
 					_recycleFile(path);
@@ -2678,9 +2694,9 @@ var presets = {};
 			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				const path = folders.data + 'playlistTools_presets.json';
-				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, window.Name, popup.question + popup.yes_no);
+				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
-					const answerPresets = WshShell.Popup('Do you want to maintain your own presets?\n(\'No\' will create a backup file in ' + path + ')', 0, window.Name, popup.question + popup.yes_no);
+					const answerPresets = WshShell.Popup('Do you want to maintain your own presets?\n(\'No\' will create a backup file in ' + path + ')', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
 					let copy;
 					if (answerPresets === popup.yes) {
 						copy = {...presets};
@@ -2878,3 +2894,71 @@ function menuTooltip() {
 	}
 	return info;
 }
+
+/* 
+	Shortcuts
+*/
+menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
+	const entryList = menu.getEntries();
+	Object.keys(shortcuts).forEach((key) => {
+		const shortcut = shortcuts[key];
+		const idx = entryList.findIndex((entry) => {
+			if (entry.entryText) {
+				if (_isFunction(entry.entryText)) {
+					if (entry.entryText().indexOf(shortcut.keys) !== -1) {return false;}
+					if (_isFunction(entry.menuName)) {
+						return (entry.menuName() + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+					} else {
+						return (entry.menuName + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+					}
+				} else {
+					if (entry.entryText.indexOf(shortcut.keys) !== -1) {return false;}
+					if (_isFunction(entry.menuName)) {
+						return (entry.menuName() + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
+					} else {
+						return (entry.menuName + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
+					}
+				}
+			}
+		});
+		// if (idx !== -1){console.log(menu.getEntry(idx))}
+		if (idx !== -1) {
+			if (_isFunction(entryList[idx].entryText)) {
+				const copyFunc = entryList[idx].entryText;
+				entryList[idx].entryText = () => {return copyFunc() + '\t' + shortcut.keys;}
+			} else {
+				entryList[idx].entryText += '\t' + shortcut.keys;
+			}
+		}
+	});
+	menu.entryArr = entryList;
+	menu.entryArrTemp = entryList;
+}});
+
+// function on_key_up(vkey) {
+	// keyCallback();
+// }
+
+// function on_key_up(vkey) {
+	// let bDone = false;
+	// Object.keys(shortcuts).forEach((key) => {
+		// if (bDone) {return;}
+		// const shortcut = shortcuts[key];
+		// if (vkey === shortcut.val && (shortcut.mod === -1 || utils.IsKeyPressed(shortcut.mod))) {shortcut.func(shortcut.menu); bDone = true;}
+	// });
+	// console.log(vkey)
+// }
+
+var keyCallbackDate = Date.now();
+function keyCallback() {
+	if (!window.IsVisible) {return;}
+	if (Date.now() - keyCallbackDate <= 500) {return;} // Limit rate to 500 ms
+	let bDone = false;
+	Object.keys(shortcuts).forEach((key) => {
+		if (bDone) {return;}
+		const shortcut = shortcuts[key];
+		if (utils.IsKeyPressed(shortcut.val) && (shortcut.mod === -1 || utils.IsKeyPressed(shortcut.mod))) {shortcut.func(shortcut.menu); bDone = true;}
+	});
+	if (bDone) {keyCallbackDate = Date.now();}
+}
+repeatFn(keyCallback, 100)();

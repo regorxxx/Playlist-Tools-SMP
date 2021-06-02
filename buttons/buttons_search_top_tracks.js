@@ -6,7 +6,7 @@
 	Button name and tooltip text is changed according to that value!
  */
  
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\top_tracks.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\top_tracks.js');
 var prefix = "tt_";
 
 try { //May be loaded along other buttons

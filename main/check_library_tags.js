@@ -49,7 +49,7 @@
  */
  
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
 
 const checkTags_properties = {
 	tagNamesToCheck: 	['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople'],

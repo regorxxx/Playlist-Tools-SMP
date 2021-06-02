@@ -7,7 +7,7 @@
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\remove_duplicates.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
 if (!utils.CheckComponent("foo_playcount")) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
 
 const timeKeys = {Days: daysBetween, Weeks: weeksBetween};

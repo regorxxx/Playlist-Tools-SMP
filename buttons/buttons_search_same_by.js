@@ -61,7 +61,7 @@
 	1 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 1 style.
  */
  
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\search_same_by.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_same_by.js');
 var prefix = "ssby_";
  
  

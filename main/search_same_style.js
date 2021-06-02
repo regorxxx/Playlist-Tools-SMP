@@ -9,7 +9,7 @@
  */
 
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\remove_duplicates.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
  
 function do_search_same_style(	playlistLength = 50, 
 								forcedQuery = "NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad",
