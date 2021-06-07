@@ -11,19 +11,33 @@
 ## [Unreleased][]
 ### Added
 - Search by Distance: 4 sets of buttons, one for each method: GRAPH, WEIGHT, DYNGENRE + ONE CONFIGURABLE (method at properties). (This in addition to the fully customizable buttons)
+- Shortcuts: Some shortcuts have been added (global shortcuts without requiring panel to be in focus). Are shown on the related menu entries tabbed to the right. Experimental feature, read the popup before activating it at config menu.
+- Configuration: pools have togable forced query now.
+- Presets: All Music and Last FM presets which use their genre/mood tags (for Search by tags, Dynamic Queries, Playlist Filters and Pools). Pools moods presets (Happy Mix, Sad Mix, Angry Mix, Chill Mix and Slow Chill Mix). Pools genre presets (Rock mix, Hip-Hop mix, etc.).
+- Macros: 2 macros examples to test all tools (with or without input). Since all input box have defaults, you can simply press enter and process all without reading for testing.
 ### Changed
-- GRAPH: mean distance is now also divided by the numbef of genre/styles of the reference track. That should give more results for tracks with too many tags, while not changing so much for the rest. Distance filters have been updated accordingly in all buttons to reflect the change (and users should do the same in their customized buttons).
-- Search by Distance: All buttons now have not needed properties deleted, to not confuse users about things on properties not being reflected on the buttons
-- Buttons framework: updated.
+- Search by Distance\GRAPH: mean distance is now also divided by the number of genre/styles of the reference track. That should give more results for tracks with too many tags, while not changing so much for the rest. Distance filters have been updated accordingly in all buttons to reflect the change (and users should do the same in their customized buttons).
+- Search by Distance: All buttons have not needed properties deleted to not confuse users about things changed on properties not being reflected on the buttons.
+- Buttons framework: updated for better shortcuts and macros compatibility.
 - Helpers: Moved all external libraries to 'helpers-external'.
 - Helpers: Split 'helpers_xxx.js' file into multiple ones for easier future maintenance.
 - Moved all SMP scripts without UI (those not meant to be loaded directly on panels) to 'main'.
 ### Removed
 ### Fixed
 - Search Same By: button did not work correctly due to bad property parsing.
+- Search Same By: bypass query checking if current track has no tags configured on new entry addition. Previously it was not saved due to checking error.
 - Playlist manipulation\Harmonic mix: was not working on entire playlist, only on selection in both cases.
 - Search by Distance: crashes when trying to access non present properties on the arguments (found while applying the previous changes).
 - Search by Distance: crash when sharing cache between 2 panels due to a typo.
+- Search by Distance: crash when pool was smaller than set playlist length.
+- Pools: using random picking method, sometimes the last element was omitted, thus resulting on (total length - 1) tracks per source choosen.
+- Pools: when only 1 track is retrieved from a source, skips picking methods and adds it directly to the final playlist. Previously it was simply skipped (due to previous bug).
+- Pools: not working when current playlist was empty. It tried to check for dynamic queries even when there was none, thus failing wihtout a track to check against.
+- Pools: random picking method was not really random due to using sort + random method. Using an array shuffle now instead.
+- Select...\Select random...: not really random due to using sort + random method. Using an array shuffle now instead.
+- Search by Distance: in key mixing and random picking not really random due to using sort + random method. Using an array shuffle now instead.
+- Harmonic mix\Harmonic mix from...: not really random due to using sort + random method. Using an array shuffle now instead.
+- Tooltip: missing new line before shortcuts tips.
 
 ## [1.3.0] - 2021-05-31
 ### Added

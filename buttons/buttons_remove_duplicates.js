@@ -14,13 +14,13 @@
 	Tooltip texts are changed according to the variables set!
 */
 
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
 var prefix = "rd_";
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Remove Duplicates Button', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
@@ -33,7 +33,7 @@ prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
 var newButtonsProperties = { //You can simply add new properties here
 	sortInputA:	["Tag or titleformat expression to check", "artist"	],
 	sortInputB:	["Tag or titleformat expression to check", "date"	],
-	sortInputC:	["Tag or titleformat expression to check", "title"		],
+	sortInputC:	["Tag or titleformat expression to check", "title"	],
 	nAllowed:	["Number of duplicates allowed (n + 1)"	 , 0		],
 };
 

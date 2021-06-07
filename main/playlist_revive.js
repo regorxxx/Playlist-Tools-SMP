@@ -18,6 +18,8 @@
  */
  
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
 
 function playlistRevive({
 					playlist = plman.ActivePlaylist,

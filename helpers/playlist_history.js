@@ -1,6 +1,7 @@
 'use strict';
 
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_playlists.js');
 
 const plsHistory = [];
 const plsHistoryMax = 6; // -1 for the head (active playlist)

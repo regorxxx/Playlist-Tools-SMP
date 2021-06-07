@@ -5,12 +5,13 @@
 	You can configure the number of tracks at properties panel. Also forced query to prefilter tracks.
  */
 
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_same_style_moods.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
 var prefix = "ss_";
  
 try { //May be loaded along other buttons
 	window.DefinePanel('Search Similar Button', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';

@@ -10,12 +10,13 @@
 	next step until the user press OK on those popups...and then the files would be blocked being tagged! = Error on next step.
  */
 
-var prefix = "";
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\tags_automation.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+var prefix = "";
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Automate Tags', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';

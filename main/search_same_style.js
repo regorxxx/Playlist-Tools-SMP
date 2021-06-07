@@ -8,7 +8,9 @@
 	NOTE: If you want to use arbitrary tags, use "search_same_by.js" instead.
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_math.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
  
 function do_search_same_style(	playlistLength = 50, 

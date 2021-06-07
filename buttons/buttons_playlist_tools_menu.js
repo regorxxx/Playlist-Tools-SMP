@@ -9,10 +9,10 @@
 
 	NOTE: 'on_mouse_lbtn_up(x, y)' is simply replaced with a button to call the menu.
  */
- 
+
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js'); 
 try { //May be loaded along other buttons
 	window.DefinePanel('Playlist Tools Menu', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
@@ -21,6 +21,7 @@ try { //May be loaded along other buttons
 	console.log('Playlist Tools Menu Button loaded.');
 }
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\playlist_tools_menu.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
 
 var prefix = 'menu_';
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
@@ -40,6 +41,7 @@ var newButtons = {
 		} else {
 			menu.btn_up(this.x, this.y + this.h);
 		}
+		keyCallbackDate = Date.now(); // Update key checking
 	}, null, g_font, menuTooltip, null, null, '\uf149', _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID

@@ -13,7 +13,7 @@ function do_sort_by_key({
 								keyTag = 'key',
 								bSelection = true,
 								sortOrder = 1,
-								bDebug = true,
+								bDebug = false,
 							} = {}) {
 	// Safety checks
 	if (!keyTag.length) {return false;}

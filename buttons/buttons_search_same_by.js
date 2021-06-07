@@ -60,14 +60,16 @@
 	2 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
 	1 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 1 style.
  */
- 
+
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_same_by.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
 var prefix = "ssby_";
  
  
 try { //May be loaded along other buttons
 	window.DefinePanel('Search Same By Button', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
@@ -78,13 +80,13 @@ try { //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
 
 var newButtonsProperties = { //You can simply add new properties here
-	playlistLength: ["Max Playlist Mix length", 50],
-	forcedQuery: ["Forced query to filter database (added to any other internal query)", 
+	playlistLength: 	["Max Playlist Mix length", 50],
+	forcedQuery: 		["Forced query to filter database (added to any other internal query)", 
 				"NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad"
 				],
-	checkDuplicatesBy: ["Tags to look for duplicates", "title,artist,date"],
-	sameBy: ["Tags to look for similarity","genre,1,style,2,mood,5"],
-	playlistName: ["Playlist name","Search..."]
+	checkDuplicatesBy:	["Tags to look for duplicates", "title,artist,date"],
+	sameBy: 			["Tags to look for similarity", JSON.stringify({genre:1 , style: 2, mood: 5})],
+	playlistName:		["Playlist name","Search..."],
 };
 newButtonsProperties['playlistLength'].push({greater: 0, func: Number.isSafeInteger}, newButtonsProperties['playlistLength'][1]);
 newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
@@ -104,10 +106,11 @@ var newButtons = {
 		let args = getProperties(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
 		args.checkDuplicatesBy = args.checkDuplicatesBy.split(",");
 		args.playlistLength = Number(args.playlistLength);
+		args.sameBy = JSON.parse(args.sameBy)
         do_search_same_by(args);
 		t1 = Date.now();
 		console.log("Call to do_search_same_by took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Random playlist matching ' + JSON.stringify(convertStringToObject(getPropertiesValues(newButtonsProperties, prefix)[3], "number", ",")) +  ' of the current selected track', prefix, newButtonsProperties),
+	}, null, g_font,'Random playlist matching ' + getPropertiesValues(newButtonsProperties, prefix)[3] +  ' of the current selected track', prefix, newButtonsProperties),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

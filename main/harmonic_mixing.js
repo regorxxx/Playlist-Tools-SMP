@@ -11,6 +11,8 @@
 */ 
 
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\camelot_wheel_xxx.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_playlists.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
 
 function do_harmonic_mixing({
 								selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),

@@ -2,6 +2,7 @@
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
 
 // include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\EDIT.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
 var prefix = "EDIT";
  
 //Always loaded along other buttons and panel

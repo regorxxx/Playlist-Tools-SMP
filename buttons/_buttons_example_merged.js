@@ -22,9 +22,10 @@
 		skipped, instead of throwing and error! This is better than try/catch, since it doesn't omit coding errors while including them...
 */
 
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
+
 try { //May be loaded along other buttons
 	window.DefinePanel('Merged Buttons bar', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';

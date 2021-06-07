@@ -5,13 +5,14 @@
 	Search n most played tracks on library. You can configure the number of tracks at properties panel.
 	Button name and tooltip text is changed according to that value!
  */
- 
+
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\top_tracks_from_date.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
 var prefix = "tt_";
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Top Tracks Button', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 120, h: 22};
 	var buttonOrientation = 'x';

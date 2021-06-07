@@ -4,12 +4,13 @@
 	-> EDIT
  */
  
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 // include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\EDIT.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
 var prefix = "EDIT";
  
 try { //May be loaded along other buttons
 	window.DefinePanel('EDIT', {author:'xxx'});
-	include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';

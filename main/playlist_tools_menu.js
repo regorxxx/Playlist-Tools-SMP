@@ -25,6 +25,10 @@
 	*/
 
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
+include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_UI.js');
 include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\menu_xxx.js');
 
 // Properties
@@ -36,12 +40,14 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	forcedQueryMenusEnabled:	['Menus with forced query enabled', '{}'],
 	ratingLimits:				['Set ratings extremes (ex. from 1 to 10 -> 1,10)', '1,5'],
 	presets:					['Saved presets', '{}'],
+	bShortcuts:					['Enable global shortcuts', false],
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
 	firstPopup:		['Playlist Tools: Fired once', false],
 	menusEnabled: 	['List of menus enabled', '{}'],
 	bTooltipInfo: 	['Show shortcuts on tooltip', true],
+	bProfile: 		['Profiler logging', false],
 };
 
 // Checks
@@ -57,17 +63,17 @@ const defaultArgs = {
 					forcedQuery: menu_properties['forcedQuery'][1], 
 					ratingLimits: menu_properties['ratingLimits'][1].split(','),
 };
+var readmes = {'Playlist Tools Menu': fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
 loadProperties();
-const bProfile = true;
+const bProfile = getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix)['bProfile'][1];
 // Menu
 const specialMenu = 'Special Playlists...';
 const configMenu = 'Configuration';
 const scriptName = 'Playlist Tools Menu';
-var readmes = {'Playlist Tools Menu': fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
 const menu = new _menu();
 
 // For enable/disable menus
-const menusEnabled = JSON.parse(getPropertiesPairs(menu_panelProperties, menu_prefix)['menusEnabled'][1]);
+const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix)['menusEnabled'][1]);
 const menuDisabled = [];
 var disabledCount = 0;
 
@@ -77,17 +83,19 @@ var forcedQueryMenusEnabled = {};
 // Presets menus
 var presets = {};
 
+// Other funcs by menus to be applied at property load
+const deferFunc = [];
+
 // Key shortcuts
 // Menu names strip anything after \t
 // Adding new entries here automatically adds them to the associated menu
-window.DlgCode = DLGC_WANTALLKEYS;
 const shortcuts = {
-	searchSame: {keys: 'Shift + S',	mod: 16, val: 83, menu: 'Search same by tags...\\By... (pairs of tags)', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	prevPls: 	{keys: 'Ctrl + R',	mod: 17, val: 82, menu: 'Called: Playlist History\\Previous playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	remDupl: 	{keys: 'Ctrl + D',	mod: 17, val: 68, menu: 'Duplicates and tag filtering\\Remove duplicates by ', func: (s) => {menu.btn_up(void(0), void(0), void(0), s + sortInputDuplic.join(', '))}},
-	quFilter:	{keys: 'Shift + F',	mod: 16, val: 70, menu: 'Query filtering\\Filter playlist by Global forced query', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	harmMix:	{keys: 'Ctrl + H',	mod: 17, val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	deadItm:	{keys: 'Shift + D',	mod: 16, val: 68, menu: 'Playlist Revive\\Find dead items in all playlists', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	searchSame: {keys: 'Ctrl + Shift + S',	mod: [VK_CONTROL,VK_SHIFT], val: 83, menu: 'Search same by tags...\\By... (pairs of tags)', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	prevPls: 	{keys: 'Ctrl + R',			mod: [VK_CONTROL], val: 82, menu: 'Playlist History\\Previous playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	remDupl: 	{keys: 'Ctrl + D',			mod: [VK_CONTROL], val: 68, menu: 'Duplicates and tag filtering\\Remove duplicates by ', func: (s) => {menu.btn_up(void(0), void(0), void(0), s + sortInputDuplic.join(', '))}},
+	quFilter:	{keys: 'Ctrl + G',			mod: [VK_CONTROL], val: 71, menu: 'Query filtering\\Filter playlist by Global forced query', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	harmMix:	{keys: 'Ctrl + H',			mod: [VK_CONTROL], val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	deadItm:	{keys: 'Ctrl + Shift + R',	mod: [VK_CONTROL,VK_SHIFT], val: 82, menu: 'Playlist Revive\\Find dead items in all playlists', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
 }
 
 /* 
@@ -317,8 +325,14 @@ const shortcuts = {
 								}
 								input = {name: entryName, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap}};
 								// Final check
-								try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
-								catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
+								const sel = fb.GetFocusItem();
+								if (sel) {
+									const selInfo = sel.GetFileInfo();
+									if (!Object.keys(input.args.sameBy).every((key) => {return selInfo.MetaFind(key) === -1})) {
+										try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
+										catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
+									}
+								}
 							}
 							// Add entry
 							sameByQueries.push(input);
@@ -396,7 +410,7 @@ const shortcuts = {
 
 // Standard Queries...
 {
-	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\dynamic_query.js';
+	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\dynamic_query.js';
 	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 		const name = 'Standard Queries...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -411,13 +425,13 @@ const shortcuts = {
 					{name: 'Recently played'	, query: '%last_played% DURING LAST 1 WEEK'		, sort: {tfo: '%last_played%', direction: -1}},
 					{name: 'Recently added'		, query: '%added% DURING LAST 1 WEEK'			, sort: {tfo: '%added%', direction: -1}},
 					{name: 'sep'},
-					{name: 'Rock playlist'		, query: 'GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Psychedelic playlist', query: 'GENRE IS Psychedelic Rock OR GENRE IS Psychedelic OR STYLE IS Neo-Psychedelia', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Folk \\ Country playlist', query: 'GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Country', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Blues playlist'		, query: 'GENRE IS Blues', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Jazz playlist'		, query: 'GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Soul \\ RnB playlist', query: 'GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Hip-Hop playlist', query: 'GENRE IS Hip-Hop', sort: {tfo: '$rand()', direction: 1}}
+					{name: 'Rock tracks'		, query: 'GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Psychedelic tracks', query: 'GENRE IS Psychedelic Rock OR GENRE IS Psychedelic OR STYLE IS Neo-Psychedelia OR STYLE IS Psychedelic Folk', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Folk \\ Country tracks', query: 'GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Country', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Blues tracks'		, query: 'GENRE IS Blues', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Jazz tracks'		, query: 'GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Soul \\ RnB tracks', query: 'GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Hip-Hop tracks', query: 'GENRE IS Hip-Hop', sort: {tfo: '$rand()', direction: 1}}
 				];
 				let selArg = {name: 'Custom', query: queryFilter[0].query};
 				const queryFilterDefaults = [...queryFilter];
@@ -729,7 +743,7 @@ const shortcuts = {
 						const distanceUnit = music_graph_descriptors.intra_supergenre; // 100
 						const entryArgs = [
 							{title: 'Nearest Tracks', args: {sbd_max_graph_distance: distanceUnit / 2, method: 'GRAPH'}}, // 50
-							{title: 'Similar Genre mix, within a decade', args: {sbd_max_graph_distance: music_graph_descriptors.cluster, method: 'GRAPH'}}, // 85
+							{title: 'Similar Genre mix, within a decade', args: {scoreFilter: 70, sbd_max_graph_distance: music_graph_descriptors.cluster, method: 'GRAPH'}}, // 85
 							{title: 'Varied Styles/Genres mix, within a decade', args: {sbd_max_graph_distance: distanceUnit * 3/2, method: 'GRAPH'}}, //150
 							{title: 'Random Styles/Genres mix, same Mood', args: {sbd_max_graph_distance: distanceUnit * 4, method: 'GRAPH'}} //400
 						];
@@ -946,7 +960,7 @@ const shortcuts = {
 					var sortInputDuplic = ['title', 'artist', 'date'];
 					var sortInputFilter = ['title', 'artist', 'date'];
 					var nAllowed = 2;
-					// const shortcut = (shortcuts.hasOwnProperty('remDupl') && shortcuts.remDupl.keys.length ? '\t' + shortcuts.remDupl.keys : '');
+					// const shortcut = (shortcuts.hasOwnProperty('remDupl') && shortcuts.remDupl.keys.length ? '\t' + shortcuts.remDupl.keys : ''); // TODO
 					const shortcut = '';
 					// Create new properties with previous args
 					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
@@ -1006,7 +1020,7 @@ const shortcuts = {
 			}
 		}
 		{	// Filter by Query
-			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\	filter_by_query.js';
+			const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\filter_by_query.js';
 			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 				const name = 'Query filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -1159,7 +1173,7 @@ const shortcuts = {
 								args.selItems = args.selItems();
 								args.playlistLength = args.selItems.Count; // Max allowed
 								if (bProfile) {var profiler = new FbProfiler('do_harmonic_mixing');}
-								do_harmonic_mixing();
+								do_harmonic_mixing(args);
 								if (bProfile) {profiler.Print();}
 							}, flags: selArg.flags ? selArg.flags : undefined});
 						}
@@ -1173,7 +1187,7 @@ const shortcuts = {
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 				menu.newEntry({menuName, entryText: name, func: () => {
 					let input;
-					try {input = utils.InputBox(window.ID, 'Enter name:', window.Name + ': ' + name, '', true);}
+					try {input = utils.InputBox(window.ID, 'Enter name:', window.Name + ': ' + name, 'New playlist', true);}
 					catch (e) {return;}
 					if (!input.length) {return;}
 					plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
@@ -1913,19 +1927,19 @@ const shortcuts = {
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select random track', func: () => {
-					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).sort(() => Math.random() - 0.5); // Get indexes randomly sorted
+					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistSelection(plman.ActivePlaylist, [numbers[0]], true); // Take first one
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select random # tracks', func: () => {
-					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).sort(() => Math.random() - 0.5); // Get indexes randomly sorted
+					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
 					const selLength = numbers[0] ? numbers[0] : numbers[1]; // There is only a single zero...
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: (args = {...scriptDefaultArgs}) => {return 'Select random ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1] + ' tracks'}, func: (args = {...scriptDefaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).sort(() => Math.random() - 0.5); // Get indexes randomly sorted
+					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
 					const selLength = args.properties.playlistLength[1];
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
@@ -2183,12 +2197,12 @@ const shortcuts = {
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					const subMenuName = menu.newMenu(name, menuName);
-					// const shortcut = (shortcuts.hasOwnProperty('prevPls') && shortcuts.prevPls.keys.length ? '\t' + shortcuts.prevPls.keys : '');
+					// const shortcut = (shortcuts.hasOwnProperty('prevPls') && shortcuts.prevPls.keys.length ? '\t' + shortcuts.prevPls.keys : ''); //TODO
 					const shortcut = '';
 					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist' + shortcut, func: () => {
-						const idx = plsHistory.length >= 1 ? getPlaylistIndexArray(plsHistory[1].name) : -1;
+						const idx = plsHistory.length >= 2 ? getPlaylistIndexArray(plsHistory[1].name) : -1;
 						if (idx.length) {
 							if (idx.length === 1 && idx[0] !== -1) {
 								plman.ActivePlaylist = idx[0];
@@ -2213,8 +2227,107 @@ const shortcuts = {
 							}});
 						});
 					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
+				menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
+		}
+		{	// Include scripts
+			const name = 'Include scripts';
+			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+				const subMenuName = menu.newMenu(name, menuName);
+				let scriptIncluded = [];
+				let scriptIncludedDefaults = [];
+				menu_properties['scriptIncluded'] = [menuName + '\\' + name + ' scripts', JSON.stringify(scriptIncluded)];
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				deferFunc.push({name, func: (properties) => {
+					const scriptIncluded = JSON.parse(properties['scriptIncluded'][1]);
+					scriptIncluded.forEach((scrObj) => {
+						try {include(scrObj.path);}
+						catch (e) {return;}
+					});
+				}});
+				//  Menus
+				menu.newEntry({menuName: subMenuName, entryText: 'Include headless scripts:', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+				menu.newCondEntry({entryText: name + ' (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					// Entry list
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					scriptIncluded = JSON.parse(args.properties['scriptIncluded'][1]);
+					scriptIncluded.forEach( (scrObj) => {
+						// Add separators
+						if (scrObj.hasOwnProperty('name') && scrObj.name === 'sep') {
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						} else { 
+							// Create names for all entries
+							let scriptName = scrObj.name;
+							scriptName = scriptName.length > 40 ? scriptName.substring(0,40) + ' ...' : scriptName;
+							// Entries
+							menu.newEntry({menuName: subMenuName, entryText: scriptName, func: null, flags: MF_GRAYED});
+						}
+					});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					{	// Add / Remove
+					menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						const answer = WshShell.Popup('This is an utility to easily include (\'merge\') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don\'t require any UI, user interaction, etc..\n\nNote you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\\Spider Monkey Panel) and do nothing more.\n\nThe use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.\n\nIn any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.', 0, window.Name + ': ' + name, popup.question + popup.yes_no);
+						if (answer === popup.no) {return;}
+						// Input all variables
+						let input;
+						let path = '';
+						try {path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', window.Name + ': ' + name, '', true);}
+						catch (e) {return;}
+						if (path === 'sep') {input = {name: path};} // Add separator
+						else { // or new entry
+							if (_isFile(path)) {
+								try {include(path);}
+								catch (e) {return;}
+								const arr = isCompatible('1.4.0') ? utils.SplitFilePath(path) : utils.FileTest(path, 'split'); //TODO: Deprecated
+								const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
+								input = {name , path};
+							}
+						}
+						// Add entry
+						scriptIncluded.push(input);
+						// Save as property
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded); // And update property with new value
+						// Presets
+						if (!presets.hasOwnProperty('scriptIncluded')) {presets.scriptIncluded = [];}
+						presets.scriptIncluded.push(input);
+						args.properties['presets'][1] = JSON.stringify(presets);
+						overwriteProperties(args.properties); // Updates panel
+					}});
+					{
+						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
+						scriptIncluded.forEach( (queryObj, index) => {
+							const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
+							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
+								scriptIncluded.splice(index, 1);
+								args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
+								// Presets
+								if (presets.hasOwnProperty('scriptIncluded')) {
+									presets.scriptIncluded.splice(presets.scriptIncluded.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
+									if (!presets.scriptIncluded.length) {delete presets.scriptIncluded;}
+									args.properties['presets'][1] = JSON.stringify(presets);
+								}
+								overwriteProperties(args.properties); // Updates panel
+							}});
+						});
+						if (!scriptIncluded.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
+							scriptIncluded = [...scriptIncludedDefaults];
+							args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
+							// Presets
+							if (presets.hasOwnProperty('scriptIncluded')) {
+								delete presets.scriptIncluded;
+								args.properties['presets'][1] = JSON.stringify(presets);
+							}
+							overwriteProperties(args.properties); // Updates panel
+						}});
+					}
+				}
+				}});
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
 		menu.newEntry({entryText: 'sep'});
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
@@ -2225,6 +2338,7 @@ const shortcuts = {
 	const name = 'Pools';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu_pools.txt';
+		forcedQueryMenusEnabled[name] = true;
 		let menuName = menu.newMenu(name);
 		{	// Automate tags
 			const staticPools = [
@@ -2253,7 +2367,7 @@ const shortcuts = {
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and instrumentals', 
 					sort: '',
-					}}
+					}},
 			];
 			
 			let selArg = {...pools[0]};
@@ -2265,7 +2379,7 @@ const shortcuts = {
 			// Functions
 			const pickMethods = {
 				random: (handleListFrom, num, count) => {
-						const numbers = range(0, count, 1).sort(() => Math.random() - 0.5).slice(0, count > num ? num : count); // Get n indexes randomly sorted
+						const numbers = range(0, count - 1, 1).shuffle().slice(0, count > num ? num : count); // n randomly sorted. sort + random, highly biased!!
 						const handleListFromClone = handleListFrom.Clone().Convert();
 						return new FbMetadbHandleList(numbers.flatMap((i) => {return handleListFromClone.slice(i, i + 1)}));
 					},
@@ -2306,7 +2420,11 @@ const shortcuts = {
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});
 					// Pick
 					const num = pool.fromPls[plsName] || Infinity;
-					handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, handleListFrom.Count);
+					const count = handleListFrom.Count;
+					if (count !== 1) {
+						handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
+					}
+					console.log('Playlist tools Pools: pool size -> ' + handleListFrom.Count + ' (' + count +') tracks');
 					handleListTo.InsertRange(handleListTo.Count, handleListFrom);
 				});
 				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
@@ -2390,7 +2508,10 @@ const shortcuts = {
 					menu.newEntry({menuName, entryText: 'sep'});
 				} else {
 					let entryText = poolObj.name;
-					menu.newEntry({menuName, entryText, func: (pool = poolObj.pool) => {do_pool(pool);}});
+					// Global forced query
+					const pool = clone(poolObj.pool);
+					if (forcedQueryMenusEnabled[name]) {Object.keys(pool.query).forEach((key) => {pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';});}
+					menu.newEntry({menuName, entryText, func: () => {do_pool(pool);}});
 				}
 			});
 			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
@@ -2406,7 +2527,10 @@ const shortcuts = {
 						let poolName = poolObj.name;
 						poolName = poolName.length > 40 ? poolName.substring(0,40) + ' ...' : poolName;
 						// Entries
-						menu.newEntry({menuName, entryText: poolName, func: (pool = poolObj.pool) => {do_pool(pool);}});
+						// Global forced query
+						const pool = clone(poolObj.pool);
+						if (forcedQueryMenusEnabled[name]) {Object.keys(pool.query).forEach((key) => {pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';});}
+						menu.newEntry({menuName, entryText: poolName, func: () => {do_pool(pool);}});
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
@@ -2499,7 +2623,7 @@ const shortcuts = {
 			readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu_macros.txt';
 			// Create new properties
 			const macrosDefaults = [
-				{name: 'Test', entry: [
+				{name: 'Test Tools', entry: [
 					'Most played Tracks\\Most played from 2021',
 					'Most played Tracks\\Most played from (all years)',
 					'Top rated Tracks from...\\Top rated from 2021',
@@ -2508,7 +2632,28 @@ const shortcuts = {
 					'Select...\\Select last track',
 					'Dynamic Queries...\\Same title (any artist)',
 					'Select...\\Select random track',
-					'Special Playlists...\\Influences from any date'
+					'Search similar by Graph...\Random Styles/Genres mix, same Mood',
+					'Select...\\Select random track',
+					'Special Playlists...\\Influences from any date',
+					'Duplicates and tag filtering\\Remove duplicates by title, artist, date',
+					'Harmonic mix\\Harmonic mix from playlist',
+					'Select...\\Select All',
+					'Advanced sort...\\Incremental genre/styles (DynGenre)',
+					'Advanced sort...\\Incremental key (Camelot Wheel)',
+					'Scatter by tags\\Scatter acoustic tracks',
+					'Pools\\Top tracks mix'
+				]},
+				{name: 'Test Tools (with input)', entry: [
+					'Top rated Tracks from...\\From year... ',
+					'Search same by tags...\\By... (pairs of tags)',
+					'Standard Queries...\\By... (query)',
+					'Dynamic Queries...\\By... (query)',
+					'Duplicates and tag filtering\\Filter playlist by... (tags)',
+					'Query filtering\\Filter playlist by... (query)',
+					'Select...\\Select All',
+					'Sort...\\By... (expression)',
+					'Playlist manipulation\\Find or create playlist...',
+					'Pools\\Custom pool...'
 				]}
 			]; //{name, entry: []}
 			menu_properties['macros'] = ['Saved macros', JSON.stringify(macrosDefaults)];
@@ -2518,7 +2663,7 @@ const shortcuts = {
 			menu.newEntry({menuName, entryText: 'sep'});
 			menu.newCondEntry({entryText: 'Macros', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				const propMacros = JSON.parse(args.properties['macros'][1]);
+				let propMacros = JSON.parse(args.properties['macros'][1]);
 				if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
 				// List
 				propMacros.forEach((macro) => {
@@ -2737,6 +2882,26 @@ const shortcuts = {
 			}});
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
+		{	// Shortcuts
+			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+			menu.newEntry({menuName: configMenu, entryText: 'Enabled Global shortcuts', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				if (!args.properties.bShortcuts[1]) {
+					const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\n(shortcuts are indicated in the related menus and are hard-coded)\nAre you sure you want to enable it?', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
+					if (answer !== popup.yes) {return;}
+				}
+				args.properties.bShortcuts[1] = !args.properties.bShortcuts[1];
+				overwriteProperties(args.properties); // Updates panel
+				// Shortcuts
+				if (args.properties.bShortcuts[1]) {
+					if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
+				} else {
+					if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
+				}
+			}});
+			menu.newCheckMenu(configMenu, 'Enabled Global shortcuts', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1]()).bShortcuts[1];});
+		}
+		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Readmes
 			const subMenuName = menu.newMenu('Readmes...', configMenu);
 			menu.newEntry({menuName: subMenuName, entryText: 'Open popup with readme:', func: null, flags: MF_GRAYED});
@@ -2829,7 +2994,7 @@ function loadProperties() {
 	}
 }
 
-function updateMenuProperties(propObject) {
+function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	// Sanity checks
 	propObject['playlistLength'][1] = Number(propObject['playlistLength'][1]);
 	if (!Number.isSafeInteger(propObject['playlistLength'][1]) || propObject['playlistLength'][1] <= 0) {fb.ShowPopupMessage('Playlist length must be a positive integer.\n' + propObject['playlistLength'].slice(0,2), scriptName);}
@@ -2840,7 +3005,7 @@ function updateMenuProperties(propObject) {
 	if (!panelPropObject['firstPopup'][1]) {
 		panelPropObject['firstPopup'][1] = true;
 		overwriteProperties(panelPropObject); // Updates panel
-		const readmeKeys= ['Playlist Tools Menu', 'Macros']; // Must read files on first execution
+		const readmeKeys = ['Playlist Tools Menu', 'Macros']; // Must read files on first execution
 		readmeKeys.forEach( (key) => {
 			const readmePath = readmes[key];
 			if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
@@ -2859,6 +3024,18 @@ function updateMenuProperties(propObject) {
 	});
 	// Presets
 	presets = JSON.parse(propObject['presets'][1]);
+	// Shortcuts
+	if (propObject['bShortcuts'][1]) {
+		if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
+	} else {
+		if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
+	}
+	// Other funcs by menus
+	menuFunc.forEach((obj) => {
+		if (obj.hasOwnProperty('func') && _isFunction(obj.func)) {
+		obj.func(propObject);
+		}
+	});
 }
 
 function focusFlags() {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}
@@ -2889,7 +3066,7 @@ function menuTooltip() {
 		info = 'Playlist:		' + plman.GetPlaylistName(plman.ActivePlaylist) + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);
 		if (getPropertiesPairs(menu_panelProperties, 'menu_').bTooltipInfo[1]) {
-			info += '(L. Click for menu \\ Shift + L. Click to switch enables menus)';
+			info += '\n(L. Click for menu \\ Shift + L. Click to switch enables menus)';
 		}
 	}
 	return info;
@@ -2898,67 +3075,76 @@ function menuTooltip() {
 /* 
 	Shortcuts
 */
-menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
-	const entryList = menu.getEntries();
-	Object.keys(shortcuts).forEach((key) => {
-		const shortcut = shortcuts[key];
-		const idx = entryList.findIndex((entry) => {
-			if (entry.entryText) {
-				if (_isFunction(entry.entryText)) {
-					if (entry.entryText().indexOf(shortcut.keys) !== -1) {return false;}
-					if (_isFunction(entry.menuName)) {
-						return (entry.menuName() + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: (args = {properties: [{...menu_properties}, () => {return menu_prefix;}]}) => {
+	args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+	if (args.properties.bShortcuts[1]) {
+		const entryList = menu.getEntries();
+		Object.keys(shortcuts).forEach((key) => {
+			const shortcut = shortcuts[key];
+			const idx = entryList.findIndex((entry) => {
+				if (entry.entryText) {
+					if (_isFunction(entry.entryText)) {
+						if (entry.entryText().indexOf(shortcut.keys) !== -1) {return false;}
+						if (_isFunction(entry.menuName)) {
+							return (entry.menuName() + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+						} else {
+							return (entry.menuName + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+						}
 					} else {
-						return (entry.menuName + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+						if (entry.entryText.indexOf(shortcut.keys) !== -1) {return false;}
+						if (_isFunction(entry.menuName)) {
+							return (entry.menuName() + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
+						} else {
+							return (entry.menuName + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
+						}
 					}
+				}
+			});
+			// if (idx !== -1){console.log(menu.getEntry(idx))}
+			if (idx !== -1) {
+				if (_isFunction(entryList[idx].entryText)) {
+					const copyFunc = entryList[idx].entryText;
+					entryList[idx].entryText = () => {return copyFunc() + '\t' + shortcut.keys;}
 				} else {
-					if (entry.entryText.indexOf(shortcut.keys) !== -1) {return false;}
-					if (_isFunction(entry.menuName)) {
-						return (entry.menuName() + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
-					} else {
-						return (entry.menuName + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
-					}
+					entryList[idx].entryText += '\t' + shortcut.keys;
 				}
 			}
 		});
-		// if (idx !== -1){console.log(menu.getEntry(idx))}
-		if (idx !== -1) {
-			if (_isFunction(entryList[idx].entryText)) {
-				const copyFunc = entryList[idx].entryText;
-				entryList[idx].entryText = () => {return copyFunc() + '\t' + shortcut.keys;}
-			} else {
-				entryList[idx].entryText += '\t' + shortcut.keys;
-			}
-		}
-	});
-	menu.entryArr = entryList;
-	menu.entryArrTemp = entryList;
+		menu.entryArr = entryList;
+		menu.entryArrTemp = entryList;
+	}
 }});
 
 // function on_key_up(vkey) {
-	// keyCallback();
-// }
-
-// function on_key_up(vkey) {
-	// let bDone = false;
-	// Object.keys(shortcuts).forEach((key) => {
-		// if (bDone) {return;}
-		// const shortcut = shortcuts[key];
-		// if (vkey === shortcut.val && (shortcut.mod === -1 || utils.IsKeyPressed(shortcut.mod))) {shortcut.func(shortcut.menu); bDone = true;}
-	// });
 	// console.log(vkey)
 // }
 
-var keyCallbackDate = Date.now();
 function keyCallback() {
 	if (!window.IsVisible) {return;}
-	if (Date.now() - keyCallbackDate <= 500) {return;} // Limit rate to 500 ms
-	let bDone = false;
-	Object.keys(shortcuts).forEach((key) => {
-		if (bDone) {return;}
-		const shortcut = shortcuts[key];
-		if (utils.IsKeyPressed(shortcut.val) && (shortcut.mod === -1 || utils.IsKeyPressed(shortcut.mod))) {shortcut.func(shortcut.menu); bDone = true;}
-	});
-	if (bDone) {keyCallbackDate = Date.now();}
+	// Enable/Disable switch on Ctrl + Alt + E
+	if (!isFinite(keyCallbackDate) && utils.IsKeyPressed(VK_ALT) && utils.IsKeyPressed(VK_CONTROL) && utils.IsKeyPressed(69)) {keyCallbackDate = Date.now(); return;}
+	if (isFinite(keyCallbackDate) && utils.IsKeyPressed(VK_ALT) && utils.IsKeyPressed(VK_CONTROL) && utils.IsKeyPressed(69)) {keyCallbackDate = Infinity; return;}
+	// Disable on alt-tab
+	if (isFinite(keyCallbackDate) && utils.IsKeyPressed(VK_ALT) && utils.IsKeyPressed(VK_TAB)) {keyCallbackDate = Infinity; return;}
+	 // Limit rate to 500 ms
+	const rate = Date.now() - keyCallbackDate;
+	if (rate <= 500 || rate < 0) {return;}
+	// Key checking
+	const keys = Object.keys(shortcuts);
+	const keysLength = keys.length;
+	for (let i = 0; i < keysLength; i++) {
+		const shortcut = shortcuts[keys[i]];
+		if (utils.IsKeyPressed(shortcut.val)) {
+			if (shortcut.mod.length && shortcut.mod.some((mod) => {return !utils.IsKeyPressed(mod);})) {continue;}
+			keyCallbackDate = Date.now();
+			delayFn(() => {
+				shortcut.func(shortcut.menu);
+				keyCallbackDate = Date.now();
+			},50)();
+			break;
+		}
+	}
 }
-repeatFn(keyCallback, 100)();
+const keyCallbackFn = repeatFn(keyCallback, 100);
+var keyCallbacklID = -1;
+var keyCallbackDate = Date.now();
