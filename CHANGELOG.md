@@ -15,7 +15,7 @@
 ### Removed
 ### Fixed
 
-## [1.4.0] - 2021-05-31
+## [1.4.0] - 2021-06-07
 ### Added
 - Search by Distance: 4 sets of buttons, one for each method: GRAPH, WEIGHT, DYNGENRE + ONE CONFIGURABLE (method at properties). (This in addition to the fully customizable buttons)
 - Shortcuts: Some shortcuts have been added (global shortcuts without requiring panel to be in focus). Are shown on the related menu entries tabbed to the right. Experimental feature, read the popup before activating it at config menu.
