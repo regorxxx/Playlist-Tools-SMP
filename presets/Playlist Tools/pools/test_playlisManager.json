@@ -1,0 +1,25 @@
+{
+	"readme": "Test for Playlist Manager integration: uses a playlist named 'test' which must be present in some Playlist manager panel.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Playlist Manager test",
+		"pool": {
+			"fromPls": {
+				"test": 12,
+				"_LIBRARY_1": 1
+			},
+			"query": {
+				"test": "ALL",
+				"_LIBRARY_1": "GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll"
+			},
+			"toPls": "Playlist Manager test",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"test": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	}]
+}

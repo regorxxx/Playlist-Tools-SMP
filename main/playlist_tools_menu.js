@@ -48,6 +48,7 @@ const menu_panelProperties = {
 	menusEnabled: 	['List of menus enabled', '{}'],
 	bTooltipInfo: 	['Show shortcuts on tooltip', true],
 	bProfile: 		['Profiler logging', false],
+	playlistPath: 	['Playlist manager tracked folders', '[]'],
 };
 
 // Checks
@@ -98,6 +99,33 @@ const shortcuts = {
 	deadItm:	{keys: 'Ctrl + Shift + R',	mod: [VK_CONTROL,VK_SHIFT], val: 82, menu: 'Playlist Revive\\Find dead items in all playlists', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
 }
 
+function on_notify_data(name, info) { 
+	switch (name) {
+		case 'Playlist manager: playlistPath': {
+			if (info && info.length) {
+				const properties =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), 'menu_');
+				const playlistPath = JSON.parse(properties.playlistPath[1]);
+				let bDone = false;
+				if (isArrayStrings(info)) {
+					if (!new Set(playlistPath).isSuperset(new Set(info))) {
+						playlistPath.concat([...new Set(info).difference(new Set(playlistPath))])
+						bDone = true;
+					}
+				} else if (isStringWeak(info)) {
+					if (playlistPath.indexOf(info) === -1) {
+						playlistPath.push(info);
+						bDone = true;
+					}
+				}
+				if (bDone) {
+					properties.playlistPath[1] = JSON.stringify(playlistPath);
+					overwriteProperties(properties); // Updates panel
+				}
+			}
+		}
+	}
+}
+
 /* 
 	Menus
 */
@@ -132,7 +160,7 @@ const shortcuts = {
 				menu.newEntry({menuName, entryText: 'From year... ', func: () => {
 					const selYear = new Date().getFullYear();
 					let input;
-					try {input = Number(utils.InputBox(window.ID, 'Enter year:', window.Name + ': ' + name, selYear, true));}
+					try {input = Number(utils.InputBox(window.ID, 'Enter year:', scriptName + ': ' + name, selYear, true));}
 					catch (e) {return;}
 					if (!Number.isSafeInteger(input)) {return;}
 					do_top_tracks_from_date({...defaultArgs,  year: input});
@@ -141,7 +169,7 @@ const shortcuts = {
 			{	// Input menu: last x time
 				menu.newEntry({menuName, entryText: 'From last... ', func: () => {
 					let input;
-					try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), window.Name + ': ' + name, '4 WEEKS', true).trim();}
+					try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), scriptName + ': ' + name, '4 WEEKS', true).trim();}
 					catch (e) {return;}
 					if (!input.length) {return;}
 					do_top_tracks_from_date({...defaultArgs,  last: input, bUseLast: true});
@@ -190,7 +218,7 @@ const shortcuts = {
 			{	// Input menu
 				menu.newEntry({menuName, entryText: 'From year... ', func: () => {
 					let selYear = new Date().getFullYear();
-					try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', window.Name + ': ' + name, selYear, true);}
+					try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', scriptName + ': ' + name, selYear, true);}
 					catch (e) {return;}
 					if (!selYear.length) {return;}
 					selYear = selYear.split(','); // May be a range or a number
@@ -242,17 +270,10 @@ const shortcuts = {
 				menu.newEntry({menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-			/* 		// Add to presets
-					if (!presets.hasOwnProperty('sameByQueries')) {presets.sameByQueries = [];}
-					const defaults = [];
-					sameByQueriesDefaults.forEach( (queryObjDef) => {defaults.push(JSON.stringify(queryObjDef))}); */
 					// Entry list
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 					sameByQueries = JSON.parse(args.properties['sameByQueries'][1]);
 					sameByQueries.forEach( (queryObj) => {
-/* 						// Add to presets
-						const {name, ...copy} = queryObj;
-						if (defaults.indexOf(JSON.stringify(copy)) === -1) {presets.sameByQueries.push(queryObj)} */
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 							let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
@@ -282,7 +303,7 @@ const shortcuts = {
 							args.sameBy = selArg.args.sameBy = convertStringToObject(args.properties['sameByCustomArg'][1], 'number', ',');
 							// Input
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
+							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
 							catch (e) {return;}
 							if (!input.length) {return;}
 							// For internal use original object
@@ -302,25 +323,25 @@ const shortcuts = {
 							// Input all variables
 							let input;
 							let entryName = '';
-							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
 							catch (e) {return;}
 							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
-								try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', window.Name + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
+								try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
 								catch (e) {return;}
 								if (!input.length) {return;}
 								if (input.indexOf(',') === -1) {return;}
 								if (input.indexOf(';') !== -1) {return;}
 								let logic = 'AND';
-								try {logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', window.Name + ': ' + name, logic, true);}
+								try {logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', scriptName + ': ' + name, logic, true);}
 								catch (e) {return;}
 								if (!logic.length) {return;}
 								let remap;
-								try {remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', window.Name + ': ' + name, '', true);}
+								try {remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', scriptName + ': ' + name, '', true);}
 								catch (e) {return;}
 								let bOnlyRemap = false;
 								if (remap.length) {
-									const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, window.Name + ': ' + name, popup.question + popup.yes_no);
+									const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
 									if (answer === popup.yes) {bOnlyRemap = true;}
 								}
 								input = {name: entryName, args: {sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap}};
@@ -378,33 +399,35 @@ const shortcuts = {
 				}});
 			}
 			{	// Static menus: Special playlist (at other menu)
-				menu.newEntry({menuName: specialMenu, entryText: 'Based on Queries:', func: null, flags: MF_GRAYED}); // Jumps just before special playlists
-				const selArgs = [ 
-					{title: 'sep', menu: specialMenu},
-					{title: 'Same artist(s) or featured artist(s)', menu: specialMenu, args: {sameBy: {artist: 1, involvedpeople: 1}, remapTags: {artist: ['involvedpeople'], involvedpeople: ['artist']}, bOnlyRemap: false, logic: 'OR'}},  // Finds tracks where artist or involved people matches any from selection
-					{title: 'Find collaborations along other artists', menu: specialMenu, args: {sameBy: {artist: 1}, remapTags: {artist: ['involvedpeople']}, bOnlyRemap: true, logic: 'OR'}},  // Finds tracks where involved people matches artist from selection (remap)
-					{title: 'Music by same composer(s) as artist(s)', menu: specialMenu, args: {sameBy: {composer: 1}, remapTags: {composer: ['involvedpeople', 'artist']}, bOnlyRemap: true, logic: 'OR'}}, // Finds tracks where artist or involvedpeople matches composer from selection (remap)
-					{title: 'sep', menu: specialMenu},
-				];
-				selArgs.forEach( (selArg) => {
-					if (selArg.title === 'sep') {
-						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-						menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
-					} else {
-						let entryText = '';
-						if (!selArg.hasOwnProperty('title')) {
-							Object.keys(selArg.args.sameBy).forEach((key, index, array) => {
-								entryText += (!entryText.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
-								entryText += capitalize(key) + (selArg.args.sameBy[key] > 1 ? 's' : '') + ' (=' + selArg.args.sameBy[key] + ')';
-								});
-						} else {entryText = selArg.title;}
-						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-						menu.newEntry({menuName: entryMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
-					}
-				});
+				if (!menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[specialMenu] === true) {
+					menu.newEntry({menuName: specialMenu, entryText: 'Based on Queries:', func: null, flags: MF_GRAYED}); // Jumps just before special playlists
+					const selArgs = [ 
+						{title: 'sep', menu: specialMenu},
+						{title: 'Same artist(s) or featured artist(s)', menu: specialMenu, args: {sameBy: {artist: 1, involvedpeople: 1}, remapTags: {artist: ['involvedpeople'], involvedpeople: ['artist']}, bOnlyRemap: false, logic: 'OR'}},  // Finds tracks where artist or involved people matches any from selection
+						{title: 'Find collaborations along other artists', menu: specialMenu, args: {sameBy: {artist: 1}, remapTags: {artist: ['involvedpeople']}, bOnlyRemap: true, logic: 'OR'}},  // Finds tracks where involved people matches artist from selection (remap)
+						{title: 'Music by same composer(s) as artist(s)', menu: specialMenu, args: {sameBy: {composer: 1}, remapTags: {composer: ['involvedpeople', 'artist']}, bOnlyRemap: true, logic: 'OR'}}, // Finds tracks where artist or involvedpeople matches composer from selection (remap)
+						{title: 'sep', menu: specialMenu},
+					];
+					selArgs.forEach( (selArg) => {
+						if (selArg.title === 'sep') {
+							let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
+							menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
+						} else {
+							let entryText = '';
+							if (!selArg.hasOwnProperty('title')) {
+								Object.keys(selArg.args.sameBy).forEach((key, index, array) => {
+									entryText += (!entryText.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
+									entryText += capitalize(key) + (selArg.args.sameBy[key] > 1 ? 's' : '') + ' (=' + selArg.args.sameBy[key] + ')';
+									});
+							} else {entryText = selArg.title;}
+							let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
+							menu.newEntry({menuName: entryMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
+						}
+					});
+				} else {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				menu.newEntry({entryText: 'sep'});
 			}
-			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+		}
 	}
 }
 
@@ -471,7 +494,7 @@ const shortcuts = {
 							args.query = selArg.query = JSON.parse(args.properties['searchCustomArg'][1]).query;
 							// Input
 							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:', window.Name + ': ' + name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							// Playlist
@@ -490,21 +513,21 @@ const shortcuts = {
 							// Input all variables
 							let input;
 							let entryName = '';
-							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name, '', true);}
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName, '', true);}
 							catch (e) {return;}
 							if (!entryName.length) {return;}
 							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
 								let query = '';
-								try {query = utils.InputBox(window.ID, 'Enter query:', window.Name + ': ' + name, args.query, true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, args.query, true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return}
 								let tfo = '';
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', window.Name + ': ' + name, '', true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true);}
 								catch (e) {return;}
 								let direction = 1;
-								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', window.Name + ': ' + name, 1, true));}
+								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true));}
 								catch (e) {return;}
 								if (isNaN(direction)) {return;}
 								direction = direction > 0 ? 1 : -1;
@@ -613,7 +636,7 @@ const shortcuts = {
 							args.query = selArg.query = args.properties['dynamicQueriesCustomArg'][1];
 							// Input
 							let query = '';
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							if (!fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, scriptName); return;}
@@ -633,20 +656,20 @@ const shortcuts = {
 							// Input all variables
 							let input;
 							let entryName = '';
-							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
 							catch (e) {return;}
 							if (!entryName.length) {return;}
 							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
 								let query = '';
-								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, selArg.query, true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								let tfo = '';
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', window.Name + ': ' + name, '', true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true);}
 								catch (e) {return;}
 								let direction = 1;
-								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', window.Name + ': ' + name, 1, true));}
+								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true));}
 								catch (e) {return;}
 								if (isNaN(direction)) {return;}
 								direction = direction > 0 ? 1 : -1;
@@ -703,7 +726,7 @@ const shortcuts = {
 	}
 }
 
-// Similar by...
+// Similar by...Graph\Dyngenre\Weight
 {
 	const scriptPath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js';
 	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
@@ -712,7 +735,22 @@ const shortcuts = {
 		const nameWeight = 'Search similar by Weight...';
 		if (!menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true) {
 			include(scriptPath);
-			readmes['Search similar by Graph\\Dyngenre\\Weight'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt';
+			readmes['Search similar by... (All)'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance.txt';
+			readmes['Search similar by... (recipes\\themes)'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance_recipes_themes.txt';
+			readmes['Search similar by Graph'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance_graph.txt';
+			readmes['Search similar by Dyngenre'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance_dyngenre.txt';
+			readmes['Search similar by Weight'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\search_bydistance_weight.txt';
+			const selArgs = [
+				{name: 'sep'},
+				{name: 'Nearest Tracks', args: {genreWeight: 15, styleWeight: 10, moodWeight: 5, keyWeight: 10, dateWeight: 25, bpmWeight: 5,  dateRange: 15, 
+					bpmRange: 25, probPick: 100, scoreFilter: 70}},
+				{name: 'Similar Genre mix, within a decade', args: {genreWeight: 15, styleWeight: 10, moodWeight: 5, keyWeight: 5, dateWeight: 25, bpmWeight: 5,  dateRange: 15, bpmRange: 25, probPick: 100, scoreFilter: 70}},
+				{name: 'Varied Styles/Genres mix, within a decade', args: {genreWeight: 0, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 25, bpmWeight: 5,  dateRange: 15, bpmRange: 25, probPick: 100, scoreFilter: 60}},
+				{name: 'Random Styles/Genres mix, same Mood', args: {genreWeight: 0, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 0, bpmWeight: 5, 
+					bpmRange: 25, probPick: 100, scoreFilter: 50}}
+				];
+			let similarBy = [
+				];
 			// Delete unused properties
 			const toDelete = ['genreWeight', 'styleWeight', 'dyngenreWeight', 'dyngenreRange', 'moodWeight', 'keyWeight', 'keyRange', 'dateWeight', 'dateRange', 'bpmWeight', 'bpmRange', 'composerWeight', 'customStrWeight', 'customNumWeight', 'customNumRange', 'forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'sbd_max_graph_distance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN'];
 			let toMerge = {}; // Deep copy
@@ -724,17 +762,43 @@ const shortcuts = {
 			});
 			// And merge
 			menu_properties = {...menu_properties, ...toMerge};
+			menu_properties['similarBy'] = ['Search similar by Graph\\Dyngenre\\Weight... args', JSON.stringify(similarBy)];
 			// Set default args
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}], genreWeight: 0, styleWeight: 0, dyngenreWeight: 0, moodWeight: 0, keyWeight: 0, dateWeight: 0, bpmWeight: 0, composerWeight: 0, customStrWeight: 0, customNumWeight: 0, dyngenreRange: 0, keyRange: 0, dateRange: 0, bpmRange: 0, customNumRange: 0, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, sbd_max_graph_distance: 100, poolFilteringTag: '', poolFilteringN: 3, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: true, bProgressiveListOrder: false, bScatterInstrumentals: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN: 3, bCreatePlaylist: true};
-			const selArgs = [
-				{title: 'sep'},
-				{title: 'Nearest Tracks', args: {genreWeight: 15, styleWeight: 10, moodWeight: 5, keyWeight: 10, dateWeight: 25, bpmWeight: 5,  dateRange: 15, 
-					bpmRange: 25, probPick: 100, scoreFilter: 70}},
-				{title: 'Similar Genre mix, within a decade', args: {genreWeight: 15, styleWeight: 10, moodWeight: 5, keyWeight: 5, dateWeight: 25, bpmWeight: 5,  dateRange: 15, bpmRange: 25, probPick: 100, scoreFilter: 60}},
-				{title: 'Varied Styles/Genres mix, within a decade', args: {genreWeight: 0, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 25, bpmWeight: 5,  dateRange: 15, bpmRange: 25, probPick: 100, scoreFilter: 60}},
-				{title: 'Random Styles/Genres mix, same Mood', args: {genreWeight: 0, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 0, bpmWeight: 5, 
-					bpmRange: 25, probPick: 100, scoreFilter: 50}}
-				];
+			// Menus
+			function loadMenus(menuName, selArgs, entryArgs = []){
+				selArgs.forEach( (selArg) => {
+					if (selArg.name === 'sep') {
+						let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
+						menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
+					} else {
+						const entryArg = entryArgs.find((item) => {return item.name === selArg.name;}) || {};
+						let entryText = selArg.name;
+						menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							const globQuery = args.properties['forcedQuery'][1];
+							if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
+								args['forcedQuery'] =  globQuery + ' AND ' + args['forcedQuery'];
+							}
+							do_searchby_distance(args);
+						}, flags: focusFlags});
+					}
+				});
+			}
+			function loadMenusCond(menuName, method){
+				menu.newCondEntry({entryText: 'Search similar by Graph\\Dyngenre\\Weight... (cond)', condFunc: (args = {...scriptDefaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					similarBy = JSON.parse(args.properties.similarBy[1]);
+					const entries = similarBy.map((item) => {
+						if (!item.hasOwnProperty('method')) {
+							item.method = method;
+							if (item.hasOwnProperty('args')) {item.args.method = method;}
+						}
+						return item;
+					}).filter((item) => {return item.method === method;});
+					loadMenus(menuName, entries);
+				}});
+			}
 			{	// Graph
 				if (!menusEnabled.hasOwnProperty(nameGraph) || menusEnabled[nameGraph] === true) {
 					let menuName = menu.newMenu(nameGraph);
@@ -742,24 +806,13 @@ const shortcuts = {
 						menu.newEntry({menuName, entryText: 'Similar tracks by genre/style complex relations:', func: null, flags: MF_GRAYED});
 						const distanceUnit = music_graph_descriptors.intra_supergenre; // 100
 						const entryArgs = [
-							{title: 'Nearest Tracks', args: {sbd_max_graph_distance: distanceUnit / 2, method: 'GRAPH'}}, // 50
-							{title: 'Similar Genre mix, within a decade', args: {scoreFilter: 70, sbd_max_graph_distance: music_graph_descriptors.cluster, method: 'GRAPH'}}, // 85
-							{title: 'Varied Styles/Genres mix, within a decade', args: {sbd_max_graph_distance: distanceUnit * 3/2, method: 'GRAPH'}}, //150
-							{title: 'Random Styles/Genres mix, same Mood', args: {sbd_max_graph_distance: distanceUnit * 4, method: 'GRAPH'}} //400
+							{name: 'Nearest Tracks', args: {sbd_max_graph_distance: distanceUnit / 2, method: 'GRAPH'}}, // 50
+							{name: 'Similar Genre mix, within a decade', args: {scoreFilter: 70, sbd_max_graph_distance: music_graph_descriptors.cluster, method: 'GRAPH'}}, // 85
+							{name: 'Varied Styles/Genres mix, within a decade', args: {sbd_max_graph_distance: distanceUnit * 3/2, method: 'GRAPH'}}, //150
+							{name: 'Random Styles/Genres mix, same Mood', args: {sbd_max_graph_distance: distanceUnit * 4, method: 'GRAPH'}} //400
 						];
-						selArgs.forEach( (selArg) => {
-							if (selArg.title === 'sep') {
-								let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-								menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
-							} else {
-								const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
-								let entryText = selArg.title;
-								menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									do_searchby_distance(args);
-								}, flags: focusFlags});
-							}
-						});
+						loadMenus(menuName, selArgs, entryArgs);
+						loadMenusCond(menuName, 'GRAPH');
 					}
 				} else {menuDisabled.push({menuName: nameGraph, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 			}
@@ -770,24 +823,13 @@ const shortcuts = {
 						menu.newEntry({menuName, entryText: 'Similar tracks by genre/style simple grouping:', func: null, flags: MF_GRAYED});
 						const distanceUnit = 1;
 						const entryArgs = [
-							{title: 'Nearest Tracks', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
-							{title: 'Similar Genre mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
-							{title: 'Varied Styles/Genres mix, within a decade', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit * 2, method: 'DYNGENRE'}},
-							{title: 'Random Styles/Genres mix, same Mood', args: {dyngenreWeight: 20, dyngenreRange: distanceUnit * 2, method: 'DYNGENRE'}}
+							{name: 'Nearest Tracks', args: {dyngenreWeight: 25, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
+							{name: 'Similar Genre mix, within a decade', args: {dyngenreWeight: 10, dyngenreRange: distanceUnit, method: 'DYNGENRE'}},
+							{name: 'Varied Styles/Genres mix, within a decade', args: {dyngenreWeight: 10, dyngenreRange: distanceUnit * 2, method: 'DYNGENRE'}},
+							{name: 'Random Styles/Genres mix, same Mood', args: {dyngenreWeight: 5, dyngenreRange: distanceUnit * 4, method: 'DYNGENRE'}}
 						];
-						selArgs.forEach( (selArg) => {
-							if (selArg.title === 'sep') {
-								let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-								menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
-							} else {
-								const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
-								let entryText = selArg.title;
-								menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									do_searchby_distance(args);
-								}, flags: focusFlags});
-							}
-						});
+						loadMenus(menuName, selArgs, entryArgs);
+						loadMenusCond(menuName, 'DYNGENRE');
 					}
 				} else {menuDisabled.push({menuName: nameDynGenre, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 			}
@@ -795,26 +837,15 @@ const shortcuts = {
 				if (!menusEnabled.hasOwnProperty(nameWeight) || menusEnabled[nameWeight] === true) {
 					let menuName = menu.newMenu(nameWeight);
 					{	// Static menus
-						menu.newEntry({menuName, entryText: 'Similar tracks by tag similarity scoring:', func: null, flags: MF_GRAYED});
+						menu.newEntry({menuName, entryText: 'Similar tracks by tag matching scoring:', func: null, flags: MF_GRAYED});
 						const entryArgs = [
-							{title: 'Nearest Tracks', args: {method: 'WEIGHT'}},
-							{title: 'Similar Genre mix, within a decade', args: {method: 'WEIGHT'}},
-							{title: 'Varied Styles/Genres mix, within a decade', args: {method: 'WEIGHT'}},
-							{title: 'Random Styles/Genres mix, same Mood', args: {method: 'WEIGHT'}}
+							{name: 'Nearest Tracks', args: {method: 'WEIGHT'}},
+							{name: 'Similar Genre mix, within a decade', args: {method: 'WEIGHT'}},
+							{name: 'Varied Styles/Genres mix, within a decade', args: {method: 'WEIGHT'}},
+							{name: 'Random Styles/Genres mix, same Mood', args: {method: 'WEIGHT'}}
 						];
-						selArgs.forEach( (selArg) => {
-							if (selArg.title === 'sep') {
-								let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-								menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
-							} else {
-								const entryArg = entryArgs.find((item) => {return item.title === selArg.title;});
-								let entryText = selArg.title;
-								menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									do_searchby_distance(args);
-								}, flags: focusFlags});
-							}
-						});
+						loadMenus(menuName, selArgs, entryArgs);
+						loadMenusCond(menuName, 'WEIGHT');
 					}
 				} else {menuDisabled.push({menuName: nameWeight, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 			}
@@ -823,108 +854,144 @@ const shortcuts = {
 				if (!menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[specialMenu] === true) {
 					menu.newEntry({menuName: specialMenu, entryText: 'Based on Graph/Dyngenre/Weight:', func: null, flags: MF_GRAYED});
 					const selArgs = [
-						{title: 'sep'},
-						{title: 'Influences from any date', args: {genreWeight: 5, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 0, bpmWeight: 10, bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, sbd_max_graph_distance: 500, method: 'GRAPH'}},
-						{title: 'Influences within 20 years', args: {genreWeight: 5, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 10, dateRange: 20, bpmWeight: 10, bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, sbd_max_graph_distance: 500, method: 'GRAPH'}},
-						{title: 'sep'},
-						{title: 'Progressive playlist by genre/styles', args: {genreWeight: 15, styleWeight: 5, moodWeight: 30, keyWeight: 10, dateWeight: 5, dateRange: 35, bpmWeight: 10, probPick: 100, scoreFilter: 70, sbd_max_graph_distance: 200, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3}},
-						{title: 'Progressive playlist by mood', args: {genreWeight: 20, styleWeight: 20, moodWeight: 5, keyWeight: 20, dateWeight: 0, bpmWeight: 10, probPick: 100, scoreFilter: 60, sbd_max_graph_distance: 300, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3}},
-						{title: 'sep'},
-						{title: 'Harmonic mix with similar genre/styles', args: {dyngenreWeight: 20, genreWeight: 15, styleWeight: 15, dyngenreRange: 2, keyWeight: 0, dateWeight: 5, dateRange: 25, scoreFilter: 70, method: 'DYNGENRE', 
+						{name: 'sep'},
+						{name: 'Influences from any date', args: {genreWeight: 5, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 0, bpmWeight: 10, bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, sbd_max_graph_distance: 500, method: 'GRAPH'}},
+						{name: 'Influences within 20 years', args: {genreWeight: 5, styleWeight: 5, moodWeight: 15, keyWeight: 10, dateWeight: 10, dateRange: 20, bpmWeight: 10, bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, sbd_max_graph_distance: 500, method: 'GRAPH'}},
+						{name: 'sep'},
+						{name: 'Progressive playlist by genre/styles', args: {genreWeight: 15, styleWeight: 5, moodWeight: 30, keyWeight: 10, dateWeight: 5, dateRange: 35, bpmWeight: 10, probPick: 100, scoreFilter: 70, sbd_max_graph_distance: 200, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3}},
+						{name: 'Progressive playlist by mood', args: {genreWeight: 20, styleWeight: 20, moodWeight: 5, keyWeight: 20, dateWeight: 0, bpmWeight: 10, probPick: 100, scoreFilter: 60, sbd_max_graph_distance: 300, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3}},
+						{name: 'sep'},
+						{name: 'Harmonic mix with similar genre/styles', args: {dyngenreWeight: 20, genreWeight: 15, styleWeight: 15, dyngenreRange: 2, keyWeight: 0, dateWeight: 5, dateRange: 25, scoreFilter: 70, method: 'DYNGENRE', 
 							bInKeyMixingPlaylist: true}},
-						{title: 'Harmonic mix with similar moods', args: {moodWeight: 35, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 25, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true}},
-						{title: 'Harmonic mix with only instrumental tracks', args: {moodWeight: 15, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 35, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: 'GENRE IS Instrumental OR STYLE IS Instrumental'}}
+						{name: 'Harmonic mix with similar moods', args: {moodWeight: 35, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 25, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true}},
+						{name: 'Harmonic mix with only instrumental tracks', args: {moodWeight: 15, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 35, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: 'GENRE IS Instrumental OR STYLE IS Instrumental'}}
 						];
-					selArgs.forEach( (selArg) => {
-						if (selArg.title === 'sep') {
-							menu.newEntry({menuName: specialMenu, entryText: 'sep'});
-						} else {
-							let entryText = selArg.title;
-							menu.newEntry({menuName: specialMenu, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-								const globQuery = args.properties['forcedQuery'][1];
-								if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
-									args['forcedQuery'] =  globQuery + ' AND ' + args['forcedQuery'];
-								}
-								do_searchby_distance(args);
-							}, flags: focusFlags});
-						}
-					});
-				}
+					// Menus
+					function loadMenusCond(method){
+						menu.newCondEntry({entryText: 'Special playlists... (cond)', condFunc: (args = {...scriptDefaultArgs}) => {
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							similarBy = JSON.parse(args.properties.similarBy[1]);
+							const entries = similarBy.filter((item) => {return item.method === method;});
+							loadMenus(specialMenu, entries);
+						}});
+					}
+					loadMenus(specialMenu, selArgs);
+					loadMenusCond('SPECIAL');
+				} else {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 			{	// -> Config menu
-				{
-					const submenu = menu.newMenu('Search by Distance', configMenu);
-					{ // Find genre/styles not on graph
-						menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: (args = {...scriptDefaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the pan
-							// Skipped values at pre-filter
-							const tagValuesExcluded = new Set(args.properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
-							// Get all tags and their frequency
-							const tagsToCheck = [...new Set(args.properties['genreTag'][1].concat(',', args.properties['styleTag'][1]).split(',').filter(Boolean))]; // Merge and filter
-							if (!tagsToCheck.length) {
-								fb.ShowPopupMessage('There are no tags to check set at properties panel:\n' + args.properties['genreTag'][0], scriptName);
-								return;
-							}
-							// Get tags
-							const tags = new Set(getTagsValuesV4(fb.GetLibraryItems(), tagsToCheck, false, true).flat(Infinity));
-							// Get node list (+ weak substitutions + substitutions + style cluster)
-							const nodeList = new Set(music_graph_descriptors.style_supergenre.flat(Infinity)).union(new Set(music_graph_descriptors.style_weak_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_cluster.flat(Infinity)));
-							// Compare (- user exclusions - graph exclusions)
-							const missing = tags.difference(nodeList).difference(tagValuesExcluded).difference(music_graph_descriptors.map_distance_exclusions);
-							// Report
-							const userFile = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx_user.js';
-							const UserFileFound = (isCompatible('1.4.0') ? utils.IsFile(userFile) : utils.FileTest(userFile, 'e')) ? '' : ' (not found)';
-							const UserFileEmpty = UserFileFound &&  Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
-							const report = 'Graph descriptors:\n' +
-											'.\helpers\music_graph_descriptors_xxx.js\n' +
-											'.\helpers\music_graph_descriptors_xxx_user.js' + UserFileFound + UserFileEmpty + '\n\n' +
-											'List of tags not present on the graph descriptors:\n' +
-											[...missing].sort().join(', ');
-							fb.ShowPopupMessage(report, scriptName);
-						}});
-						// Graph debug
-						menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
-							if (bProfile) {var profiler = new FbProfiler('graphDebug');}
-							graphDebug(all_music_graph);
-							if (bProfile) {profiler.Print();}
-						}});
-						// Graph test
-						menu.newEntry({menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
-							if (bProfile) {var profiler = new FbProfiler('testGraph');}
-							testGraph(all_music_graph);
-							testGraphV2(all_music_graph);
-							if (bProfile) {profiler.Print();}
-						}});
-						// Graph cache reset
-						menu.newEntry({menuName: submenu, entryText: 'Reset link cache', func: () => {
-							_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
-							_deleteFile(folders.data + 'searchByDistance_cacheLinkSet.json');
-							cacheLink = void(0);
-							cacheLinkSet = void(0);
-							updateCache(); // Creates new one and also notifies other panels to discard their cache
-						}});
+				if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+					{
+						const submenu = menu.newMenu('Search by Distance', configMenu);
+						{ // Find genre/styles not on graph
+							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: (args = {...scriptDefaultArgs}) => {
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the pan
+								// Skipped values at pre-filter
+								const tagValuesExcluded = new Set(args.properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
+								// Get all tags and their frequency
+								const tagsToCheck = [...new Set(args.properties['genreTag'][1].concat(',', args.properties['styleTag'][1]).split(',').filter(Boolean))]; // Merge and filter
+								if (!tagsToCheck.length) {
+									fb.ShowPopupMessage('There are no tags to check set at properties panel:\n' + args.properties['genreTag'][0], scriptName);
+									return;
+								}
+								// Get tags
+								const tags = new Set(getTagsValuesV4(fb.GetLibraryItems(), tagsToCheck, false, true).flat(Infinity));
+								// Get node list (+ weak substitutions + substitutions + style cluster)
+								const nodeList = new Set(music_graph_descriptors.style_supergenre.flat(Infinity)).union(new Set(music_graph_descriptors.style_weak_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_cluster.flat(Infinity)));
+								// Compare (- user exclusions - graph exclusions)
+								const missing = tags.difference(nodeList).difference(tagValuesExcluded).difference(music_graph_descriptors.map_distance_exclusions);
+								// Report
+								const userFile = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx_user.js';
+								const UserFileFound = (isCompatible('1.4.0') ? utils.IsFile(userFile) : utils.FileTest(userFile, 'e')) ? '' : ' (not found)';
+								const UserFileEmpty = UserFileFound &&  Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
+								const report = 'Graph descriptors:\n' +
+												'.\helpers\music_graph_descriptors_xxx.js\n' +
+												'.\helpers\music_graph_descriptors_xxx_user.js' + UserFileFound + UserFileEmpty + '\n\n' +
+												'List of tags not present on the graph descriptors:\n' +
+												[...missing].sort().join(', ');
+								fb.ShowPopupMessage(report, scriptName);
+							}});
+							// Graph debug
+							menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
+								if (bProfile) {var profiler = new FbProfiler('graphDebug');}
+								graphDebug(all_music_graph);
+								if (bProfile) {profiler.Print();}
+							}});
+							// Graph test
+							menu.newEntry({menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
+								if (bProfile) {var profiler = new FbProfiler('testGraph');}
+								testGraph(all_music_graph);
+								testGraphV2(all_music_graph);
+								if (bProfile) {profiler.Print();}
+							}});
+							// Graph cache reset
+							menu.newEntry({menuName: submenu, entryText: 'Reset link cache', func: () => {
+								_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
+								_deleteFile(folders.data + 'searchByDistance_cacheLinkSet.json');
+								cacheLink = void(0);
+								cacheLinkSet = void(0);
+								updateCache(); // Creates new one and also notifies other panels to discard their cache
+							}});
+						}
+						menu.newEntry({menuName: submenu, entryText: 'sep'});
+						{ // Create theme
+							menu.newEntry({menuName: submenu, entryText: 'Create theme file with selected track', func: (args = {...scriptDefaultArgs}) => {
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+								// Tag names
+								const genreTag = args.properties['genreTag'][1].split(',').filter(Boolean);
+								const styleTag = args.properties['styleTag'][1].split(',').filter(Boolean);
+								const moodTag = args.properties['moodTag'][1].split(',').filter(Boolean);
+								const dateTag = args.properties['dateTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								const composerTag = args.properties['composerTag'][1].split(',').filter(Boolean);
+								const customStrTag = args.properties['customStrTag'][1].split(',').filter(Boolean);
+								const customNumTag = args.properties['customNumTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								// Tag Values
+								const selHandleList = new FbMetadbHandleList(fb.GetFocusItem());
+								const genre = genreTag.length ? getTagsValuesV3(selHandleList, genreTag, true).flat().filter(Boolean) : [];
+								const style = styleTag.length ? getTagsValuesV3(selHandleList, styleTag, true).flat().filter(Boolean) : [];
+								const mood = moodTag.length ? getTagsValuesV3(selHandleList, moodTag, true).flat().filter(Boolean) : [];
+								const composer = composerTag.length ? getTagsValuesV3(selHandleList, composerTag, true).flat().filter(Boolean) : [];
+								const customStr = customStrTag.length ? getTagsValuesV3(selHandleList, customStrTag, true).flat().filter(Boolean) : [];
+								const restTagNames = ['key', dateTag.length ? dateTag[0] : 'skip', 'bpm', customNumTag.length ? customNumTag[0] : 'skip']; // 'skip' returns empty arrays...
+								const [keyArr, dateArr, bpmArr, customNumArr] = getTagsValuesV4(selHandleList, restTagNames).flat();
+								const key = keyArr;
+								const date = dateTag.length ? [Number(dateArr[0])] : [];
+								const bpm = bpmArr.length ? [Number(bpmArr[0])] : [];
+								const customNum = customNumTag.length ? [Number(customNumArr[0])] : [];
+								// Theme obj
+								let input = '';
+								input = utils.InputBox(window.ID, 'Enter theme name', scriptName + ': ' + configMenu, 'my theme', true);
+								// try {input = utils.InputBox(window.ID, 'Enter theme name', scriptName + ': ' + configMenu, 'my theme', true);}
+								// catch (e) {return;}
+								if (!input.length) {return;}
+								const theme = {name: input, tags: []};
+								theme.tags.push({genre, style, mood, key, date, bpm, composer, customStr, customNum});
+								const filePath = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\themes\\' + input + '.json';
+								const bDone = _save(filePath, JSON.stringify(theme, null, '\t'));
+								if (!bDone) {fb.ShowPopupMessage('Error saving theme file:' + filePath, scriptName + ': ' + name); return;}
+							}, flags: focusFlags});
+						}
+						menu.newEntry({menuName: submenu, entryText: 'sep'});
+						{ // Open descriptors
+							menu.newEntry({menuName: submenu, entryText: 'Open main descriptor', func: () => {
+								const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx.js';
+								if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
+							}});
+							menu.newEntry({menuName: submenu, entryText: 'Open user descriptor', func: () => {
+								const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx_user.js';
+								if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
+							}});
+						}
+						menu.newEntry({menuName: submenu, entryText: 'sep'});
+						{ // Open graph html file
+							menu.newEntry({menuName: submenu, entryText: 'Show Music Graph on Browser', func: () => {
+								const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\Draw Graph.html';
+								if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run(file);}
+							}});
+						}
 					}
-					menu.newEntry({menuName: submenu, entryText: 'sep'});
-					{ // Open descriptors
-						menu.newEntry({menuName: submenu, entryText: 'Open main descriptor', func: () => {
-							const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx.js';
-							if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
-						}});
-						menu.newEntry({menuName: submenu, entryText: 'Open user descriptor', func: () => {
-							const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\music_graph_descriptors_xxx_user.js';
-							if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
-						}});
-					}
-					menu.newEntry({menuName: submenu, entryText: 'sep'});
-					{ // Open graph html file
-						menu.newEntry({menuName: submenu, entryText: 'Show Music Graph on Browser', func: () => {
-							const file = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\Draw Graph.html';
-							if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run(file);}
-						}});
-					}
-				}
-				menu.newEntry({menuName: configMenu, entryText: 'sep'});
+					menu.newEntry({menuName: configMenu, entryText: 'sep'});
+				} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		} else {
 			menuDisabled.push({menuName: nameGraph, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});
@@ -978,19 +1045,19 @@ const shortcuts = {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
 						let tags;
-						try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name + ': ' + name, sortInputDuplic.join(','), true);}
+						try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','), true);}
 						catch (e) {return;}
 						if (!tags.length) {return;}
 						tags = tags.split(',').filter((val) => val);
 						let n;
-						try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name + ': ' + name, nAllowed, true));}
+						try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true));}
 						catch (e) {return;}
 						if (!Number.isSafeInteger(n)) {return;}
 						do_remove_duplicatesV3(null, null, tags, n);
 					}, flags: playlistCountFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name + ': ' + name, sortInputDuplic.join(','));
+						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','));
 						if (sortInputDuplic.join(',') === input) {return;}
 						if (!input.length) {return;}
 						sortInputDuplic = input.split(',').filter((n) => n);
@@ -999,7 +1066,7 @@ const shortcuts = {
 						overwriteProperties(args.properties); // Updates panel
 					}});
 					menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', window.Name + ': ' + name, sortInputFilter.join(','));
+						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputFilter.join(','));
 						if (sortInputFilter.join(',') === input) {return;}
 						if (!input.length) {return;}
 						sortInputFilter = input.split(',').filter((n) => n);
@@ -1008,7 +1075,7 @@ const shortcuts = {
 						overwriteProperties(args.properties); // Updates panel
 					}});
 					menu.newEntry({menuName: subMenuName, entryText: 'Set number allowed (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', window.Name + ': ' + name, nAllowed));
+						const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed));
 						if (nAllowed === input) {return;}
 						if (!Number.isSafeInteger(input)) {return;}
 						nAllowed = input;
@@ -1074,7 +1141,7 @@ const shortcuts = {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = args.properties['queryFilterCustomArg'][1];
 							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
 							catch (e) {return;}
 							if (!query.length) {return;}
 							let focusHandle = fb.GetFocusItem(true);
@@ -1091,13 +1158,13 @@ const shortcuts = {
 						menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							let input;
 							let entryName;
-							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
+							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
 							catch (e) {return;}
 							if (!entryName.length) {return;}
 							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else {
 								let query;
-								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', window.Name + ': ' + name, '', true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
@@ -1158,17 +1225,17 @@ const shortcuts = {
 					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\harmonic_mixing.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
-						{title: 'Harmonic mix from playlist'	, args: {selItems: () => {return plman.GetPlaylistItems(plman.ActivePlaylist);}}, flags: playlistCountFlags},
-						{title: 'Harmonic mix from selection'	, args: {selItems: () => {return plman.GetPlaylistSelectedItems(plman.ActivePlaylist);}}, flags: multipleSelectedFlags},
+						{name: 'Harmonic mix from playlist'	, args: {selItems: () => {return plman.GetPlaylistItems(plman.ActivePlaylist);}}, flags: playlistCountFlags},
+						{name: 'Harmonic mix from selection'	, args: {selItems: () => {return plman.GetPlaylistSelectedItems(plman.ActivePlaylist);}}, flags: multipleSelectedFlags},
 					];
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Using rule of Fifths (new playlist):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					selArgs.forEach( (selArg) => {
-						if (selArg.title === 'sep') {
+						if (selArg.name === 'sep') {
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						} else {
-							let entryText = selArg.title;
+							let entryText = selArg.name;
 							menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 								args.selItems = args.selItems();
 								args.playlistLength = args.selItems.Count; // Max allowed
@@ -1187,7 +1254,7 @@ const shortcuts = {
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 				menu.newEntry({menuName, entryText: name, func: () => {
 					let input;
-					try {input = utils.InputBox(window.ID, 'Enter name:', window.Name + ': ' + name, 'New playlist', true);}
+					try {input = utils.InputBox(window.ID, 'Enter name:', scriptName + ': ' + name, 'New playlist', true);}
 					catch (e) {return;}
 					if (!input.length) {return;}
 					plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
@@ -1200,27 +1267,27 @@ const shortcuts = {
 				const subMenuName = menu.newMenu(name, menuName);
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				const selArgs = [
-					{title: '25 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 25);}},
-					{title: '50 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 50);}},
-					{title: '75 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 75);}},
-					{title: '100 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 100);}},
-					{title: 'sep'},
-					{title: '25 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -25);}},
-					{title: '50 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -50);}},
-					{title: '75 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -75);}},
-					{title: '100 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -100);}},
-					{title: 'sep'},
-					{title: (args = {...scriptDefaultArgs}) => {return 'Global Pls. Length: ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]);}},
-					{title: (args = {...scriptDefaultArgs}) => {return 'Global pls. Length (end): ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]);}},
+					{name: '25 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 25);}},
+					{name: '50 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 50);}},
+					{name: '75 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 75);}},
+					{name: '100 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 100);}},
+					{name: 'sep'},
+					{name: '25 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -25);}},
+					{name: '50 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -50);}},
+					{name: '75 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -75);}},
+					{name: '100 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -100);}},
+					{name: 'sep'},
+					{name: (args = {...scriptDefaultArgs}) => {return 'Global Pls. Length: ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]);}},
+					{name: (args = {...scriptDefaultArgs}) => {return 'Global pls. Length (end): ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]);}},
 				];	
 				menu.newEntry({menuName: subMenuName, entryText: 'Set playlist length to desired #:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				// Menus
 				selArgs.forEach( (selArg) => {
-					if (selArg.title === 'sep') {
+					if (selArg.name === 'sep') {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					} else {
-						let entryText = selArg.title;
+						let entryText = selArg.name;
 						menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: playlistCountFlags});
 					}
 				});
@@ -1351,9 +1418,9 @@ const shortcuts = {
 				const subMenuName = menu.newMenu(name, menuName);
 				{	// Legacy Sort (for use with macros!!)
 					const selArgs = [
-						{title: 'Randomize', func: () => {plman.UndoBackup(plman.ActivePlaylist); plman.SortByFormat(plman.ActivePlaylist, '', true);}},
-						{title: 'Reverse', func: () => {plman.UndoBackup(plman.ActivePlaylist); fb.RunMainMenuCommand('Edit/Selection/Sort/Reverse');}},
-						{title: 'sep'}
+						{name: 'Randomize', func: () => {plman.UndoBackup(plman.ActivePlaylist); plman.SortByFormat(plman.ActivePlaylist, '', true);}},
+						{name: 'Reverse', func: () => {plman.UndoBackup(plman.ActivePlaylist); fb.RunMainMenuCommand('Edit/Selection/Sort/Reverse');}},
+						{name: 'sep'}
 					];
 					let sortLegacy = [
 						{name: 'Sort by Mood', tfo: '%mood%'},
@@ -1371,10 +1438,10 @@ const shortcuts = {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					// Static menus
 					selArgs.forEach( (selArg) => {
-						if (selArg.title === 'sep') {
+						if (selArg.name === 'sep') {
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						} else {
-							let entryText = selArg.title;
+							let entryText = selArg.name;
 							menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: multipleSelectedFlags});
 						}
 					});
@@ -1405,7 +1472,7 @@ const shortcuts = {
 								args.tfo = selArg.tfo = JSON.parse(args.properties['sortLegacyCustomArg'][1]).tfo;
 								// Input
 								let tfo;
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', window.Name + ': ' + name, args.tfo, true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, args.tfo, true);}
 								catch (e) {return;}
 								if (!tfo.length) {return;}
 								// Execute
@@ -1424,13 +1491,13 @@ const shortcuts = {
 								// Input all variables
 								let input;
 								let entryName = '';
-								try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
+								try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
 								catch (e) {return;}
 								if (!entryName.length) {return;}
 								if (entryName === 'sep') {input = {name: entryName};} // Add separator
 								else { // or new entry
 									let tfo = '';
-									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', window.Name + ': ' + name, args.tfo, true);}
+									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, args.tfo, true);}
 									catch (e) {return;}
 									if (!tfo.length) {return;}
 									input = {name: entryName, tfo};
@@ -1492,10 +1559,10 @@ const shortcuts = {
 					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 						include(scriptPath);
 						readmes[name + '\\' + 'Sort by Key'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_key.txt';
-						if (selArgs.length) {selArgs.push({title: 'sep'});}
+						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
-							{title: 'Incremental key (Camelot Wheel)', 	func: do_sort_by_key, args: {sortOrder: 1}},
-							{title: 'Decremental key (Camelot Wheel)',	func: do_sort_by_key, args: {sortOrder: -1}},
+							{name: 'Incremental key (Camelot Wheel)', 	func: do_sort_by_key, args: {sortOrder: 1}},
+							{name: 'Decremental key (Camelot Wheel)',	func: do_sort_by_key, args: {sortOrder: -1}},
 						].forEach((val) => {selArgs.push(val);});
 					}
 				}
@@ -1504,18 +1571,18 @@ const shortcuts = {
 					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
 						include(scriptPath);
 						readmes[name + '\\' + 'Sort by DynGenre'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\sort_by_dyngenre.txt';
-						if (selArgs.length) {selArgs.push({title: 'sep'});}
+						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
-							{title: 'Incremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: 1}},
+							{name: 'Incremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: 1}},
 						].forEach((val) => {selArgs.push(val);});
 					}
 				}
 				// Menus
 				selArgs.forEach( (selArg) => {
-					if (selArg.title === 'sep') {
+					if (selArg.name === 'sep') {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					} else {
-						let entryText = selArg.title;
+						let entryText = selArg.name;
 						menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: multipleSelectedFlags});
 					}
 				});
@@ -1530,22 +1597,22 @@ const shortcuts = {
 					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
-						{title: 'Scatter instrumental tracks'	, 	args: {tagName: 'genre,style', tagValue: 'Instrumental,Jazz,Instrumental Rock'}},
-						{title: 'Scatter acoustic tracks'		, 	args: {tagName: 'genre,style,mood', tagValue: 'Acoustic'}},
-						{title: 'Scatter electronic tracks'		,	args: {tagName: 'genre,style', tagValue: 'Electronic'}},
-						{title: 'Scatter female vocal tracks'	,	args: {tagName: 'genre,style', tagValue: 'Female Vocal'}},
-						{title: 'sep'},
-						{title: 'Scatter sad mood tracks'		,	args: {tagName: 'mood', tagValue: 'Sad'}},
-						{title: 'Scatter aggressive mood tracks', 	args: {tagName: 'mood', tagValue: 'Aggressive'}},
+						{name: 'Scatter instrumental tracks'	, 	args: {tagName: 'genre,style', tagValue: 'Instrumental,Jazz,Instrumental Rock'}},
+						{name: 'Scatter acoustic tracks'		, 	args: {tagName: 'genre,style,mood', tagValue: 'Acoustic'}},
+						{name: 'Scatter electronic tracks'		,	args: {tagName: 'genre,style', tagValue: 'Electronic'}},
+						{name: 'Scatter female vocal tracks'	,	args: {tagName: 'genre,style', tagValue: 'Female Vocal'}},
+						{name: 'sep'},
+						{name: 'Scatter sad mood tracks'		,	args: {tagName: 'mood', tagValue: 'Sad'}},
+						{name: 'Scatter aggressive mood tracks', 	args: {tagName: 'mood', tagValue: 'Aggressive'}},
 					];
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reorder selection according to tags:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					selArgs.forEach( (selArg) => {
-						if (selArg.title === 'sep') {
+						if (selArg.name === 'sep') {
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						} else {
-							let entryText = selArg.title;
+							let entryText = selArg.name;
 							menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 								do_scatter_by_tags(args);
 							}, flags: multipleSelectedFlags});
@@ -1716,126 +1783,128 @@ const shortcuts = {
 						} else {menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 					}
 					{	// Configure properties
-						const subMenuName = menu.newMenu('Tools\\Find in and Remove from...', configMenu);
-						{	// bFindShowCurrent (Find in Playlists)
-							if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
-								const subMenuSecondName = menu.newMenu('Show current playlist?', subMenuName);
+						if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+							const subMenuName = menu.newMenu('Tools\\Find in and Remove from...', configMenu);
+							{	// bFindShowCurrent (Find in Playlists)
+								if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
+									const subMenuSecondName = menu.newMenu('Show current playlist?', subMenuName);
+									const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+									const options = ['Yes (greyed entry)', 'No (omit it)'];	
+									menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED});
+									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties['bFindShowCurrent'][1] = true;
+										overwriteProperties(args.properties); // Updates panel
+									}});
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties['bFindShowCurrent'][1] = false;
+										overwriteProperties(args.properties); // Updates panel
+									}});
+									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+										return (args.properties['bFindShowCurrent'][1] ? 0 : 1);
+									});
+								}
+							}
+							{	// bRemoveShowLocked (Remove from Playlists)
+								if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
+									const subMenuSecondName = menu.newMenu('Show locked playlist (autoplaylists, etc.)?', subMenuName);
+									const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+									const options = ['Yes (locked, greyed entries)', 'No (omit them)'];	
+									menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED});
+									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties['bRemoveShowLocked'][1] = true;
+										overwriteProperties(args.properties); // Updates panel
+									}});
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties['bRemoveShowLocked'][1] = false;
+										overwriteProperties(args.properties); // Updates panel
+									}});
+									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+										return (args.properties['bRemoveShowLocked'][1] ? 0 : 1);
+									});
+								}
+							}
+							{	// findRemoveSplitSize ( Find in / Remove from Playlists)
+								const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
 								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-								const options = ['Yes (greyed entry)', 'No (omit it)'];	
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED});
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-								menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									args.properties['bFindShowCurrent'][1] = true;
-									overwriteProperties(args.properties); // Updates panel
-								}});
-								menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									args.properties['bFindShowCurrent'][1] = false;
-									overwriteProperties(args.properties); // Updates panel
-								}});
-								menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
-									return (args.properties['bFindShowCurrent'][1] ? 0 : 1);
+								const options = [5, 10, 20, 30, 'Other...'];
+								const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
+								options.forEach( (val, index) => { // Creates menu entries for all options
+									if (index === 0) {
+										menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of entries:', func: null, flags: MF_GRAYED});
+										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+									}
+									const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
+									optionsIdx[index] = idx; // For later use
+									if (index !== options.length - 1) { // Predefined sizes
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											args.properties['findRemoveSplitSize'][1] = val;
+											overwriteProperties(args.properties); // Updates panel
+										}});
+									} else { // Last one is user configurable
+										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', scriptName + ': ' + subMenuName, args.properties['findRemoveSplitSize'][1]));
+											if (args.properties['findRemoveSplitSize'][1] === input) {return;}
+											if (!Number.isSafeInteger(input)) {return;}
+											args.properties['findRemoveSplitSize'][1] = input;
+											overwriteProperties(args.properties); // Updates panel
+										}});
+									}
+								});
+								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+									const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
+									return (size !== -1 ? size : options.length - 1);
 								});
 							}
-						}
-						{	// bRemoveShowLocked (Remove from Playlists)
-							if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
-								const subMenuSecondName = menu.newMenu('Show locked playlist (autoplaylists, etc.)?', subMenuName);
+							{	// maxSelCount ( Find in / Remove from Playlists)
+								const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
 								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-								const options = ['Yes (locked, greyed entries)', 'No (omit them)'];	
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED});
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-								menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									args.properties['bRemoveShowLocked'][1] = true;
-									overwriteProperties(args.properties); // Updates panel
-								}});
-								menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-									args.properties['bRemoveShowLocked'][1] = false;
-									overwriteProperties(args.properties); // Updates panel
-								}});
-								menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
-									return (args.properties['bRemoveShowLocked'][1] ? 0 : 1);
+								const options = [5, 10, 20, 25, 'Other...'];
+								const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
+								options.forEach( (val, index) => { // Creates menu entries for all options
+									if (index === 0) {
+										menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of tracks:', func: null, flags: MF_GRAYED});
+										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+									}
+									const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
+									optionsIdx[index] = idx; // For later use
+									if (index !== options.length - 1) { // Predefined sizes
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											args.properties['maxSelCount'][1] = val;
+											overwriteProperties(args.properties); // Updates panel
+										}});
+									} else { // Last one is user configurable
+										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', scriptName + ': ' + subMenuName, args.properties['maxSelCount'][1]));
+											if (args.properties['maxSelCount'][1] === input) {return;}
+											if (!Number.isSafeInteger(input)) {return;}
+											args.properties['maxSelCount'][1] = input;
+											overwriteProperties(args.properties); // Updates panel
+										}});
+									}
+								});
+								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+									const size = options.indexOf(args.properties['maxSelCount'][1]);
+									return (size !== -1 ? size : options.length - 1);
 								});
 							}
-						}
-						{	// findRemoveSplitSize ( Find in / Remove from Playlists)
-							const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
-							const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-							const options = [5, 10, 20, 30, 'Other...'];
-							const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
-							options.forEach( (val, index) => { // Creates menu entries for all options
-								if (index === 0) {
-									menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of entries:', func: null, flags: MF_GRAYED});
-									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-								}
-								const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
-								optionsIdx[index] = idx; // For later use
-								if (index !== options.length - 1) { // Predefined sizes
-									menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-										args.properties['findRemoveSplitSize'][1] = val;
-										overwriteProperties(args.properties); // Updates panel
-									}});
-								} else { // Last one is user configurable
-									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-									menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-										const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', window.Name + ': ' + subMenuName, args.properties['findRemoveSplitSize'][1]));
-										if (args.properties['findRemoveSplitSize'][1] === input) {return;}
-										if (!Number.isSafeInteger(input)) {return;}
-										args.properties['findRemoveSplitSize'][1] = input;
-										overwriteProperties(args.properties); // Updates panel
-									}});
-								}
-							});
-							menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
-								const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
-								return (size !== -1 ? size : options.length - 1);
-							});
-						}
-						{	// maxSelCount ( Find in / Remove from Playlists)
-							const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
-							const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-							const options = [5, 10, 20, 25, 'Other...'];
-							const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
-							options.forEach( (val, index) => { // Creates menu entries for all options
-								if (index === 0) {
-									menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of tracks:', func: null, flags: MF_GRAYED});
-									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-								}
-								const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
-								optionsIdx[index] = idx; // For later use
-								if (index !== options.length - 1) { // Predefined sizes
-									menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-										args.properties['maxSelCount'][1] = val;
-										overwriteProperties(args.properties); // Updates panel
-									}});
-								} else { // Last one is user configurable
-									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-									menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-										const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', window.Name + ': ' + subMenuName, args.properties['maxSelCount'][1]));
-										if (args.properties['maxSelCount'][1] === input) {return;}
-										if (!Number.isSafeInteger(input)) {return;}
-										args.properties['maxSelCount'][1] = input;
-										overwriteProperties(args.properties); // Updates panel
-									}});
-								}
-							});
-							menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
-								const size = options.indexOf(args.properties['maxSelCount'][1]);
-								return (size !== -1 ? size : options.length - 1);
-							});
-						}
-						menu.newEntry({menuName: configMenu, entryText: 'sep'});
+							menu.newEntry({menuName: configMenu, entryText: 'sep'});
+						} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 					}
 				} else {
 					menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
@@ -1954,21 +2023,21 @@ const shortcuts = {
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				const subMenuQuarter = menu.newMenu('By quarters', subMenuName);
 				const selArgs = [
-					{title: 'Select first Half',		menu: subMenuHalf,		args: {start: 0, end: 1/2}},
-					{title: 'Select second Half',		menu: subMenuHalf,		args: {start: 1/2, end: 1}},
-					{title: 'Select first Quarter',		menu: subMenuQuarter, 	args: {start: 0, end: 1/4}},
-					{title: 'Select first Third',		menu: subMenuThird,		args: {start: 0, end: 1/3}},
-					{title: 'Select second Third',		menu: subMenuThird, 	args: {start: 1/3, end: 2/3}},
-					{title: 'Select third Third',		menu: subMenuThird,  	args: {start: 2/3, end: 1}},
-					{title: 'Select second Quarter',	menu: subMenuQuarter,	args: {start: 1/4, end: 1/2}},
-					{title: 'Select third Quarter',		menu: subMenuQuarter,	args: {start: 1/2, end: 3/4}},
-					{title: 'Select fourth Quarter',	menu: subMenuQuarter,	args: {start: 3/4, end: 1}}
+					{name: 'Select first Half',		menu: subMenuHalf,		args: {start: 0, end: 1/2}},
+					{name: 'Select second Half',		menu: subMenuHalf,		args: {start: 1/2, end: 1}},
+					{name: 'Select first Quarter',		menu: subMenuQuarter, 	args: {start: 0, end: 1/4}},
+					{name: 'Select first Third',		menu: subMenuThird,		args: {start: 0, end: 1/3}},
+					{name: 'Select second Third',		menu: subMenuThird, 	args: {start: 1/3, end: 2/3}},
+					{name: 'Select third Third',		menu: subMenuThird,  	args: {start: 2/3, end: 1}},
+					{name: 'Select second Quarter',	menu: subMenuQuarter,	args: {start: 1/4, end: 1/2}},
+					{name: 'Select third Quarter',		menu: subMenuQuarter,	args: {start: 1/2, end: 3/4}},
+					{name: 'Select fourth Quarter',	menu: subMenuQuarter,	args: {start: 3/4, end: 1}}
 				];
 				selArgs.forEach( (selArg) => {
-					if (selArg.title === 'sep') {
+					if (selArg.name === 'sep') {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					} else {
-						let entryText = selArg.title;
+						let entryText = selArg.name;
 						menu.newEntry({menuName: selArg.menu, entryText, func: (args = selArg.args) => {
 							const count = plman.PlaylistItemCount(plman.ActivePlaylist);
 							const start = count * args.start;
@@ -2070,7 +2139,7 @@ const shortcuts = {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Configure tags to check...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', window.Name + ': ' + name, args.properties['tagNamesToCheck'][1]);
+						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, args.properties['tagNamesToCheck'][1]);
 						if (args.properties['tagNamesToCheck'][1] === input) {return;}
 						if (!input.length) {return;}
 						args.properties['tagNamesToCheck'][1] = [...new Set(input.split(',').filter(Boolean))].join(','); // filter holes and remove duplicates
@@ -2084,7 +2153,7 @@ const shortcuts = {
 						const subMenuSecondName = menu.newMenu('Configure dictionary...', subMenuName);
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', window.Name + ': ' + name, args.properties['tagNamesExcludedDic'][1]);
+							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, args.properties['tagNamesExcludedDic'][1]);
 							if (args.properties['tagNamesExcludedDic'][1] === input) {return;}
 							if (!input.length) {return;}
 							args.properties['tagNamesExcludedDic'][1] = [...new Set(input.split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
@@ -2092,7 +2161,7 @@ const shortcuts = {
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Set dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', window.Name + ': ' + name, args.properties['dictName'][1]);
+							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', scriptName + ': ' + name, args.properties['dictName'][1]);
 							if (args.properties['dictName'][1] === input) {return;}
 							if (!input.length) {return;}
 							const dictPath = args.properties['dictPath'][1] + '\\' + input;
@@ -2102,7 +2171,7 @@ const shortcuts = {
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', window.Name + ': ' + name, args.properties['dictPath'][1]);
+							const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', scriptName + ': ' + name, args.properties['dictPath'][1]);
 							if (args.properties['dictPath'][1] === input) {return;}
 							if (!input.length) {return;}
 							if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
@@ -2178,7 +2247,7 @@ const shortcuts = {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', window.Name + ': ' + name, args.properties['simThreshold'][1]));
+							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, args.properties['simThreshold'][1]));
 							if (args.properties['simThreshold'][1] === input) {return;}
 							if (!Number.isFinite(input)) {return;}
 							if (input < 0 || input > 1) {return;}
@@ -2234,6 +2303,7 @@ const shortcuts = {
 		{	// Include scripts
 			const name = 'Include scripts';
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+				readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\include_scripts.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				let scriptIncluded = [];
 				let scriptIncludedDefaults = [];
@@ -2268,12 +2338,12 @@ const shortcuts = {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					{	// Add / Remove
 					menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						const answer = WshShell.Popup('This is an utility to easily include (\'merge\') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don\'t require any UI, user interaction, etc.\n\nNote you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\\Spider Monkey Panel) and do nothing more.\n\nThe use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.\n\nIn any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.', 0, window.Name + ': ' + name, popup.question + popup.yes_no);
+						const answer = WshShell.Popup('This is an utility to easily include (\'merge\') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don\'t require any UI, user interaction, etc.\n\nNote you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\\Spider Monkey Panel) and do nothing more.\n\nThe use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.\n\nIn any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
 						if (answer === popup.no) {return;}
 						// Input all variables
 						let input;
 						let path = '';
-						try {path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', window.Name + ': ' + name, '', true);}
+						try {path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', scriptName + ': ' + name, '', true);}
 						catch (e) {return;}
 						if (path === 'sep') {input = {name: path};} // Add separator
 						else { // or new entry
@@ -2337,6 +2407,13 @@ const shortcuts = {
 {
 	const name = 'Pools';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+		include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_playlists.js');
+		const plsManHelper = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\playlist_manager_helpers.js';
+		let isPlsMan = false;
+		if (_isFile(plsManHelper)) {
+			include(plsManHelper);
+			isPlsMan = true;
+		}
 		readmes[name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu_pools.txt';
 		forcedQueryMenusEnabled[name] = true;
 		let menuName = menu.newMenu(name);
@@ -2386,25 +2463,177 @@ const shortcuts = {
 				start: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(num - 1, count);} return handleListFrom;},
 				end: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(0, count - num);} return handleListFrom;},
 			};
-			const do_pool = (pool) => {
+			const do_pool = (pool, properties) => {
 				let handleListTo = new FbMetadbHandleList();
+				let bAbort = false;
 				Object.keys(pool.fromPls).forEach((plsName) => {
+					if (bAbort) {return;}
 					let handleListFrom;
-					if (!plsName.startsWith('_LIBRARY_')) { // Playlist Source
-						const idxFrom = plman.FindPlaylist(plsName);
-						if (idxFrom === -1) {
-							// Ask playlist manager instances for playlists with that name!
-							// Don't use callbacks (to ask for pls name) since they are async, instead look for playlist files with that name directly here
-							// And get playlist paths with callbacks at script init + custom folder
-							console.log('Playlist tools Pools: source -> Not found');
-							return;
+					// Select source
+					switch (true) {
+						case plsName.startsWith('_LIBRARY_'): { // Library Source
+							handleListFrom = fb.GetLibraryItems();
+							console.log('Playlist tools Pools: source -> Library');
+							break;
 						}
-						console.log('Playlist tools Pools: source -> ' + plsName);
-						handleListFrom = plman.GetPlaylistItems(idxFrom);
-					} else { // Library Source
-						handleListFrom = fb.GetLibraryItems();
-						console.log('Playlist tools Pools: source -> Library');
+						case plsName.startsWith('_SEARCHBYGRAPH_'): { // Search by GRAPH
+							const nameGraph = 'Search similar by Graph...';
+							const nameDynGenre = 'Search similar by DynGenre...';
+							const nameWeight = 'Search similar by Weight...';
+							const bScriptLoaded = !menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
+							if (typeof do_searchby_distance !== undefined && bScriptLoaded) {
+								// Get arguments
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFile(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\recipes\\' + pool.recipe[plsName]) : pool.recipe[plsName];
+								// Get reference (instead of selection)
+								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
+								// Check
+								if (!recipe) {
+									console.log('Playlist tools Pools: source recipe not found (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\recipes\\' + pool.recipe[plsName] + ').');
+									bAbort = true; 
+									return;
+								}
+								const checks = ['sbd_max_graph_distance'];
+								let bDone = true;
+								checks.forEach((key) => {
+									if (!recipe.hasOwnProperty(key)) {
+										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js' + ')');
+										bDone = false;
+									}
+								});
+								if (!bDone) {bAbort = true; return;}
+								// Force arguments
+								recipe.bCreatePlaylist = false; 
+								recipe.playlistLength = Infinity; // use all possible tracks
+								recipe.method = 'GRAPH';
+								recipe.bShowFinalSelection = false;
+								recipe.bBasicLogging = true;
+								// Apply
+								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, ...recipe});
+								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
+								console.log('Playlist tools Pools: source -> Search by GRAPH');
+							} else {
+								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js' + ')');
+								bAbort = true;
+								return;
+							}
+							break;
+						}
+						case plsName.startsWith('_SEARCHBYWEIGHT_'): { // Search by WEIGHT
+							if (typeof do_searchby_distance !== undefined) {
+								// Get arguments
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFile(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\recipes\\' + pool.recipe[plsName]) : pool.recipe[plsName];
+								// Get reference (instead of selection)
+								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
+								// Check
+								if (!recipe) {
+									console.log('Playlist tools Pools: source recipe not found (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\recipes\\' + pool.recipe[plsName] + ').');
+									bAbort = true; 
+									return;
+								}
+								const checks = [];
+								let bDone = true;
+								checks.forEach((key) => {
+									if (!recipe.hasOwnProperty(key)) {
+										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js' + ')');
+										bDone = false;
+									}
+								});
+								if (!bDone) {bAbort = true; return;}
+								// Force arguments
+								recipe.bCreatePlaylist = false; 
+								recipe.playlistLength = Infinity; // use all possible tracks
+								recipe.method = 'WEIGHT';
+								recipe.bShowFinalSelection = false;
+								recipe.bBasicLogging = false;
+								// Apply
+								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, ...recipe});
+								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
+								console.log('Playlist tools Pools: source -> Search by WEIGHT');
+							} else {
+								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js' + ')');
+								bAbort = true;
+								return;
+							}
+							break;
+						}
+						case plsName.startsWith('_SEARCHBYDYNGENRE_'): { // Search by DYNGENRE
+							if (typeof do_searchby_distance !== undefined) {
+								// Get arguments
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFile(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\recipes\\' + pool.recipe[plsName]) : pool.recipe[plsName];
+								// Get reference (instead of selection)
+								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
+								// Check
+								if (!recipe) {
+									console.log('Playlist tools Pools: source recipe not found (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\presets\\Search by\\recipes\\' + pool.recipe[plsName] + ').');
+									bAbort = true; 
+									return;
+								}
+								const checks = ['dyngenreWeight'];
+								let bDone = true;
+								checks.forEach((key) => {
+									if (!recipe.hasOwnProperty(key)) {
+										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js' + ')');
+										bDone = false;
+									}
+								});
+								if (!bDone) {bAbort = true; return;}
+								// Force arguments
+								recipe.bCreatePlaylist = false; 
+								recipe.playlistLength = Infinity; // use all possible tracks
+								recipe.method = 'DYNGENRE';
+								recipe.bShowFinalSelection = false;
+								recipe.bBasicLogging = false;
+								// Apply
+								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, ...recipe});
+								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
+								console.log('Playlist tools Pools: source -> Search by DYNGENRE');
+							} else {
+								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_bydistance.js' + ')');
+								bAbort = true;
+								return;
+							}
+							break;
+						}
+						default : { // Playlist Source
+							const idxFrom = plman.FindPlaylist(plsName);
+							// Try loaded playlist first, then matching pls name (within file) and then by filename
+							if (idxFrom === -1) { // Playlist file
+								let bDone = false;
+								let plsMatch = {};
+								if (isPlsMan) {
+									const propertiesPanel =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), 'menu_');
+									const playlistPath = JSON.parse(propertiesPanel.playlistPath[1]); // This is retrieved everytime the menu is called
+									playlistPath.forEach((path) => { // Find first exact match
+										if (bDone) {return;}
+										const plsArr = loadPlaylistsFromFolder(playlistPath);
+										plsArr.forEach((plsObj) => {
+											if (bDone) {return;}
+											if (plsObj.name === plsName) {
+												handleListFrom = getHandlesFromPlaylist(plsObj.path, path, true); // Load found handles, omit the rest instead of nothing
+												plsMatch = plsObj;
+												bDone = true;
+											}
+										});
+										if (bDone) {return;}
+										plsArr.forEach((plsObj) => {
+											if (bDone) {return;}
+											if (plsObj.path.replace(path,'').startsWith(plsName)) {
+												handleListFrom = getHandlesFromPlaylist(plsObj.path, path, true); // Load found handles, omit the rest instead of nothing
+												plsMatch = plsObj;
+												bDone = true;
+											}
+										});
+									});
+								}
+								if (!bDone) {console.log('Playlist tools Pools: source -> Not found - ' + plsName);}
+								else {console.log('Playlist tools Pools: source -> ' + plsName + ' (' + plsMatch.path + ')');}
+							} else { // Loaded playlist
+								console.log('Playlist tools Pools: source -> ' + plsName);
+								handleListFrom = plman.GetPlaylistItems(idxFrom);
+							}
+						}
 					}
+					if (!handleListFrom || !handleListFrom.Count) {return;}
 					// Filter
 					const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
 					if (query.length && query.toUpperCase() !== 'ALL') {
@@ -2412,7 +2641,7 @@ const shortcuts = {
 						if (checkQuery(processedQuery, true)) {
 							console.log('Playlist tools Pools: filter -> ' + processedQuery);
 							handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
-						} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); return;}
+						} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
 					}
 					// Remove duplicates
 					handleListFrom = do_remove_duplicatesV2(handleListFrom);
@@ -2427,6 +2656,7 @@ const shortcuts = {
 					console.log('Playlist tools Pools: pool size -> ' + handleListFrom.Count + ' (' + count +') tracks');
 					handleListTo.InsertRange(handleListTo.Count, handleListFrom);
 				});
+				if (bAbort) {fb.ShowPopupMessage('Check console. Pools failed with major errors.', scriptName); return;}
 				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
 				if (plman.IsPlaylistLocked(true)) {return;}
 				plman.UndoBackup(idxTo);
@@ -2440,7 +2670,7 @@ const shortcuts = {
 			const inputPool = () => {
 				// Sources
 				let fromPls;
-				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', window.Name + ': ' + name, Object.keys(pools[0].pool.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pools[0].pool.fromPls[key];}, ''), true);}
+				try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', scriptName + ': ' + name, Object.keys(pools[0].pool.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pools[0].pool.fromPls[key];}, ''), true);}
 				catch (e) {return;}
 				if (!fromPls.length) {console.log('Input was empty'); return;}
 				if (fromPls.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2456,7 +2686,7 @@ const shortcuts = {
 				fromPls = Object.fromEntries(fromPls);
 				// Queries
 				let query;
-				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', window.Name + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
+				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', scriptName + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
 				catch (e) {return;}
 				if (!query.length) {console.log('Input was empty'); return;}
 				if (query.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2473,7 +2703,7 @@ const shortcuts = {
 				// Picking Method
 				let pickMethod;
 				const pickMethodsKeys = Object.keys(pickMethods);
-				try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', window.Name + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
+				try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', scriptName + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
 				catch (e) {return;}
 				if (!pickMethod.length) {console.log('Input was empty'); return;}
 				if (pickMethod.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
@@ -2488,12 +2718,12 @@ const shortcuts = {
 				pickMethod = Object.fromEntries(pickMethod);
 				// Destination
 				let toPls;
-				try {toPls = utils.InputBox(window.ID, 'Enter playlist destination:', window.Name + ': ' + name, 'Playlist C', true);}
+				try {toPls = utils.InputBox(window.ID, 'Enter playlist destination:', scriptName + ': ' + name, 'Playlist C', true);}
 				catch (e) {return;}
 				if (!toPls.length) {console.log('Input was empty'); return;}
 				// Sort
 				let sort = '';
-				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', window.Name + ': ' + name, '%playlist_index%', true);}
+				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', scriptName + ': ' + name, '%playlist_index%', true);}
 				catch (e) {return;}
 				// TODO: Test sorting
 				// Object
@@ -2510,7 +2740,15 @@ const shortcuts = {
 					let entryText = poolObj.name;
 					// Global forced query
 					const pool = clone(poolObj.pool);
-					if (forcedQueryMenusEnabled[name]) {Object.keys(pool.query).forEach((key) => {pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';});}
+					if (forcedQueryMenusEnabled[name]) {
+						Object.keys(pool.query).forEach((key) => {
+							if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') {
+								pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
+							} else if (!pool.query[key].length || pool.query[key].toUpperCase() === 'ALL') {
+								pool.query[key] = args.forcedQuery;
+							}
+						});
+					}
 					menu.newEntry({menuName, entryText, func: () => {do_pool(pool);}});
 				}
 			});
@@ -2529,8 +2767,16 @@ const shortcuts = {
 						// Entries
 						// Global forced query
 						const pool = clone(poolObj.pool);
-						if (forcedQueryMenusEnabled[name]) {Object.keys(pool.query).forEach((key) => {pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';});}
-						menu.newEntry({menuName, entryText: poolName, func: () => {do_pool(pool);}});
+						if (forcedQueryMenusEnabled[name]) {
+							Object.keys(pool.query).forEach((key) => {
+								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') {
+									pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
+								} else if (!pool.query[key].length || pool.query[key].toUpperCase() === 'ALL') {
+									pool.query[key] = args.forcedQuery;
+								}
+							});
+						}
+						menu.newEntry({menuName, entryText: poolName, func: () => {do_pool(pool, args.properties);}});
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
@@ -2543,7 +2789,7 @@ const shortcuts = {
 						const pool = inputPool();
 						if (!pool) {return;}
 						// Execute
-						do_pool(pool);
+						do_pool(pool, args.properties);
 						// For internal use original object
 						selArg.pool = pool;
 						args.properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
@@ -2557,7 +2803,7 @@ const shortcuts = {
 						// Input all variables
 						let input;
 						let entryName = '';
-						try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', window.Name + ': ' + name, '', true);}
+						try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
 						catch (e) {return;}
 						if (!entryName.length) {return;}
 						if (entryName === 'sep') {input = {name: entryName};} // Add separator
@@ -2586,7 +2832,7 @@ const shortcuts = {
 								args.properties['pools'][1] = JSON.stringify(pools);
 								// Presets
 								if (presets.hasOwnProperty('pools')) {
-									presets.macros.splice(presets.pools.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(pool);}), 1);
+									presets.pools.splice(presets.pools.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(pool);}), 1);
 									if (!presets.pools.length) {delete presets.pools;}
 									args.properties['presets'][1] = JSON.stringify(presets);
 								}
@@ -2607,6 +2853,10 @@ const shortcuts = {
 						}});
 					}
 				}
+			}});
+			menu.newCondEntry({entryText: 'Get playlist manager path (cond)', condFunc: () => {
+				window.NotifyOthers('Playlist manager: playlistPath', null); // Ask to share paths
+				isPlsMan = _isFile(plsManHelper); // Safety check
 			}});
 		}
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
@@ -2743,7 +2993,8 @@ const shortcuts = {
 // Configuration...
 {
 	if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
-	// Create it if it was not already created. Contains entries from multiple scripts
+		readmes[configMenu + '\\Presets'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\playlist_tools_menu_presets.txt';
+		// Create it if it was not already created. Contains entries from multiple scripts
 		if (!menu.hasMenu(configMenu)) {
 			menu.newMenu(configMenu);
 		}
@@ -2751,7 +3002,7 @@ const shortcuts = {
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Set Global Playlist Length... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', window.Name + ': ' + configMenu, args.properties['playlistLength'][1]));
+				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', scriptName + ': ' + configMenu, args.properties['playlistLength'][1]));
 				if (args.properties['playlistLength'][1] === input) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
 				defaultArgs.playlistLength = input;
@@ -2765,7 +3016,7 @@ const shortcuts = {
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Set Global Forced Query... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', window.Name + ': ' + configMenu, args.properties['forcedQuery'][1]);
+					const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, args.properties['forcedQuery'][1]);
 					if (args.properties['forcedQuery'][1] === input) {return;}
 					try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
@@ -2797,37 +3048,49 @@ const shortcuts = {
 			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				let file;
-				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', window.Name + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
+				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
 				catch (e) {return;}
 				if (!file.length) {return;}
 				if (!_isFile(file)) {fb.ShowPopupMessage('File does not exist: \n' + file, scriptName)}
-				const fileText = _open(file, 65001);
-				if (fileText.length) {
-					const newPresets = JSON.parse(fileText);
-					Object.keys(newPresets).forEach((key) => {
-						// Merge with current presets
-						if (presets.hasOwnProperty(key)) {presets[key] = [...presets[key], ...newPresets[key]];}
-						else {presets[key] = newPresets[key];}
-						// Add menus
-						let currentMenu = JSON.parse(args.properties[key][1]);
-						currentMenu = currentMenu.concat(presets[key]);
-						args.properties[key][1] = JSON.stringify(currentMenu);
-					});
-					// Save all
-					args.properties['presets'][1] = JSON.stringify(presets);
-					overwriteProperties(args.properties); // Updates panel
+				const newPresets = _jsonParseFile(file);
+				if (!newPresets) {fb.ShowPopupMessage('File not valid: \n' + file, scriptName); return;}
+				// Load description
+				let readme = '';
+				if (newPresets.hasOwnProperty('readme')) {
+					readme = newPresets.readme;
+					delete newPresets.readme;
 				}
+				// List entries
+				const presetList = Object.keys(newPresets).map((key) => {return '+ ' + key + ' -> ' + args.properties[key][0] + '\n\t- ' + newPresets[key].map((_) => {return _.name + (_.hasOwnProperty('method') ? ' (' + _.method + ')': '');}).join('\n\t- ');});
+				readme += (readme.length ? '\n\n' : '') + 'List of presets:\n' + presetList;
+				fb.ShowPopupMessage(readme, scriptName + ': Presets (' + file.split('\\').pop() + ')')
+				// Accept?
+				const answer = WshShell.Popup('Check the popup for description. Do you want to import it?', 0, scriptName + ': Presets (' + file.split('\\').pop() + ')', popup.question + popup.yes_no);
+				if (answer === popup.no) {return;}
+				// Import
+				Object.keys(newPresets).forEach((key) => {
+					// Merge with current presets
+					let currentMenu = JSON.parse(args.properties[key][1]);
+					if (presets.hasOwnProperty(key)) {presets[key] = [...presets[key], ...newPresets[key]];} 
+					else {presets[key] = newPresets[key];}
+					currentMenu = currentMenu.concat(newPresets[key]);
+					args.properties[key][1] = JSON.stringify(currentMenu);
+				});
+				// Save all
+				args.properties['presets'][1] = JSON.stringify(presets);
+				overwriteProperties(args.properties); // Updates panel
 			}});
 		}
 		{	// Export all presets
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
+				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
 					const path = folders.data + 'playlistTools_presets.json'
 					_recycleFile(path);
-					if (_save(path, JSON.stringify(presets))) {
+					const readme = 'Backup ' + new Date().toString();
+					if (_save(path, JSON.stringify({readme, ...presets}, null, '\t'))) {
 						_explorer(path);
 						console.log('Playlist tools: presets backup saved at ' + path);
 					}
@@ -2839,17 +3102,18 @@ const shortcuts = {
 			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				const path = folders.data + 'playlistTools_presets.json';
-				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
+				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
-					const answerPresets = WshShell.Popup('Do you want to maintain your own presets?\n(\'No\' will create a backup file in ' + path + ')', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
+					const answerPresets = WshShell.Popup('Do you want to maintain your own presets?\n(\'No\' will create a backup file in ' + path + ')', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 					let copy;
 					if (answerPresets === popup.yes) {
 						copy = {...presets};
 					} else {
 						_recycleFile(path);
-						if (_save(path, JSON.stringify(presets))) {
-							console.log('Playlist tools: presets backup saved at ' + path);
-						}
+						const readme = 'Backup ' + new Date().toString();
+						if (_save(path, JSON.stringify({readme, ...presets}, null, '\t'))) {console.log('Playlist tools: presets backup saved at ' + path);}
+						else {console.log('Playlist tools: failed to create backup of presets at ' + path);}
+						presets = {};
 					}
 					// For the current instance
 					for (let key in args.properties) {
@@ -2883,11 +3147,12 @@ const shortcuts = {
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Shortcuts
+			readmes[configMenu + '\\Global Shortcuts'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\global_shortcuts.txt';
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Enabled Global shortcuts', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 				if (!args.properties.bShortcuts[1]) {
-					const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts are indicated in the related menus and are hard-coded.\nAre you sure you want to enable it?', 0, window.Name + ': ' + configMenu, popup.question + popup.yes_no);
+					const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts are indicated in the related menus and are hard-coded.\nAre you sure you want to enable it?', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 					if (answer !== popup.yes) {return;}
 				}
 				args.properties.bShortcuts[1] = !args.properties.bShortcuts[1];
@@ -2916,7 +3181,7 @@ const shortcuts = {
 								if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
 									const readme = utils.ReadTextFile(value, 65001);
 									if (readme.length) {fb.ShowPopupMessage(readme, key);}
-								}
+								} else {console.log('Readme not found: ' + value);}
 							}});
 							iCount++;
 						}
@@ -3033,7 +3298,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	// Other funcs by menus
 	menuFunc.forEach((obj) => {
 		if (obj.hasOwnProperty('func') && _isFunction(obj.func)) {
-		obj.func(propObject);
+			obj.func(propObject);
 		}
 	});
 }
@@ -3100,7 +3365,6 @@ menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: (args = {propertie
 					}
 				}
 			});
-			// if (idx !== -1){console.log(menu.getEntry(idx))}
 			if (idx !== -1) {
 				if (_isFunction(entryList[idx].entryText)) {
 					const copyFunc = entryList[idx].entryText;

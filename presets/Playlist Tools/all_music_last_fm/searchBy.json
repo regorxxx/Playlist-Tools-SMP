@@ -1,0 +1,34 @@
+{
+	"readme": "Mixes (according to selection) using All Music or Last FM tags.",
+	"sameByQueries": [{
+		"name": "sep"
+	},
+	{
+		"name": "All Music / Last FM genres (75%)",
+		"args": {
+			"sameBy": {
+				"album genre allmusic": 0.75,
+				"album genre last.fm": 0.75
+			},
+			"logic": "OR",
+			"remapTags": {
+				
+			},
+			"bOnlyRemap": false
+		}
+	},
+	{
+		"name": "All Music / Last FM moods (75%)",
+		"args": {
+			"sameBy": {
+				"album mood allmusic": 0.75,
+				"album theme allmusic": 0.75
+			},
+			"logic": "OR",
+			"remapTags": {
+				
+			},
+			"bOnlyRemap": false
+		}
+	}]
+}

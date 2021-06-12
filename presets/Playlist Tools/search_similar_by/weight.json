@@ -1,0 +1,39 @@
+{
+	"readme": "WEIGHT presets work by matching genre\\style tags (Rock != Hard Rock), without using complex logics.\nThey work with any tag.",
+	"similarBy": [{
+		"name": "sep",
+		"method": "WEIGHT"
+	},
+	{
+		"name": "Genres and keys",
+		"method": "WEIGHT",
+		"args": {
+			"genreWeight": 10,
+			"styleWeight": 5,
+			"moodWeight": 0,
+			"keyWeight": 25,
+			"keyRange": 2,
+			"dateWeight": 0,
+			"bpmWeight": 5,
+			"bpmRange": 40,
+			"probPick": 100,
+			"scoreFilter": 70
+		}
+	},
+	{
+		"name": "Moods and keys",
+		"method": "WEIGHT",
+		"args": {
+			"genreWeight": 5,
+			"styleWeight": 5,
+			"moodWeight": 25,
+			"keyWeight": 25,
+			"keyRange": 2,
+			"dateWeight": 0,
+			"bpmWeight": 5,
+			"bpmRange": 40,
+			"probPick": 100,
+			"scoreFilter": 70
+		}
+	}]
+}

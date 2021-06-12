@@ -1,0 +1,8 @@
+﻿An utility to easily include ('merge') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don't require any UI, user interaction, etc. 
+
+Note you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\Spider Monkey Panel) and do nothing more.
+
+The use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.
+In any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). 
+
+If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.

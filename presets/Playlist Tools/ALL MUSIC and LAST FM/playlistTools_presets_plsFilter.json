@@ -1,1 +1,0 @@
-{"queryFilter":[{"name":"sep"},{"name":"Same All Music / Last FM genres than sel","query":"(ALBUM GENRE ALLMUSIC IS #ALBUM GENRE ALLMUSIC#) OR (ALBUM GENRE LAST.FM IS #ALBUM GENRE LAST.FM#)"},{"name":"Same All Music moods than sel","query":"(ALBUM MOOD ALLMUSIC IS #ALBUM MOOD ALLMUSIC#) OR (ALBUM THEME ALLMUSIC IS #ALBUM THEME ALLMUSIC#)"}]}

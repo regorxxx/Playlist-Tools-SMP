@@ -5,15 +5,30 @@ picking method (random, from start, from end) and final sorting of destination p
 
 Usage:
 	- Set source playlist(s) and other parameters.
-		- Playlists matching the source names must exist to be used
+		- Playlists matching the source names must exist to be used (*)
 		- As source name, _LIBRARY_#, where # is a number, may be used.
+		- As source name, SEARCHBY$_#, where $ is GRAPH\WEIGHT\DYNGENRE, may be used.
 		- The query will be applied to the current source to get elegible tracks.
-		- Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (*)
+		- Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (**)
 		- Duplicates are removed after query (by artist|title|date).
 		- Any track already selected for final playlist in previous steps is removed.
 		- Finally tracks are choosen using the picking method set.
 		- Source(s) with less tracks than pool(s) size will use all tracks.
 	- Final playlist is created with tracks from all pools. 
-	
-(*) For a selected rock track, 'GENRE IS #GENRE#' would translate into 'GENRE IS Rock'.
+
+(*) Playlist may be loaded within foobar or playlist files tracked by Playlist Manager panels.
+Playlist A would match first a playlist within foobar with same name, then a playlist file with 
+matching '#PLAYLIST:Playlist A' tag and finally any playlist file named 'Playlist A.m3u8'. 
+Autoplaylists are excluded (use queries instead) and fpl files too.
+
+(**) Output from 'Search by (method)' as source, setting source name as '_SEARCHBYGRAPH_#', etc. 
+(where # is any number). Allows spotify-like source creation instead of using queries for the pool. 
+Can be used multiple times (beware of computing time) and mixed with the other sources types. 
+This new source may only be used by creating a preset pool with a text editor, 
+since it requires to set so many arguments that is not reasonable to do it via popups.
+'recipe' and 'theme' keys must be set when using this type of source (a recipe may force a theme too).
+Both may point to a filename (i.e. another preset like themes) or contain the arguments object.
+Examples are offered in the presets folder for all use-cases. See readme for recipes\themes.
+
+(***) For a selected rock track, 'GENRE IS #GENRE#' would translate into 'GENRE IS Rock'.
 Thus using the currently selected track to define the pool behavior. See 'Dynamic Query'.

@@ -1,0 +1,38 @@
+{
+	"readme": "Mixes (according to selection) using All Music or Last FM tags.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Current All Music / Last FM genres",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 50
+			},
+			"query": {
+				"_LIBRARY_0": "(ALBUM GENRE ALLMUSIC IS #ALBUM GENRE ALLMUSIC#) OR (ALBUM GENRE LAST.FM IS #ALBUM GENRE LAST.FM#)"
+			},
+			"toPls": "All Music / Last FM mix",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random"
+			}
+		}
+	},
+	{
+		"name": "Current All Music moods",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 50
+			},
+			"query": {
+				"_LIBRARY_0": "(ALBUM MOOD ALLMUSIC IS #ALBUM MOOD ALLMUSIC#) OR (ALBUM THEME ALLMUSIC IS #ALBUM THEME ALLMUSIC#)"
+			},
+			"toPls": "All Music / Last Mood FM mix",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random"
+			}
+		}
+	}]
+}

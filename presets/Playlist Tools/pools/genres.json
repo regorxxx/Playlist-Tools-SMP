@@ -1,0 +1,139 @@
+{
+	"readme": "Mixes which use 'genre' and 'style' tags to create playlists.\nModify the presets substituting those tags with All Music or Last FM tag names if required.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Rock playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Rock OR GENRE IS Alt. Rock",
+				"_LIBRARY_1": "GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll"
+			},
+			"toPls": "Rock playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	},
+	{
+		"name": "Psychedelic playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Psychedelic Rock OR GENRE IS Psychedelic",
+				"_LIBRARY_1": "STYLE IS Neo-Psychedelia OR STYLE IS Psychedelic Folk"
+			},
+			"toPls": "Psychedelic playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	},
+	{
+		"name": "Folk \\ Country playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Folk OR GENRE IS Folk-Rock",
+				"_LIBRARY_1": "GENRE IS Country"
+			},
+			"toPls": "Folk \\ Country playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	},
+	{
+		"name": "Blues playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Blues",
+				"_LIBRARY_1": "GENRE IS Blues"
+			},
+			"toPls": "Blues playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	},
+	{
+		"name": "Jazz playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Jazz",
+				"_LIBRARY_1": "GENRE IS Jazz Vocal"
+			},
+			"toPls": "Jazz playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	},
+	{
+		"name": "Soul \\ RnB playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Soul OR STYLE IS R&B",
+				"_LIBRARY_1": "GENRE IS Soul OR STYLE IS R&B"
+			},
+			"toPls": "Soul \\ RnB playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	},
+	{
+		"name": "Hip-Hop playlist",
+		"pool": {
+			"fromPls": {
+				"_LIBRARY_0": 25,
+				"_LIBRARY_1": 25
+			},
+			"query": {
+				"_LIBRARY_0": "GENRE IS Hip-Hop",
+				"_LIBRARY_1": "GENRE IS Hip-Hop"
+			},
+			"toPls": "Hip-Hop playlist",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random"
+			}
+		}
+	}]
+}
