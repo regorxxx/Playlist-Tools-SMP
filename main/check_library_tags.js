@@ -58,7 +58,7 @@ const checkTags_properties = {
 	bAskForConfigTags: 	['Enables popup asking to config excluded tags', false],
 	bUseDic:		 	['Enables dictionary checking for every tag value (slow!)', false],
 	dictName:			['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
-	dictPath:			['Path to all dictionaries', fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\typo\\dictionaries'],
+	dictPath:			['Path to all dictionaries', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + 'scripts\\SMP\\xxx-scripts\\typo\\dictionaries'],
 };
 checkTags_properties['tagNamesToCheck'].push({func: isString}, checkTags_properties['tagNamesToCheck'][1]);
 checkTags_properties['dictName'].push({func: isString}, checkTags_properties['dictName'][1]);

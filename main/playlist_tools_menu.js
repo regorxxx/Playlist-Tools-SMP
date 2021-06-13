@@ -97,6 +97,7 @@ const shortcuts = {
 	quFilter:	{keys: 'Ctrl + G',			mod: [VK_CONTROL], val: 71, menu: 'Query filtering\\Filter playlist by Global forced query', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
 	harmMix:	{keys: 'Ctrl + H',			mod: [VK_CONTROL], val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
 	deadItm:	{keys: 'Ctrl + Shift + R',	mod: [VK_CONTROL,VK_SHIFT], val: 82, menu: 'Playlist Revive\\Find dead items in all playlists', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+	// close:		{keys: 'Esc',				mod: [VK_SHIFT], val: VK_ESCAPE, menu: '', func: () => {fb.Exit()}},
 }
 
 function on_notify_data(name, info) { 
@@ -960,9 +961,8 @@ function on_notify_data(name, info) {
 								const customNum = customNumTag.length ? [Number(customNumArr[0])] : [];
 								// Theme obj
 								let input = '';
-								input = utils.InputBox(window.ID, 'Enter theme name', scriptName + ': ' + configMenu, 'my theme', true);
-								// try {input = utils.InputBox(window.ID, 'Enter theme name', scriptName + ': ' + configMenu, 'my theme', true);}
-								// catch (e) {return;}
+								try {input = utils.InputBox(window.ID, 'Enter theme name', scriptName + ': ' + configMenu, 'my theme', true);}
+								catch (e) {return;}
 								if (!input.length) {return;}
 								const theme = {name: input, tags: []};
 								theme.tags.push({genre, style, mood, key, date, bpm, composer, customStr, customNum});
@@ -2506,9 +2506,9 @@ function on_notify_data(name, info) {
 								recipe.playlistLength = Infinity; // use all possible tracks
 								recipe.method = 'GRAPH';
 								recipe.bShowFinalSelection = false;
-								recipe.bBasicLogging = true;
+								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, ...recipe});
+								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by GRAPH');
 							} else {
@@ -2546,7 +2546,7 @@ function on_notify_data(name, info) {
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, ...recipe});
+								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by WEIGHT');
 							} else {
@@ -2584,7 +2584,7 @@ function on_notify_data(name, info) {
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, ...recipe});
+								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by DYNGENRE');
 							} else {
@@ -3011,7 +3011,7 @@ function on_notify_data(name, info) {
 			}});
 		}
 		{
-		const subMenuName = menu.newMenu('Global Forced Query', configMenu);
+			const subMenuName = menu.newMenu('Global Forced Query', configMenu);
 			{	// Menu to configure properties: forcedQuery
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Set Global Forced Query... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {

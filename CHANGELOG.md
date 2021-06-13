@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [1.5.0](#150---2021-06-13)
 - [1.4.0](#140---2021-06-07)
 - [1.3.0](#130---2021-05-31)
 - [1.2.0](#120---2021-05-28)
@@ -11,6 +12,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [1.5.0] - 2021-06-13
+### Added
 - Playlist Manager Integration: Listeners to retrieve tracked playlist paths from Playlist Manager panels.
 - Pools & Playlist Manager Integration: May now use playlist files tracked by Playlist Manager panels as source. i.e. Playlist A would match first a playlist within foobar with same name, then a playlist file with matching '#PLAYLIST:Playlist A' tag and finally anu playlist file named 'Playlist A.m3u8'. Autoplaylists are excluded (use queries instead) and fpl files too. This feature allows to use virtual playlists as containers, where you can easily collect tracks (since Playlist Manager allows to send tracks directly to a file without loading it) to be used later on pools without polluting the UI with tons of dummy playlists.
 - Pools & Search by GRAPH\WEIGHT\DYNGENRE: May now use the output from 'Search by (method)' as source, setting source name as '_SEARCHBYGRAPH_X', '_SEARCHBYWEIGHT_X', etc. (where X is any number). Therefore it allows intelligent playlist creation instead of using queries for the pool. Multiple sources can be set this way (beware of computing time) and mixed with the other sources (library and playlists). This new source may only be used by creating a preset pool with a text editor, since it requires to set so many arguments that is not reasonable to do it via popups. 'recipe' and 'theme' (see below) keys must be set when using this type of source (a recipe may force a theme too). Both may point to a filename (i.e. another preset like themes -see below-) or contain the arguments object. Examples are offered in the presets folder for all use-cases.
@@ -19,6 +26,7 @@
 - Search by distance: custom button now allows to set the recipe file used by pressing Ctrl + L. Click. 'None' would use the current properties variables, which is the default behaviour.
 - Search by distance: themes presets may be used as reference instead of tracks. Whenever the argument is set, it's used instead of the selection. Custom button now allows to use a theme file. Once set, button would always use the theme as reference instead of the current selection.
 - Search by distance: custom button now allows to set the theme file used by pressing Shift + L. Click. 'None' would use the current selection, which is the default behavior.
+- Search by distance: custom button now allows to create a theme file using the currently focused track's tags.
 - Configuration\Search by distance: new entry to create a theme file using the currently focused track's tags.
 - Readmes: for Presets usage, Global Shortcuts, Include Script, Search by GRAPH\WEIGHT\DYNGENRE (specific readmes for each method) and Recipes\Themes.
 - Presets: new presets for Search by GRAPH\WEIGHT\DYNGENRE.
@@ -31,6 +39,7 @@
 - Search by distance: custom button tooltip shows the theme and recipe being used, along tips to change them.
 - Readmes: updated pools readme with latest changes.
 - Data: json file for presets is now formatted to be readable.
+- Portable: when properties are set for the first time, now use relative paths on profile folder for portable installations (>= 1.6). When possible, any other stored path is also stored as relative paths (for example themes or recipes on buttons).
 - Code refactoring and cleanup.
 ### Removed
 ### Fixed
@@ -38,6 +47,7 @@
 - Presets: duplication after adding multiple presets.
 - Pools: crash removing entries due to a typo.
 - Search by distance: setting both genre and style weights to zero output nothing with GRAPH method instead of using the values for the graph and not for weighting.
+- Search by distance: when playlist length is set to Infinite, warnings are no longer shown about number of tracks being less than it (which obviously always happened).
 
 ## [1.4.0] - 2021-06-07
 ### Added
@@ -173,7 +183,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.1.0...v1.2.0
