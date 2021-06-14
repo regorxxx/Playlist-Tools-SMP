@@ -31,7 +31,7 @@ var newButtonsProperties = { //You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 // we change the default coordinates here to accommodate text
-if (buttonOrientation === 'x') {buttonCoordinates.w -= 18;}
+if (buttonOrientation === 'x') {buttonCoordinates.w -= 5;}
 
 var newButtons = {
 	SameStyles: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Same Styles', function () {
@@ -41,7 +41,7 @@ var newButtons = {
 		do_search_same_style(Number(playlistLength), forcedQuery);
 		t1 = Date.now();
 		console.log("Call to do_search_same_style took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties),
+	}, null, g_font,'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties, chars.link, _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

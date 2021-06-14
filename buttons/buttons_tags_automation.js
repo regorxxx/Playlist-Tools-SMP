@@ -32,13 +32,13 @@ var newButtonsProperties = {	//You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 var newButtons = {
-	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Automate Tags', function () {
+	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Autom. Tags', function () {
 		let t0 = Date.now();
 		let t1 = 0;
         tagsAutomation();
 		t1 = Date.now();
 		console.log("Call to Automate Tags took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font, 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties),
+	}, null, g_font, 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags, _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

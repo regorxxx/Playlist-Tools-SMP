@@ -42,7 +42,7 @@ var newButtons = {
 			menu.btn_up(this.x, this.y + this.h);
 		}
 		keyCallbackDate = Date.now(); // Update key checking
-	}, null, g_font, menuTooltip, null, null, '\uf149', _gdiFont('FontAwesome', 10)),
+	}, null, g_font, menuTooltip, null, null, chars.wrench, _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

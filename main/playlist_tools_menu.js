@@ -2266,24 +2266,15 @@ function on_notify_data(name, info) {
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					const subMenuName = menu.newMenu(name, menuName);
-					// const shortcut = (shortcuts.hasOwnProperty('prevPls') && shortcuts.prevPls.keys.length ? '\t' + shortcuts.prevPls.keys : ''); //TODO
 					const shortcut = '';
 					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist' + shortcut, func: () => {
-						const idx = plsHistory.length >= 2 ? getPlaylistIndexArray(plsHistory[1].name) : -1;
-						if (idx.length) {
-							if (idx.length === 1 && idx[0] !== -1) {
-								plman.ActivePlaylist = idx[0];
-							} else if (idx.indexOf(plsHistory[1].idx) !== -1) {
-								plman.ActivePlaylist = plsHistory[1].idx;
-							}
-						}
-					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
+					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist' + shortcut, func: goPrevPls, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
 					menu.newCondEntry({entryText: 'Playlist History... (cond)', condFunc: () => {
 						const [, ...list] = plsHistory;
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						if (!list.length) {menu.newEntry({menuName: subMenuName, entryText: '-None-', func: null, flags: MF_GRAYED});}
 						list.forEach( (pls, idx) => {
-							if (!idx) {menu.newEntry({menuName: subMenuName, entryText: 'sep'});}
 							menu.newEntry({menuName: subMenuName, entryText: pls.name, func: () => {
 								const idx = getPlaylistIndexArray(pls.name);
 								if (idx.length) {

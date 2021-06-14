@@ -29,6 +29,9 @@ var newButtonsProperties = { //You can simply add new properties here
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
+// we change the default coordinates here to accommodate text
+if (buttonOrientation === 'x') {buttonCoordinates.w += 5;}
+
 var newButtons  = {
     TopTracks: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks', function () {
 		let t0 = Date.now();
@@ -37,7 +40,7 @@ var newButtons  = {
 		do_top_tracks({playlistLength: Number(playlistLength), forcedQuery});
 		t1 = Date.now();
 		console.log("Call to do_top_tracks took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates).\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties),
+	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates).\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties, chars.heartOn, _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

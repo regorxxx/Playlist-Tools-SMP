@@ -30,6 +30,8 @@
 - Configuration\Search by distance: new entry to create a theme file using the currently focused track's tags.
 - Readmes: for Presets usage, Global Shortcuts, Include Script, Search by GRAPH\WEIGHT\DYNGENRE (specific readmes for each method) and Recipes\Themes.
 - Presets: new presets for Search by GRAPH\WEIGHT\DYNGENRE.
+- Buttons: new '_buttons_mergedV3.js' toolbar which can be customized without editing the js file. Allows to enable/disable buttons -even add multiple copies- on demand and customize toolbar background color (L. Click on the bar).
+- Buttons: new 'buttons_playlist_history.js' button. On click switches to previous playlist (since it's a switch, pressing it indefinitely always switches between the same 2 playlists). Shift + L. Click shows the entire list of previous playlists.
 ### Changed
 - Popups: all titles renamed to script name + sub menu name.
 - Presets: current date is added as description when exporting user presets or creating a backup.
@@ -40,6 +42,10 @@
 - Readmes: updated pools readme with latest changes.
 - Data: json file for presets is now formatted to be readable.
 - Portable: when properties are set for the first time, now use relative paths on profile folder for portable installations (>= 1.6). When possible, any other stored path is also stored as relative paths (for example themes or recipes on buttons).
+- Buttons: icons to all buttons.
+- Buttons framework: skip icon drawing if font is not found.
+- Buttons framework: allow a menu when clicking on the panel (and not on buttons).
+- Helpers: warn about missing font on console if trying to load a font and is not found.
 - Code refactoring and cleanup.
 ### Removed
 ### Fixed

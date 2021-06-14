@@ -29,7 +29,7 @@ var newButtonsProperties = { //You can simply add new properties here
 };
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
-if (buttonOrientation === 'x') {buttonCoordinates.w += 18;}
+if (buttonOrientation === 'x') {buttonCoordinates.w += 35;}
 
 var newButtons = {
     SearchSimilar: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Same Styles/Moods', function () {
@@ -39,7 +39,7 @@ var newButtons = {
         do_search_same_style_moods(Number(playlistLength), query);
 		t1 = Date.now();
 		console.log("Call to do_search_similar took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Random playlist matching at least 2 styles and 6 moods of the current selected track', prefix, newButtonsProperties),
+	}, null, g_font,'Random playlist matching at least 2 styles and 6 moods of the current selected track', prefix, newButtonsProperties, chars.link, _gdiFont('FontAwesome', 10)),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
