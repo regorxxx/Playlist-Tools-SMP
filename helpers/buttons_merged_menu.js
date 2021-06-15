@@ -10,7 +10,7 @@ function createButtonsMenu(name) {
 	menu.newEntry({entryText: 'sep'});
 	{
 		const subMenu = menu.newMenu('Add buttons');
-		const notAllowedDup = new Set(['buttons_playlist_tools_menu.js', 'buttons_playlist_history.js'])
+		const notAllowedDup = new Set(['buttons_playlist_tools.js', 'buttons_playlist_history.js'])
 		const buttonsPathNames = new Set(buttonsPath.map((path) => {return path.split('\\').pop();}));
 		function isAllowed(fileName) {return !notAllowedDup.has(fileName) || !buttonsPathNames.has(fileName);}
 		files.forEach((path, idx) => {

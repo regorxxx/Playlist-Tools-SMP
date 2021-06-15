@@ -89,6 +89,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx-scripts\playlist_revive.js
 	* **Playlist History:** history of previously active playlists (for macros).  
 		.\xxx-scripts\helpers\playlist_history.js
+	* **Include scripts:** add multiple SMP scripts into the same panel.  
 * **Pools:** use playlist(s) as source pool(s) for a destination playlist.  
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
@@ -113,9 +114,7 @@ Any other path WILL NOT work without editing the scripts. (see images\_Installat
 For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
 For portable installations >= 1.6: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
 For portable installations <= 1.5: .\foobar2000\scripts\SMP\xxx-scripts\...  
-Then load any button script into a SMP panel within foobar.  
-
-There are buttons bars and independent buttons for each script and the playlist tools menu. 'buttons_playlist_tools_menu.js' is associated to the tools menu seen on the gifs, while '_buttons_merged.js' is the entire bar.
+Then load 'buttons_toolbar.js' (toolbar) or 'buttons_toolbar.js' (independent button) into a SMP panel within foobar. The toolbar can be configured within foobar to add any button desired for quick access to multiple tools.
 
 [changelog]: CHANGELOG.md
 [version_badge]: https://img.shields.io/github/release/regorxxx/Playlist-Tools-SMP.svg

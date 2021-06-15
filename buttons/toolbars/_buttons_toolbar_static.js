@@ -55,7 +55,7 @@ toolbarColor = RGB(211,218,237);
 						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_remove_duplicates.js',  //+25 w
 						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_bydistance.js',
 						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_tags_automation.js',
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_playlist_tools_menu.js',
+						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_playlist_tools.js',
 						];
 	
 	for (let i = 0; i < buttonsPath.length; i++) {
