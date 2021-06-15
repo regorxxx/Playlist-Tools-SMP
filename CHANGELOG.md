@@ -2,7 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [1.5.0](#150---2021-06-13)
+- [2.0.0](#200---2021-06-15)
 - [1.4.0](#140---2021-06-07)
 - [1.3.0](#130---2021-05-31)
 - [1.2.0](#120---2021-05-28)
@@ -16,7 +16,7 @@
 ### Removed
 ### Fixed
 
-## [1.5.0] - 2021-06-13
+## [2.0.0] - 2021-06-15
 ### Added
 - Playlist Manager Integration: Listeners to retrieve tracked playlist paths from Playlist Manager panels.
 - Pools & Playlist Manager Integration: May now use playlist files tracked by Playlist Manager panels as source. i.e. Playlist A would match first a playlist within foobar with same name, then a playlist file with matching '#PLAYLIST:Playlist A' tag and finally anu playlist file named 'Playlist A.m3u8'. Autoplaylists are excluded (use queries instead) and fpl files too. This feature allows to use virtual playlists as containers, where you can easily collect tracks (since Playlist Manager allows to send tracks directly to a file without loading it) to be used later on pools without polluting the UI with tons of dummy playlists.
@@ -190,8 +190,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.5.0...HEAD
-[1.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v1.5.0
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.1.0...v1.2.0
