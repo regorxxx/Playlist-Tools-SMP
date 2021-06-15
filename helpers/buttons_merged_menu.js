@@ -6,7 +6,7 @@ function createButtonsMenu(name) {
 	menu.clear(true); // Reset on every call
 	const files = findRecursivefile('*.js', [fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons']).filter((path) => {return !path.split('\\').pop().startsWith('_');});
 	// Header
-	menu.newEntry({entryText: 'Enable buttons:', func: null, flags: MF_GRAYED});
+	menu.newEntry({entryText: 'Toolbar configuration:', func: null, flags: MF_GRAYED});
 	menu.newEntry({entryText: 'sep'});
 	{
 		const subMenu = menu.newMenu('Add buttons');

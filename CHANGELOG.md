@@ -30,7 +30,7 @@
 - Configuration\Search by distance: new entry to create a theme file using the currently focused track's tags.
 - Readmes: for Presets usage, Global Shortcuts, Include Script, Search by GRAPH\WEIGHT\DYNGENRE (specific readmes for each method) and Recipes\Themes.
 - Presets: new presets for Search by GRAPH\WEIGHT\DYNGENRE.
-- Buttons: new '_buttons_mergedV3.js' toolbar which can be customized without editing the js file. Allows to enable/disable buttons -even add multiple copies- on demand and customize toolbar background color (L. Click on the bar).
+- Buttons: new 'buttons_toolbar.js' toolbar which can be customized without editing the js file. Allows to enable/disable buttons -even add multiple copies- on demand and customize toolbar background color (L. Click on the bar).
 - Buttons: new 'buttons_playlist_history.js' button. On click switches to previous playlist (since it's a switch, pressing it indefinitely always switches between the same 2 playlists). Shift + L. Click shows the entire list of previous playlists.
 ### Changed
 - Popups: all titles renamed to script name + sub menu name.
@@ -47,6 +47,7 @@
 - Buttons framework: allow a menu when clicking on the panel (and not on buttons).
 - Helpers: warn about missing font on console if trying to load a font and is not found.
 - Code refactoring and cleanup.
+- Split all buttons into examples, toolbar and buttons folder. 'buttons_toolbar.js' is now the main script -in root folder- which can be loaded within a panel for easy configuration of buttons from this repository or any other. 'buttons_playlist_tools.js' is the independent button.
 ### Removed
 ### Fixed
 - Presets: after resetting all config, presets were not being deleted.
