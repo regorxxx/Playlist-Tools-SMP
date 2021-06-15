@@ -90,10 +90,10 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* **Playlist History:** history of previously active playlists (for macros).  
 		.\xxx-scripts\helpers\playlist_history.js
 	* **Include scripts:** add multiple SMP scripts into the same panel.  
-* **Pools:** use playlist(s) as source pool(s) for a destination playlist.  
+* **Pools:** use playlist(s), queries, etc. as source pool(s) for a destination playlist.  
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
-* Other scripts integration:
+* **Other scripts integration:**
 	* [Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP): Pools may use tracks from playlists files tracked by the manager, not requiring to have playlists loaded within foobar. i.e. Random Pools component-like playlist creation, using not only queries as sources, but also other playlists or playlists files.
 
 The menus are highly customizable. They are created on demand according to the selected tracks or current playlist, and many entries can be added, removed or edited to suit your needs. Also if some scripts are missing, the menu is rebuilt skipping those entries (letting you to install selectively what you need).
