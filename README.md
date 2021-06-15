@@ -16,7 +16,8 @@ It's impossible to offer a complete list of the things that can be done with the
 The collection of scripts provided here are not only a direct replacement of [Random Pools](https://www.foobar2000.org/components/view/foo_random_pools) or [MusicIp](https://www.spicefly.com/section.php?section=musicip) but an improvement and generalization in many aspects of those tools.
 
 * **Macros:** allows to record and save the menus entries used, as a macro, to be called later. Automatic custom playlist creation and edits without limits. Works with all tools. (only limitation are popups, which still require user input)
-* **Pools:** playlist creation similar to Random Pools component. Multiple playlists \ library sources (pools) can be set to fill a destination playlist. Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist.
+* **Dynamic Queries:** queries which addapt to the currently selected track. i.e. placeholders tags are substituted with the actual values of the currently selected track, then the query is evaluated as usual. Queries created this way are pretty situational, save a lot of writing time and are meant to be used by multiple playlist creation tools.
+* **Pools:** playlist creation similar to Random Pools component. Multiple playlists \ library sources (pools) can be set to fill a destination playlist. Configurable selection length per source, query filtering, picking method (random, from start, from end) and final sorting of destination playlist. They may even use dynamic queries changing the way the pools behave according to selection (for ex. a pool which outputs tracks with same key than selected track + another one which outputs same genre tracks), the main limitation of Random Pools component.
 * **Fully configurable submenu entries:** shift + left click on menu button allows to switch tools functionality. Individual tools or entire submenus may be disabled/enabled. When all entries from a tool are disabled, the entire script files associated are omitted at loading.
 * **User configurable presets:** many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality, exported and imported as "addons".
 * **Global shortcuts (experimental):** global shortcuts without requiring panel to be in focus assocated to some tools. Shown on the related menu entries tabbed to the right. Experimental feature, read the popup before activating it.
@@ -90,7 +91,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* **Playlist History:** history of previously active playlists (for macros).  
 		.\xxx-scripts\helpers\playlist_history.js
 	* **Include scripts:** add multiple SMP scripts into the same panel.  
-* **Pools:** use playlist(s), queries, etc. as source pool(s) for a destination playlist.  
+* **Pools:** use playlist(s), (dynamic) queries, etc. as source pool(s) for a destination playlist.  
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
 * **Other scripts integration:**
