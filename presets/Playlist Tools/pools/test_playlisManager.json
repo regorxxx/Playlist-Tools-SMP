@@ -1,5 +1,5 @@
 {
-	"readme": "Test for Playlist Manager integration: uses a playlist named 'test' which must be present in some Playlist manager panel.",
+	"readme": "Test for Playlist Manager integration: uses a playlist named 'test' which must be present in some Playlist manager panel. Uses entire playlist as source, without global forced query.",
 	"pools": [{
 		"name": "sep"
 	},

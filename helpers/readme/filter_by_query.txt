@@ -1,22 +1,10 @@
 ﻿Filters handle list or playlist using queries.
 Similar to what foobar search or some search/filter plugins do.
 
+Empty query will try to apply global forced query if enabled, otherwise gets replaced with 'ALL'.
+'ALL' will never apply forced query, even if enabled.
+
 Dynamic variables are allowed too, enclosed on '#':
 #ARTIST#, #$year(%date%)#, ...
 These placeholders will be replaced with focused item\'s result on execution.
-Also allows working with multivalue tags by default,
-Using TF expressions, multivalue tags are not converted, thus the expression is executed 'as is'.
-
-Some examples: 
-For a rock track, 'GENRE IS #GENRE#' would translate into 'GENRE IS Rock'.
-The entire playlist would be filtered with tracks from that genre.
-
-For a rock and electronic track, 'GENRE IS #GENRE#' would translate into '(GENRE IS Rock) AND (GENRE IS Electronic) '.
-Note multi-value tags are splitted and produce multiple query entries by default. (*)
-
-For a Dylan's track, 'COMPOSER IS #ARTIST#' would translate into 'COMPOSER IS Bob Dylan'.
-And the entire playlist would be filtered with any track written by him.
-
-(*) Since '#TAG# IS VALUE' forces tag to be equal to value, muti-value tags follow the same rationale.
-If you want to use another logic (OR, combinations, etc.) between different values of the same tag
-then the tool to use would be 'Search Same By'.
+See Dynamic Query readme for more info.

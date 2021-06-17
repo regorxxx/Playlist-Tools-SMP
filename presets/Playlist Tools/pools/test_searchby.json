@@ -1,5 +1,5 @@
 {
-	"readme": "Test for Search by Distance integration. Uses inline recipes and themes.",
+	"readme": "Test for Search by Distance integration. Uses inline recipes and themes. Uses entire library as sources, without global forced query.",
 	"pools": [{
 		"name": "sep"
 	},

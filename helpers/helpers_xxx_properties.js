@@ -27,6 +27,7 @@ function setProperties(propertiesDescriptor, prefix = '', count = 1, bPadding = 
 		}
 		if (bNumber) {count++;}
 	}
+	return propertiesDescriptor;
 }
 
 // Overwrites all properties at once
@@ -39,6 +40,7 @@ function overwriteProperties(propertiesDescriptor) { // Equivalent to setPropert
 			window.SetProperty(propertiesDescriptor[k][0], propertiesDescriptor[k][1]);
 		}
 	}
+	return propertiesDescriptor;
 }
 
 // Recreates the property object like this: {propertyKey : ['description',defaultValue]} -> {propertyKey : userSetValue}
@@ -185,7 +187,7 @@ function checkProperty(property, withValue) {
 		bPass = false; report += 'Value obey this condition: ' + checks['func'] + '\n';
 	}
 	if (checks.hasOwnProperty('portable') && checks['portable'] && _isFile(fb.FoobarPath + 'portable_mode_enabled') && !_isFile(valToCheck) && !_isFolder(valToCheck)) {
-		console.log(window.Name + ' - Portable installation: replacing path \'' + property[0] + '\' with \'' + property[3] + '\''); // Silent?
+		console.log(window.Name + ' - Portable installation: property \'' + property[0] + '\'\nReplacing path \'' + property[1] + '\' --> \'' + property[3] + '\''); // Silent?
 		// TODO warn about using relative paths?
 	}
 	if (!bPass) {

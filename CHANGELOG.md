@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [2.0.1](#201---2021-06-17)
 - [2.0.0](#200---2021-06-15)
 - [1.4.0](#140---2021-06-07)
 - [1.3.0](#130---2021-05-31)
@@ -16,6 +17,22 @@
 ### Removed
 ### Fixed
 
+## [2.0.1] - 2021-06-17
+### Added
+- Shortcuts: now saved as json file (at '.\profile\js_data\playlistTools_shortcuts.json'), to be easily configurable. Shortcuts can be arbitrarily added, changed or deleted. Menu entries linked to a shortcut will show the keys in their name tabbed to the right. See popup when enabling them. New entry to open shortcuts file.
+- Standard queries...: New default standard queries to retrieve entire library with or without forced query. Restore defaults to load them. (To be used with macros)
+- Macros: New default macros to check all library tags (automates retrieving entire library and using check tags). Restore defaults to load them.
+- Global Forced Query: 'Playlist Manipulation\Query filtering' is now also added to the list of toogable forced query application.
+### Changed
+- Queries behavior on Standard queries, Dynamic queries, Query filtering and Pools menus is now unified. 'ALL' always retrieves entire source, no matter if global forced query is enabled or not. Empty retrieves source filtered with forced query (or behaves as 'ALL' if it's disabled). Updated related readmes with the changes.
+- Config menu: reworked a bit the menus for Global forced query, Shortcuts and presets.
+### Removed
+### Fixed
+- Check tags: Fixed typo on dictionaries path after file restructuring on latest release. Recommended to reset folder calling 'Other Tools\Check tags\Configure dictionary...\Sets dictionaries folder...' and deleting the current value. Then the default one will be restored.
+- Duplicates and Tag filtering:  User settings (tags and number allowed) were not being loaded at startup.
+- Standard queries...: menu error when using a query with 'ALL' and global forced query was enabled.
+- Typo on 'Top rated Tracks from...\From year...'. Adjusted 'Test Tools (with input)' macro with the change. Recommended to restore defaults for macros to apply the change (and change any user-set macro with that entry).
+
 ## [2.0.0] - 2021-06-15
 ### Added
 - Playlist Manager Integration: Listeners to retrieve tracked playlist paths from Playlist Manager panels.
@@ -23,7 +40,7 @@
 - Pools & Search by GRAPH\WEIGHT\DYNGENRE: May now use the output from 'Search by (method)' as source, setting source name as '_SEARCHBYGRAPH_X', '_SEARCHBYWEIGHT_X', etc. (where X is any number). Therefore it allows intelligent playlist creation instead of using queries for the pool. Multiple sources can be set this way (beware of computing time) and mixed with the other sources (library and playlists). This new source may only be used by creating a preset pool with a text editor, since it requires to set so many arguments that is not reasonable to do it via popups. 'recipe' and 'theme' (see below) keys must be set when using this type of source (a recipe may force a theme too). Both may point to a filename (i.e. another preset like themes -see below-) or contain the arguments object. Examples are offered in the presets folder for all use-cases.
 - Search by GRAPH\WEIGHT\DYNGENRE: now allows user configurable menus (which can only be added using the properties panel or loading presets). Reasoning: it's not practical to add so many popups to just set a new entry but it makes sense to be able to add new entries to the tool... so it's left to the user to add them manually. The presets may link to recipes and themes as arguments too (see below).
 - Search by distance: Recipes presets may be used to set variables of the function. Whenever the argument is set, it's used instead of related property. Custom button now allows to use a recipe file. Once set, button would always use the recipe as arguments instead of the properties variables. A recipe may force the use of a theme.
-- Search by distance: custom button now allows to set the recipe file used by pressing Ctrl + L. Click. 'None' would use the current properties variables, which is the default behaviour.
+- Search by distance: custom button now allows to set the recipe file used by pressing Ctrl + L. Click. 'None' would use the current properties variables, which is the default behavior.
 - Search by distance: themes presets may be used as reference instead of tracks. Whenever the argument is set, it's used instead of the selection. Custom button now allows to use a theme file. Once set, button would always use the theme as reference instead of the current selection.
 - Search by distance: custom button now allows to set the theme file used by pressing Shift + L. Click. 'None' would use the current selection, which is the default behavior.
 - Search by distance: custom button now allows to create a theme file using the currently focused track's tags.
@@ -190,7 +207,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.2.0...v1.3.0

@@ -90,13 +90,16 @@ const deferFunc = [];
 // Key shortcuts
 // Menu names strip anything after \t
 // Adding new entries here automatically adds them to the associated menu
-const shortcuts = {
-	searchSame: {keys: 'Ctrl + Shift + S',	mod: [VK_CONTROL,VK_SHIFT], val: 83, menu: 'Search same by tags...\\By... (pairs of tags)', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	prevPls: 	{keys: 'Ctrl + R',			mod: [VK_CONTROL], val: 82, menu: 'Playlist History\\Previous playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	remDupl: 	{keys: 'Ctrl + D',			mod: [VK_CONTROL], val: 68, menu: 'Duplicates and tag filtering\\Remove duplicates by ', func: (s) => {menu.btn_up(void(0), void(0), void(0), s + sortInputDuplic.join(', '))}},
-	quFilter:	{keys: 'Ctrl + G',			mod: [VK_CONTROL], val: 71, menu: 'Query filtering\\Filter playlist by Global forced query', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	harmMix:	{keys: 'Ctrl + H',			mod: [VK_CONTROL], val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
-	deadItm:	{keys: 'Ctrl + Shift + R',	mod: [VK_CONTROL,VK_SHIFT], val: 82, menu: 'Playlist Revive\\Find dead items in all playlists', func: (s) => {menu.btn_up(void(0), void(0), void(0), s)}},
+const shortcutsPath = folders.data + 'playlistTools_shortcuts.json';
+var shortcuts = {
+	'Look here for key codes': 'https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes',
+	'Tip': 'Any menu entry may be added: submenu_name + \\ + entry_name',
+	searchSame: {keys: 'Ctrl + Shift + S',	mod: [VK_CONTROL,VK_SHIFT], val: 83, menu: 'Search same by tags...\\By... (pairs of tags)'},
+	prevPls: 	{keys: 'Ctrl + R',			mod: [VK_CONTROL], val: 82, menu: 'Playlist History\\Previous playlist'},
+	remDupl: 	{keys: 'Ctrl + D',			mod: [VK_CONTROL], val: 68, menu: 'Duplicates and tag filtering\\Remove duplicates by '},
+	quFilter:	{keys: 'Ctrl + G',			mod: [VK_CONTROL], val: 71, menu: 'Query filtering\\Filter playlist by Global forced query'},
+	harmMix:	{keys: 'Ctrl + H',			mod: [VK_CONTROL], val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist'},
+	deadItm:	{keys: 'Ctrl + Shift + R',	mod: [VK_CONTROL,VK_SHIFT], val: 82, menu: 'Playlist Revive\\Find dead items in all playlists'},
 	// close:		{keys: 'Esc',				mod: [VK_SHIFT], val: VK_ESCAPE, menu: '', func: () => {fb.Exit()}},
 }
 
@@ -217,7 +220,7 @@ function on_notify_data(name, info) {
 			});
 			menu.newEntry({menuName, entryText: 'sep'});
 			{	// Input menu
-				menu.newEntry({menuName, entryText: 'From year... ', func: () => {
+				menu.newEntry({menuName, entryText: 'From year...', func: () => {
 					let selYear = new Date().getFullYear();
 					try {selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', scriptName + ': ' + name, selYear, true);}
 					catch (e) {return;}
@@ -312,7 +315,6 @@ function on_notify_data(name, info) {
 							args.properties['sameByCustomArg'][1] = convertObjectToString(selArg.args.sameBy); // And update property with new value
 							overwriteProperties(args.properties); // Updates panel
 							const sameByArgs = {...selArg.args, playlistLength: args.playlistLength, forcedQuery: args.forcedQuery};
-							console.log(sameByArgs);
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
 							do_search_same_by(sameByArgs);
 						}, flags: focusFlags});
@@ -444,16 +446,19 @@ function on_notify_data(name, info) {
 			const menuName = menu.newMenu(name);
 			{	// Dynamic menu
 				let queryFilter = [
-					{name: 'Rating 4-5'		, query: '%rating% EQUAL 5 OR %rating% EQUAL 4'	, sort: {tfo: '%rating%', direction: 1}},
+					{name: 'Entire library', query: 'ALL', sort: {tfo: '', direction: -1}},
+					{name: 'Entire library (forced query)', query: '', sort: {tfo: '', direction: -1}},
 					{name: 'sep'},
-					{name: 'Recently played'	, query: '%last_played% DURING LAST 1 WEEK'		, sort: {tfo: '%last_played%', direction: -1}},
-					{name: 'Recently added'		, query: '%added% DURING LAST 1 WEEK'			, sort: {tfo: '%added%', direction: -1}},
+					{name: 'Rating 4-5', query: '%rating% EQUAL 5 OR %rating% EQUAL 4', sort: {tfo: '%rating%', direction: 1}},
 					{name: 'sep'},
-					{name: 'Rock tracks'		, query: 'GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Recently played', query: '%last_played% DURING LAST 1 WEEK', sort: {tfo: '%last_played%', direction: -1}},
+					{name: 'Recently added', query: '%added% DURING LAST 1 WEEK', sort: {tfo: '%added%', direction: -1}},
+					{name: 'sep'},
+					{name: 'Rock tracks', query: 'GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll', sort: {tfo: '$rand()', direction: 1}},
 					{name: 'Psychedelic tracks', query: 'GENRE IS Psychedelic Rock OR GENRE IS Psychedelic OR STYLE IS Neo-Psychedelia OR STYLE IS Psychedelic Folk', sort: {tfo: '$rand()', direction: 1}},
 					{name: 'Folk \\ Country tracks', query: 'GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Country', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Blues tracks'		, query: 'GENRE IS Blues', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Jazz tracks'		, query: 'GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Blues tracks', query: 'GENRE IS Blues', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Jazz tracks', query: 'GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()', direction: 1}},
 					{name: 'Soul \\ RnB tracks', query: 'GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()', direction: 1}},
 					{name: 'Hip-Hop tracks', query: 'GENRE IS Hip-Hop', sort: {tfo: '$rand()', direction: 1}}
 				];
@@ -482,8 +487,12 @@ function on_notify_data(name, info) {
 							// Entries
 							menu.newEntry({menuName, entryText: queryName, func: () => {
 								let query = queryObj.query;
-								if (forcedQueryMenusEnabled[name]) {query = '(' + query + ') AND (' + args.forcedQuery + ')';}
-								do_dynamic_query({query, sort: queryObj.sort});
+								if (forcedQueryMenusEnabled[name]) { // With forced query enabled
+									if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+										query = '(' + query + ') AND (' + args.forcedQuery + ')';
+									} else if (!query.length) {query = args.forcedQuery.length ? args.forcedQuery : 'ALL';} // Empty uses forced query or ALL
+								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
+								do_dynamic_query({query, sort: queryObj.sort}); 
 							}});
 						}
 					});
@@ -624,7 +633,11 @@ function on_notify_data(name, info) {
 							menu.newEntry({menuName, entryText: queryObj.name, func: () => {
 								if (!fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, scriptName); return;}
 								let query = queryObj.query;
-								if (forcedQueryMenusEnabled[name]) {query = '(' + query + ') AND (' + args.forcedQuery + ')';}
+								if (forcedQueryMenusEnabled[name]) {  // With forced query enabled
+									if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+										query = '(' + query + ') AND (' + args.forcedQuery + ')';
+									} else if (!query.length) {query = args.forcedQuery.length ? args.forcedQuery : 'ALL';} // Empty uses forced query or ALL
+								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 								do_dynamic_query({query, sort: queryObj.sort});
 							}, flags: focusFlags});
 						}
@@ -1024,11 +1037,9 @@ function on_notify_data(name, info) {
 					include(scriptPath);
 					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\remove_duplicates.txt';
 					let subMenuName = menu.newMenu(name, menuName);
-					var sortInputDuplic = ['title', 'artist', 'date'];
-					var sortInputFilter = ['title', 'artist', 'date'];
-					var nAllowed = 2;
-					// const shortcut = (shortcuts.hasOwnProperty('remDupl') && shortcuts.remDupl.keys.length ? '\t' + shortcuts.remDupl.keys : ''); // TODO
-					const shortcut = '';
+					let sortInputDuplic = ['title', 'artist', 'date'];
+					let sortInputFilter = ['title', 'artist', 'date'];
+					let nAllowed = 2;
 					// Create new properties with previous args
 					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
 					menu_properties['sortInputFilter'] = [menuName + '\\' + name + ' Tags to filter playlists', sortInputFilter.join(',')];
@@ -1040,48 +1051,56 @@ function on_notify_data(name, info) {
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Remove duplicates by ' + sortInputDuplic.join(', ') + shortcut;}, func: () => {do_remove_duplicatesV2(null, null, sortInputDuplic);}, flags: playlistCountFlags});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')';}, func: () => {do_remove_duplicatesV3(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
-						let tags;
-						try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','), true);}
-						catch (e) {return;}
-						if (!tags.length) {return;}
-						tags = tags.split(',').filter((val) => val);
-						let n;
-						try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true));}
-						catch (e) {return;}
-						if (!Number.isSafeInteger(n)) {return;}
-						do_remove_duplicatesV3(null, null, tags, n);
-					}, flags: playlistCountFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','));
-						if (sortInputDuplic.join(',') === input) {return;}
-						if (!input.length) {return;}
-						sortInputDuplic = input.split(',').filter((n) => n);
+					menu.newCondEntry({entryText: 'Remove Duplicates... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['sortInputDuplic'][1] = sortInputFilter.join(',');
-						overwriteProperties(args.properties); // Updates panel
-					}});
-					menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputFilter.join(','));
-						if (sortInputFilter.join(',') === input) {return;}
-						if (!input.length) {return;}
-						sortInputFilter = input.split(',').filter((n) => n);
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['sortInputFilter'][1] = sortInputFilter.join(',');
-						overwriteProperties(args.properties); // Updates panel
-					}});
-					menu.newEntry({menuName: subMenuName, entryText: 'Set number allowed (for filtering)... ', func: (args = {...scriptDefaultArgs}) => {
-						const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed));
-						if (nAllowed === input) {return;}
-						if (!Number.isSafeInteger(input)) {return;}
-						nAllowed = input;
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-						args.properties['nAllowed'][1] = nAllowed;
-						overwriteProperties(args.properties); // Updates panel
+						// Update args
+						sortInputDuplic = args.properties.sortInputDuplic[1].split(',');
+						sortInputFilter = args.properties.sortInputFilter[1].split(',');
+						nAllowed = args.properties.nAllowed[1];
+						// Menus
+						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {do_remove_duplicatesV2(null, null, sortInputDuplic);}, flags: playlistCountFlags});
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {do_remove_duplicatesV3(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlags});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
+							let tags;
+							try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','), true);}
+							catch (e) {return;}
+							if (!tags.length) {return;}
+							tags = tags.split(',').filter((val) => val);
+							let n;
+							try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true));}
+							catch (e) {return;}
+							if (!Number.isSafeInteger(n)) {return;}
+							do_remove_duplicatesV3(null, null, tags, n);
+						}, flags: playlistCountFlags});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)... ', func: () => {
+							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','));
+							if (sortInputDuplic.join(',') === input) {return;}
+							if (!input.length) {return;}
+							sortInputDuplic = input.split(',').filter((n) => n);
+							args.properties['sortInputDuplic'][1] = sortInputDuplic.join(',');
+							overwriteProperties(args.properties); // Updates panel
+							updateShortcutsNames({sortInputDuplic: args.properties['sortInputDuplic'][1]});
+						}});
+						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)... ', func: () => {
+							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputFilter.join(','));
+							if (sortInputFilter.join(',') === input) {return;}
+							if (!input.length) {return;}
+							sortInputFilter = input.split(',').filter((n) => n);
+							args.properties['sortInputFilter'][1] = sortInputFilter.join(',');
+							overwriteProperties(args.properties); // Updates panel
+							updateShortcutsNames({sortInputFilter: args.properties['sortInputFilter'][1], nAllowed});
+						}});
+						menu.newEntry({menuName: subMenuName, entryText: 'Set number allowed (for filtering)... ', func: () => {
+							const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed));
+							if (nAllowed === input) {return;}
+							if (!Number.isSafeInteger(input)) {return;}
+							nAllowed = input;
+							args.properties['nAllowed'][1] = nAllowed;
+							overwriteProperties(args.properties); // Updates panel
+							updateShortcutsNames({sortInputFilter: args.properties['sortInputFilter'][1], nAllowed});
+						}});
 					}});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
@@ -1093,6 +1112,7 @@ function on_notify_data(name, info) {
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					readmes[menuName + '\\' + name] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\filter_by_query.txt';
+					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
 							{name: 'Rating > 2', query: 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'}, 
@@ -1128,10 +1148,18 @@ function on_notify_data(name, info) {
 								const queryName = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
 								menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + queryName, func: () => {
 									let query = queryObj.query;
+									// Forced query
+									if (forcedQueryMenusEnabled[name]) { // With forced query enabled
+										if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+											query = '(' + query + ') AND (' + args.forcedQuery + ')';
+										} else if (!query.length) {query = args.forcedQuery.length ? args.forcedQuery : 'ALL';} // Empty uses forced query or ALL
+									} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
+									// Test
 									let focusHandle = fb.GetFocusItem(true);
 									if (focusHandle && query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, focusHandle);}
 									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
+									// Execute
 									do_filter_by_query(null, query);
 								}, flags: playlistCountFlags});
 							}
@@ -1140,17 +1168,25 @@ function on_notify_data(name, info) {
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (query)' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = args.properties['queryFilterCustomArg'][1];
-							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
+							let input;
+							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
 							catch (e) {return;}
-							if (!query.length) {return;}
+							// Forced query
+							let query = input;
+							if (forcedQueryMenusEnabled[name]) { // With forced query enabled
+								if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+									query = '(' + query + ') AND (' + args.forcedQuery + ')';
+								} else if (!query.length) {query = args.forcedQuery.length ? args.forcedQuery : 'ALL';} // Empty uses forced query or ALL
+							} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
+							// Test
 							let focusHandle = fb.GetFocusItem(true);
 							if (focusHandle && query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, focusHandle);}
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
+							// Execute
 							do_filter_by_query(null, query);
 							// For internal use original object
-							selArg.query = query; 
+							selArg.query = input; 
 							args.properties['queryFilterCustomArg'][1] = query; // And update property with new value
 							overwriteProperties(args.properties); // Updates panel
 						}, flags: playlistCountFlags});
@@ -1166,7 +1202,6 @@ function on_notify_data(name, info) {
 								let query;
 								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true);}
 								catch (e) {return;}
-								if (!query.length) {return;}
 								if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
 									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
@@ -2171,9 +2206,9 @@ function on_notify_data(name, info) {
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:', scriptName + ': ' + name, args.properties['dictPath'][1]);
+							let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(set to empty to restore default path)', scriptName + ': ' + name, args.properties['dictPath'][1]);
 							if (args.properties['dictPath'][1] === input) {return;}
-							if (!input.length) {return;}
+							if (!input.length) {input = args.properties['dictPath'][3];}
 							if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
 							args.properties['dictPath'][1] = input;
 							overwriteProperties(args.properties); // Updates panel
@@ -2266,10 +2301,9 @@ function on_notify_data(name, info) {
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					const subMenuName = menu.newMenu(name, menuName);
-					const shortcut = '';
 					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist' + shortcut, func: goPrevPls, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
+					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist', func: goPrevPls, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
 					menu.newCondEntry({entryText: 'Playlist History... (cond)', condFunc: () => {
 						const [, ...list] = plsHistory;
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -2677,14 +2711,14 @@ function on_notify_data(name, info) {
 				fromPls = Object.fromEntries(fromPls);
 				// Queries
 				let query;
-				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent.\n(playlist,query;playlist,query)', scriptName + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
+				try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent, but empty applies global forced query too if enabled.\n(playlist,query;playlist,query)', scriptName + ': ' + name, Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
 				catch (e) {return;}
 				if (!query.length) {console.log('Input was empty'); return;}
 				if (query.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
 				query = query.split(';');
 				query = query.map((pair) => {
 					pair = pair.split(',');
-					if (!pair[1].length) {pair[1] = 'ALL'}
+					// if (!pair[1].length) {pair[1] = 'ALL'}
 					return pair;
 				});
 				// TODO Check queries
@@ -2731,12 +2765,18 @@ function on_notify_data(name, info) {
 					let entryText = poolObj.name;
 					// Global forced query
 					const pool = clone(poolObj.pool);
-					if (forcedQueryMenusEnabled[name]) {
+					if (forcedQueryMenusEnabled[name]) { // With forced query enabled
 						Object.keys(pool.query).forEach((key) => {
-							if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') {
+							if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
 								pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
-							} else if (!pool.query[key].length || pool.query[key].toUpperCase() === 'ALL') {
-								pool.query[key] = args.forcedQuery;
+							} else if (!pool.query[key].length) { // Empty uses forced query or ALL
+								pool.query[key] =  args.forcedQuery.length ? args.forcedQuery : 'ALL';
+							}
+						});
+					} else {
+						Object.keys(pool.query).forEach((key) => { // Otherwise empty is replaced with ALL
+							if (!pool.query[key].length) {
+								pool.query[key] = 'ALL';
 							}
 						});
 					}
@@ -2759,11 +2799,17 @@ function on_notify_data(name, info) {
 						// Global forced query
 						const pool = clone(poolObj.pool);
 						if (forcedQueryMenusEnabled[name]) {
-							Object.keys(pool.query).forEach((key) => {
-								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') {
+							Object.keys(pool.query).forEach((key) => { // With forced query enabled
+								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
 									pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
-								} else if (!pool.query[key].length || pool.query[key].toUpperCase() === 'ALL') {
-									pool.query[key] = args.forcedQuery;
+								} else if (!pool.query[key].length) { // Empty uses forced query or ALL
+									pool.query[key] = args.forcedQuery.length ? args.forcedQuery : 'ALL';
+								}
+							});
+						} else {
+							Object.keys(pool.query).forEach((key) => { // Otherwise empty is replaced with ALL
+								if (!pool.query[key].length) {
+									pool.query[key] = 'ALL';
 								}
 							});
 						}
@@ -2777,12 +2823,28 @@ function on_notify_data(name, info) {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
 						args.tfo = selArg.tfo = JSON.parse(args.properties['poolsCustomArg'][1]).tfo;
 						// Input
-						const pool = inputPool();
-						if (!pool) {return;}
+						const input = inputPool();
+						if (!input) {return;}
+						const pool = clone(input);
+						if (forcedQueryMenusEnabled[name]) {
+							Object.keys(pool.query).forEach((key) => { // With forced query enabled
+								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+									pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
+								} else if (!pool.query[key].length) { // Empty uses forced query or ALL
+									pool.query[key] = args.forcedQuery.length ? args.forcedQuery : 'ALL';
+								}
+							});
+						} else {
+							Object.keys(pool.query).forEach((key) => { // Otherwise empty is replaced with ALL
+								if (!pool.query[key].length) {
+									pool.query[key] = 'ALL';
+								}
+							});
+						}
 						// Execute
 						do_pool(pool, args.properties);
 						// For internal use original object
-						selArg.pool = pool;
+						selArg.pool = input;
 						args.properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
 						overwriteProperties(args.properties); // Updates panel
 					}});
@@ -2885,7 +2947,7 @@ function on_notify_data(name, info) {
 					'Pools\\Top tracks mix'
 				]},
 				{name: 'Test Tools (with input)', entry: [
-					'Top rated Tracks from...\\From year... ',
+					'Top rated Tracks from...\\From year...',
 					'Search same by tags...\\By... (pairs of tags)',
 					'Standard Queries...\\By... (query)',
 					'Dynamic Queries...\\By... (query)',
@@ -2895,6 +2957,17 @@ function on_notify_data(name, info) {
 					'Sort...\\By... (expression)',
 					'Playlist manipulation\\Find or create playlist...',
 					'Pools\\Custom pool...'
+				]},
+				{name: 'sep'},
+				{name: 'Report library tags errors', entry: [
+					'Standard Queries...\\Entire library',
+					'Select...\\Select All',
+					'Check tags\\Report errors by comparison'
+				]},
+				{name: 'Report all library tags', entry: [
+					'Standard Queries...\\Entire library',
+					'Select...\\Select All',
+					'Check tags\\Report all tags by comparison'
 				]}
 			]; //{name, entry: []}
 			menu_properties['macros'] = ['Saved macros', JSON.stringify(macrosDefaults)];
@@ -3005,18 +3078,7 @@ function on_notify_data(name, info) {
 			const subMenuName = menu.newMenu('Global Forced Query', configMenu);
 			{	// Menu to configure properties: forcedQuery
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newEntry({menuName: subMenuName, entryText: 'Set Global Forced Query... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-					const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, args.properties['forcedQuery'][1]);
-					if (args.properties['forcedQuery'][1] === input) {return;}
-					try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
-					catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
-					defaultArgs.forcedQuery = input;
-					args.properties['forcedQuery'][1] = input;
-					overwriteProperties(args.properties); // Updates panel
-				}});
-				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-				menu.newEntry({menuName: subMenuName, entryText: 'Enabled on... (plus any other):', func: null, flags: MF_GRAYED})
+				menu.newEntry({menuName: subMenuName, entryText: 'Switch forced query functionality', func: null, flags: MF_GRAYED})
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				menu.newCondEntry({entryText: 'forcedQueryMenusEnabled', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
@@ -3030,8 +3092,46 @@ function on_notify_data(name, info) {
 						}});
 						menu.newCheckMenu(subMenuName, key, void(0), () => {return forcedQueryMenusEnabled[key];});
 					});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+					menu.newEntry({menuName: subMenuName, entryText: 'Set Global Forced Query... ', func: () => {
+						const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, args.properties['forcedQuery'][1]);
+						if (args.properties['forcedQuery'][1] === input) {return;}
+						try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
+						catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
+						defaultArgs.forcedQuery = input;
+						args.properties['forcedQuery'][1] = input;
+						overwriteProperties(args.properties); // Updates panel
+					}});
 				}});
 			}
+		}
+		menu.newEntry({menuName: configMenu, entryText: 'sep'});
+		{	// Shortcuts
+			const subMenuName = menu.newMenu('Global Shortcuts', configMenu);
+			menu.newEntry({menuName: subMenuName, entryText: 'Switch shortcuts functionality:', func: null, flags: MF_GRAYED})
+			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+			{	// Enable
+				readmes[configMenu + '\\Global Shortcuts'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\global_shortcuts.txt';
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Global shortcuts', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					if (!args.properties.bShortcuts[1]) {
+						const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts can be configured at:\n' + shortcutsPath + '\n\nAre you sure you want to enable it?', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+						if (answer !== popup.yes) {return;}
+					}
+					args.properties.bShortcuts[1] = !args.properties.bShortcuts[1];
+					overwriteProperties(args.properties); // Updates panel
+					// Shortcuts
+					if (args.properties.bShortcuts[1]) {
+						if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
+					} else {
+						if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
+					}
+				}});
+				menu.newCheckMenu(subMenuName, 'Enabled Global shortcuts', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1]()).bShortcuts[1];});
+			}
+			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+			menu.newEntry({menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => {_explorer(shortcutsPath);}});
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Import presets
@@ -3088,6 +3188,7 @@ function on_notify_data(name, info) {
 				}
 			}});
 		}
+		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Reset all config
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
@@ -3135,27 +3236,6 @@ function on_notify_data(name, info) {
 					}
 				}
 			}});
-		}
-		menu.newEntry({menuName: configMenu, entryText: 'sep'});
-		{	// Shortcuts
-			readmes[configMenu + '\\Global Shortcuts'] = fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\readme\\global_shortcuts.txt';
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-			menu.newEntry({menuName: configMenu, entryText: 'Enabled Global shortcuts', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
-				if (!args.properties.bShortcuts[1]) {
-					const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts are indicated in the related menus and are hard-coded.\nAre you sure you want to enable it?', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
-					if (answer !== popup.yes) {return;}
-				}
-				args.properties.bShortcuts[1] = !args.properties.bShortcuts[1];
-				overwriteProperties(args.properties); // Updates panel
-				// Shortcuts
-				if (args.properties.bShortcuts[1]) {
-					if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
-				} else {
-					if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
-				}
-			}});
-			menu.newCheckMenu(configMenu, 'Enabled Global shortcuts', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1]()).bShortcuts[1];});
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Readmes
@@ -3278,6 +3358,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 			// Specific
 		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
 	});
+	updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});
 	// Presets
 	presets = JSON.parse(propObject['presets'][1]);
 	// Shortcuts
@@ -3292,6 +3373,26 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 			obj.func(propObject);
 		}
 	});
+}
+
+function updateShortcutsNames(keys = {}) {
+	if (_isFile(shortcutsPath)) {
+		const data = _jsonParseFile(shortcutsPath);
+		if (data) {
+			if (Object.keys(keys).length) {
+				const sortInputDuplic = keys.hasOwnProperty('sortInputDuplic') ? keys.sortInputDuplic.replace(/,/g, ', ') : null;
+				const sortInputFilter = keys.hasOwnProperty('sortInputFilter') ? keys.sortInputFilter.replace(/,/g, ', ') : null;
+				const nAllowed = keys.hasOwnProperty('nAllowed') ? '(' + keys.nAllowed + ')' : null;
+				for (const key in data) {
+					if (data[key].menu === 'Duplicates and tag filtering\\Remove duplicates by ' && sortInputDuplic) {data[key].menu += sortInputDuplic;}
+					if (data[key].menu === 'Duplicates and tag filtering\\Filter playlist by ' && sortInputFilter && nAllowed) {data[key].menu += sortInputFilter + ' ' + nAllowed;}
+				}
+			}
+			shortcuts = data;
+		}
+	} else {
+		_save(shortcutsPath, JSON.stringify(shortcuts, null, '\t'))
+	}
 }
 
 function focusFlags() {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}
@@ -3337,6 +3438,7 @@ menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: (args = {propertie
 		const entryList = menu.getEntries();
 		Object.keys(shortcuts).forEach((key) => {
 			const shortcut = shortcuts[key];
+			if (!shortcut.hasOwnProperty('keys')) {return;}
 			const idx = entryList.findIndex((entry) => {
 				if (entry.entryText) {
 					if (_isFunction(entry.entryText)) {
@@ -3393,7 +3495,7 @@ function keyCallback() {
 			if (shortcut.mod.length && shortcut.mod.some((mod) => {return !utils.IsKeyPressed(mod);})) {continue;}
 			keyCallbackDate = Date.now();
 			delayFn(() => {
-				shortcut.func(shortcut.menu);
+				menu.btn_up(void(0), void(0), void(0), shortcut.menu);
 				keyCallbackDate = Date.now();
 			},50)();
 			break;
