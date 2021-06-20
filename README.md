@@ -47,11 +47,11 @@ The sky is the limit once you use the current scripts to create your own buttons
 		.\xxx-scripts\filter_by_query.js
 	* **Harmonic mix:** Dj-like playlist generation by key. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx-scripts\harmonic_mixing.js
-	* Find or create playlist
-	* Cut playlist length (for macros) 
-	* Send playlist's tracks to (for macros) 
-	* Go to playlist (for macros) 
-	* Close playlist (for macros) 
+	* **Find or create playlist**
+	* **Cut playlist length** (for macros) 
+	* **Send playlist's tracks to** (for macros) 
+	* **Go to playlist** (for macros) 
+	* **Close playlist** (for macros) 
 * **Selection manipulation:**  
 	* **Harmonic mix:** Dj-like selection ordering by key. (aka [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation))  
 		.\xxx-scripts\harmonic_mixing.js
@@ -67,14 +67,14 @@ The sky is the limit once you use the current scripts to create your own buttons
 			.\xxx-scripts\search_bydistance.js
 	* **Scatter by tags:** reorders selection to avoid consecutive tracks with the same configurable tag.  
 		.\xxx-scripts\scatter_by_tags.js
-	* Find now playling track in...  
+	* **Find now playling track in...**  
 		.\xxx-scripts\find_remove_from_playlists.js
-	* Find track(s) in...  
+	* **Find track(s) in...**  
 		.\xxx-scripts\find_remove_from_playlists.js
-	* Remove track(s) from...  
+	* **Remove track(s) from...**  
 		.\xxx-scripts\find_remove_from_playlists.js
-	* Send selection to playlist... (for macros)  
-	* Select (for macros)  
+	* **Send selection to playlist...** (for macros)  
+	* **Select** (for macros)  
 		* By halves
 		* By thirds
 		* By quarters
