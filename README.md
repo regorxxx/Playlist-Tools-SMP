@@ -24,7 +24,7 @@ The collection of scripts provided here are not only a direct replacement of [Ra
 * **Include other scripts (experimental):** easily include ('merge') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don't require any UI, user interaction,... like scripts which set the main menu SPM entries (File\\Spider Monkey Panel).
 
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
-* **Most played tracks from...:** from a year or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))
+* **Most played tracks from...:** from a year or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))  
 	.\xxx-scripts\top_tracks.js  
 	.\xxx-scripts\top_tracks_from_date.js  
 * **Top Rated tracks from...:** from a year or range of years.  
