@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [2.0.2](#202---2021-06-20)
 - [2.0.1](#201---2021-06-17)
 - [2.0.0](#200---2021-06-15)
 - [1.4.0](#140---2021-06-07)
@@ -22,6 +23,13 @@
 - Buttons: toolbar had a typo on the property. After updating the old property will be unused, thus recreating the entire bar again. If you want to restore the old one, just copy the old filename at the properties panel to the new property.
 - Buttons: toolbar now also deletes unused properties when removing buttons. 
 - Buttons: toolbar now also rewrites properties of buttons which have multiple copies, instead of requiring to set up them everytime a copy at the left is removed. It considers multiple copies of the same button get their properties indexed according to their positions too; thus, removing the 2nd copy of a button, will shift by one all copies at greater indexes (at its right) along their properties. The same applies when moving them instead of removing.
+
+## [2.0.2] - 2021-06-20
+### Added
+### Changed
+- Duplicates of main buttons files are now on the root, instead of using symlinks. Some file archivers, like 7zip, did not decompress correctly the releases... 
+### Removed
+### Fixed
 
 ## [2.0.1] - 2021-06-17
 ### Added
@@ -213,7 +221,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...HEAD
+[2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.3.0...v1.4.0
