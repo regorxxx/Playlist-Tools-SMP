@@ -4,10 +4,9 @@
 	-> EDIT
  */
  
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\save_tags.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
-var prefix = "EDIT";
+include('..\\helpers\\buttons_xxx.js');
+include('..\\main\\save_tags.js');
+include('..\\helpers\\helpers_xxx_properties.js');
  
 try { //May be loaded along other buttons
 	window.DefinePanel('EDIT', {author:'xxx'});
@@ -16,40 +15,49 @@ try { //May be loaded along other buttons
 	var buttonOrientation = 'x';
 } catch (e) {
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Remove EDIT loaded.');
+	console.log('Sace Tags Buttons loaded.');
 }
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
-
-var newButtonsProperties = { //You can simply add new properties here
-};
-// newButtonsProperties = {...defaultProperties, ...newButtonsProperties}; // Add default properties at the beginning to be sure they work 
-setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
 // if (buttonOrientation === 'x') {buttonCoordinates.w += 0;}
 // if (buttonOrientation === 'y') {buttonCoordinates.h += 0;}
 
 var newButtons = {
-	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Save', function () {
-		let t0 = Date.now();
-		let t1 = 0;
-		saveTags();
-		t1 = Date.now();
-		console.log("Call to EDIT took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'EDIT', prefix, newButtonsProperties),
+	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Save tags', function () {
+		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
+		if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
+			const readme = utils.ReadTextFile(readmePath, 65001);
+			if (readme.length) {fb.ShowPopupMessage(readme, 'Save tags and comparison');}
+		}
+		let file;
+		try {file = utils.InputBox(window.ID, 'Path to save tags file:', 'Tags file', folders.data + 'tags.json', true);}
+		catch (e) {return;}
+		if (!file.length) {return;}
+		saveTags({file});
+	}, null, g_font,'Save all tags from selected tracks to json', void(0), void(0), chars.save),
 	TwoButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Compare', function () {
-		let t0 = Date.now();
-		let t1 = 0;
-		compareTags();
-		t1 = Date.now();
-		console.log("Call to EDIT took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'EDIT', prefix, newButtonsProperties),
+		let file;
+		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
+		catch (e) {return;}
+		if (!file.length) {return;}
+		const toTags =  _jsonParseFile(file);
+		if (!toTags || !toTags.length) {return;}
+		let toTagsFolder;
+		try {toTagsFolder = utils.InputBox(window.ID, 'Root path of the original file tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true);}
+		catch (e) {return;}
+		if (!toTagsFolder.length) {return;}
+		let selItemsFolder;
+		try {selItemsFolder = utils.InputBox(window.ID, 'Root path of the current tracks:', 'Current root path', toTagsFolder, true);}
+		catch (e) {return;}
+		if (!selItemsFolder.length) {return;}
+		compareTags({toTags, toTagsFolder, selItemsFolder});
+	}, null, g_font,'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.', void(0), void(0), chars.exchange),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
 	if (buttons.hasOwnProperty(buttonName)) {
 		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
+		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
 		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
 		delete newButtons[buttonName];
 	}

@@ -7,7 +7,7 @@
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
+include('remove_duplicates.js');
 if (!utils.CheckComponent("foo_playcount")) {fb.ShowPopupMessage('top_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Tracks

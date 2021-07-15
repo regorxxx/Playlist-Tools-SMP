@@ -6,7 +6,7 @@
 	Uses notation described at 'dyngenre_map' on dyngenre_map_xxx.js to sort selection by genre/style.
 */ 
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\dyngenre_map_xxx.js');
+include('..\\helpers\\dyngenre_map_xxx.js');
 
 const [,, genreStyleMap] = dyngenre_map();
 

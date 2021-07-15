@@ -6,9 +6,9 @@
 	Button name and tooltip text is changed according to that value!
  */
 
- include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\top_tracks.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\buttons_xxx.js');
+include('..\\main\\top_tracks.js');
+include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = "tt_";
 
 try { //May be loaded along other buttons
@@ -28,6 +28,7 @@ var newButtonsProperties = { //You can simply add new properties here
 };
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
+buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 // we change the default coordinates here to accommodate text
 if (buttonOrientation === 'x') {buttonCoordinates.w += 5;}
@@ -40,13 +41,13 @@ var newButtons  = {
 		do_top_tracks({playlistLength: Number(playlistLength), forcedQuery});
 		t1 = Date.now();
 		console.log("Call to do_top_tracks took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates).\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties, chars.heartOn, _gdiFont('FontAwesome', 10)),
+	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates).\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties, chars.heartOn),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
 	if (buttons.hasOwnProperty(buttonName)) {
 		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
+		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
 		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
 		delete newButtons[buttonName];
 	}

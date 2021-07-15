@@ -23,9 +23,10 @@
 */
 
 var bLoadTags = true; // Note this must be added before loading helpers! See buttons_search_same_by.js and search_same_by.js
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_foobar.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_UI.js');
+include('..\\..\\helpers\\buttons_xxx.js');
+include('..\\..\\helpers\\helpers_xxx.js');
+include('..\\..\\helpers\\helpers_xxx_foobar.js');
+include('..\\..\\helpers\\helpers_xxx_UI.js');
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Merged Buttons bar', {author:'xxx'});
@@ -48,14 +49,14 @@ toolbarColor = RGB(211,218,237);
 
 {	// Buttons
 	let buttonsPath = [	 // Add here your buttons path
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_same_by.js',  //+15 w
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_remove_duplicates.js',  //+25 w
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_bydistance_customizable.js',
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_bydistance_customizable.js',
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_bydistance_customizable.js',
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_bydistance_customizable.js',
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_tags_automation.js',
-						fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_playlist_tools.js',
+						folders.xxx + 'buttons\\buttons_search_same_by.js',  //+15 w
+						folders.xxx + 'buttons\\buttons_remove_duplicates.js',  //+25 w
+						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
+						folders.xxx + 'buttons\\buttons_tags_automation.js',
+						folders.xxx + 'buttons\\buttons_playlist_tools.js',
 						];
 	
 	for (let i = 0; i < buttonsPath.length; i++) {
@@ -68,7 +69,7 @@ toolbarColor = RGB(211,218,237);
 	
 	/* 	
 		OR just add them manually:
-		include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\buttons\\buttons_search_same_style.js', {always_evaluate: true});
+		include(folders.xxx + 'buttons\\buttons_search_same_style.js', {always_evaluate: true});
 		...
 	*/
 }

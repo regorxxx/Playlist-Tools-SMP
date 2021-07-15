@@ -1,0 +1,21 @@
+﻿Utility to compare tags between 2 sets of tracks (sources).
+It may be used to compare changes between backups and current library 
+and/or apply tags from one source to another. For ex. you may apply current
+library tags to your backup, thus updating it, without having to copy all files.
+Specially useful on local networks.
+
+Usage:
+- Send all tracks from Source A to a playlist:
+	- Select source A tracks, and save its tags to a file.
+- Send all tracks from Source B to a playlist:
+	- Select source B tracks and compare against previously created tags file (Source A).
+- On popups, you may replace root paths for comparing:
+	- Source A may be at: H:\Music\... 			-> 		Root: 'H:\'
+	- Source B may be at: D:\Backup\Music\... 		-> 		Root: 'D:\Backup\'
+	- It's supposed that both sources directory trees -minus the root- are identical.
+- Utility will report not matched files. i.e. files at B not present at A.
+	- Comparison is asymmetrical. Files from A not present on B will not be reported, and just skipped.
+	- If you want to report missing files in both directions, the perform comparison in 2 steps (A to B and B to A).
+- Utility will report matched files with tag differences.
+	- Tags from source A tracks may be applied to Source B tracks if desired.
+	- Only files with differences will be edited (timestamps will remain the same for the rest).

@@ -1,8 +1,8 @@
 ﻿'use strict';
 //01/06/21
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_file.js');
+include('helpers_xxx_prototypes.js');
+include('helpers_xxx_file.js');
 
 /* 
 	Global Variables 
@@ -15,6 +15,16 @@ const readablePlaylistFormats = new Set(['.m3u','.m3u8','.pls','.fpl']); // Thes
 /* 
 	Playlist manipulation 
 */
+
+// Outputs indexes of all playlists with that name
+function playlistCountNoLocked() {
+	const playlistsNum = plman.PlaylistCount
+	let count = 0;
+	for (let i = 0; i < playlistsNum; i++) {
+		if (!plman.IsPlaylistLocked(i)) {count++;};
+	}
+	return count;
+}
 
 // Select n tracks from playlist and remove the rest
 // Start is zero by default
@@ -182,7 +192,7 @@ function savePlaylist(playlistIndex, playlistPath, extension = '.m3u8', playlist
 		}
 		// Write to file
 		playlistText = playlistText.join('\r\n');
-		let bDone = utils.WriteTextFile(playlistPath, playlistText, true);
+		let bDone = _save(playlistPath, playlistText);
 		// Check
 		if (_isFile(playlistPath) && bDone) {
 			let check = utils.ReadTextFile(playlistPath, convertCharsetToCodepage('UTF-8'));
@@ -267,7 +277,7 @@ function addHandleToPlaylist(handleList, playlistPath, relPath = '') {
 		trackText = trackText.join('\r\n');
 		originalText = originalText.join('\r\n');
 		let playlistText = originalText.concat('\r\n', trackText);
-		let bDone = utils.WriteTextFile(playlistPath, playlistText, true);
+		let bDone = _save(playlistPath, playlistText);
 		// Check
 		if (_isFile(playlistPath) && bDone) {
 			let check = utils.ReadTextFile(playlistPath, convertCharsetToCodepage('UTF-8'));

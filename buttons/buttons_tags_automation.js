@@ -10,9 +10,9 @@
 	next step until the user press OK on those popups...and then the files would be blocked being tagged! = Error on next step.
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\tags_automation.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\buttons_xxx.js');
+include('..\\main\\tags_automation.js');
+include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = "";
 
 try { //May be loaded along other buttons
@@ -28,23 +28,23 @@ prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
 
 var newButtonsProperties = {	//You can simply add new properties here
 };
-
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
+buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 var newButtons = {
-	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Autom. Tags', function () {
+	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Auto. Tags', function () {
 		let t0 = Date.now();
 		let t1 = 0;
         tagsAutomation();
 		t1 = Date.now();
 		console.log("Call to Automate Tags took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font, 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags, _gdiFont('FontAwesome', 10)),
+	}, null, g_font, 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
 	if (buttons.hasOwnProperty(buttonName)) {
 		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
+		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
 		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
 		delete newButtons[buttonName];
 	}

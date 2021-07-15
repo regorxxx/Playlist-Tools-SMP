@@ -1,7 +1,7 @@
 ﻿'use strict';
 //01/06/21
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_file.js');
+include('helpers_xxx_file.js');
 
 /* 
 	Properties
@@ -39,6 +39,15 @@ function overwriteProperties(propertiesDescriptor) { // Equivalent to setPropert
 		} else {
 			window.SetProperty(propertiesDescriptor[k][0], propertiesDescriptor[k][1]);
 		}
+	}
+	return propertiesDescriptor;
+}
+
+// Deletes all properties at once
+// Omits property checking so allows setting one to null and delete it, while overwriteProperties() will throw a checking popup
+function deleteProperties(propertiesDescriptor) { 
+	for (let k in propertiesDescriptor) {
+		window.SetProperty(propertiesDescriptor[k][0], null);
 	}
 	return propertiesDescriptor;
 }
@@ -186,8 +195,8 @@ function checkProperty(property, withValue) {
 	if (checks.hasOwnProperty('func') && checks['func'] && !checks['func'](valToCheck)) {
 		bPass = false; report += 'Value obey this condition: ' + checks['func'] + '\n';
 	}
-	if (checks.hasOwnProperty('portable') && checks['portable'] && _isFile(fb.FoobarPath + 'portable_mode_enabled') && !_isFile(valToCheck) && !_isFolder(valToCheck)) {
-		console.log(window.Name + ' - Portable installation: property \'' + property[0] + '\'\nReplacing path \'' + property[1] + '\' --> \'' + property[3] + '\''); // Silent?
+	if (checks.hasOwnProperty('portable') && checks['portable'] && valToCheck !== property[3] && _isFile(fb.FoobarPath + 'portable_mode_enabled') && !_isFile(valToCheck) && !_isFolder(valToCheck)) {
+		console.log(window.Name + ' - Portable installation: property \'' + property[0] + '\'\nReplacing path \'' + valToCheck + '\' --> \'' + property[3] + '\''); // Silent?
 		// TODO warn about using relative paths?
 	}
 	if (!bPass) {

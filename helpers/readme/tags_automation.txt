@@ -1,0 +1,3 @@
+﻿Automatic tagging using foo_rgscan (Replay Gain), foo_biometric (fingerprint), foo_masstag (copy native MD5 to tag),
+foo_dynamic_range (DR) and/or foo_audiomd5 (calculate AUDIO MD5).
+This was meant as a private tool, but may be easily edited to suit your own needs.

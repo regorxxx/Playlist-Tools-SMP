@@ -1,0 +1,54 @@
+﻿An utility to easily set main Spider Monkey Panel menu entries found at 'File\Spider Monkey Panel\...' which are numbered from 1 to 9.
+
+Since one of the main limitations of those entries is they are named with numbers without any indication of what they do at all, to
+which script they are associated or an easy way to configure it without editing code, the utility tries to solve all that by giving 
+a simple menu which lists all menus set (along their number). The menus can be easily set at any time without coding at all to 
+arbitrary functions (associated to an script which is 'included' automatically), menu entries or predefined examples.
+They can also be removed or restored to defaults values at any time.
+
+Note that if you don't want to use this tool and use your own panel with an script to set the menus, you can simply disable the associated
+menu (like any other tool) to skip loading it.
+
+This utility is not only intended as a workaround to one of the main limitations of SMP, but as a way to integrate Playlist Tools
+with online controllers. Since online controllers like foo_httpcontrol (https://bitbucket.org/oblikoamorale/foo_httpcontrol/wiki/Home)
+can not interact in any way with custom buttons, UI elements or SMP scripts, the only way to 'use' some of these scripts is associating
+a tool to a main menu entry. SMP offers 9 customizable entries for that. Usually, one would create their own script to configure those menus,
+but that clearly limits its use to simple scripts or utilities... having this functionality built-in within Playlist Tools allows not only
+setting your own customized scripts but also using all the tools found within this utility! In other words, it allows to also use any of the
+tools included via remote commands. Some examples (*) (**):
+	
+	- Wanna create automatic playlists via pools using your phone or an internet browser? Set menu 1 to 'Pools\Top tracks mix'.
+	Then call it via http control server (any of the two):
+	http://localhost:8888/default?cmd=CmdLine&param1=/command:%221%22
+	http://localhost:8888/default?cmd=CmdLine&param1=/command:"1"
+	
+	Playlist will be created and set as active playlist. A refresh may be needed in the online controller to change focus to the currently active
+	playlist (otherwise switch to it manually).
+	
+	- What about removing duplicates from current playlist? Set menu 2 to 'Duplicates and tag filtering\Remove duplicates by title, artist, date'.
+	Fill any playlist in your online controller and then call it via http control server (any of the two):
+	http://localhost:8888/default?cmd=CmdLine&param1=/command:%222%22
+	http://localhost:8888/default?cmd=CmdLine&param1=/command:"2"
+	
+	And it will be applied to current playlist. Same comment apply about refreshing.
+	
+	- What about searching similar tracks to current one? Set menu 3 to 'Search same by tags...\By Styles (=2) and Moods (=6)'.
+	Select any song (or focus on it, or put it alone in a playlist) in your online controller and then call it via http control server (any of the two):
+	http://localhost:8888/default?cmd=CmdLine&param1=/command:%222%22
+	http://localhost:8888/default?cmd=CmdLine&param1=/command:"2"
+	
+	And it will use that track as input for the playlist creation. Same comment apply about refreshing.
+
+As can be seen, any Playlist Tool menu entry (or even custom scripts) can be set, therefore the sky is the limit... remember you can also set macros 
+to be used here, so anything can be automatized without limits.
+
+foo_httpcontrol even allows to create your own templates (for the web UI), so instead of using an http url, you can easily create your own buttons associated to
+the 9 SMP entries for direct access. Since SMP even allows to set output devices with scripts, this piece finally allows to treat foobar as a complete music server 
+capable of replacing online servers like Spotify with intelligent playlist creation, auto-dj, etc. You can control anything via foo_httpcontrol+SMP+Playlist Tools.
+Such template already exists and it's named ajquery-SMP (ajquery-xxx).
+
+A phone App like 'HTTP Request Shortcuts' can also automatize all this process if using an App, which obviously can not be user-set to add custom buttons. Otherwise,
+http urls must be sent via browser (*).
+
+(*) Another approach would be sending commands creating playlists with specific command names. Specially useful for phone Apps. See Playlist Names Commands readme.
+(**) Menu names may be easily retrieved by simulating menu execution with Ctrl + L. Click, which copies entry names to clipboard.

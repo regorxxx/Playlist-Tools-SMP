@@ -1,6 +1,6 @@
 'use strict';
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include('helpers_xxx.js');
 
 var macros = [
 ];

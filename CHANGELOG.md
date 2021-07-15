@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [2.1.0](#210---2021-06-20)
 - [2.0.2](#202---2021-06-20)
 - [2.0.1](#201---2021-06-17)
 - [2.0.0](#200---2021-06-15)
@@ -14,15 +15,48 @@
 
 ## [Unreleased][]
 ### Added
+- Other tools\Import track list: Reads a txt file containing a track list and find matches, if possible, on library. The results are output to a new playlist ('Import'). The input path may be a file path or an url pointing to a txt file. Specially useful to easily create playlists (with matches from your library) from online playlists, charts, etc. (like '100 greatest rock songs', ...). Skipping the need to manually add one by one the tracks to your own version of the playlist. Not found tracks are reported with a popup.
 - Buttons: new button. Customizable macro, which calls an specific macro of Playlist tools. Just a shortcut, to create your own buttons with arbitrary macros. Note a macro allows to simply call a single menu entry, so this is a simple way to create a button for any tool preset without requiring Js knowledge.
 - Buttons: new button. Macros list, which emulates the macros sub-menu of Playlist tools showing the entire list. It's just a shortcut of it, for easy access of custom tools.
+- Script Integration\SMP Main menu: the nine Spider Monkey Panel menu entries ('File\Spider Monkey Panel') are now directly configurable within playlist tools. If you prefer to set them with other script, just disable the entire functionality (Shift + L. Click). Alternatively, you can either import your script 'Script Integration\Include script' as is or assign your own functions/scripts to the menus using Playlist Tools. This functionality is meant as an easy way to change SMP menus, instead of requiring coding everytime you want to change anything... Any Playlist Tools functionality can be assigned to the nine menus. Furthermore this is the list of available actions (popups explain what they do too):
+	- Custom Menu: Assigns any Playlist Tool entry to an SMP menu. This includes macros (you can then assign an standard foobar button to a macro).
+	- Custom Function: Assigns any function (by name) and allows to include a script (which can contain the assigned function). i.e. load sub-modules.
+	- Skip tag from playback: Adds a 'SKIP' tag using current playback, with an intelligent switch according to time. Meant to be used along Skip Track (foo_skip) component.
+	- Execute menu entry by name: Meant to be used along online controllers, like ajquery-SMP, to call an arbitrary number of tools by their menu names.
+	- Device selector: Meant to be used along online controllers, like ajquery-SMP, to set ouput device by name.
+	- DSP selector: Meant to be used along online controllers, like ajquery-SMP, to set DSP by name.
+- Online controllers integration: see also ajquery-SMP(). When Playlist Tools is installed on a foobar server (foo_http_control), menu entries, output devices and DSP list will be available on the online controller to be execute or change them on demand. In other words, you will be able to do almost anything you do at the PC when using ajquery-SMP or another compatible online controller: dynamic queries, harmonic mixing, macros, pools, setting the output device, ... Furthermore, the nine SMP menu entries will have associated buttons on the controller, with descriptions, tooltips and dynamic icons according to what they do.
+- Script Integration\Playlist Name Commands: 'Playlist listener' to execute macros\menu actions according to playlist name. Is intended as a workaround to the main limitations of SMP (main menu entries are limited in number -9-) and foobar (custom UI buttons or scripts can not be called with online controllers without coding an specific controller to do so), integrating Playlist Tools with any online controllers (compatible or not).  Playlist Names Commands allows to bypass that limitation checking current playlist names regularly for "special" names. When a playlist name starts with 'PT:', the callback fires and anything after those 3 chars is treated as a special command which will be compared to a list of known commands or tried to execute as a full menu name. For ex: 'PT:Duplicates' would be equivalent to 'Duplicates and tag filtering\Remove duplicates by...', whenever a playlist is named that way, the command is applied to the tracks contained within the playlist. There is also a readme explaining the available shortcuts and functionality.
+- Search by GRAPH\WEIGHT\DYNGENRE: Key tag can now be remapped to another tag (uses 'key' by default). Configurable at properties panel. It's also directly configurable on the Search by Distance customizable button, via menus
+- Search by GRAPH\WEIGHT\DYNGENRE: BPM tag can now be remapped to another tag (uses 'bpm' by default). Configurable at properties panel. It's also directly configurable on the Search by Distance customizable button, via menus
 ### Changed
+- Dynamic Queries: queries now only require a track on current playlist if they contain '#' char. Otherwise they are treated as standard queries and therefore don't need a selection.
+- Send selection to playlist / Send playlist to playlist: omit locked playlists in their menu lists (since you can't send anything to those anyway). Contrary to the 'Remove tracks from...' behavior, this one is not configurable, since target playlists names doesn't give any info about the currently selected track (at remove menu, it tells you where that track resides, even if you can't delete it at locked playlists).
 - Buttons: toolbar config menu now opens with Shift + L. Click on the bar.
+- Buttons: Custom Search by Distance button rewritten, no functionality changes. Theme/recipe info values are now saved without the entire text, cleaner.
+- Buttons: button toolbar now saves only button filenames on json (instead of the absolute path), working now on portable installations which different drive letters too.
+- Buttons framework: default icon size is now bigger.
+- Buttons: loading buttons using the customizable toolbar will show their associated readme (if it exists).
+- Buttons: restoring defaults buttons on the toolbar will show the readme of all the restored buttons.
+- Buttons: replaced the readme entry on the toolbar menu with a submenu pointing to all readmes of every button (note this does not replace but complement the Playlist Tools' readmes).
+- Menu framework: added bool variable (bExecute) to .btn_up(x, y, object, forcedEntry = '', bExecute = true, replaceFunc = null) which allows to simulate the menu without executing any related entry function. 
+- Menu framework: added func variable (replaceFunc) to .btn_up(x, y, object, forcedEntry = '', bExecute = true, replaceFunc = null) which allows to replace the related entry function with a custom one, whenever bExecute is also false. Can be used to paste to clipboard entry names easily simulating the menu usage. Used along macro recording, allows to save a macro without actually executing the menu tools selected. Also meant to make easier setting the main SMP menus.
+- Installation: Installation path may now be changed by editing 'folders.xxxName' variable at '.\helpers\helpers_xxx.js'. This is a workaround for some SMP limitations when working with relative paths and text files, images or dynamic file loading.
 ### Removed
 ### Fixed
+- Most played tracks from...\From last...: was reporting tracks less played in a given period, instead of the most played due to a typo. Now fixed (most played tracks within the given period will be first).
+- Other tools\Playlist Revive: undefined queries when file didn't had AUDIOMD5 tag (from foo_md5) are now skipped. The plugin was never a requirement, but an extra to find faster matches by query. If you use the plugin, their tags will also be used; otherwise, the tool queries by title and compares md5 file info first (if avalaible) or file size (for exact match) and then all tags to compute similarity.
+- Other tools\Playlist Revive: reviving selection (instead of entire playlist) no longer outputs only the selected items, but recreates the entire playlists; dead items with matches are replaced and dead items without a match or other items are left untouched. Current item selection will also remain selected after processing.
+- Other tools\Playlist Revive: bug on reviving All playlists which made only active playlist to be actually changed (the rest was analyzed but not touched).
+- Queries: Fixed 'ALL' using global forced queries at some points (see 2.0.1 changes), and empty queries not allowed at input popups.
+- Callbacks: wrapped and merged all callbacks at Playlist Tools or any other script, so they can easily merged. Previously at least one of them was being overriden by the last one loaded (only affected people wich used Search By Distance buttons at different panels at the same time).
 - Buttons: toolbar had a typo on the property. After updating the old property will be unused, thus recreating the entire bar again. If you want to restore the old one, just copy the old filename at the properties panel to the new property.
 - Buttons: toolbar now also deletes unused properties when removing buttons. 
 - Buttons: toolbar now also rewrites properties of buttons which have multiple copies, instead of requiring to set up them everytime a copy at the left is removed. It considers multiple copies of the same button get their properties indexed according to their positions too; thus, removing the 2nd copy of a button, will shift by one all copies at greater indexes (at its right) along their properties. The same applies when moving them instead of removing.
+- Buttons: Fixed multiple button names while logging loading on console.
+- Menu framework: '&' char not showing (or making next char underscored) on created dynamic menus (when it was part of a playlist name for ex.), since they were not doubled. Now the framework automatically checks for names with '&' and doubles them ('&&' are skipped), so they are displayed right.
+- Multiple minor improvements and fixes on path handling for portable installations.
+- Multiple minor improvements and fixes when saving files on non existing folders.
 
 ## [2.0.2] - 2021-06-20
 ### Added
@@ -221,7 +255,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v2.1.0
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v2.0.0

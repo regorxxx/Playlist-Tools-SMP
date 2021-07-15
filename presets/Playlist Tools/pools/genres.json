@@ -15,7 +15,7 @@
 				"_LIBRARY_1": "GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll"
 			},
 			"toPls": "Rock playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -34,7 +34,7 @@
 				"_LIBRARY_1": "STYLE IS Neo-Psychedelia OR STYLE IS Psychedelic Folk"
 			},
 			"toPls": "Psychedelic playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -53,7 +53,7 @@
 				"_LIBRARY_1": "GENRE IS Country"
 			},
 			"toPls": "Folk \\ Country playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -72,7 +72,7 @@
 				"_LIBRARY_1": "GENRE IS Blues"
 			},
 			"toPls": "Blues playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -91,7 +91,7 @@
 				"_LIBRARY_1": "GENRE IS Jazz Vocal"
 			},
 			"toPls": "Jazz playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -110,7 +110,7 @@
 				"_LIBRARY_1": "GENRE IS Soul OR STYLE IS R&B"
 			},
 			"toPls": "Soul \\ RnB playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -129,7 +129,7 @@
 				"_LIBRARY_1": "GENRE IS Hip-Hop"
 			},
 			"toPls": "Hip-Hop playlist",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"

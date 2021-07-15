@@ -1,0 +1,21 @@
+{
+	"buttons_device_priority.js": "device_priority.txt",
+	"buttons_playlist_history.js": "playlist_history.txt",
+	"buttons_playlist_tools.js": "",
+	"buttons_playlist_tools_macro_custom.js": "macro_custom.txt",
+	"buttons_playlist_tools_macros.js": "macros.txt",
+	"buttons_playlist_tools_pool.js": "pools.txt",
+	"buttons_remove_duplicates.js": "remove_duplicates.txt",
+	"buttons_save_tags.js": "save_tags.txt",
+	"buttons_search_bydistance.js": "search_bydistance.txt",
+	"buttons_search_bydistance_customizable.js": "search_bydistance.txt",
+	"buttons_search_bydistance_DYNGENRE.js": "search_bydistance_dyngenre.txt",
+	"buttons_search_bydistance_GRAPH.js": "search_bydistance_graph.txt",
+	"buttons_search_bydistance_WEIGHT.js": "search_bydistance_weight.txt",
+	"buttons_search_same_by.js": "search_same_by.txt",
+	"buttons_search_same_style.js": "search_same_style.txt",
+	"buttons_search_same_style_moods.js": "search_same_style_moods.txt",
+	"buttons_search_top_tracks.js": "top_tracks.txt",
+	"buttons_search_top_tracks_from_date.js": "top_tracks_from_date.txt",
+	"buttons_tags_automation.js": "tags_automation.txt"
+}

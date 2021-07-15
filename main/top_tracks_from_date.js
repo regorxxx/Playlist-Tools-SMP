@@ -7,7 +7,7 @@
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
+include('remove_duplicates.js');
 if (!utils.CheckComponent("foo_playcount")) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
 
 const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
@@ -34,7 +34,7 @@ function do_top_tracks_from_date({
 		let timePeriod = Number(last.split(' ')[0]);
 		if (!Number.isSafeInteger(timePeriod)) {fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'do_top_tracks_from_date'); return;}
 		if (!Object.keys(timeKeys).some( (key) => {if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) {timeKey = key; return true;} else {return false;}})) {
-				fb.ShowPopupMessage('Time-unit not valid (must be' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'do_top_tracks_from_date');
+				fb.ShowPopupMessage('Time-unit not valid (must be ' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'do_top_tracks_from_date');
 				return;
 		}
 		
@@ -66,22 +66,22 @@ function do_top_tracks_from_date({
 				if (dateArray_i.length) { // Every entry is also an array of dates
 					dateArray_i.forEach( (date) => {
 						const temp = date.substring(0, 10).split('-');
-						if (temp.length === 3 && timeKeys[timeKey](currentDate, new Date(temp[0],temp[1],temp[2])) <= timePeriod) {count++;}
+						if (temp.length === 3 && timeKeys[timeKey](new Date(temp[0],temp[1],temp[2]), currentDate) <= timePeriod) {count++;}
 					});
 				} else { // For tracks without advanced statistics
 					const tempFirst = firstPlayedArray[i].substring(0, 10).split('-');
 					if (tempFirst.length !== 3) {continue;}
-					const diffFirst = timeKeys[timeKey](currentDate, new Date(tempFirst[0],tempFirst[1],tempFirst[2]));
+					const diffFirst = timeKeys[timeKey](new Date(tempFirst[0],tempFirst[1],tempFirst[2], currentDate));
 					const tempLast = lastPlayedArray[i].substring(0, 10).split('-');
 					if (tempLast.length !== 3) {continue;}
-					const diffLast = timeKeys[timeKey](currentDate, new Date(tempLast[0],tempLast[1],tempLast[2]));
-					// If first and last plays were from selected year, then all play counts too
+					const diffLast = timeKeys[timeKey](new Date(tempLast[0],tempLast[1],tempLast[2], currentDate));
+					// If first and last plays were from selected period, then all play counts too
 					if (diffFirst <= timePeriod && diffLast <= timePeriod) {count += playCountArray[i];}
 					// Or the first play
 					else if (diffFirst <= timePeriod) {count++;}
 					// Or the last play
 					else if (diffLast <= timePeriod) {count++;}
-					// Note any track known to have been played at selected year will be added to the pool, and since the handle List is already
+					// Note any track known to have been played at selected period will be added to the pool, and since the handle List is already
 					// sorted by play Count, it will output tracks with higher total counts when they have not advanced statistics
 					// being almost equivalent to 'top_tracks.js' in that case
 				}
@@ -117,6 +117,7 @@ function do_top_tracks_from_date({
 		// Order by Play Count
 		dataPool.sort(function (a, b) {return b.playCount - a.playCount;});
 		dataPool.forEach((item) => pool.push(handleList[item.idx]));
+		dataPool.forEach((item) => console.log(item.idx,item.playCount));
 		handleList = new FbMetadbHandleList(pool);
 		
 		// Output n tracks

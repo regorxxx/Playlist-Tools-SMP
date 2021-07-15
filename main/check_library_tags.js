@@ -48,11 +48,11 @@
 		easy to add up to 90% of tags/tag values to the list, greatly speeding up future reports (less tags to check).
  */
  
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_file.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
+include('..\\helpers\\helpers_xxx.js');
+include('..\\helpers\\helpers_xxx_tags.js');
+include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\helpers_xxx_file.js');
+include('..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
 
 const checkTags_properties = {
 	tagNamesToCheck: 	['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople'],
@@ -61,11 +61,11 @@ const checkTags_properties = {
 	bAskForConfigTags: 	['Enables popup asking to config excluded tags', false],
 	bUseDic:		 	['Enables dictionary checking for every tag value (slow!)', false],
 	dictName:			['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
-	dictPath:			['Path to all dictionaries', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + 'scripts\\SMP\\xxx-scripts\\helpers-external\\typo\\dictionaries'],
+	dictPath:			['Path to all dictionaries', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.xxxName + 'helpers-external\\typo\\dictionaries'],
 };
 checkTags_properties['tagNamesToCheck'].push({func: isString}, checkTags_properties['tagNamesToCheck'][1]);
 checkTags_properties['dictName'].push({func: isString}, checkTags_properties['dictName'][1]);
-checkTags_properties['dictPath'].push({func: isString, portable: true}, checkTags_properties['dictPath'][1]); // No need for a poput since the default dic will always be there
+checkTags_properties['dictPath'].push({func: isString, portable: true}, checkTags_properties['dictPath'][1]); // No need for a popup since the default dic will always be there
 var checkTags_prefix = 'ct_';
 
 // Load dictionary

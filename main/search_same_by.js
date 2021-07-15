@@ -68,9 +68,9 @@
  */
 
 var bLoadTags = true; // This tells the helper to load tags descriptors extra files
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_math.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
+include('..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\helpers\\helpers_xxx_math.js');
+include('remove_duplicates.js');
 
 function do_search_same_by({
 								playlistLength = 50, 

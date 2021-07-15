@@ -1,12 +1,12 @@
 'use strict';
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include('..\\..\\helpers\\helpers_xxx.js');
 
-// include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\EDIT.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+// include('EDIT.js');
+include('..\\..\\helpers\\helpers_xxx_properties.js');
 var prefix = "EDIT";
  
 //Always loaded along other buttons and panel
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_panel_xxx.js');
+include('..\\..\\helpers\\buttons_panel_xxx.js');
 var g_font = _gdiFont('Segoe UI', 12);
 var buttonCoordinates = {x: 0, y: window.Height - 22, w: 98, h: 22};
 var buttonOrientation = 'x';

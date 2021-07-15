@@ -1,0 +1,7 @@
+﻿Search n tracks (randomly) on library matching at least 2 styles and 6 moods from the current selected track.
+
+Usage:
+	- The number of output tracks may be set at properties panel. 
+	- Forced query to pre-filter tracks may be set at properties panel.
+
+NOTE: If you want to use arbitrary tags, use "search_same_by.js" instead.

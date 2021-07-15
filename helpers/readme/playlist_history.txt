@@ -1,0 +1,4 @@
+﻿Shortcut button for Playlist Tools' entry.
+
+Cycles between previously selected playlist and current one. 
+To see full history use the Playlist Tool menu.

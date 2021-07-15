@@ -2,15 +2,24 @@
 
 /*
 	Save tags
+	Utility to compare tags between different sources (for ex. for checking backups).
+	- Select source A, and save its tags to a file.
+	- Select source B and compare against tags file from Source A.
+	- Replace root paths for comparing:
+		- Source A may be at: H:\Music\... 				-> 		Root: 'H:\'
+		- Source B may be at: D:\Backup\Music\... 		-> 		Root: 'D:\Backup\'
+	- Utility will report not matched files and files with differences.
+	- Tags from source A may be applied to Source B if desired, for those files which have differences.
  */
  
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_file.js');
+include('..\\helpers\\helpers_xxx.js');
+include('..\\helpers\\helpers_xxx_tags.js');
+include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\helpers_xxx_file.js');
 
 function saveTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+					file = folders.data + 'tags.json',
 					} = {}) {
 	let tags = [];
 	let handleInfo = {};
@@ -46,13 +55,14 @@ function saveTags({
 		handleInfo.handleTags = handleTags;
 		tags.push(handleInfo);
 	}
-	_save(fb.ProfilePath + 'js_data\\tags.json', JSON.stringify(tags, null, 3));
+	if (!_isFolder(folders.data)) {_createFolder(folders.data);}
+	_save(file, JSON.stringify(tags, null, 3));
 }
 
 function compareTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 					selItemsFolder = 'H:\\',
-					toTags = _jsonParseFile(fb.ProfilePath + 'js_data\\tags.json'),
+					toTags = _jsonParseFile(folders.data + 'tags.json'),
 					toTagsFolder = 'H:\\',
 					} = {}) {
 	let tags = [];
@@ -114,6 +124,5 @@ function compareTags({
 			const handleList = new FbMetadbHandleList(toEditHandles);
 			handleList.UpdateFileInfoFromJSON(JSON.stringify(toEditTags));
 		}
-	}
-	else {fb.ShowPopupMessage('All equal', 'Report')}
+	} else {fb.ShowPopupMessage('All matched tracks\' tags are equal to the source tracks\' tags.\n(There may be files wihout match, look for other poppups)', 'Report')}
 }

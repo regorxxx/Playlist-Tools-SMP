@@ -14,9 +14,9 @@
 	Tooltip texts are changed according to the variables set!
 */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\remove_duplicates.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\buttons_xxx.js');
+include('..\\main\\remove_duplicates.js');
+include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = "rd_";
 
 try { //May be loaded along other buttons
@@ -38,6 +38,7 @@ var newButtonsProperties = { //You can simply add new properties here
 };
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
+buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
 if (buttonOrientation === 'x') {buttonCoordinates.w += 25;}
@@ -51,7 +52,7 @@ var newButtons = {
         do_remove_duplicatesV2(null, null, sortInput);
 		t1 = Date.now();
 		console.log("Call to do_remove_duplicatesV2 took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates, _gdiFont('FontAwesome', 10)), //Skips 4th descriptor
+	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
 	
 	RemoveDuplicatesV3: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Filter playlist', function () {
 		let t0 = Date.now();
@@ -62,13 +63,13 @@ var newButtons = {
         do_remove_duplicatesV3(null, null, sortInput, nAllowed);
 		t1 = Date.now();
 		console.log("Call to do_remove_duplicatesV3 took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter, _gdiFont('FontAwesome', 10)), // Changes a bit the tooltip to show duplicates number separated
+	}, null, g_font,'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter), // Changes a bit the tooltip to show duplicates number separated
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
 	if (buttons.hasOwnProperty(buttonName)) {
 		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
+		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
 		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
 		delete newButtons[buttonName];
 	}

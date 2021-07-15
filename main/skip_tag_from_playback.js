@@ -1,15 +1,17 @@
 ﻿'use strict';
 
 /* 
-	Add Skip Tag From Playback v 1.0 16/03/21
-	Adds a 'SKIP' tag using current playback. Meant to be used along Skip Track component.
-	Like skip bookmarking feature but the opposite,track will play as usually up to the 'SKIP' time, where it jumps to next track.
+	Add Skip Tag From Playback v 1.1 23/06/21
+	Adds a 'SKIP' tag using current playback. Meant to be used along Skip Track (foo_skip) component.
+	Has an intelligent switch which sets behavior according to playback time:
+		- If time > half track length -> Track will play as usually up to the 'SKIP' time, where it jumps to next track.
+		- If time < half track length -> Track will play from 'SKIP' time to the end.
 	This is a workaround for using %playback_time% for tagging, since %playback_time% does not work within masstagger scripts.
  */
 
-function skipTagFromPlayback(selItems = new FbMetadbHandleList(fb.GetNowPlaying())) {
-	if (typeof selItems !== 'undefined' && selItems !== null) {
-		const countItems = selItems.Count;
+function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying())) {
+	if (typeof selItem !== 'undefined' && selItem !== null) {
+		const countItems = selItem.Count;
 		if (countItems === 0) {
 			console.log('No tracks selected.');
 			return;
@@ -19,8 +21,10 @@ function skipTagFromPlayback(selItems = new FbMetadbHandleList(fb.GetNowPlaying(
 			return;
 		}
 	} else {return;}
-	const time = new Date(fb.PlaybackTime * 1000).toUTCString().substr(20,5) + '.00'; // doesn't care about ms
-	selItems.UpdateFileInfoFromJSON(JSON.stringify([{'SKIP' : time}]));
-	console.log('Adding SKIP tag to current track: ' + time);
+	const currentPlayback = fb.PlaybackTime * 1000;
+	const time = new Date(currentPlayback).toUTCString().substr(20,5) + '.00'; // doesn't care about ms
+	const bEnd = currentPlayback > selItem[0].Length * 1000 / 2 ? true : false; // skips from start or end
+	selItem.UpdateFileInfoFromJSON(JSON.stringify([{'SKIP' : (bEnd ? '' : '-') + time}]));
+	console.log('Adding SKIP tag to current track: ' + time + (bEnd ? ' (skips end)' : ' (skips start)'));
 	return time;
 }

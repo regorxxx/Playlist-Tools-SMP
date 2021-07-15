@@ -1,8 +1,8 @@
 'use strict';
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_playlists.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\menu_xxx.js');
+include('helpers_xxx.js');
+include('helpers_xxx_playlists.js');
+include('menu_xxx.js');
 
 const plsHistory = [];
 const plsHistoryMax = 11; // -1 for the head (active playlist)
@@ -60,16 +60,22 @@ function createHistoryMenu() {
 	return menu;
 }
 
-// Callbacks
-
-function on_playlist_switch() {
+// Callbacks: append to any previously existing callback
+function onPlaylistSwitch() {
 	if (plsHistory.length) {
 		if (plsHistory.length >= plsHistoryMax) {plsHistory.pop();}
 		plsHistory.unshift({name: plman.GetPlaylistName(plman.ActivePlaylist), idx: plman.ActivePlaylist});
 	} else {initplsHistory()};
 }
+if (on_playlist_switch) {
+	const oldFunc = on_playlist_switch;
+	on_playlist_switch = function() {
+		oldFunc();
+		onPlaylistSwitch();
+	}
+} else {var on_playlist_switch = onPlaylistSwitch;}
 
-function on_playlists_changed() {
+function onPlaylistsChanged() {
 	if (plsHistory.length) {
 		// Track idx change for playlist already added (when reordering for ex.)
 		plsHistory.forEach( (pls) => {
@@ -83,9 +89,24 @@ function on_playlists_changed() {
 		}
 	} else {initplsHistory()};
 }
+if (on_playlists_changed) {
+	const oldFunc = on_playlists_changed;
+	on_playlists_changed = function() {
+		oldFunc();
+		onPlaylistsChanged();
+	}
+} else {var on_playlists_changed = onPlaylistsChanged;}
 
-function on_selection_changed() {
- if (!plsHistory.length) {initplsHistory()}
+
+function onSelectionChanged() {
+	if (!plsHistory.length) {initplsHistory()}
 }
+if (on_selection_changed) {
+	const oldFunc = on_selection_changed;
+	on_selection_changed = function() {
+		oldFunc();
+		onSelectionChanged();
+	}
+} else {var on_selection_changed = onSelectionChanged;}
 
 const initplsHistory = delayFn(() => {plsHistory.push({name: plman.GetPlaylistName(plman.ActivePlaylist), idx: plman.ActivePlaylist});}, 300);

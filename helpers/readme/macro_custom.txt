@@ -1,0 +1,3 @@
+﻿Shortcut button for Playlist Tools' entry.
+
+Lets you assign an already saved macro to the button and run it.

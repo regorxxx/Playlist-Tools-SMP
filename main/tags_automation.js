@@ -2,15 +2,15 @@
 
 /* 
 	Automatic tagging...
-	File processing takes time, specially for some functions (ReplayGain, etc.), so we delay next step execution some ms
-	according to step and track selected count. Naive approach but works, no "blocked file" while processing.
+	File processing takes time, specially for some functions (ReplayGain, etc.), so we delay next step execution 
+	until onMetadbChanged fires for all selected handles. 
 	
-	Note there is no way to know when some arbitrary plugin finish their processing. Callbacks for meta changes are dangerous here.
-	Some plugins expect user input for final tagging after processing the files (ReplayGain for ex.), so that approach would delay 
-	next step until the user press OK on those popups...and then the files would be blocked being tagged! = Error on next step.
+	Note there is no way to know when some arbitrary plugin finish their processing.
+	Some plugins expect user input for final tagging after processing the files (ReplayGain for ex.), so those steps
+	are delayed to the end so the user can press OK on those popups without blocking processing.
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
+include('..\\helpers\\helpers_xxx.js');
  
 // Script
 const bRgScan = utils.CheckComponent("foo_rgscan", true);
@@ -25,7 +25,7 @@ var currentTime = null;
 const debouncedStep = debounce(step, 300); // Only continues next step when last tag update was done >100ms ago
 
 // Check if tag update was done on a selected file and wait until all tracks are updated
-function on_metadb_changed(handle_list) {
+function onMetadbChanged(handle_list, fromhook) {
 	if (iStep) {
 		if (typeof sel_items !== 'undefined' && sel_items !== null && count_items !== null) {
 			handle_list.Sort();
@@ -40,6 +40,13 @@ function on_metadb_changed(handle_list) {
 		}
 	}
 }
+if (typeof on_metadb_changed !== 'undefined') {
+	const oldFunc = on_metadb_changed;
+	on_metadb_changed = function(handle_list, fromhook) {
+		oldFunc(handle_list, fromhook);
+		onMetadbChanged(handle_list, fromhook);
+	}
+} else {var on_metadb_changed = onMetadbChanged;}
 
 function getTagsAutomationDescription() {
 	const boolArr = [bBiometric, bMassTag, bAudioMd5, bRgScan, bDynamicRange];

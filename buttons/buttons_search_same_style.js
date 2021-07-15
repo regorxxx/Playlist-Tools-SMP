@@ -5,9 +5,9 @@
 	You can configure the number of tracks at properties panel. Also forced query to prefilter tracks.
  */
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\buttons_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\main\\search_same_style.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\buttons_xxx.js');
+include('..\\main\\search_same_style.js');
+include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = "sss_";
 
 try { //May be loaded along other buttons
@@ -17,7 +17,7 @@ try { //May be loaded along other buttons
 	var buttonOrientation = 'x';
 } catch (e) {
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Search Same Button loaded.');
+	console.log('Same Styles Button loaded.');
 }
 prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
 
@@ -29,6 +29,7 @@ var newButtonsProperties = { //You can simply add new properties here
 };
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
+buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 // we change the default coordinates here to accommodate text
 if (buttonOrientation === 'x') {buttonCoordinates.w -= 5;}
@@ -41,13 +42,13 @@ var newButtons = {
 		do_search_same_style(Number(playlistLength), forcedQuery);
 		t1 = Date.now();
 		console.log("Call to do_search_same_style took " + (t1 - t0) + " milliseconds.");
-	}, null, g_font,'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties, chars.link, _gdiFont('FontAwesome', 10)),
+	}, null, g_font,'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties, chars.link),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
 	if (buttons.hasOwnProperty(buttonName)) {
 		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
+		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
 		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
 		delete newButtons[buttonName];
 	}

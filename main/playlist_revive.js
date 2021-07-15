@@ -17,9 +17,9 @@
 
  */
  
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_tags.js');
+include('..\\helpers\\helpers_xxx.js');
+include('..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\helpers\\helpers_xxx_tags.js');
 
 function playlistRevive({
 					playlist = plman.ActivePlaylist,
@@ -30,7 +30,7 @@ function playlistRevive({
 	if (typeof selItems === 'undefined' || selItems === null || selItems.Count === 0) {
 		return;
 	}
-
+	
 	let cache = new Set();
 	
 	// Filter items which already exist
@@ -44,7 +44,9 @@ function playlistRevive({
 	console.log('Found ' + items.Count + ' dead item(s) on ' + (plman.ActivePlaylist === playlist ? 'active' : '')+ ' playlist: ' + plman.GetPlaylistName(playlist));
 	if (!items.Count) {return;}
 	// Filter library with items with same tags
-	const tagsToCheck = ['title', 'audiomd5']; // First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match
+	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
+	// The other tags are considered crc checks -> Exact Match: any crc tag is matched. Otherwise, continue checking the other tags (See above).
+	const tagsToCheck = ['title', 'audiomd5', 'md5'];
 	const tags = getTagsValuesV4(items, tagsToCheck);
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
@@ -53,7 +55,7 @@ function playlistRevive({
 	});
 	// instead of using this, which would combine the different tags too
 	// const query =  query_join(query_combinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');
-	const query = query_join(queryArr, "OR");
+	const query = query_join(queryArr.filter(Boolean), "OR");
 	if (bSimulate) {console.log('Filtered library by: ' + query);}
 	try {fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
@@ -76,8 +78,13 @@ function playlistRevive({
 			if (bExact) {return;} // No need to continue then
 			const infoLibr = handleLibr.GetFileInfo();
 			let count = 0;
-			let md5Idx = info.InfoFind('md5'), md5LibrIdx = infoLibr.InfoFind('md5'); // With same MD5, it's an exact match
-			if (md5Idx !== -1 && md5LibrIdx !== -1 && info.InfoValue(info.InfoFind('md5')) === infoLibr.InfoValue(infoLibr.InfoFind('md5'))) {count = numTags; bExact = true;}
+			const md5Idx = info.InfoFind('md5'), md5LibrIdx = infoLibr.InfoFind('md5'); // With same MD5 info, it's an exact match
+			if (md5Idx !== -1 && md5LibrIdx !== -1 && info.InfoValue(md5Idx) === infoLibr.InfoValue(md5LibrIdx)) {count = numTags; bExact = true;}
+			let tag = tags[1][index][0], tagLibr = tagsLibrary[1][indexLibr][0];
+			if (tag.length && tagLibr.length && tag === tagLibr) {count = numTags; bExact = true;} // With same AUDIOMD5 tag, it's an exact match too
+			tag = tags[2][index][0], tagLibr = tagsLibrary[2][indexLibr][0];
+			if (tag.length && tagLibr.length && tag === tagLibr) {count = numTags; bExact = true;} // With same MD5 tag, it's an exact match too
+			// Check tags
 			if (new Set(tags[0][index]).intersectionSize(new Set(tagsLibrary[0][indexLibr]))) { // Instead of checking equality, tracks may have more than one title (?)
 				if (handle.Length === handleLibr.Length) {
 					count++; // Bonus score if it changed tags and thus size but length is the same
@@ -133,9 +140,30 @@ function playlistRevive({
 		if (bExact) {console.log('Exact matches have been found. That means the tracks have the same Audio MD5 or Title + Length + File Size.');}
 		// Remove all handles and insert new ones
 		if (!bSimulate) {
-			plman.UndoBackup(plman.ActivePlaylist);
-			plman.ClearPlaylist(plman.ActivePlaylist);
-			plman.InsertPlaylistItems(plman.ActivePlaylist, 0, selItems);
+			plman.UndoBackup(playlist);
+			if (selItems.Count !== plman.PlaylistItemCount(playlist)) { // When selecting only a portion, replace selection and left the rest untouched
+				const listItems = plman.GetPlaylistItems(playlist);
+				let selectedIdx = [];
+				listItems.Convert().forEach((handle, idx) => {
+					if (plman.IsPlaylistItemSelected(playlist, idx)) {
+						items.Convert().forEach((handleDead, idxDead) => {
+							if (handle.RawPath === handleDead.RawPath) {
+								if (alternatives.has(idxDead)) {
+									listItems.RemoveById(idx);
+									listItems.Insert(idx, libraryItemsArr[alternatives.get(idxDead)[0].idx]);
+								}
+							}
+						});
+						selectedIdx.push(idx);
+					}
+				});
+				plman.ClearPlaylist(playlist);
+				plman.InsertPlaylistItems(playlist, 0, listItems);
+				plman.SetPlaylistSelection(playlist, selectedIdx, true);
+			} else { 	// Just replace entire playlist
+				plman.ClearPlaylist(playlist);
+				plman.InsertPlaylistItems(playlist, 0, selItems);
+			}
 		}
 	}
 	fb.ShowConsole();

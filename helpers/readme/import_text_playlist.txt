@@ -1,0 +1,49 @@
+﻿Reads a txt file containing a track list and find matches, if possible,
+on library. The results are output to a new playlist ('Import').
+The input path may be a file path or an url pointing to a txt file.
+
+Specially useful to easily create playlists (with matches from your library)
+from online playlists, charts, etc. (like '100 greatest rock songs', ...).
+Skipping the need to manually add one by one the tracks to your own version
+of the playlist. Not found tracks are reported with a popup.
+
+A txt file example can be found at: '.\examples\track_list_to_import.txt'
+Patterns may be arbitrary, and can be set at the input box. For ex:
+	1. Respect - Aretha Franklin
+	2. Louie Louie - Kingsmen
+	...
+Would require a pattern like this:
+[". ","%title%"," - ","%artist%"]
+
+Strings with '%' are considered tags, the rest are breakpoints or 
+parts of the text which will be omitted (before ". " all is omitted).
+
+For key matching, both the original key and prefix-stripped are used
+at the query (%artist% or %album artist%). For ex:
+	1. Shapes of things - Yardbirds
+	2. Route 66 - The Rolling Stones
+	...
+Query matching becomes (note the artist name is prefix-stripped at 2):
+	1: '(title IS shapes of things) AND (artist IS yardbirds OR 
+	$stripprefix(artist,a,the,la,los,las,el) IS yardbirds) 
+	AND (NOT genre IS live AND NOT style IS live)'
+	2: '(title IS route 66) AND (artist IS the rolling stones OR
+	$stripprefix(artist,a,the,la,los,las,el) IS rolling stones) 
+	AND (NOT genre IS live AND NOT style IS live)'
+
+By default duplicates are removed, 1 track per (%artist%, %title%). (*)
+Live tracks are skipped, matching only studio tracks if possible ('genre' 
+or 'style' tags must be present on files, with a value 'Live').
+
+(*) Note in rare cases multiple matches could pass through the filter:
+Track A by Artist A -> (importTextPlaylist) -> output:
+		01 - Track A -> Artist: Artist A//Artist B
+		01 - Track A -> Artist: Artist A
+Since the default filter compares title and artist, both tracks are 
+"different" because only one artist is matched. Thus both tracks would
+be sent to the playlist. This behavior is preferred to only use title on
+the filter by default, since there could be cases where a list has same
+titles names by different artists:
+Track A by Artist A
+...
+Track A by Artist B

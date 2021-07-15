@@ -1,4 +1,4 @@
-Presets are menu entries which can be imported or exported on demand.
+﻿Presets are menu entries which can be imported or exported on demand.
 All added menu entries by the user are also considered 'presets', i.e.
 they can be managed the same than external presets.
 

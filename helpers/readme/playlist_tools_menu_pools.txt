@@ -1,4 +1,4 @@
-Playlist creation similar to Random Pools component.
+﻿Playlist creation similar to Random Pools component.
 Multiple playlists \ library sources (pools) can be set to fill a destination playlist. 
 Configurable selection length per source, query filtering, 
 picking method (random, from start, from end) and final sorting of destination playlist. 

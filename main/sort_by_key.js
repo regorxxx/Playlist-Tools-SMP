@@ -6,7 +6,7 @@
 	Uses notation described at 'camelotWheel' on camelot_wheel_xxx.js to sort selection by key.
 */ 
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\camelot_wheel_xxx.js');
+include('..\\helpers\\camelot_wheel_xxx.js');
 
 function do_sort_by_key({
 								playlistIdx = plman.ActivePlaylist,

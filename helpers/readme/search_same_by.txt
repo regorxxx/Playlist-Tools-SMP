@@ -1,7 +1,18 @@
 ﻿Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
-Note this ONLY USES already existing tags, it will not calculate similarity or anything else 
-i.e. "dynamic_genre" tag will not be calculated on the fly, or scores. Use "search_bydistance.js" for that.
-If some tags are missing, then they get skipped.
+
+Playlist Tools Usage:
+	- The number of output tracks may be set at global config. 
+	- Forced query to pre-filter tracks may be set at global config.
+	- Tags and number of matches may be set at the appropriate submenu.
+	- Duplicates are filtered by title, artist & date.
+
+Buttons usage:
+	- The number of output tracks may be set at properties panel. 
+	- Forced query to pre-filter tracks may be set at properties panel.
+	- Tags and number of matches may be set at properties panel.
+	- Duplicates may also be filtered using the appropriate setting at properties panel.
+
+Note this ONLY USES already existing tags and queries, it will not calculate similarity or anything else (like Search by Distance).
 
 Conditions are set as an object with keys (tags) and values (number of coincidences):
 sameBy = {genre: 1, style: 2 , mood: 5} -> Must match at least 1 genre value, 2 style values and 5 mood values.

@@ -1,4 +1,4 @@
-Macros are pre-recorded multiple calls to different menu entries.
+﻿Macros are pre-recorded multiple calls to different menu entries.
 It works in conjunction with the menu framework (Menu-Framework-SMP),
 and used in Playlist Tools for saving sets of tools.
 

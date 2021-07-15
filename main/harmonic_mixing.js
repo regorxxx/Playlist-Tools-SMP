@@ -10,9 +10,9 @@
 	so successive calls on a 'small' pool, will give totally different playlist lengths. We are not matching only keys, but a 'key path', which is stricter.
 */ 
 
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\camelot_wheel_xxx.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_playlists.js');
-include(fb.ProfilePath + 'scripts\\SMP\\xxx-scripts\\helpers\\helpers_xxx_prototypes.js');
+include('..\\helpers\\camelot_wheel_xxx.js');
+include('..\\helpers\\helpers_xxx_playlists.js');
+include('..\\helpers\\helpers_xxx_prototypes.js');
 
 function do_harmonic_mixing({
 								selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),

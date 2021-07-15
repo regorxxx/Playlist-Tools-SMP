@@ -15,7 +15,7 @@
 				"_LIBRARY_1": "(MOOD IS Acoustic AND NOT MOOD IS Aggressive) AND (MOOD IS Calm OR MOOD IS Chill OR MOOD IS Fast OR MOOD IS Groovy) AND (GENRE IS Rock OR GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Pop OR GENRE IS Blues OR GENRE IS Alt. Rock)"
 			},
 			"toPls": "Happy Mix",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -34,7 +34,7 @@
 				"_LIBRARY_1": "(MOOD IS Acoustic AND MOOD IS Not happy AND NOT MOOD IS Aggressive) AND (MOOD IS Calm OR MOOD IS Chill OR MOOD IS Hopeful OR MOOD IS Melancholy OR MOOD IS Sentimental) AND (GENRE IS Rock OR GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Pop OR GENRE IS Blues OR GENRE IS Alt. Rock)"
 			},
 			"toPls": "Sad Mix",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random"
@@ -55,7 +55,7 @@
 				"_LIBRARY_2": "(MOOD IS Electronic AND MOOD IS Aggressive OR MOOD IS Angry) AND (MOOD IS Uplifting OR MOOD IS Wild OR MOOD IS Weird OR MOOD IS Melancholy OR MOOD IS Sentimental)"
 			},
 			"toPls": "Angry Mix",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random",
@@ -77,7 +77,7 @@
 				"_LIBRARY_2": "MOOD IS Chill AND BPM LESS 90 AND NOT GENRE IS Classical"
 			},
 			"toPls": "Chill Mix",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random",
@@ -99,7 +99,7 @@
 				"_LIBRARY_2": "MOOD IS Chill AND BPM LESS 90 AND NOT GENRE IS Classical"
 			},
 			"toPls": "Chill Mix",
-			"sort": "%playlist_index%",
+			"sort": "",
 			"pickMethod": {
 				"_LIBRARY_0": "random",
 				"_LIBRARY_1": "random",
