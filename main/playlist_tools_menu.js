@@ -35,7 +35,8 @@ if (!_isFolder(folders.data)) {_createFolder(folders.data);}
 
 // Properties
 const bNotProperties = true; // Don't load other properties
-var menu_prefix = 'menu_'; // Update this variable when loading it along a button
+var menu_prefix = 'plto'; // Update this variable when loading it along a button
+const menu_prefix_panel = menu_prefix;
 var menu_properties = { // Properties are set at the end of the script, or must be set along the button. Menus may add new properties here
 	playlistLength:				['Global Playlist length', 50],
 	forcedQuery:				['Global forced query', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
@@ -44,6 +45,8 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	presets:					['Saved presets', '{}'],
 	bShortcuts:					['Enable global shortcuts', false],
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
+	keyTag:						['Key tag remap', 'key'], // It may be overwritten by Search by distance property too, are equivalent!
+	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])]
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
@@ -52,6 +55,7 @@ const menu_panelProperties = {
 	bTooltipInfo: 	['Show shortcuts on tooltip', true],
 	bProfile: 		['Profiler logging', false],
 	playlistPath: 	['Playlist manager tracked folders', '[]'],
+	bDebug:			['Enable global debug to console', false]
 };
 
 // Checks
@@ -67,11 +71,14 @@ const defaultArgs = {
 					forcedQuery: menu_properties['forcedQuery'][1], 
 					ratingLimits: menu_properties['ratingLimits'][1].split(','),
 					bHttpControl: () => {return utils.CheckComponent('foo_httpcontrol') && _isFolder(fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx')},
-					httpControlPath: fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\'
+					httpControlPath: fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\',
+					bDebug: menu_panelProperties['bDebug'][1],
+					keyTag: menu_properties['keyTag'][1],
+					styleGenreTag: JSON.parse(menu_properties['styleGenreTag'][1])
 };
 var readmes = {'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
 loadProperties();
-const bProfile = getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix)['bProfile'][1];
+const bProfile = getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['bProfile'][1];
 // Menu
 const specialMenu = 'Special Playlists...';
 const configMenu = 'Configuration';
@@ -79,7 +86,7 @@ const scriptName = 'Playlist Tools Menu';
 const menu = new _menu();
 
 // For enable/disable menus
-const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix)['menusEnabled'][1]);
+const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
 const menuDisabled = [];
 var disabledCount = 0;
 
@@ -114,7 +121,7 @@ function onNotifyData(name, info) {
 	switch (name) {
 		case 'Playlist manager: playlistPath': {
 			if (info && info.length) {
-				const properties =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), 'menu_');
+				const properties =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), menu_prefix_panel, 0);
 				const playlistPath = JSON.parse(properties.playlistPath[1]);
 				let bDone = false;
 				if (isArrayStrings(info)) {
@@ -146,7 +153,7 @@ if (typeof on_notify_data !== 'undefined') {
 } else {var on_notify_data = onNotifyData;}
 
 function onPlaylistsChanged() {
-	const properties = getPropertiesPairs(menu_properties, menu_prefix);
+	const properties = getPropertiesPairs(menu_properties, menu_prefix, 0);
 	if (properties.bPlaylistNameCommands[1]) {
 		const playlistData = {num: plman.PlaylistCount, name: range(0, plman.PlaylistCount - 1, 1).map((idx) => {return plman.GetPlaylistName(idx);})};
 		playlistData.name.forEach((name, index) => {
@@ -383,7 +390,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					sameByQueries = JSON.parse(args.properties['sameByQueries'][1]);
 					sameByQueries.forEach( (queryObj) => {
 						// Add separators
@@ -411,7 +418,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{ // Static menu: user configurable
 						menu.newEntry({menuName, entryText: 'By... (pairs of tags)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
 							// On first execution, must update from property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.sameBy = selArg.args.sameBy = convertStringToObject(args.properties['sameByCustomArg'][1], 'number', ',');
 							// Input
 							let input;
@@ -469,7 +476,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Add entry
 							sameByQueries.push(input);
 							// Save as property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries); // And update property with new value
 							// Presets
 							if (!presets.hasOwnProperty('sameByQueries')) {presets.sameByQueries = [];}
@@ -581,7 +588,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: 'Search library... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					queryFilter = JSON.parse(args.properties['searchQueries'][1]);
 					queryFilter.forEach( (queryObj) => {
 						// Add separators
@@ -608,7 +615,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{ // Static menu: user configurable
 						menu.newEntry({menuName, entryText: 'By... (query)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 							// On first execution, must update from property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = JSON.parse(args.properties['searchCustomArg'][1]).query;
 							// Input
 							let query;
@@ -653,7 +660,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Add entry
 							queryFilter.push(input);
 							// Save as property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.properties['searchQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 							// Presets
 							if (!presets.hasOwnProperty('searchQueries')) {presets.searchQueries = [];}
@@ -726,7 +733,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: 'Dynamic Queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					queryFilter = JSON.parse(args.properties['dynamicQueries'][1]);
 					queryFilter.forEach( (queryObj) => {
 						// Add separators
@@ -753,7 +760,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{ // Static menu: user configurable
 						menu.newEntry({menuName, entryText: 'By... (query)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 							// On first execution, must update from property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = args.properties['dynamicQueriesCustomArg'][1];
 							// Input
 							let query = '';
@@ -801,7 +808,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Add entry
 							queryFilter.push(input);
 							// Save as property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 							// Presets
 							if (!presets.hasOwnProperty('dynamicQueries')) {presets.dynamicQueries = [];}
@@ -895,7 +902,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const entryArg = entryArgs.find((item) => {return item.name === selArg.name;}) || {};
 						let entryText = selArg.name;
 						menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const globQuery = args.properties['forcedQuery'][1];
 							if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
 								args['forcedQuery'] =  globQuery + ' AND ' + args['forcedQuery'];
@@ -907,7 +914,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}
 			function loadMenusCond(menuName, method){
 				menu.newCondEntry({entryText: 'Search similar by Graph\\Dyngenre\\Weight... (cond)', condFunc: (args = {...scriptDefaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					similarBy = JSON.parse(args.properties.similarBy[1]);
 					const entries = similarBy.map((item) => {
 						if (!item.hasOwnProperty('method')) {
@@ -989,7 +996,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Menus
 					function loadMenusCond(method){
 						menu.newCondEntry({entryText: 'Special playlists... (cond)', condFunc: (args = {...scriptDefaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							similarBy = JSON.parse(args.properties.similarBy[1]);
 							const entries = similarBy.filter((item) => {return item.method === method;});
 							loadMenus(specialMenu, entries);
@@ -1005,7 +1012,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const submenu = menu.newMenu('Search by Distance', configMenu);
 						{ // Find genre/styles not on graph
 							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: (args = {...scriptDefaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the pan
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the pan
 								// Skipped values at pre-filter
 								const tagValuesExcluded = new Set(args.properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
 								// Get all tags and their frequency
@@ -1054,9 +1061,31 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
+						{
+							const submenuTwo = menu.newMenu('Tags...', submenu);
+							{	// Menu to configure tags
+								const options = ['genre', 'style', 'mood', 'bpm', 'key', 'composer', 'date', 'customStr', 'customNum'];
+								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+								menu.newEntry({menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED})
+								menu.newEntry({menuName: submenuTwo, entryText: 'sep'})
+								options.forEach((tagName) => {
+									menu.newEntry({menuName: submenuTwo, entryText: capitalize(tagName), func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+										const key = tagName + 'Tag';
+										const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, args.properties[key][1]);
+										if (!input.length) {return;}
+										if (args.properties[tagName + 'Tag'][1] === input) {return;}
+										if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
+										args.properties[key][1] = input;
+										overwriteProperties(args.properties); // Updates panel
+									}});
+								});
+							}
+						}
+						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{ // Create theme
 							menu.newEntry({menuName: submenu, entryText: 'Create theme file with selected track', func: (args = {...scriptDefaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
 								// Tag names
 								const genreTag = args.properties['genreTag'][1].split(',').filter(Boolean);
 								const styleTag = args.properties['styleTag'][1].split(',').filter(Boolean);
@@ -1158,7 +1187,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Remove Duplicates... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						// Update args
 						sortInputDuplic = args.properties.sortInputDuplic[1].split(',');
 						sortInputFilter = args.properties.sortInputFilter[1].split(',');
@@ -1245,7 +1274,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Filter playlists using queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						queryFilter = JSON.parse(args.properties['queryFilter'][1]);
 						queryFilter.forEach( (queryObj) => {
 							if (queryObj.name === 'sep') { // Create separators
@@ -1273,7 +1302,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (query)' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = args.properties['queryFilterCustomArg'][1];
 							let input;
 							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
@@ -1316,7 +1345,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								input = {name: entryName, query};
 							}
 							queryFilter.push(input);
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
 							// Presets
 							if (!presets.hasOwnProperty('queryFilter')) {presets.queryFilter = [];}
@@ -1419,8 +1448,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{name: '75 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -75);}},
 					{name: '100 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -100);}},
 					{name: 'sep'},
-					{name: (args = {...scriptDefaultArgs}) => {return 'Global Pls. Length: ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]);}},
-					{name: (args = {...scriptDefaultArgs}) => {return 'Global pls. Length (end): ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1]);}},
+					{name: (args = {...scriptDefaultArgs}) => {return 'Global Pls. Length: ' + getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]);}},
+					{name: (args = {...scriptDefaultArgs}) => {return 'Global pls. Length (end): ' + getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]);}},
 				];	
 				menu.newEntry({menuName: subMenuName, entryText: 'Set playlist length to desired #:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -1470,7 +1499,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newCondEntry({entryText: 'Send/Go/Close to Playlists...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					if (bProfile) {var profiler = new FbProfiler('Send/Go/Close to Playlists...');}
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					const playlistsNum = plman.PlaylistCount;
 					const playlistsNumNotLocked = playlistCountNoLocked();
 					if (playlistsNum && plman.PlaylistItemCount(plman.ActivePlaylist)) {
@@ -1595,7 +1624,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					});
 					menu.newCondEntry({entryText: 'Sort selection (legacy)... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						// Entry list
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						sortLegacy = JSON.parse(args.properties['sortLegacy'][1]);
 						sortLegacy.forEach( (sortObj) => {
 							// Add separators
@@ -1616,7 +1645,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						{ // Static menu: user configurable
 							menu.newEntry({menuName: subMenuName, entryText: 'By... (expression)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 								// On first execution, must update from property
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 								args.tfo = selArg.tfo = JSON.parse(args.properties['sortLegacyCustomArg'][1]).tfo;
 								// Input
 								let tfo;
@@ -1653,7 +1682,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								// Add entry
 								sortLegacy.push(input);
 								// Save as property
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 								args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy); // And update property with new value
 								// Presets
 								if (!presets.hasOwnProperty('sortLegacy')) {presets.sortLegacy = [];}
@@ -1698,6 +1727,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		{	// Advanced Sort
 			const name = 'Advanced sort...';
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+				// Menus
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({menuName: subMenuName, entryText: 'Sort selection (algorithm):', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -1731,7 +1761,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					} else {
 						let entryText = selArg.name;
-						menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: multipleSelectedFlags});
+						menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {selArg.func(args);}, flags: multipleSelectedFlags});
 					}
 				});
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
@@ -1798,7 +1828,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								if (bProfile) {var profiler = new FbProfiler('Find now playing in');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with now playing track:', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 								const nowPlay = fb.GetNowPlaying();
 								if (!nowPlay) {menu.newEntry({menuName: subMenuName, entryText: 'Playback is stopped (no playing track)', func: null, flags: MF_GRAYED}); return;}
 								const sel = new FbMetadbHandleList(nowPlay);
@@ -1844,7 +1874,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								if (bProfile) {var profiler = new FbProfiler('Find in Playlists');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with same track(s):', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 								const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 								const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
 								if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
@@ -1890,7 +1920,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								if (bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Remove track(s) from selected playlist:', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 								const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 								const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
 								if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
@@ -1941,17 +1971,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED});
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 										args.properties['bFindShowCurrent'][1] = true;
 										overwriteProperties(args.properties); // Updates panel
 									}});
 									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 										args.properties['bFindShowCurrent'][1] = false;
 										overwriteProperties(args.properties); // Updates panel
 									}});
 									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 										return (args.properties['bFindShowCurrent'][1] ? 0 : 1);
 									});
 								}
@@ -1964,17 +1994,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED});
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 										args.properties['bRemoveShowLocked'][1] = true;
 										overwriteProperties(args.properties); // Updates panel
 									}});
 									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 										args.properties['bRemoveShowLocked'][1] = false;
 										overwriteProperties(args.properties); // Updates panel
 									}});
 									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 										return (args.properties['bRemoveShowLocked'][1] ? 0 : 1);
 									});
 								}
@@ -1993,14 +2023,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									optionsIdx[index] = idx; // For later use
 									if (index !== options.length - 1) { // Predefined sizes
 										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 											args.properties['findRemoveSplitSize'][1] = val;
 											overwriteProperties(args.properties); // Updates panel
 										}});
 									} else { // Last one is user configurable
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 											const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', scriptName + ': ' + subMenuName, args.properties['findRemoveSplitSize'][1]));
 											if (args.properties['findRemoveSplitSize'][1] === input) {return;}
 											if (!Number.isSafeInteger(input)) {return;}
@@ -2010,7 +2040,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									}
 								});
 								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+									args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
 									const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
 									return (size !== -1 ? size : options.length - 1);
 								});
@@ -2029,14 +2059,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									optionsIdx[index] = idx; // For later use
 									if (index !== options.length - 1) { // Predefined sizes
 										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 											args.properties['maxSelCount'][1] = val;
 											overwriteProperties(args.properties); // Updates panel
 										}});
 									} else { // Last one is user configurable
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 											const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', scriptName + ': ' + subMenuName, args.properties['maxSelCount'][1]));
 											if (args.properties['maxSelCount'][1] === input) {return;}
 											if (!Number.isSafeInteger(input)) {return;}
@@ -2046,7 +2076,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									}
 								});
 								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel
+									args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
 									const size = options.indexOf(args.properties['maxSelCount'][1]);
 									return (size !== -1 ? size : options.length - 1);
 								});
@@ -2079,7 +2109,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newCondEntry({entryText: 'Send selection to...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					if (bProfile) {var profiler = new FbProfiler('Send selection to...');}
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					const playlistsNum = plman.PlaylistCount;
 					const playlistsNumNotLocked = playlistCountNoLocked();
 					const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -2161,8 +2191,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
 				}, flags: playlistCountFlags});
-				menu.newEntry({menuName: subMenuName, entryText: (args = {...scriptDefaultArgs}) => {return 'Select random ' + getPropertiesPairs(args.properties[0], args.properties[1]()).playlistLength[1] + ' tracks'}, func: (args = {...scriptDefaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				menu.newEntry({menuName: subMenuName, entryText: (args = {...scriptDefaultArgs}) => {return 'Select random ' + getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1] + ' tracks'}, func: (args = {...scriptDefaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
 					const selLength = args.properties.playlistLength[1];
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
@@ -2247,11 +2277,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs,  bUseDic: true}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
@@ -2261,7 +2291,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
 							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, bUseDic: obj.bUseDic}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 								args.properties['tagNamesToCheck'][1] = obj.tag;
 								checkTags(args);
 							}, flags: multipleSelectedFlags});
@@ -2271,11 +2301,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
@@ -2285,7 +2315,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
 							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 								args.properties['tagNamesToCheck'][1] = obj.tag;
 								checkTags(args);
 							}, flags: multipleSelectedFlags});
@@ -2293,7 +2323,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Configure tags to check...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, args.properties['tagNamesToCheck'][1]);
 						if (args.properties['tagNamesToCheck'][1] === input) {return;}
 						if (!input.length) {return;}
@@ -2301,13 +2331,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						overwriteProperties(args.properties); // Updates panel
 					}});
 					menu.newEntry({menuName: subMenuName, entryText: 'Configure excluded tag values...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); //Update properties from the panel
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 						addTagsToExclusionPopup(args);
 					}});
 					{
 						const subMenuSecondName = menu.newMenu('Configure dictionary...', subMenuName);
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, args.properties['tagNamesExcludedDic'][1]);
 							if (args.properties['tagNamesExcludedDic'][1] === input) {return;}
 							if (!input.length) {return;}
@@ -2315,7 +2345,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							overwriteProperties(args.properties); // Updates panel
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Set dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', scriptName + ': ' + name, args.properties['dictName'][1]);
 							if (args.properties['dictName'][1] === input) {return;}
 							if (!input.length) {return;}
@@ -2325,7 +2355,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							overwriteProperties(args.properties); // Updates panel
 						}});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(set to empty to restore default path)', scriptName + ': ' + name, args.properties['dictPath'][1]);
 							if (args.properties['dictPath'][1] === input) {return;}
 							if (!input.length) {input = args.properties['dictPath'][3];}
@@ -2368,7 +2398,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 						// Menus
 						let entryTextFunc = (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							return args.properties['simThreshold'][1];
 						};
 						menu.newEntry({menuName: subMenuName, entryText: 'Replaces dead items with ones in library:', func: null, flags: MF_GRAYED});
@@ -2380,7 +2410,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on selection (' + entryTextFunc() * 100 + '% simil.)'}, func:(args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: args.properties['simThreshold'][1]})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -2388,7 +2418,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: 1})
 						}, flags: playlistCountFlags});
 						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on current playlist (' + entryTextFunc() * 100 + '% simil.)'}, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: args.properties['simThreshold'][1]})
 						}, flags: playlistCountFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -2396,12 +2426,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1, bSimulate: true})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Simulate on selection (' + entryTextFunc() * 100 + '% simil.) (see console)'}, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: args.properties['simThreshold'][1], bSimulate: true})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, args.properties['simThreshold'][1]));
 							if (args.properties['simThreshold'][1] === input) {return;}
 							if (!Number.isFinite(input)) {return;}
@@ -2448,7 +2478,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							if (idx !== -1) {plman.ActivePlaylist = idx;}
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'Import from file (path at properties)', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const path = args.properties.importPlaylistPath[1];
 							const formatMask = JSON.parse(args.properties.importPlaylistMask[1]);
 							importTextPlaylist({path, formatMask})
@@ -2690,7 +2720,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								let bDone = false;
 								let plsMatch = {};
 								if (isPlsMan) {
-									const propertiesPanel =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), 'menu_');
+									const propertiesPanel =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), menu_prefix_panel, 0);
 									const playlistPath = JSON.parse(propertiesPanel.playlistPath[1]); // This is retrieved everytime the menu is called
 									playlistPath.forEach((path) => { // Find first exact match
 										if (bDone) {return;}
@@ -2849,7 +2879,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			});
 			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 				// Entry list
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				pools = JSON.parse(args.properties['pools'][1]);
 				pools.forEach( (poolObj) => {
 					// Add separators
@@ -2884,7 +2914,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				{ // Static menu: user configurable
 					menu.newEntry({menuName, entryText: 'Custom pool...', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
 						// On first execution, must update from property
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						args.tfo = selArg.tfo = JSON.parse(args.properties['poolsCustomArg'][1]).tfo;
 						// Input
 						const input = inputPool();
@@ -2932,7 +2962,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Add entry
 						pools.push(input);
 						// Save as property
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						args.properties['pools'][1] = JSON.stringify(pools); // And update property with new value
 						// Presets
 						if (!presets.hasOwnProperty('pools')) {presets.pools = [];}
@@ -3041,7 +3071,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			menu.newCondEntry({entryText: 'Macros', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				let propMacros = JSON.parse(args.properties['macros'][1]);
 				if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
 				// List
@@ -3062,7 +3092,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'Start recording a macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					const macro = initMacro(menu);
 					if (macro.name === 'sep') { // Just add a separator
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						saveMacro();
 						args.properties['macros'][1] = JSON.stringify(macros);
 						// Presets
@@ -3073,7 +3103,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 				}});
 				menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					const macro = saveMacro();
 					args.properties['macros'][1] = JSON.stringify(macros);
 					// Presets
@@ -3276,7 +3306,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: name + ' (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 						// Entry list
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						mainMenuSMP = JSON.parse(args.properties['mainMenuSMP'][1]);
 						mainMenuSMP.forEach( (entry, index) => {
 							if (!entry) {return;}
@@ -3449,7 +3479,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'Switch event listener:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					if (!args.properties.bPlaylistNameCommands[1]) {
 						if ((isCompatible('1.4.0') ? utils.IsFile(readmes[menuName + '\\' + name]) : utils.FileTest(readmes[menuName + '\\' + name], 'e'))) {
 							const readme = utils.ReadTextFile(readmes[menuName + '\\' + name], 65001);
@@ -3462,7 +3492,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					args.properties.bPlaylistNameCommands[1] = !args.properties.bPlaylistNameCommands[1];
 					overwriteProperties(args.properties); // Updates panel
 				}});
-				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1]()).bPlaylistNameCommands[1];}); 
+				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1](), 0).bPlaylistNameCommands[1];}); 
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
@@ -3487,7 +3517,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: name + ' (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					scriptIncluded = JSON.parse(args.properties['scriptIncluded'][1]);
 					scriptIncluded.forEach( (scrObj) => {
 						// Add separators
@@ -3525,7 +3555,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Add entry
 						scriptIncluded.push(input);
 						// Save as property
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded); // And update property with new value
 						// Presets
 						if (!presets.hasOwnProperty('scriptIncluded')) {presets.scriptIncluded = [];}
@@ -3580,7 +3610,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		{	// Menu to configure properties: playlistLength
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Set Global Playlist Length... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', scriptName + ': ' + configMenu, args.properties['playlistLength'][1]));
 				if (args.properties['playlistLength'][1] === input) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
@@ -3596,7 +3626,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'Switch forced query functionality:', func: null, flags: MF_GRAYED})
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				menu.newCondEntry({entryText: 'forcedQueryMenusEnabled', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					forcedQueryMenusEnabled = {...forcedQueryMenusEnabled, ...JSON.parse(args.properties['forcedQueryMenusEnabled'][1])}; // Merge with properties
 					overwriteProperties({forcedQueryMenusEnabled: args.properties['forcedQueryMenusEnabled']}); // Updates panel
 					Object.keys(forcedQueryMenusEnabled).forEach((key) => {
@@ -3620,6 +3650,28 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}});
 			}
 		}
+		{
+			const subMenuName = menu.newMenu('Tag remapping...', configMenu);
+			{	// Menu to configure properties: tags
+				const options = ['key', 'styleGenre'];
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				menu.newEntry({menuName: subMenuName, entryText: 'Set the tags used by tools:', func: null, flags: MF_GRAYED})
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+				options.forEach((tagName) => {
+					menu.newEntry({menuName: subMenuName, entryText: capitalize(tagName), func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu)
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+						const key = tagName + 'Tag';
+						const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, args.properties[key][1]);
+						if (!input.length) {return;}
+						if (args.properties[tagName + 'Tag'][1] === input) {return;}
+						defaultArgs[key] = input;
+						args.properties[key][1] = input;
+						overwriteProperties(args.properties); // Updates panel
+					}});
+				});
+			}
+		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Shortcuts
 			const subMenuName = menu.newMenu('Global Shortcuts', configMenu);
@@ -3629,7 +3681,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				readmes[configMenu + '\\Global Shortcuts'] = folders.xxx + 'helpers\\readme\\global_shortcuts.txt';
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Global shortcuts', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					if (!args.properties.bShortcuts[1]) {
 						const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts can be configured at:\n' + shortcutsPath + '\n\nAre you sure you want to enable it?', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 						if (answer !== popup.yes) {return;}
@@ -3643,16 +3695,54 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
 					}
 				}});
-				menu.newCheckMenu(subMenuName, 'Enabled Global shortcuts', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1]()).bShortcuts[1];});
+				menu.newCheckMenu(subMenuName, 'Enabled Global shortcuts', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1](), 0).bShortcuts[1];});
 			}
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			menu.newEntry({menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => {_explorer(shortcutsPath);}});
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
+		{	// Logging
+			const subMenuName = menu.newMenu('Logging', configMenu);
+			menu.newEntry({menuName: subMenuName, entryText: 'Switch logging functionality:', func: null, flags: MF_GRAYED})
+			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+			{	// bDebug
+				const scriptDefaultArgs = {properties: [{...menu_panelProperties}, menu_prefix_panel]};
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled extended console debug', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1], 0); // Update properties from the panel
+					args.properties.bDebug[1] = !args.properties.bDebug[1];
+					defaultArgs.bDebug = args.properties.bDebug[1];
+					overwriteProperties(args.properties); // Updates panel
+				}});
+				menu.newCheckMenu(subMenuName, 'Enabled extended console debug', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1], 0).bDebug[1];});
+				// bProfile
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled profiler console log', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1], 0); // Update properties from the panel
+					args.properties.bProfile[1] = !args.properties.bProfile[1];
+					defaultArgs.bProfile = args.properties.bProfile[1];
+					overwriteProperties(args.properties); // Updates panel
+				}});
+				menu.newCheckMenu(subMenuName, 'Enabled profiler console log', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1], 0).bProfile[1];});
+			}
+		}
+		{	// UI
+			const subMenuName = menu.newMenu('UI', configMenu);
+			menu.newEntry({menuName: subMenuName, entryText: 'Switch UI functionality:', func: null, flags: MF_GRAYED})
+			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+			{	// bTooltipInfo
+				const scriptDefaultArgs = {properties: [{...menu_panelProperties}, menu_prefix_panel]};
+				menu.newEntry({menuName: subMenuName, entryText: 'Show shortcuts on tooltip', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1], 0); // Update properties from the panel
+					args.properties.bTooltipInfo[1] = !args.properties.bTooltipInfo[1];
+					overwriteProperties(args.properties); // Updates panel
+				}});
+				menu.newCheckMenu(subMenuName, 'Show shortcuts on tooltip', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1], 0).bTooltipInfo[1];});
+			}
+		}
+		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Import presets
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				let file;
 				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
 				catch (e) {return;}
@@ -3690,7 +3780,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		{	// Export all presets
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
 					const path = folders.data + 'playlistTools_presets.json'
@@ -3707,7 +3797,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		{	// Reset all config
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				const path = folders.data + 'playlistTools_presets.json';
 				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
@@ -3729,7 +3819,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					overwriteProperties(args.properties); // Updates panel
 					// For the panel (only along buttons)
 					if (typeof buttons !== 'undefined' && Object.keys(menu_properties).length) {
-						let panelProperties = getPropertiesPairs(menu_panelProperties, 'menu_');
+						let panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
 						for (let key in args.panelProperties) {
 							panelProperties[key][1] = menu_panelProperties[key][1];
 						}
@@ -3792,7 +3882,7 @@ const menuAlt = new _menu();
 	menuAlt.newEntry({entryText: 'sep'});
 	// All entries
 	menuAlt.newEntry({entryText: 'Restore all', func: () => {
-		const panelProperties = getPropertiesPairs(menu_panelProperties, 'menu_');
+		const panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
 		menuList.forEach( (menuEntry) => {
 			if (!allowed.has(menuEntry.subMenuFrom)) {return;}
 			const menuName = menuEntry.menuName
@@ -3811,7 +3901,7 @@ const menuAlt = new _menu();
 		const entryName = menuEntry.subMenuFrom === menu.getMainMenuName() ? menuName : '--- ' + menuName;
 		if (!menusEnabled.hasOwnProperty(menuName)) {menusEnabled[menuName] = true;}
 		menuAlt.newEntry({entryText: entryName, func: () => {
-			const panelProperties = getPropertiesPairs(menu_panelProperties, 'menu_');
+			const panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
 			menusEnabled[menuName] = !menusEnabled[menuName];
 			panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
 			overwriteProperties(panelProperties); // Updates panel
@@ -3835,11 +3925,11 @@ function loadProperties() {
 		if (Object.keys(menu_panelProperties).length) {
 			Object.entries(menu_panelProperties).forEach(([key, value]) => {menu_properties[key] = value;});
 		}
-		setProperties(menu_properties, menu_prefix);
-		updateMenuProperties(getPropertiesPairs(menu_properties, menu_prefix));
+		setProperties(menu_properties, menu_prefix, 0);
+		updateMenuProperties(getPropertiesPairs(menu_properties, menu_prefix, 0));
 	} else { // With buttons, set these properties only once per panel
 		if (Object.keys(menu_panelProperties).length) {
-			setProperties(menu_panelProperties, 'menu_');
+			setProperties(menu_panelProperties, menu_prefix_panel, 0);
 		}
 	}
 }
@@ -3851,7 +3941,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	try {fb.GetQueryItems(new FbMetadbHandleList(), propObject['forcedQuery'][1]);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + propObject['forcedQuery'], scriptName);}
 	// Info Popup
-	let panelPropObject = (typeof buttons !== 'undefined') ? getPropertiesPairs(menu_panelProperties, 'menu_') : propObject;
+	let panelPropObject = (typeof buttons !== 'undefined') ? getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0) : propObject;
 	if (!panelPropObject['firstPopup'][1]) {
 		panelPropObject['firstPopup'][1] = true;
 		overwriteProperties(panelPropObject); // Updates panel
@@ -3865,12 +3955,16 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		});
 	}
 	// And update
+	Object.entries(panelPropObject).forEach(([key, value]) => {
+		if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = value[1];}
+	});
 	Object.entries(propObject).forEach(([key, value]) => {
 		if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = value[1];}
 		// if (menu_properties.hasOwnProperty(key)) {menu_properties[key] = value;}
 		// if (menu_panelProperties.hasOwnProperty(key)) {menu_panelProperties[key] = value;}
 			// Specific
 		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
+		if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(defaultArgs[key]);}
 	});
 	updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});
 	// Presets
@@ -3937,7 +4031,7 @@ function menuTooltip() {
 		info = 'Playlist:		' + plman.GetPlaylistName(plman.ActivePlaylist) + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);
 	}
-	if (getPropertiesPairs(menu_panelProperties, 'menu_').bTooltipInfo[1]) {
+	if (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]) {
 		info += '\n-----------------------------------------------------'
 		info += '\n(L. Click for tools menu)\n(Shift + L. Click to switch enabled menus)\n(Ctrl + L. Click to copy menu names to clipboard)';
 	}
@@ -3948,7 +4042,7 @@ function menuTooltip() {
 	Shortcuts
 */
 menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: (args = {properties: [{...menu_properties}, () => {return menu_prefix;}]}) => {
-	args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+	args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 	if (args.properties.bShortcuts[1]) {
 		const entryList = menu.getEntries();
 		Object.keys(shortcuts).forEach((key) => {

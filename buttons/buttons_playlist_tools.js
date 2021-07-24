@@ -29,17 +29,17 @@ try {
 	include('helpers\\helpers_xxx_properties.js');
 	include('helpers\\helpers_xxx_clipboard.js');
 }
-var prefix = 'menu_';
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+var prefix = menu_prefix;
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before "_"
 menu_prefix = prefix; // update var for internal use of playlist_tools_menu
 
 var newButtonsProperties = {
 	...menu_properties,
 };
 
-setProperties(newButtonsProperties, prefix); // This sets all the panel properties at once
-updateMenuProperties(getPropertiesPairs(newButtonsProperties, prefix)); // Update manually the default args
-buttonsBar.list.push({...getPropertiesPairs(newButtonsProperties, prefix), ...getPropertiesPairs(menu_panelProperties, 'menu_')});
+setProperties(newButtonsProperties, prefix, 0); // This sets all the panel properties at once
+updateMenuProperties(getPropertiesPairs(newButtonsProperties, prefix, 0)); // Update manually the default args
+buttonsBar.list.push({...getPropertiesPairs(newButtonsProperties, prefix, 0), ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
 
 var newButtons = {
 	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Playlist Tools", function (mask) {

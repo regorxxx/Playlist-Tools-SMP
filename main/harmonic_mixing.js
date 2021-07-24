@@ -64,7 +64,7 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebu
 		const index = nextIndex;
 		if (!keyCache.has(index)) {
 			const keyCurrent = keyHandle[index][0];
-			camelotKeyCurrent = keyCurrent.length ? camelotWheel.getKeyNotationObject(keyCurrent) : null;
+			camelotKeyCurrent = keyCurrent.length ? camelotWheel.getKeyNotationObjectCamelot(keyCurrent) : null;
 			if (camelotKeyCurrent) {keyCache.set(index, camelotKeyCurrent);}
 		} else {camelotKeyCurrent = keyCache.get(index);}
 		// Delete from check selection
@@ -77,7 +77,7 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebu
 			for (const indexNew of toCheck) {
 				if (!keyCache.has(indexNew)) {
 					const keyNew = keyHandle[indexNew][0];
-					camelotKeyNew = (keyNew.length) ? camelotWheel.getKeyNotationObject(keyNew) : null;
+					camelotKeyNew = keyNew.length ? camelotWheel.getKeyNotationObjectCamelot(keyNew) : null;
 					if (camelotKeyNew) {keyCache.set(indexNew, camelotKeyNew);}
 					else {toCheck.delete(indexNew);}
 				} else {camelotKeyNew = keyCache.get(indexNew);}
@@ -116,6 +116,6 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebu
 		console.log('Pattern applied:');
 		console.log(patternDebug); // Always has one item less thankey arrays
 	}
-	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag.') : null;
+	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag (or ussing not recognized notation).') : null;
 	return {selectedHandlesArray, error};
 }

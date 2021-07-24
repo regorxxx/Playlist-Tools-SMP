@@ -23,7 +23,7 @@ var newButtons = {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			configMenu.newCondEntry({entryText: 'Pools', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 				let propPools = JSON.parse(args.properties['pools'][1]);
 				configMenu.newEntry({entryText: 'Playlist creation:', func: null, flags: MF_GRAYED});
 				configMenu.newEntry({entryText: 'sep'});

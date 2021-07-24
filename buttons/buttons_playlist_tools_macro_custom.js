@@ -35,7 +35,7 @@ var newButtons = {
 				const configMenu = new _menu();
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				configMenu.newCondEntry({entryText: 'Macros', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1]()); // Update properties from the panel. Note () call on second arg
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					let propMacros = JSON.parse(args.properties['macros'][1]);
 					if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
 					configMenu.newEntry({entryText: 'Execute macros:', func: null, flags: MF_GRAYED});
