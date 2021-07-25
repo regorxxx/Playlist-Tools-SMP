@@ -3038,7 +3038,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					'Advanced sort...\\Incremental genre/styles (DynGenre)',
 					'Advanced sort...\\Incremental key (Camelot Wheel)',
 					'Scatter by tags\\Scatter acoustic tracks',
-					'Pools\\Top tracks mix'
+					'Playlist Revive\\Find dead items in all playlists',
+					'Import track list\\Import from file (path at properties)',
+					'Pools\\Top tracks mix',
+					'Macr0s\\Report library tags errors',
+					'Search by Distance\\Find genres/styles not on Graph',
+					'Search by Distance\\Debug Graph (check console)'
 				]},
 				{name: 'Test Tools (with input)', entry: [
 					'Top rated Tracks from...\\From year...',
@@ -3050,6 +3055,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					'Select...\\Select All',
 					'Sort...\\By... (expression)',
 					'Playlist manipulation\\Find or create playlist...',
+					'Import track list\\Import from file \\ url...',
 					'Pools\\Custom pool...'
 				]},
 				{name: 'sep'},
