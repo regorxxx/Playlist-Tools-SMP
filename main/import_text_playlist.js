@@ -46,7 +46,7 @@ function importTextPlaylist({path = folders.data + 'playlistImport.txt', formatM
 
 function createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive) {
 	let {handlePlaylist, notFound} = getHandlesFromText(text, formatMask, bSkipLive);
-	if (notFound) {
+	if (notFound && notFound.length) {
 		const report = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '')+ 'Line ' + line.idx + '-> ' + Object.keys(line.tags).map((key) => {return capitalize(key) + ': ' + line.tags[key]}).join(', ');}, '');
 		fb.ShowPopupMessage(report, 'Tracks not found')
 	}
@@ -92,6 +92,8 @@ function extractTags(text, formatMask) {
 								breakPoint.push(nextIdx + mask.length);
 							}
 						}
+					} else if (index === 0) { // Or fist value is a tag, so extract from start
+						breakPoint.push(0);
 					} else if (index === maskLength - 1) { // Or last value is a tag, so extract until the end
 						breakPoint.push(line.length + 1);
 					}
