@@ -2463,19 +2463,22 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-							menu.newEntry({menuName: subMenuName, entryText: 'Import from file \\ url...', func: () => {
+							menu.newEntry({menuName: subMenuName, entryText: 'Import from file \\ url...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							let path;
 							try {path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true);}
 							catch (e) {return;}
 							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {console.log('File does not exist.'); return ;}
 							let formatMask;
-							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks:\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\nThe default value matches something like:\n1. Respect - Aretha Franklin', scriptName + ': ' + name, JSON.stringify(['. ', '%title%', ' - ', '%artist%']), true);}
+							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%title%\', \' - \', \'%artist%\'] matches something like:\n1. Respect - Aretha Franklin', scriptName + ': ' + name, args.properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							try {formatMask = JSON.parse(formatMask);}
-							catch (e) {return;}
+							catch (e) {console.log('Playlist Tools: Invalid format mask'); return;}
 							if (!formatMask) {return;}
 							const idx = importTextPlaylist({path, formatMask})
 							if (idx !== -1) {plman.ActivePlaylist = idx;}
+							args.properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
+							overwriteProperties(args.properties); // Updates panel							
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'Import from file (path at properties)', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
