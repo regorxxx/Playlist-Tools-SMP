@@ -71,12 +71,14 @@ function playlistRevive({
 		let alternativesObj = []; // {idx: , simil: , bExact: }
 		if (isCompatible('1.4.0') ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, "e")) {return;}
 		const info = handle.GetFileInfo();
+		if (!info) {return;}
 		let numTags = 0;
 		for (let i = 0; i < info.MetaCount; i++) {numTags += info.MetaValueCount(i);}
 		let bExact = false; // For exact matching: title, size and length
 		libraryItemsArr.forEach( (handleLibr, indexLibr) => {
 			if (bExact) {return;} // No need to continue then
 			const infoLibr = handleLibr.GetFileInfo();
+			if (!infoLibr) {return;}
 			let count = 0;
 			const md5Idx = info.InfoFind('md5'), md5LibrIdx = infoLibr.InfoFind('md5'); // With same MD5 info, it's an exact match
 			if (md5Idx !== -1 && md5LibrIdx !== -1 && info.InfoValue(md5Idx) === infoLibr.InfoValue(md5LibrIdx)) {count = numTags; bExact = true;}
