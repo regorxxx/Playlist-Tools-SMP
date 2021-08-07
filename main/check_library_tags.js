@@ -265,7 +265,7 @@ function checkTags({
 			});
 		});
 	}
-	// Report popup
+	// Report popups
 	// First part - Tags errors
 	let textA =	'List of values with lowest frequency of apparition.\n' +
 				'Some of them may be misspelled (1) or misplaced (2).\n' +
@@ -316,8 +316,8 @@ function checkTags({
 	rightTagsText = '(1) Values without problems identified:\n' + rightTagsText;
 	reportTagsText = '(2) Values with problems reported:\n' + reportTagsText;
 	textB += rightTagsText + '\n\n' + reportTagsText;
-	textB += '------------------------------------------------------\n';
-	textB += '------------------------------------------------------\n';
+	// textB += '------------------------------------------------------\n';
+	// textB += '------------------------------------------------------\n';
 	// Third part - Queries to find the tracks and tips
 	let textC =	'Queries needed to find the tracks with errors.\n' +
 				'You may use them in search or facets panels.\n\n';
@@ -350,9 +350,15 @@ function checkTags({
 												'Those tags can be sanitized just saving the tags again\n' +
 												'without any changes, select all and force saving (ctrl+s).';
 	tipsText = 'Other tips:\n' + tipsText;
-	textC += queryText + '\n\n' + tipsText + '\n\n';
-	// Popup with all texts
-	fb.ShowPopupMessage(textA + textB + textC, popupTitle);
+	textC += queryText + '\n\n';
+	textC += '------------------------------------------------------\n';
+	textC += '------------------------------------------------------\n';
+	textC += tipsText;
+	textA += tipsText;
+	// Popups with all texts
+	fb.ShowPopupMessage(textC, popupTitle + ': queries');
+	fb.ShowPopupMessage(textB, popupTitle + ': tag pairs and exclussions');
+	fb.ShowPopupMessage(textA, popupTitle + ': possible errors');
 	// Set verified tags known to be right Popup
 	if (properties['bAskForConfigTags'][1]) {
 		let currentTags = [];

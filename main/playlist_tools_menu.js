@@ -2169,6 +2169,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistSelection(plman.ActivePlaylist, range(start, end, 1), true);
 				}, flags: playlistCountFlags});
+				menu.newEntry({menuName: subMenuName, entryText: 'Invert selection', func: () => {
+					const ap = plman.ActivePlaylist;
+					const toSelect = [];
+					range(0, plman.PlaylistItemCount(ap) - 1, 1).forEach((idx) => {if (!plman.IsPlaylistItemSelected(ap, idx)) {toSelect.push(idx);}});
+					plman.ClearPlaylistSelection(plman.ActivePlaylist);
+					plman.SetPlaylistSelection(plman.ActivePlaylist, toSelect, true);
+				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'Clear selection', func: () => {plman.ClearPlaylistSelection(plman.ActivePlaylist);}, flags: selectedFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select first track', func: () => {

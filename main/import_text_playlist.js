@@ -48,7 +48,9 @@ function createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive) {
 	let {handlePlaylist, notFound} = getHandlesFromText(text, formatMask, bSkipLive);
 	if (notFound && notFound.length) {
 		const report = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '')+ 'Line ' + line.idx + '-> ' + Object.keys(line.tags).map((key) => {return capitalize(key) + ': ' + line.tags[key]}).join(', ');}, '');
-		fb.ShowPopupMessage(report, 'Tracks not found')
+		const reportPls = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '') + Object.keys(line.tags).map((key) => {return line.tags[key]}).join(' - ');}, '');
+		fb.ShowPopupMessage(reportPls, 'Not found list');
+		fb.ShowPopupMessage(report, 'Tracks not found at source');
 	}
 	if (handlePlaylist) {
 		if (filterMask && filterMask.length) {handlePlaylist = do_remove_duplicatesV3(handlePlaylist, null, filterMask.filter((n) => n), 0);}
