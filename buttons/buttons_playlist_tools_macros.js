@@ -17,6 +17,8 @@ try { //May be loaded along other buttons
 	console.log('Playlist Tools Macros Button loaded.');
 }
 
+buttonsBar.list.push({});
+
 var newButtons = {
 	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Macros", function (mask) {
 		if (isPlaylistToolsLoaded()) {

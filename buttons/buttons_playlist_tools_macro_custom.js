@@ -25,8 +25,8 @@ var newButtonsProperties = { //You can simply add new properties here
 	macro: 		['Macro entry', ''],
 };
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
-buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve
+buttonsBar.list.push(newButtonsProperties);
 
 var newButtons = {
 	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, newButtonsProperties.customName[1], function (mask) {

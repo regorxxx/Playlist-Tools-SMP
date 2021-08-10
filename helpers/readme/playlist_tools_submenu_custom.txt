@@ -1,0 +1,2 @@
+﻿Shortcut button for Playlist Tools' submenus. Instead of having all on the same button, they can be split
+into multiple buttons similarly to foobar2000 main menus (File, Edit, ....).

@@ -18,6 +18,7 @@ try { //May be loaded along other buttons
 	console.log('Sace Tags Buttons loaded.');
 }
 
+buttonsBar.list.push({});
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
 // if (buttonOrientation === 'x') {buttonCoordinates.w += 0;}
 // if (buttonOrientation === 'y') {buttonCoordinates.h += 0;}

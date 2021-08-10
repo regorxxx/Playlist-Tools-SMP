@@ -5,6 +5,7 @@
 	"buttons_playlist_tools_macro_custom.js": "macro_custom.txt",
 	"buttons_playlist_tools_macros.js": "macros.txt",
 	"buttons_playlist_tools_pool.js": "pools.txt",
+	"buttons_playlist_tools_submenu_custom.js": "playlist_tools_submenu_custom.txt",
 	"buttons_remove_duplicates.js": "remove_duplicates.txt",
 	"buttons_save_tags.js": "save_tags.txt",
 	"buttons_search_bydistance.js": "search_bydistance.txt",
