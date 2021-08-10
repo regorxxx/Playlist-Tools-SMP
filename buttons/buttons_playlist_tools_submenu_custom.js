@@ -86,7 +86,7 @@ var newButtons = {
 		return (isPlaylistToolsLoaded() ? (
 			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu:\n(L. Click to configure sub-menu)'
 			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.');
-	}, prefix, newButtonsProperties, chars.wrench),
+	}, null, newButtonsProperties, chars.wrench),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
