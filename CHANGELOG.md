@@ -2,8 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0](#300---2021-06-20)
-- [2.1.0](#210---2021-06-20)
+- [3.0.0](#300---2021-08-11)
 - [2.0.2](#202---2021-06-20)
 - [2.0.1](#201---2021-06-17)
 - [2.0.0](#200---2021-06-15)
@@ -275,8 +274,7 @@
 ### Fixed
 
 [Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0...HEAD
-[3.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.1.0...v3.0.0
-[2.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v2.1.0
+[3.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v3.0.0
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v2.0.0
