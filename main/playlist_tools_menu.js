@@ -2158,6 +2158,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		{	// Move
 			const name = 'Move selection to...';
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+				readmes[menuName + '\\' + 'Move, expand & jump'] = folders.xxx + 'helpers\\readme\\selection_expand_jump.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({menuName: subMenuName, entryText: 'On current playlist:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -2303,11 +2304,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{name: 'By Mood', args: ['%MOOD%']},
 					{name: 'sep'},
 					{name: 'By...(tags)', args: () => {
-						let input = '%ARTIST%,%ALBUM%';
-						try {input = utils.InputBox(window.ID, 'Enter TF expression:\n(multiple tags may be separated by comma)', scriptName + ': ' + name, input, true);}
+						let input = '%ARTIST%;%ALBUM%';
+						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
 						catch (e) {return;}
 						if (!input.length) {return [];}
-						input = input.split(',');
+						input = input.split(';');
 						if (!input.length) {return [];}
 						return input;
 					}},
@@ -2354,15 +2355,15 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{name: 'By Date', args: ['%DATE%']},
 					{name: 'By Genre', args: ['%GENRE%']},
 					{name: 'By Style', args: ['%STYLE%']},
-					{name: 'By Key', args: ['%KEY%']},
+					{name: 'By Key', args: [defaultArgs.keyTag]}, // Uses remapped tag. Probably missing %, fixed later.
 					{name: 'By Mood', args: ['%MOOD%']},
 					{name: 'sep'},
 					{name: 'By...(tags)', args: () => {
-						let input = '%ARTIST%,%ALBUM%';
-						try {input = utils.InputBox(window.ID, 'Enter TF expression:\n(multiple tags may be separated by comma)', scriptName + ': ' + name, input, true);}
+						let input = '%ARTIST%;%ALBUM%';
+						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
 						catch (e) {return;}
 						if (!input.length) {return [];}
-						input = input.split(',');
+						input = input.split(';');
 						if (!input.length) {return [];}
 						return input;
 					}},
@@ -2385,6 +2386,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								let bDone = false;
 								(_isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
 									if (bDone) {return;}
+									if (tf.indexOf('$') === -1 && tf.indexOf('%') === -1) {tf = '%' + tf + '%';} // Add % to tag names if missing
 									const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
 									for (let i = subMenu === 'Next' ? focusIdx + 1 : focusIdx - 1; i >= 0 && i <= count; subMenu === 'Next' ? i++ : i--) {
 										if (plman.IsPlaylistItemSelected(ap, i)) {continue;}
@@ -4059,9 +4061,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 */
 const menuAlt = new _menu();
 {
-	const menuList = menu.getMenus().slice(1);
-	menuDisabled.forEach( (obj) => {menuList.splice(obj.index, 0, obj);});
 	const allowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration']);
+	const menuList = menu.getMenus().slice(1).filter((_) => {return allowed.has(_.subMenuFrom);});
+	menuDisabled.forEach( (obj) => {menuList.splice(obj.index, 0, obj);});
 	// Header
 	menuAlt.newEntry({entryText: 'Switch menus functionality:', func: null, flags: MF_GRAYED});
 	menuAlt.newEntry({entryText: 'sep'});
@@ -4069,7 +4071,6 @@ const menuAlt = new _menu();
 	menuAlt.newEntry({entryText: 'Restore all', func: () => {
 		const panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
 		menuList.forEach( (menuEntry) => {
-			if (!allowed.has(menuEntry.subMenuFrom)) {return;}
 			const menuName = menuEntry.menuName
 			menusEnabled[menuName] = true;
 		});
@@ -4080,10 +4081,25 @@ const menuAlt = new _menu();
 	}});
 	menuAlt.newEntry({entryText: 'sep'});
 	// Individual entries
-	menuList.forEach( (menuEntry) => {
-		if (!allowed.has(menuEntry.subMenuFrom)) {return;}
+	let i = 0;
+	let bLastSep = false;
+	const menuListLength = menuList.length;
+	const mainMenuName = menu.getMainMenuName();
+	menuList.forEach( (menuEntry, idx) => {
 		const menuName = menuEntry.menuName
-		const entryName = menuEntry.subMenuFrom === menu.getMainMenuName() ? menuName : '--- ' + menuName;
+		const entryName = menuEntry.subMenuFrom === mainMenuName ? menuName : '--- ' + menuName;
+		let flags = MF_STRING;
+		let bSep = false;
+		if (menuEntry.subMenuFrom === mainMenuName) {
+			if (idx && i >= 16) {i = 0; flags = MF_MENUBARBREAK;}
+			if (!bLastSep && i && menuList[idx + 1].subMenuFrom !== mainMenuName) {bLastSep = true; menuAlt.newEntry({entryText: 'sep'});}
+			else {bLastSep = false;}
+			i++;
+		} else {
+			i++;
+			if (!bLastSep && menuList[idx + 1].subMenuFrom === mainMenuName && i < 16) {bLastSep = true; bSep = true;}
+			else {bLastSep = false;}
+		}
 		if (!menusEnabled.hasOwnProperty(menuName)) {menusEnabled[menuName] = true;}
 		menuAlt.newEntry({entryText: entryName, func: () => {
 			const panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
@@ -4091,8 +4107,9 @@ const menuAlt = new _menu();
 			panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
 			overwriteProperties(panelProperties); // Updates panel
 			window.Reload();
-		}});
+		}, flags});
 		menuAlt.newCheckMenu(menuAlt.getMainMenuName(), entryName, void(0), () => {return menusEnabled[menuName];});
+		if (bSep) {menuAlt.newEntry({entryText: 'sep'});}
 	});
 	menu_panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
 }

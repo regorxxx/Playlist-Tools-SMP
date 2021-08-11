@@ -1,2 +1,8 @@
 ﻿Shortcut for Playlist Tools' sub-menus, splits sub-menus into 
 multiple buttons similarly to foobar main menus (File, Edit, ....).
+
+Note these sub-menu shortcuts buttons are still subject to any
+modification on the main one. i.e. they use the same config, presets,
+properties, etc. This has one unexpected consequence, if a tool is
+disabled in the main one (via Shift + L.click) it will also be disabled
+in the shortcut button! Use that to further configure the entries you need.
