@@ -9,7 +9,7 @@
 		
 	NOTE: menus are enclosed within {} scopes, so they can be easily rearranged, added or removed
 	without affecting the other menus. Only exception to this rule are the menus named 'specialMenu'
-	and 'configMenu', sub-menu collecting different entries from multiple scripts; They can be moved the 
+	and 'configMenu', sub-menus collecting different entries from multiple scripts; They can be moved the 
 	same than the others but obviously removing other menus/scripts affect these ones too.
 	
 	NOTE2: menuTooltip() can be called when used along buttons or integrated with other scripts to
