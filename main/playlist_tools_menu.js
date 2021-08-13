@@ -1041,7 +1041,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Graph debug
 							menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
 								if (bProfile) {var profiler = new FbProfiler('graphDebug');}
-								graphDebug(all_music_graph);
+								graphDebug(all_music_graph, true); // Show popup on pass
 								if (bProfile) {profiler.Print();}
 							}});
 							// Graph test

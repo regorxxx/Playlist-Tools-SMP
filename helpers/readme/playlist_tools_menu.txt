@@ -2,7 +2,7 @@
 
 The menu is created dynamically according to the components and scripts installed; therefore if something is missing, the associated entry is not drawed (you can use that feature to remove things you would never use). Some menu entries may also be manually deleted or created according to user set variables, allowing even further customization. Just follow the instrunctions on the popups.
 
-Menu entries may be greyed (disabled) if some conditions are not met (i.e. sorting would be disabled when selecting only 1 track), these are related to some obvious requisites:
+Menu entries may be grayed (disabled) if some conditions are not met (i.e. sorting would be disabled when selecting only 1 track), these are related to some obvious requisites:
 -Scripts requiring multiple selected items (>3): those applied to a list of tracks.
 -Scripts requiring at least 1 item on the active playlist: those applied on the entire playlist.
 -Scripts requiring a selected/focused item: those applied on focused item.
