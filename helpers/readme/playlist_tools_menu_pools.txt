@@ -7,12 +7,12 @@ Usage:
 	- Set sources:
 		- Playlists matching the source names must exist to be used (*)
 		- As source name, _LIBRARY_#, where # is a number, may be used.
-		- As source name, SEARCHBY$_#, where $ is GRAPH\WEIGHT\DYNGENRE, may be used.
+		- As source name, SEARCHBY$_#, where $ is GRAPH\WEIGHT\DYNGENRE, may be used. (**)
 	- Set other parameters:
 		- The query will be applied to the current source to get eligible tracks.
 			- Empty query will try to apply global forced query if enabled, otherwise is 'ALL'.
 			- 'ALL' will never apply forced query, even if enabled.
-			- Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (**)
+			- Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (***)
 		- Duplicates are removed after query (by artist|title|date).
 		- Any track already selected for final playlist in previous steps is removed.
 		- Finally tracks are chosen using the picking method set.
@@ -31,7 +31,9 @@ This new source may only be used by creating a preset pool with a text editor,
 since it requires to set so many arguments that is not reasonable to do it via popups.
 'recipe' and 'theme' keys must be set when using this type of source (a recipe may force a theme too).
 Both may point to a filename (i.e. another preset like themes) or contain the arguments object.
-Examples are offered in the presets folder for all use-cases. See readme for recipes\themes.
+Examples can be found in the presets folder for all use-cases. 
+Also see 'Search similar by... (recipes\themes)'.
 
 (***) For a selected rock track, 'GENRE IS #GENRE#' would translate into 'GENRE IS Rock'.
-Thus using the currently selected track to define the pool behavior. See 'Dynamic Query'.
+Thus using the currently selected track to define the pool behavior. 
+Also see 'Dynamic Queries' readme.

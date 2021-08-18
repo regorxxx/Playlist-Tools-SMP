@@ -7,4 +7,4 @@ Empty query will try to apply global forced query if enabled, otherwise gets rep
 Dynamic variables are allowed too, enclosed on '#':
 #ARTIST#, #$year(%date%)#, ...
 These placeholders will be replaced with focused item\'s result on execution.
-See Dynamic Query readme for more info.
+Also see 'Dynamic Queries' readme.

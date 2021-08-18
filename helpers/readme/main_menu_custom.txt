@@ -50,5 +50,5 @@ Such template already exists and it's named ajquery-SMP (ajquery-xxx).
 A phone App like 'HTTP Request Shortcuts' can also automatize all this process if using an App, which obviously can not be user-set to add custom buttons. Otherwise,
 http urls must be sent via browser (*).
 
-(*) Another approach would be sending commands creating playlists with specific command names. Specially useful for phone Apps. See Playlist Names Commands readme.
+(*) Another approach would be sending commands creating playlists with specific command names. Specially useful for phone Apps. See 'Playlist Names Commands' readme.
 (**) Menu names may be easily retrieved by simulating menu execution with Ctrl + L. Click, which copies entry names to clipboard.

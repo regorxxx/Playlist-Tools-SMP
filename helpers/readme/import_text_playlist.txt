@@ -13,7 +13,7 @@ Patterns may be arbitrary, and can be set at the input box. For ex:
 	2. Louie Louie - Kingsmen
 	...
 Would require a pattern like this:
-[". ","%title%"," - ","%artist%"]
+	[". ","%title%"," - ","%artist%"]
 
 Strings with '%' are considered tags, the rest are breakpoints or 
 parts of the text which will be omitted (before ". " all is omitted).

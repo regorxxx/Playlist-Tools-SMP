@@ -39,5 +39,5 @@ conventions used within foobar2000 normal usage on Pc (some are named 'Search..'
 Beware of loosing a playlist this way! Have in mind all playlists will be either deleted or modified + renamed with any command, so only apply these commands
 to newly created playlists.
 
-(*) Another approach would be using SMP main menus and associated those entries to http url commands. See SMP Main menu readme.
+(*) Another approach would be using SMP main menus and associated those entries to http url commands. See 'SMP Main menu' readme.
 (**) Names are not case sensitive... 'PT:Harmonic' is equivalent to 'pt:harmonic'.
