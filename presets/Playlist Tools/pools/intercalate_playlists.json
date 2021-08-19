@@ -1,0 +1,29 @@
+{
+	"readme": "Uses 3 playlists as sources and inserts tracks in order intercalating them.\nModify the preset substituting the playlist names as needed.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Intercalate playlists",
+		"pool": {
+			"fromPls": {
+				"Playlist A": 25,
+				"Playlist B": 25,
+				"Playlist C": 25
+			},
+			"query": {
+				"Playlist A": "ALL",
+				"Playlist B": "ALL",
+				"Playlist C": "ALL"
+			},
+			"toPls": "Intercalate mix",
+			"sort": "%playlist_index%",
+			"pickMethod": {
+				"Playlist A": "random",
+				"Playlist B": "random",
+				"Playlist C": "random"
+			},
+			"insertMethod": "intercalate"
+		}
+	}]
+}
