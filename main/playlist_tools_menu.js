@@ -2705,6 +2705,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 	const name = 'Pools';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
+		include(folders.xxx + 'helpers\\helpers_xxx_playlists_files.js');
 		const plsManHelper = folders.xxx + 'helpers\\playlist_manager_helpers.js';
 		let isPlsMan = false;
 		if (_isFile(plsManHelper)) {
@@ -2727,6 +2728,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Top tracks mix', 
 					sort: '',
+					}},
+				{name: 'Top tracks mix (intercalate)', pool: {
+					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
+					query: {_LIBRARY_0: '%rating% EQUAL 3', _LIBRARY_1: '%rating% EQUAL 4', _LIBRARY_2: '%rating% EQUAL 5'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					insertMethod: 'intercalate',
+					toPls: 'Top tracks mix', 
+					sort: '%playlist_index%',
 					}},
 				{name: 'Current genre/style and top tracks', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
@@ -2760,10 +2769,22 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				start: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(num - 1, count);} return handleListFrom;},
 				end: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(0, count - num);} return handleListFrom;},
 			};
+			const insertMethods = {
+				standard: (handleListFrom, handleListTo) => {handleListTo.InsertRange(handleListTo.Count, handleListFrom);},
+				intercalate: (handleListFrom, handleListTo, n) => { // Source 1 Track 1, Source 2  Track 2, Source 3  Track 3, Source 1 Track 2, ...
+					if (!handleListTo.Count || !n) {insertMethods.standard(handleListFrom, handleListTo);}
+					else {
+						handleListFrom.Convert().forEach((handle, idx) => {
+							const pos = (idx + 1)* (n + 1) - 1;
+							handleListTo.Insert(pos, handle);
+						});
+					}
+				},
+			};
 			const do_pool = (pool, properties) => {
 				let handleListTo = new FbMetadbHandleList();
 				let bAbort = false;
-				Object.keys(pool.fromPls).forEach((plsName) => {
+				Object.keys(pool.fromPls).forEach((plsName, n) => {
 					if (bAbort) {return;}
 					let handleListFrom;
 					// Select source
@@ -2951,7 +2972,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
 					}
 					console.log('Playlist tools Pools: pool size -> ' + handleListFrom.Count + ' (' + count +') tracks');
-					handleListTo.InsertRange(handleListTo.Count, handleListFrom);
+					// Insert
+					if (pool.hasOwnProperty('insertMethod')) {
+						insertMethods[pool.insertMethod](handleListFrom, handleListTo, n)
+					} else {insertMethods['standard'](handleListFrom, handleListTo)}
 				});
 				if (bAbort) {fb.ShowPopupMessage('Check console. Pools failed with major errors.', scriptName); return;}
 				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
@@ -3347,6 +3371,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const name = 'SMP Main menu';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
+					include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_custom.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					var mainMenuSMP = Object.values(on_main_menu_entries);
