@@ -42,6 +42,8 @@
 - Logging: Added option to switch console logging at configuration submenu.
 - Logging: Added option to switch profiler logging at configuration submenu.
 - Logging: Added option to show/hide tooltip shortcuts at configuration submenu.
+- Search by distance: added new presets for Search by Distance customizable button. Added Acoustic, Instrumental and Female Vocal versions for 'Similar tracks (G)' recipe which forces only acoustic, instrumental or female vocal tracks as output. Style, genre and Picard tags (acousticness, speechiness, gender) -see below- are taken into consideration.
+- Search by distance: added a submenu on customizable button to set additional query filters (along the forced query): Acoustic, Instrumental and Female Vocal tracks. They can work in conjunction with any recipe as long as the recipe does not force a query too.
 - Presets: scripts for Picard to retrieve high level tags (gender, valence, danceability, speechiness, ...) from AcousticBrainz high level data. Tags are easily configurable. AcousticBrainz Tags plugin 2.2+ is required (within Picard). Those tags are meant as a direct replacement, using an open source data model, of Spotify's tags... which can only be retrieved with an API in some software and rely on closed source models and data (new data can not be added by users). If some tracks are not in AcousticBrainz database, they may be [analyzed locally to then send send the results to their server](https://musicbrainz.org/doc/How_to_Submit_Analyses_to_AcousticBrainz) and later get the results on Picard.
 ### Changed
 - Dynamic Queries: queries now only require a track on current playlist if they contain '#' char. Otherwise they are treated as standard queries and therefore don't need a selection.
