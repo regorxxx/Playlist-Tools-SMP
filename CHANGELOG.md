@@ -43,7 +43,7 @@
 - Logging: Added option to switch profiler logging at configuration submenu.
 - Logging: Added option to show/hide tooltip shortcuts at configuration submenu.
 - Search by distance: added new presets for Search by Distance customizable button. Added Acoustic, Instrumental and Female Vocal versions for 'Similar tracks (G)' recipe which forces only acoustic, instrumental or female vocal tracks as output. Style, genre and Picard tags (acousticness, speechiness, gender) -see below- are taken into consideration.
-- Search by distance: added a submenu on customizable button to set additional query filters (along the forced query): Acoustic, Instrumental and Female Vocal tracks. They can work in conjunction with any recipe as long as the recipe does not force a query too.
+- Search by distance: added a submenu on customizable button to set additional query filters (along the forced query): Acoustic, Instrumental and Female Vocal tracks. They can work in conjunction with any recipe as long as the recipe does not force a query too. Filters may be added or edited on 'xxx-scripts\presets\Search by\filters\custom_button_filters.json'.
 - Presets: scripts for Picard to retrieve high level tags (gender, valence, danceability, speechiness, ...) from AcousticBrainz high level data. Tags are easily configurable. AcousticBrainz Tags plugin 2.2+ is required (within Picard). Those tags are meant as a direct replacement, using an open source data model, of Spotify's tags... which can only be retrieved with an API in some software and rely on closed source models and data (new data can not be added by users). If some tracks are not in AcousticBrainz database, they may be [analyzed locally to then send send the results to their server](https://musicbrainz.org/doc/How_to_Submit_Analyses_to_AcousticBrainz) and later get the results on Picard.
 ### Changed
 - Dynamic Queries: queries now only require a track on current playlist if they contain '#' char. Otherwise they are treated as standard queries and therefore don't need a selection.
@@ -54,12 +54,13 @@
 - Alt Menu: Reworked menu to enable/disable tools (Shift + L. Click). List is split in multiple columns (instead of one big vertical list), separators have also been added to differentiate easily menus and submenus.
 - Properties: property names have been changed to omit the number before the description, this should allow to reuse properties even if the menus are disabled or loaded in different order (otherwise they would be re-numbered).
 - Buttons: toolbar config menu now opens with Shift + L. Click on the bar.
-- Buttons: Custom Search by Distance button rewritten, no functionality changes. Theme/recipe info values are now saved without the entire text, cleaner.
 - Buttons: button toolbar now saves only button filenames on json (instead of the absolute path), working now on portable installations which different drive letters too.
 - Buttons framework: default icon size is now bigger.
 - Buttons: loading buttons using the customizable toolbar will show their associated readme (if it exists).
 - Buttons: restoring defaults buttons on the toolbar will show the readme of all the restored buttons.
 - Buttons: replaced the readme entry on the toolbar menu with a submenu pointing to all readmes of every button (note this does not replace but complement the Playlist Tools' readmes).
+- Search by distance: Custom Search by Distance button rewritten, no functionality changes. Theme/recipe info values are now saved without the entire text, cleaner.
+- Search by distance: Custom Search by Distance button now has a menu entry to rename it after the first time (instead of using the properties panel).
 - Search by distance: changed debug to show popup even after test passing (meant to be used along Playlist Tools). Default behavior remains the same, popup only appears if errors are found. When calling the menu entry to test the graph, it shows a popup with the results in any case.
 - Search by distance: Updated descriptors. Added multiple genre and styles to punk, rock, pop, folk, industrial, downtempo and metal super-genres, along their style clusters, substitutions and influence relations.
 - Menu framework: added bool variable (bExecute) to .btn_up(x, y, object, forcedEntry = '', bExecute = true, replaceFunc = null) which allows to simulate the menu without executing any related entry function. 
@@ -81,6 +82,7 @@
 - Buttons: toolbar now also rewrites properties of buttons which have multiple copies, instead of requiring to set up them everytime a copy at the left is removed. It considers multiple copies of the same button get their properties indexed according to their positions too; thus, removing the 2nd copy of a button, will shift by one all copies at greater indexes (at its right) along their properties. The same applies when moving them instead of removing.
 - Buttons: Fixed multiple button names while logging loading on console.
 - Menu framework: '&' char not showing (or making next char underscored) on created dynamic menus (when it was part of a playlist name for ex.), since they were not doubled. Now the framework automatically checks for names with '&' and doubles them ('&&' are skipped), so they are displayed right.
+- Search by distance: Fixed crash while trying to parse the cache file if it's being edited at the same time or corrupt.
 - Multiple minor improvements and fixes on path handling for portable installations.
 - Multiple minor improvements and fixes when saving files on non existing folders.
 
