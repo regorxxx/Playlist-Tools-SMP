@@ -2923,7 +2923,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									const playlistPath = JSON.parse(propertiesPanel.playlistPath[1]); // This is retrieved everytime the menu is called
 									playlistPath.forEach((path) => { // Find first exact match
 										if (bDone) {return;}
-										const plsArr = loadPlaylistsFromFolder(playlistPath);
+										const plsArr = loadPlaylistsFromFolder(path);
 										plsArr.forEach((plsObj) => {
 											if (bDone) {return;}
 											if (plsObj.name === plsName) {
