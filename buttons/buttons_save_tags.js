@@ -41,7 +41,7 @@ var newButtons = {
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}
 		if (!file.length) {return;}
-		const toTags =  _jsonParseFile(file);
+		const toTags =  _jsonParseFile(file, convertCharsetToCodepage('UTF-8'));
 		if (!toTags || !toTags.length) {return;}
 		let toTagsFolder;
 		try {toTagsFolder = utils.InputBox(window.ID, 'Root path of the original file tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true);}

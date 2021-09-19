@@ -62,7 +62,7 @@ function saveTags({
 function compareTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 					selItemsFolder = 'H:\\',
-					toTags = _jsonParseFile(folders.data + 'tags.json'),
+					toTags = _jsonParseFile(folders.data + 'tags.json', convertCharsetToCodepage('UTF-8')),
 					toTagsFolder = 'H:\\',
 					} = {}) {
 	let tags = [];

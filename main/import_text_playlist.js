@@ -130,7 +130,7 @@ function getQueryMatches(tags, bSkipLive = true) {
 			const queryTags = Object.keys(handleTags).map((key) => {
 					const query = key + ' IS ' + handleTags[key];
 					if (key === 'artist' || key === 'album artist') {
-						let tfoKey = '"$stripprefix(' +  key + ',' + stripPrefix.join(',') + ')"';
+						let tfoKey = '"$stripprefix(%' +  key + '%,' + stripPrefix.join(',') + ')"';
 						let tfoKeyVal = fb.TitleFormat('$stripprefix(' +  handleTags[key] + ',' + stripPrefix.join(',') + ')').Eval(true);
 						const tfoQuery = tfoKey + ' IS ' + tfoKeyVal;
 						return query + ' OR ' + tfoQuery;

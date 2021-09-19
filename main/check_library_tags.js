@@ -56,14 +56,18 @@ include('..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://gi
 
 const checkTags_properties = {
 	tagNamesToCheck: 	['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople'],
+	tagsToCompare:	 	['Tags to compare against (\'tag name,...\')', 'genre,style;composer,involvedpeople,artist'],
 	tagValuesExcluded: 	['Tag values to be excluded (\'tag name,value;...\')', ''],
-	tagNamesExcludedDic:['Tags to be excluded at dictionary checking (\'tag name,...\')', 'composer,involvedpeople'],
+	tagNamesExcludedDic:['Tags to be excluded at dictionary checking (\'tag name,...\')', 'album,composer,involvedpeople,artist'],
 	bAskForConfigTags: 	['Enables popup asking to config excluded tags', false],
 	bUseDic:		 	['Enables dictionary checking for every tag value (slow!)', false],
 	dictName:			['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
 	dictPath:			['Path to all dictionaries', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.xxxName + 'helpers-external\\typo\\dictionaries'],
 };
 checkTags_properties['tagNamesToCheck'].push({func: isString}, checkTags_properties['tagNamesToCheck'][1]);
+checkTags_properties['tagsToCompare'].push({func: isStringWeak}, checkTags_properties['tagsToCompare'][1]);
+checkTags_properties['tagValuesExcluded'].push({func: isStringWeak}, checkTags_properties['tagValuesExcluded'][1]);
+checkTags_properties['tagNamesExcludedDic'].push({func: isStringWeak}, checkTags_properties['tagNamesExcludedDic'][1]);
 checkTags_properties['dictName'].push({func: isString}, checkTags_properties['dictName'][1]);
 checkTags_properties['dictPath'].push({func: isString, portable: true}, checkTags_properties['dictPath'][1]); // No need for a popup since the default dic will always be there
 var checkTags_prefix = 'ct_';
@@ -97,7 +101,12 @@ function checkTags({
 					maxSizePerTag = 30, // From the previous pool, only the first X values are shown
 					stringSimilThreshold = 0.85, // How much tag values must be similar to be considered as alternative values
 					bUseDic = properties['bUseDic'][1],
+					iSteps = iStepsLibrary, iDelay = iDelayLibrary, // Async processing ~ x1.4 time required
+					bAsync = true,
+					bDebug = false,
+					bProfile = false
 					} = {}) {
+	if (bProfile) {var profiler = new FbProfiler('checkTags...');}
 	if (typeof selItems === 'undefined' || selItems === null || selItems.count === 0) {
 		return;
 	}
@@ -127,26 +136,133 @@ function checkTags({
 	if (inputTags.length) {
 		mergeStringToTagsObject(tagValuesExcluded, inputTags);
 	}
-	// Get all tags and their frequency
 	const tagsToCheck = [...new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean))]; // i, filter holes and remove duplicates
 	if (!tagsToCheck.length) {
 		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
 		return;
 	}
-	const tags = getTagsValuesV4(selItems, tagsToCheck, false, true);
-	let count = []; // i x j x k
-	tags.forEach( (tagArray) => { // i
-		count.push(new Map());
-		tagArray.forEach( (tagValueArray) => { //j
-			tagValueArray.forEach( (tagValue) => { //k
-				if (count[count.length -1].has(tagValue)) {
-					count[count.length -1].set(tagValue, count[count.length -1].get(tagValue) + 1);
-				} else {
-					count[count.length -1].set(tagValue, 1);
-				}
+	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((_) => {return [...new Set(_.split(',').filter(Boolean))];}); // filter holes and remove duplicates
+	const tagsToCompareMap = new Map();
+	if (tagsToCompare.length) {
+		tagsToCompare.forEach((arr) => {
+			arr.forEach((tag, _, thisArr) => {
+				if (!tagsToCompareMap.has(tag)) {tagsToCompareMap.set(tag, new Set(thisArr));}
+				else {tagsToCompareMap.set(tag, tagsToCompareMap.get(tag).union(new Set(thisArr)));}
 			});
 		});
+	}
+	if (!bAsync || !iSteps || iSteps === 1 || iDelay === 0) {
+		// Get all tags and their frequency
+		const tags = checkTagsRetrieve(selItems, tagsToCheck, [...Array(tagsToCheck.length)].map((_) => {return [];}));
+		const count = [...Array(tags.length)].map((_) => {return new Map();}); // i x j x k
+		tags.forEach( (tagArray, i) => { // i
+			checkTagsCount(tagArray, count, i);
+		});
+		const [countArray, countArrayFiltered] = checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, maxSizePerTag);
+		// Find possible alternatives (misplacing and misspelling) or other errors to report
+		let alternativesMap = new Map();
+		const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(','); // Don't check these against dictionary
+		if (countArray.length && countArrayFiltered.length) {
+			tagsToCheck.forEach( (tagA, indexA) => {
+				const bCompare = tagsToCompareMap.has(tagA);
+				const toCompareWith = bCompare ? tagsToCompareMap.get(tagA) : null;
+				countArrayFiltered[indexA].forEach( (tagValueA, i) => {
+					checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
+				});
+			});
+		}
+		setTimeout(() => {}, 1000);
+		checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
+		if (bProfile) {profiler.Print();}
+	} else {
+	// Get all tags and their frequency
+		new Promise(resolve => {
+			const items = selItems.Convert();
+			const count = items.length;
+			const range = Math.round(count / iSteps);
+			const delay = iDelay / 4;
+			let tags = [...Array(tagsToCheck.length)].map((_) => {return [];});
+			for (let i = 1; i <= iSteps; i++) {
+				setTimeout(() => {
+					const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
+					tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
+					const progress = i / iSteps * 100;
+					if (progress % 10 === 0) {console.log('Retrieving tags ' + Math.round(progress) + '%.');}
+					if (i === iSteps) {resolve(tags);}
+				}, delay * i);
+			}
+		})
+		.then(tags => {
+			return new Promise(resolve => {
+				const count = [...Array(tags.length)].map((_) => {return new Map();}); // i x j x k
+				const total = tags.length - 1;
+				const delay = iDelay / 50;
+				tags.forEach( (tagArray, i) => { // i
+					setTimeout(() => {
+						checkTagsCount(tagArray, count, i);
+						if (i === total) {resolve(count);}
+					}, delay * i);
+				})
+			});
+		})
+		.then(count => {
+			const [countArray, countArrayFiltered] = checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, maxSizePerTag);
+			return {countArray, countArrayFiltered};
+		})
+		.then(({countArray, countArrayFiltered}) => {
+			return new Promise(resolve => {
+				// Find possible alternatives (misplacing and misspelling) or other errors to report
+				let alternativesMap = new Map();
+				const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(','); // Don't check these against dictionary
+				if (countArray.length && countArrayFiltered.length) {
+					const total = tagsToCheck.length - 1;
+					let prevProgress = 0;
+					tagsToCheck.forEach( (tagA, indexA) => {
+						const bCompare = tagsToCompareMap.has(tagA);
+						const toCompareWith = bCompare ? tagsToCompareMap.get(tagA) : null;
+						const totalA = countArrayFiltered[indexA].length - 1;
+						const delay = bCompare ? (totalA + 1) * (toCompareWith.size ** 2) / 150 * iDelay / 100 : (totalA + 1) / 1000 * iDelay / 100;
+						countArrayFiltered[indexA].forEach( (tagValueA, i) => {
+							setTimeout(() => {
+								checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
+								const progress = Math.round(i * indexA / (total * totalA) * 10) * 10;
+								if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Checking tags ' + Math.round(progress) + '%.');}
+								if (indexA === total && i === totalA) {resolve({countArrayFiltered, alternativesMap});}
+							}, delay * i);
+						});
+					});
+				} else {resolve({countArrayFiltered, alternativesMap});}
+			});
+		}).then(({countArrayFiltered, alternativesMap}) => {
+			setTimeout(() => {}, 1000);
+			checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
+			if (bProfile) {profiler.Print();}
+		});
+	}
+}
+
+/*
+	Sync code
+*/
+function checkTagsRetrieve(items, tagsToCheck, tags) {
+	const newTags = getTagsValuesV4(items, tagsToCheck, false, true);
+	tags = tags.map((arr, i) => {return arr.concat(newTags[i]);});
+	return tags;
+}
+
+function checkTagsCount(tagArray, count, i) {
+	tagArray.forEach( (tagValueArray) => { //j
+		tagValueArray.forEach( (tagValue) => { //k
+			if (count[i].has(tagValue)) {
+				count[i].set(tagValue, count[i].get(tagValue) + 1);
+			} else {
+				count[i].set(tagValue, 1);
+			}
+		});
 	});
+}
+
+function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, maxSizePerTag) {
 	// Sort by frequency
 	let countArray = []; // i x k
 	let countArrayThreshold = []; // i
@@ -174,10 +290,11 @@ function checkTags({
 			countArrayFiltered[index] = [];
 			// Add any identified errors first without considering freq. filter
 			countArrayPre[index].forEach( (tagValue, subIndex) => {
-				if (!tagValue[0].length) {countArrayFiltered[index].push(tagValue);console.log(selItems[subIndex]);}
+				if (!tagValue[0].length) {countArrayFiltered[index].push(tagValue);}
 				else if (!tagValue[0].trim().length) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0].trim().length !== tagValue[0].length) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0] === '?') {countArrayFiltered[index].push(tagValue);}
+				else if (tagValue[0].indexOf('  ') !== -1) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0].indexOf(';') !== -1) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0].indexOf(',') !== -1) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0].indexOf('/') !== -1) {countArrayFiltered[index].push(tagValue);}
@@ -200,71 +317,72 @@ function checkTags({
 			}
 		});
 	}
-	// Find possible alternatives (misplacing and misspelling) or other errors to report
-	let alternativesMap = new Map();
-	const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(','); // Don't check these against dictionary
-	if (countArray.length && countArrayFiltered.length) {
-		tagsToCheck.forEach( (tagA, indexA) => {
-			countArrayFiltered[indexA].forEach( (tagValueA) => {
-				// Identified errors first (same checks at freq. filtering step)
-				const tagKey = tagA + keySplit + tagValueA[0];
-				if (!tagValueA[0].length) {alternativesMap.set(tagKey, 'Tag set to empty value (breaks queries!)');}
-				else if (!tagValueA[0].trim().length) {alternativesMap.set(tagKey, 'Tag set to blank space(s)');}
-				else if (tagValueA[0].trim().length !== tagValueA[0].length) {alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes');}
-				else if (tagValueA[0] === '?') {alternativesMap.set(tagKey, 'Tag not set');}
-				else if (tagValueA[0].indexOf(';') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
-				else if (tagValueA[0].indexOf(',') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
-				else if (tagValueA[0].indexOf('/') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
-				else { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
-					let similValues = [];
-					tagsToCheck.forEach( (tagB, indexB) => {
-						countArray[indexB].forEach( (tagValueB) => {
-							if (indexB === indexA && tagValueB[0] !== tagValueA[0]) { // When comparing the same tag, calc similarity (and skip the same value)
-								if (similarity(tagValueA[0],tagValueB[0]) >= stringSimilThreshold) {
-									similValues.push(tagValueB[0]);
-								}
-							} else if (indexB !== indexA && tagValueB[0] === tagValueA[0]) { // When comparing to other tags, check for simple matching
-								similValues.push(tagValueB[0] + ' (as ' + tagB + ')');
-							} else if (indexB !== indexA && tagValueB[0] !== tagValueA[0]) { // and similarity
-								if (similarity(tagValueA[0],tagValueB[0]) >= stringSimilThreshold) {
-									similValues.push(tagValueB[0] + ' (as similar ' + tagB + ')');
-								}
-							}
-							// If no error found yet, compare against dictionary
-							if (bUseDic && tagNamesExcludedDic.indexOf(tagA) === -1 && !similValues.length) {
-								tagValueA[0].split(' ').forEach( (word, index, array) => {
-									if (!dictionary.check(word)) {
-										const dicSugggest = dictionary.suggest(word);
-										if (dicSugggest.length) {
-											dicSugggest.forEach( (suggestion) => { // Filter suggestions with similarity threshold
-												if (similarity(word, suggestion) >= stringSimilThreshold) {
-													// Reconstruct tag value with new suggestion
-													const numTerms = array.length;
-													if (numTerms === 1) { // may be a tag value with one word
-														// suggestion = suggestion;
-													} else { // or multiple words
-														if (index === 0) {
-															suggestion = suggestion + ' ' + array.slice(index + 1, numTerms);
-														} else if (index < array.length - 1) {
-															suggestion = array.slice(0, index) + ' ' + suggestion + ' ' + array.slice(index + 1, numTerms);
-														} else  {
-															suggestion = array.slice(0, index) + ' ' + suggestion;
-														}
-													}
-													similValues.push(suggestion + ' (on dictionary)');
-												}
-											});
-										}
+	return [countArray, countArrayFiltered];
+}
+
+function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary) {
+	// Identified errors first (same checks at freq. filtering step)
+	const tagKey = tagA + keySplit + tagValueA[0];
+	if (!tagValueA[0].length) {alternativesMap.set(tagKey, 'Tag set to empty value (breaks queries!)');}
+	else if (!tagValueA[0].trim().length) {alternativesMap.set(tagKey, 'Tag set to blank space(s)');}
+	else if (tagValueA[0].trim().length !== tagValueA[0].length) {alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes');}
+	else if (tagValueA[0] === '?') {alternativesMap.set(tagKey, 'Tag not set');}
+	else if (tagValueA[0].indexOf('  ') !== -1) {alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)');}
+	else if (tagValueA[0].indexOf(';') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
+	else if (tagValueA[0].indexOf(',') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
+	else if (tagValueA[0].indexOf('/') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
+	else if (bCompare){ // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
+		let similValues = [];
+		tagsToCheck.forEach( (tagB, indexB) => {
+			if (toCompareWith.has(tagB)) {
+				countArray[indexB].forEach( (tagValueB) => {
+					if (indexB === indexA && tagValueB[0] !== tagValueA[0]) { // When comparing the same tag, calc similarity (and skip the same value)
+						if (similarity(tagValueA[0],tagValueB[0]) >= stringSimilThreshold) {
+							similValues.push(tagValueB[0]);
+						}
+					} else if (indexB !== indexA && tagValueB[0] === tagValueA[0]) { // When comparing to other tags, check for simple matching
+						similValues.push(tagValueB[0] + ' (as ' + tagB + ')');
+					} else if (indexB !== indexA && tagValueB[0] !== tagValueA[0]) { // and similarity
+						if (similarity(tagValueA[0],tagValueB[0]) >= stringSimilThreshold) {
+							similValues.push(tagValueB[0] + ' (as similar ' + tagB + ')');
+						}
+					}
+				});
+			}
+		});
+		// If no error found yet, compare against dictionary
+		if (bUseDic && tagNamesExcludedDic.indexOf(tagA) === -1 && !similValues.length) {
+			tagValueA[0].split(' ').forEach( (word, index, array) => {
+				if (!dictionary.check(word)) {
+					const dicSugggest = dictionary.suggest(word);
+					if (dicSugggest.length) {
+						dicSugggest.forEach( (suggestion) => { // Filter suggestions with similarity threshold
+							if (similarity(word, suggestion) >= stringSimilThreshold) {
+								// Reconstruct tag value with new suggestion
+								const numTerms = array.length;
+								if (numTerms === 1) { // may be a tag value with one word
+									// suggestion = suggestion;
+								} else { // or multiple words
+									if (index === 0) {
+										suggestion = suggestion + ' ' + array.slice(index + 1, numTerms);
+									} else if (index < array.length - 1) {
+										suggestion = array.slice(0, index) + ' ' + suggestion + ' ' + array.slice(index + 1, numTerms);
+									} else  {
+										suggestion = array.slice(0, index) + ' ' + suggestion;
 									}
-								});
+								}
+								similValues.push(suggestion + ' (on dictionary)');
 							}
 						});
-					});
-					if (similValues.length) {alternativesMap.set(tagKey, similValues);}
+					}
 				}
 			});
-		});
+		}
+		if (similValues.length) {alternativesMap.set(tagKey, similValues);}
 	}
+}
+
+function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded) {
 	// Report popups
 	// First part - Tags errors
 	let textA =	'List of values with lowest frequency of apparition.\n' +
@@ -357,7 +475,7 @@ function checkTags({
 	textA += tipsText;
 	// Popups with all texts
 	fb.ShowPopupMessage(textC, popupTitle + ': queries');
-	fb.ShowPopupMessage(textB, popupTitle + ': tag pairs and exclussions');
+	fb.ShowPopupMessage(textB, popupTitle + ': tag pairs and exclusions');
 	fb.ShowPopupMessage(textA, popupTitle + ': possible errors');
 	// Set verified tags known to be right Popup
 	if (properties['bAskForConfigTags'][1]) {
@@ -377,6 +495,7 @@ function checkTags({
 		}
 	}
 }
+
 
 /*
 	Helpers

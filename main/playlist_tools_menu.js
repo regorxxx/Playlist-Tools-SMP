@@ -46,7 +46,8 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	bShortcuts:					['Enable global shortcuts', false],
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
 	keyTag:						['Key tag remap', 'key'], // It may be overwritten by Search by distance property too, are equivalent!
-	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])]
+	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])],
+	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Pools': true, 'Search by distance': true, 'Remove duplicates': true, 'Import track list': true})]
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
@@ -73,6 +74,7 @@ const defaultArgs = {
 					bHttpControl: () => {return utils.CheckComponent('foo_httpcontrol') && _isFolder(fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx')},
 					httpControlPath: fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\',
 					bDebug: menu_panelProperties['bDebug'][1],
+					bProfile: menu_panelProperties['bProfile'][1],
 					keyTag: menu_properties['keyTag'][1],
 					styleGenreTag: JSON.parse(menu_properties['styleGenreTag'][1])
 };
@@ -2451,12 +2453,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs}, bAsync = null) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
+						args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs,  bUseDic: true}) => {
+					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs,  bUseDic: true}, bAsync = null) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
+						args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
@@ -2465,9 +2469,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
-							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, bUseDic: obj.bUseDic}) => {
+							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, bUseDic: obj.bUseDic}, bAsync = null) => {
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 								args.properties['tagNamesToCheck'][1] = obj.tag;
+								args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
 								checkTags(args);
 							}, flags: multipleSelectedFlags});
 						});
@@ -2475,12 +2480,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity}) => {
+					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity}, bAsync = null) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
+						args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true}) => {
+					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true}, bAsync = null) => {
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
+						args.bAsync =  bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
 						checkTags(args);
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
@@ -2489,9 +2496,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
-							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic}) => {
+							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic}, bAsync = null) => {
 								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
 								args.properties['tagNamesToCheck'][1] = obj.tag;
+								args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
 								checkTags(args);
 							}, flags: multipleSelectedFlags});
 						});
@@ -3246,10 +3254,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					'Playlist Revive\\Find dead items in all playlists',
 					'Import track list\\Import from file (path at properties)',
 					'Pools\\Top tracks mix',
-					'Macr0s\\Report library tags errors',
+					'Macros\\Report library tags errors',
 					'Search by Distance\\Find genres/styles not on Graph',
 					'Search by Distance\\Debug Graph (check console)'
-				]},
+				], bAsync: false},
 				{name: 'Test Tools (with input)', entry: [
 					'Top rated Tracks from...\\From year...',
 					'Search same by tags...\\By... (pairs of tags)',
@@ -3262,18 +3270,18 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					'Playlist manipulation\\Find or create playlist...',
 					'Import track list\\Import from file \\ url...',
 					'Pools\\Custom pool...'
-				]},
+				], bAsync: false},
 				{name: 'sep'},
 				{name: 'Report library tags errors', entry: [
 					'Standard Queries...\\Entire library',
 					'Select...\\Select All',
 					'Check tags\\Report errors by comparison'
-				]},
+				], bAsync: true},
 				{name: 'Report all library tags', entry: [
 					'Standard Queries...\\Entire library',
 					'Select...\\Select All',
 					'Check tags\\Report all tags by comparison'
-				]}
+				], bAsync: true}
 			]; 
 			// {name, entry: []}
 			menu_properties['macros'] = ['Saved macros', JSON.stringify(macrosDefaults)];
@@ -3291,8 +3299,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName, entryText: 'sep'});
 					} else {
 						menu.newEntry({menuName, entryText: macro.name, func: () => {
+							const bAsync = macro.hasOwnProperty('bAsync') && macro.bAsync ? true : false;
 							macro.entry.forEach( (entry, idx, arr) => {
-								menu.btn_up(void(0), void(0), void(0), entry); // Don't clear menu on last call
+								menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: bAsync}); // Don't clear menu on last call
 							});
 						}});
 					}
@@ -3302,7 +3311,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Save
 				menu.newEntry({menuName, entryText: 'Start recording a macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					const macro = initMacro(menu);
-					if (macro.name === 'sep') { // Just add a separator
+					if (macro && macro.name === 'sep') { // Just add a separator
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						saveMacro();
 						args.properties['macros'][1] = JSON.stringify(macros);
@@ -3911,6 +3920,34 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			menu.newEntry({menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => {_explorer(shortcutsPath);}});
+		}
+		{	// Async processing
+			const subMenuName = menu.newMenu('Asynchronous processing', configMenu);
+			menu.newEntry({menuName: subMenuName, entryText: 'Switch async functionality:', func: null, flags: MF_GRAYED})
+			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+ 			{	// Enable
+				readmes[configMenu + '\\Async processing'] = folders.xxx + 'helpers\\readme\\async_processing.txt';
+				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+				menu.newCondEntry({entryText: 'async', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+					const async = JSON.parse(args.properties.async[1]);
+					const options = Object.keys(async);
+					const notAvailable = ['Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
+					options.forEach((key) => {
+						const bNotAvailable = notAvailable.indexOf(key) !== -1;
+						menu.newEntry({menuName: subMenuName, entryText: key + (bNotAvailable ? '\t not available' : ''), func: () => {
+							if (!async[key]) {
+								const answer = WshShell.Popup('Enables asynchronous processing for the selected tool:\nUI will not be blocked while executing it, allowing to continue using Foobar2000 without interruptions, but as a side-effect it will also take more time to finish.\n\nFeature is only noticeable when processing a high number of tracks or computationally heavy tasks.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+								if (answer !== popup.yes) {return;}
+							}
+							async[key] = !async[key];
+							args.properties.async[1] = JSON.stringify(async);
+							overwriteProperties(args.properties); // Updates panel
+						}, flags: bNotAvailable ? MF_GRAYED : MF_STRING});
+						menu.newCheckMenu(subMenuName, key, void(0), () => {return !bNotAvailable && async[key];});
+					});
+				}});
+			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Logging
