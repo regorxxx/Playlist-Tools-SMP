@@ -12,7 +12,7 @@
 
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
 try { //May be loaded along other buttons
-	window.DefinePanel('Playlist Tools Menu', {author:'xxx'});
+	window.DefinePanel('Playlist Tools Menu', {author:'xxx', version: '3.0.0'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
