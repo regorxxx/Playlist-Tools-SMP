@@ -171,38 +171,52 @@ function checkTags({
 				});
 			});
 		}
-		setTimeout(() => {}, 1000);
-		checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
-		if (bProfile) {profiler.Print();}
+		setTimeout(() => {
+			checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
+			if (bProfile) {profiler.Print();}
+		}, 500);
 	} else {
 	// Get all tags and their frequency
 		new Promise(resolve => {
+			const promises = [];
 			const items = selItems.Convert();
 			const count = items.length;
 			const range = Math.round(count / iSteps);
 			const delay = iDelay / 4;
 			let tags = [...Array(tagsToCheck.length)].map((_) => {return [];});
+			let prevProgress = 0;
 			for (let i = 1; i <= iSteps; i++) {
-				setTimeout(() => {
-					const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
-					tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
-					const progress = i / iSteps * 100;
-					if (progress % 10 === 0) {console.log('Retrieving tags ' + Math.round(progress) + '%.');}
-					if (i === iSteps) {resolve(tags);}
-				}, delay * i);
+				promises.push(new Promise(resolve => {
+					setTimeout(() => {
+						const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
+						tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
+						const progress = i / iSteps * 100;
+						if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Retrieving tags ' + Math.round(progress) + '%.');}
+						resolve();
+					}, delay * i);
+				}));
 			}
+			Promise.all(promises).then(() => {
+				resolve(tags);
+			});
 		})
 		.then(tags => {
 			return new Promise(resolve => {
+				const promises = [];
 				const count = [...Array(tags.length)].map((_) => {return new Map();}); // i x j x k
 				const total = tags.length - 1;
 				const delay = iDelay / 50;
 				tags.forEach( (tagArray, i) => { // i
-					setTimeout(() => {
-						checkTagsCount(tagArray, count, i);
-						if (i === total) {resolve(count);}
-					}, delay * i);
-				})
+					promises.push(new Promise(resolve => {
+						setTimeout(() => {
+							checkTagsCount(tagArray, count, i);
+							resolve();
+						}, delay * i);
+					}));
+				});
+				Promise.all(promises).then(() => {
+					resolve(count);
+				});
 			});
 		})
 		.then(count => {
@@ -214,6 +228,7 @@ function checkTags({
 				// Find possible alternatives (misplacing and misspelling) or other errors to report
 				let alternativesMap = new Map();
 				const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(','); // Don't check these against dictionary
+				const promises = [];
 				if (countArray.length && countArrayFiltered.length) {
 					const total = tagsToCheck.length - 1;
 					let prevProgress = 0;
@@ -223,20 +238,26 @@ function checkTags({
 						const totalA = countArrayFiltered[indexA].length - 1;
 						const delay = bCompare ? (totalA + 1) * (toCompareWith.size ** 2) / 150 * iDelay / 100 : (totalA + 1) / 1000 * iDelay / 100;
 						countArrayFiltered[indexA].forEach( (tagValueA, i) => {
-							setTimeout(() => {
-								checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
-								const progress = Math.round(i * indexA / (total * totalA) * 10) * 10;
-								if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Checking tags ' + Math.round(progress) + '%.');}
-								if (indexA === total && i === totalA) {resolve({countArrayFiltered, alternativesMap});}
-							}, delay * i);
+							promises.push(new Promise(resolve => {
+								setTimeout(() => {
+									checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
+									const progress = Math.round(i * indexA / (total * totalA) * 10) * 10;
+									if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Checking tags ' + Math.round(progress) + '%.');}
+									resolve();
+								}, delay * i);
+							}));
 						});
 					});
-				} else {resolve({countArrayFiltered, alternativesMap});}
+				} else {promises.push(new Promise.resolve('empty'));}
+				Promise.all(promises).then(() => {
+					resolve({countArrayFiltered, alternativesMap});
+				});
 			});
 		}).then(({countArrayFiltered, alternativesMap}) => {
-			setTimeout(() => {}, 1000);
-			checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
-			if (bProfile) {profiler.Print();}
+			setTimeout(() => {
+				checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
+				if (bProfile) {profiler.Print();}
+			}, 500);
 		});
 	}
 }

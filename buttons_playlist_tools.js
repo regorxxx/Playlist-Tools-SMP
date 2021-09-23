@@ -20,15 +20,20 @@ try { //May be loaded along other buttons
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Playlist Tools Menu Button loaded.');
 }
-// try {
-	include('..\\main\\playlist_tools_menu.js');
-	include('..\\helpers\\helpers_xxx_properties.js');
-	include('..\\helpers\\helpers_xxx_clipboard.js');
-// } catch (e) {
-	// include('main\\playlist_tools_menu.js');
-	// include('helpers\\helpers_xxx_properties.js');
-	// include('helpers\\helpers_xxx_clipboard.js');
-// }
+
+{
+	let bIncludeRel = true;
+	try {include('..\\helpers\\helpers_xxx_dummy.js');} catch(e) {bIncludeRel = false;}
+	if (bIncludeRel) {
+		include('..\\main\\playlist_tools_menu.js');
+		include('..\\helpers\\helpers_xxx_properties.js');
+		include('..\\helpers\\helpers_xxx_clipboard.js');
+	} else {
+		include('main\\playlist_tools_menu.js');
+		include('helpers\\helpers_xxx_properties.js');
+		include('helpers\\helpers_xxx_clipboard.js');
+	}
+}
 var prefix = menu_prefix;
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before "_"
 menu_prefix = prefix; // update var for internal use of playlist_tools_menu

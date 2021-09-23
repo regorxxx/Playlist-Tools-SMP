@@ -19,15 +19,18 @@ function removeFromPlaylist(selList, playlistIndex) {
 	plman.InsertPlaylistItems(playlistIndex, 0, handle_list);
 }
 
-function findInPlaylists(selList = fb.GetFocusItem()) {
+function findInPlaylists(selList = fb.GetFocusItem(), lockType = []) {
 	if (!selList) {return [];}
 	let inPlaylist = [];
 	let inPlaylistSet = new Set();
+	const bAll = lockType.length ? true : false;
 	for (const sel of selList.Convert()){
 		for (let i = 0; i < plman.PlaylistCount; i++) {
 			if (plman.GetPlaylistItems(i).Find(sel) !== -1) {
 				if (!inPlaylistSet.has(i)) {
-					inPlaylist.push({index: i, name: plman.GetPlaylistName(i), bLocked: plman.IsPlaylistLocked(i)});
+					const lockActions = plman.GetPlaylistLockedActions(i);
+					const bLocked = bAll ? lockActions.length : new Set(lockActions).isSuperset(new Set(lockType));
+					inPlaylist.push({index: i, name: plman.GetPlaylistName(i), bLocked});
 					inPlaylistSet.add(i);
 				}
 			}
