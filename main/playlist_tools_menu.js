@@ -3873,7 +3873,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					if (!args.properties.bPlaylistNameCommands[1]) {
 						if ((isCompatible('1.4.0') ? utils.IsFile(readmes[menuName + '\\' + name]) : utils.FileTest(readmes[menuName + '\\' + name], 'e'))) {
-							const readme = utils.ReadTextFile(readmes[menuName + '\\' + name], 65001);
+							const readme = utils.ReadTextFile(readmes[menuName + '\\' + name], convertCharsetToCodepage('UTF-8'));
 							if (readme.length) {
 								const answer = WshShell.Popup(readme, 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 							if (answer !== popup.yes) {return;}
@@ -4270,11 +4270,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			if (Object.keys(readmes).length) {
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
 					if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) { 
-						const readme = utils.ReadTextFile(value, 65001); // Executed on script load
+						const readme = utils.ReadTextFile(value, convertCharsetToCodepage('UTF-8')); // Executed on script load
 						if (readme.length) {
 							menu.newEntry({menuName: subMenuName, entryText: key, func: () => { // Executed on menu click
 								if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
-									const readme = utils.ReadTextFile(value, 65001);
+									const readme = utils.ReadTextFile(value, convertCharsetToCodepage('UTF-8'));
 									if (readme.length) {fb.ShowPopupMessage(readme, key);}
 								} else {console.log('Readme not found: ' + value);}
 							}});
@@ -4383,7 +4383,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		readmeKeys.forEach( (key) => {
 			const readmePath = readmes[key];
 			if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
-				const readme = utils.ReadTextFile(readmePath, 65001);
+				const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
 				if (readme.length) {fb.ShowPopupMessage(readme, key);}
 			}
 		});

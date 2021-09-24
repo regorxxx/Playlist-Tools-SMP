@@ -32,6 +32,7 @@ const bShowID = true; // Show Prefixes + ID on tooltips
 // Toolbar color fix
 var bToolbar = false; // Change this on buttons bars files to set the background color
 var toolbarColor = RGB(211,218,237);
+var textColor = RGB(0,0,0);
 
 let g_down = false;
 let cur_btn = null;
@@ -126,11 +127,11 @@ function SimpleButton(x, y, w, h, text, fonClick, state, g_font = _gdiFont('Sego
 			let textWidthCalculated = _isFunction(this.text) ? this.textWidth() : this.textWidth;
 			let iconCalculated = _isFunction(this.icon) ? this.icon() : this.icon;
 			let textCalculated = _isFunction(this.text) ? this.text() : this.text;
-			gr.GdiDrawText(iconCalculated, this.g_font_icon, RGB(0, 0, 0), x_calc - iconWidthCalculated / 5 - textWidthCalculated / 2, y_calc, w_calc, h_calc, DT_CENTER | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX); // Icon
-			gr.GdiDrawText(textCalculated, this.g_font, RGB(0, 0, 0), x_calc + iconWidthCalculated, y_calc, w_calc, h_calc, DT_CENTER | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX); // Text
+			gr.GdiDrawText(iconCalculated, this.g_font_icon, textColor, x_calc - iconWidthCalculated / 5 - textWidthCalculated / 2, y_calc, w_calc, h_calc, DT_CENTER | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX); // Icon
+			gr.GdiDrawText(textCalculated, this.g_font, textColor, x_calc + iconWidthCalculated, y_calc, w_calc, h_calc, DT_CENTER | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX); // Text
 		} else {
 			let textCalculated = _isFunction(this.text) ? this.text() : this.text;
-			gr.GdiDrawText(textCalculated, this.g_font, RGB(0, 0, 0), x_calc, y_calc, w_calc, h_calc, DT_CENTER | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX); // Text
+			gr.GdiDrawText(textCalculated, this.g_font, textColor, x_calc, y_calc, w_calc, h_calc, DT_CENTER | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX); // Text
 		}
 	};
 
