@@ -47,7 +47,7 @@ function playlistRevive({
 	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
 	// The other tags are considered crc checks -> Exact Match: any crc tag is matched. Otherwise, continue checking the other tags (See above).
 	const tagsToCheck = ['title', 'audiomd5', 'md5'];
-	const tags = getTagsValuesV4(items, tagsToCheck);
+	const tags = getTagsValuesV4(items, tagsToCheck, void(0), void(0), null);
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
 	tagsToCheck.forEach( (tagName, index) => {
@@ -60,7 +60,7 @@ function playlistRevive({
 	try {fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	const libraryItems = fb.GetQueryItems(fb.GetLibraryItems(), query);
-	const tagsLibrary = getTagsValuesV4(libraryItems, tagsToCheck);
+	const tagsLibrary = getTagsValuesV4(libraryItems, tagsToCheck, void(0), void(0), null);
 	const libraryItemsArr = libraryItems.Convert();
 	// Find coincidences in library
 	// Checks all tags from reference track and compares to all tags from library tracks that passed the filter

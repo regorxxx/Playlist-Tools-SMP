@@ -152,19 +152,24 @@ function createButtonsMenu(name) {
 		menu.newEntry({menuName, entryText: 'Set custom bar color...', func: () => {
 			barProperties.toolbarColor[1] = utils.ColourPicker(window.ID, barProperties.toolbarColor[1]);
 			overwriteProperties(barProperties);
-			window.Reload();
+			bToolbar = true; // buttons_xxx.js
+			toolbarColor = barProperties.toolbarColor[1]; // buttons_xxx.js
+			window.Repaint();
 		}});
 		menu.newEntry({menuName, entryText: 'Set custom text color...', func: () => {
 			barProperties.textColor[1] = utils.ColourPicker(window.ID, barProperties.textColor[1]);
 			overwriteProperties(barProperties);
-			window.Reload();
+			textColor = barProperties.textColor[1]; // buttons_xxx.js
+			window.Repaint();
 		}});
 		menu.newEntry({menuName, entryText: 'sep'});
 		menu.newEntry({menuName, entryText: 'Reset...', func: () => {
 			barProperties.toolbarColor[1] = -1;
 			barProperties.textColor[1] = RGB(0,0,0);
 			overwriteProperties(barProperties);
-			window.Reload();
+			bToolbar = false; // buttons_xxx.js
+			textColor = barProperties.textColor[1]; // buttons_xxx.js
+			window.Repaint();
 		}});
 	}
 	menu.newEntry({entryText: 'sep'});

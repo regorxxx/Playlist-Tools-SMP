@@ -5,8 +5,8 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_prototypes.js');
 include('remove_duplicates.js');
 
-// bSkipLive will not output matches which are live tracks
-// filterMask will filter the matches allowing only 1 track with same tags (no duplicates)
+// queryFilters will apply different conditions to the possible matches, and the ones which satisfy more will be selected
+// duplicatesMask will filter the matches allowing only 1 track with same tags (no duplicates)
 // Note in rare cases multiple matches could pass through the filter:
 // Track A by Artist A -> (importTextPlaylist) -> output:
 // 		01 - Track A -> Artist: Artist A//Artist B
@@ -17,7 +17,12 @@ include('remove_duplicates.js');
 // Track A by Artist A
 // ...
 // Track A by Artist B
-function importTextPlaylist({path = folders.data + 'playlistImport.txt', formatMask = ['', '. ', '%title%', ' - ', '%artist%'], filterMask = ['title', 'artist'], bSkipLive = true} = {}) {
+function importTextPlaylist({
+		path = folders.data + 'playlistImport.txt',
+		formatMask = ['', '. ', '%title%', ' - ', '%artist%'],
+		duplicatesMask = ['title', 'artist'],
+		queryFilters = ['NOT GENRE IS live AND NOT STYLE IS live']
+	} = {}) {
 	if (!path || !path.length) {
 		console.log('importTextPlaylist(): no file was provided');
 		return -1;
@@ -25,7 +30,7 @@ function importTextPlaylist({path = folders.data + 'playlistImport.txt', formatM
 	let text = '';
 	if (_isFile(path)) {
 		text = utils.ReadTextFile(path);
-		return createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive);
+		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
 	} else if (path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1) {
 		let request = new ActiveXObject('Microsoft.XMLHTTP');
 		request.open('GET', path, true);
@@ -36,7 +41,7 @@ function importTextPlaylist({path = folders.data + 'playlistImport.txt', formatM
 					var type = request.getResponseHeader('Content-Type');
 					if (type.indexOf("text") !== 1) {
 						text = request.responseText;
-						return createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive);
+						return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
 					} else {console.log('importTextPlaylist(): could not retrieve any text from ' + path); return -1;}
 				} else {console.log('HTTP error: ' + request.status);}
 			}
@@ -44,8 +49,8 @@ function importTextPlaylist({path = folders.data + 'playlistImport.txt', formatM
 	} else {console.log('importTextPlaylist(): file does not exist. ' + path); return -1;}
 }
 
-function createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive) {
-	let {handlePlaylist, notFound} = getHandlesFromText(text, formatMask, bSkipLive);
+function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters) {
+	let {handlePlaylist, notFound} = getHandlesFromText(text, formatMask, queryFilters);
 	if (notFound && notFound.length) {
 		const report = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '')+ 'Line ' + line.idx + '-> ' + Object.keys(line.tags).map((key) => {return capitalize(key) + ': ' + line.tags[key]}).join(', ');}, '');
 		const reportPls = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '') + Object.keys(line.tags).map((key) => {return line.tags[key]}).join(' - ');}, '');
@@ -53,7 +58,7 @@ function createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive) {
 		fb.ShowPopupMessage(report, 'Tracks not found at source');
 	}
 	if (handlePlaylist) {
-		if (filterMask && filterMask.length) {handlePlaylist = do_remove_duplicatesV3(handlePlaylist, null, filterMask.filter((n) => n), 0);}
+		if (duplicatesMask && duplicatesMask.length) {handlePlaylist = do_remove_duplicates(handlePlaylist, null, duplicatesMask.filter((n) => n), 0);}
 		const idx = plman.PlaylistCount;
 		plman.InsertPlaylistItems(plman.CreatePlaylist(idx, 'Import'), 0, handlePlaylist);
 		if (!handlePlaylist.Count) {console.log('importTextPlaylist(): could not find any track with the given text');}
@@ -61,12 +66,12 @@ function createPlaylistFromText(text, path, formatMask, filterMask, bSkipLive) {
 	} else {return -1;}
 }
 
-function getHandlesFromText(text, formatMask, bSkipLive = true) {
+function getHandlesFromText(text, formatMask, queryFilters) {
 	let handlePlaylist = new FbMetadbHandleList();
 	if (text && text.length) {
 		const tags = extractTags(text.split('\r\n'), formatMask);
 		if (tags && tags.length) {
-			const {matches, notFound} = getQueryMatches(tags, bSkipLive);
+			const {matches, notFound} = getQueryMatches(tags, queryFilters);
 			if (matches && matches.Count) {handlePlaylist.AddRange(matches);}
 			return {handlePlaylist, notFound};
 		} else {console.log('getHandlesFromText(): no tags retrieved');}
@@ -121,28 +126,47 @@ function extractTags(text, formatMask) {
 }
 
 
-function getQueryMatches(tags, bSkipLive = true) {
+function getQueryMatches(tags, queryFilters) {
 	let matches = new FbMetadbHandleList();
 	let notFound = [];
+	const queryFiltersLength = queryFilters.length;
 	const stripPrefix = ['a', 'an', 'the', 'la', 'los', 'las', 'el']; // Also match keys without prefixes! the rolling stones == the rolling stones OR rolling stones
 	tags.forEach((handleTags, idx) => {
 		if (Object.keys(handleTags).length) {
 			const queryTags = Object.keys(handleTags).map((key) => {
 					const query = key + ' IS ' + handleTags[key];
 					if (key === 'artist' || key === 'album artist') {
-						let tfoKey = '"$stripprefix(%' +  key + '%,' + stripPrefix.join(',') + ')"';
-						let tfoKeyVal = fb.TitleFormat('$stripprefix(' +  handleTags[key] + ',' + stripPrefix.join(',') + ')').Eval(true);
+						const tfoKey = '"$stripprefix(%' +  key + '%,' + stripPrefix.join(',') + ')"';
+						const tagVal = sanitizeTagTfo(handleTags[key]); // Quote special chars
+						const tfo = '$stripprefix(' +  tagVal + ',' + stripPrefix.join(',') + ')';		
+						const tfoKeyVal = fb.TitleFormat(tfo).Eval(true);
+						if (!tfoKeyVal.length) {console.log('Error creating query: ' + tfo);}
 						const tfoQuery = tfoKey + ' IS ' + tfoKeyVal;
 						return query + ' OR ' + tfoQuery;
 					} else {
 						return query;
 					}
 			});
-			if (bSkipLive) {queryTags.push('NOT genre IS live AND NOT style IS live')}
 			const query = query_join(queryTags, 'AND');
 			const handles = checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null;
-			if (handles && handles.Count) {matches.AddRange(handles)}
-			else {
+			let bDone = false;
+			if (handles && handles.Count) { // Filter the results step by step to see which ones satisfy more conditions
+				if (queryFiltersLength) {
+					const handlesFilter = new Array(queryFiltersLength);
+					handlesFilter[0] = handles.Clone();
+					queryFilters.forEach((queryFilter, i) => {
+						const prevResult = handlesFilter[i ? i - 1 : 0];
+						const bEmpty = prevResult.Count ? false : true;
+						handlesFilter[i] = bEmpty ? new FbMetadbHandleList() : fb.GetQueryItems(prevResult, queryFilter);
+						if (i !== queryFiltersLength - 1) {handlesFilter[i + 1] = bEmpty ? new FbMetadbHandleList() : handlesFilter[i].Clone();}
+					});
+					for (let i = queryFiltersLength - 1; i >= 0; i--) { // The last results are the handles which passed all the filters successfully, are the preferred results
+						if (handlesFilter[i].Count) {matches.AddRange(handlesFilter[i]); bDone = true; break;}
+					}
+				}
+				if (!bDone) {matches.AddRange(handles); bDone = true;}
+			}
+			if (!bDone) {
 				const tags = {};
 				Object.keys(handleTags).forEach((key) => {tags[key] = handleTags[key];});
 				notFound.push({idx, tags});

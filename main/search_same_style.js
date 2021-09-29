@@ -70,7 +70,7 @@ function do_search_same_style(	playlistLength = 50,
 
 		//Find and remove duplicates. Sort Random
 		if (checkDuplicatesBy !== null) {
-			queryhandle_list = do_remove_duplicatesV2(queryhandle_list, sortBy, checkDuplicatesBy);
+			queryhandle_list = do_remove_duplicates(queryhandle_list, sortBy, checkDuplicatesBy);
 		}
 		
 		let oldCount = queryhandle_list.Count;

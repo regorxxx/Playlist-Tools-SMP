@@ -46,7 +46,7 @@ function do_top_tracks_from_date({
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			handleList = do_remove_duplicatesV2(handleList, sortBy, checkDuplicatesBy);
+			handleList = do_remove_duplicates(handleList, sortBy, checkDuplicatesBy);
 		}
 		
 		// Filter Play counts by date

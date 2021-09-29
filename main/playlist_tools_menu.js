@@ -1195,8 +1195,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						sortInputFilter = args.properties.sortInputFilter[1].split(',');
 						nAllowed = args.properties.nAllowed[1];
 						// Menus
-						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {do_remove_duplicatesV2(null, null, sortInputDuplic);}, flags: playlistCountFlagsAddRem});
-						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {do_remove_duplicatesV3(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {do_remove_duplicates(null, null, sortInputDuplic);}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {do_remove_duplicates(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
 							let tags;
@@ -1208,7 +1208,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true));}
 							catch (e) {return;}
 							if (!Number.isSafeInteger(n)) {return;}
-							do_remove_duplicatesV3(null, null, tags, n);
+							do_remove_duplicates(null, null, tags, n);
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)...', func: () => {
@@ -2809,6 +2809,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Create new properties with previous args
 						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'track_list_to_import.txt'];
 						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%title%', ' - ', '%artist%'])];
+						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify(['%channels% LESS 3 AND NOT COMMENT HAS Quad', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', '(NOT GENRE IS live AND NOT STYLE IS live) OR ((GENRE IS live OR STYLE IS live) AND style IS hi-fi)', 'NOT GENRE IS live AND NOT STYLE IS live'])];
 						// Checks
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
 						// Merge
@@ -2828,7 +2829,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							try {formatMask = JSON.parse(formatMask);}
 							catch (e) {console.log('Playlist Tools: Invalid format mask'); return;}
 							if (!formatMask) {return;}
-							const idx = importTextPlaylist({path, formatMask})
+							const queryFilters = JSON.parse(args.properties.importPlaylistFilters[1]);
+							const idx = importTextPlaylist({path, formatMask, queryFilters})
 							if (idx !== -1) {plman.ActivePlaylist = idx;}
 							args.properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
 							overwriteProperties(args.properties); // Updates panel							
@@ -2837,7 +2839,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const path = args.properties.importPlaylistPath[1];
 							const formatMask = JSON.parse(args.properties.importPlaylistMask[1]);
-							importTextPlaylist({path, formatMask})
+							const queryFilters = JSON.parse(args.properties.importPlaylistFilters[1]);
+							importTextPlaylist({path, formatMask, queryFilters})
+						}});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuName, entryText: 'Configure filters...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+							let input;
+							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n ["%channels% LESS 3", "%rating% GREATER 2"]', scriptName + ': ' + name, args.properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							catch (e) {return;}
+							if (!input.length) {input = '[]';}
+							try {JSON.parse(input);}
+							catch (e) {console.log('Playlist Tools: Invalid filter array'); return;}
+							if (input !== args.properties.importPlaylistFilters[1]) {args.properties.importPlaylistFilters[1] = input;}
+							overwriteProperties(args.properties); // Updates panel	
 						}});
 					}
 					menu.newEntry({menuName, entryText: 'sep'});
@@ -3140,7 +3155,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
 					}
 					// Remove duplicates
-					handleListFrom = do_remove_duplicatesV2(handleListFrom);
+					handleListFrom = do_remove_duplicates(handleListFrom);
 					// Remove tracks on destination list
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});
 					// Pick

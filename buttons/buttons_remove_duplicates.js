@@ -34,7 +34,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	sortInputA:	["Tag or titleformat expression to check", "artist"	],
 	sortInputB:	["Tag or titleformat expression to check", "date"	],
 	sortInputC:	["Tag or titleformat expression to check", "title"	],
-	nAllowed:	["Number of duplicates allowed (n + 1)"	 , 0		],
+	nAllowed:	["Number of duplicates allowed (n + 1)"	 , 1		]
 };
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
@@ -49,9 +49,9 @@ var newButtons = {
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix, void(0), 4); //This gets all the panel properties at once but 4th
 		let sortInput = badSortInput.filter((n) => n); //Filter the holes, since they can appear at any place!
-        do_remove_duplicatesV2(null, null, sortInput);
+        do_remove_duplicates(null, null, sortInput);
 		t1 = Date.now();
-		console.log("Call to do_remove_duplicatesV2 took " + (t1 - t0) + " milliseconds.");
+		console.log("Call to do_remove_duplicatesV3 took " + (t1 - t0) + " milliseconds.");
 	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
 	
 	RemoveDuplicatesV3: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Filter playlist', function () {
@@ -60,7 +60,7 @@ var newButtons = {
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
 		let nAllowed = badSortInput.splice(3, 1); // But we take away 4th variable for later
 		let sortInput = badSortInput.filter((n) => n); //Filter the holes, since they can appear at any place!
-        do_remove_duplicatesV3(null, null, sortInput, nAllowed);
+        do_remove_duplicates(null, null, sortInput, nAllowed);
 		t1 = Date.now();
 		console.log("Call to do_remove_duplicatesV3 took " + (t1 - t0) + " milliseconds.");
 	}, null, g_font,'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter), // Changes a bit the tooltip to show duplicates number separated

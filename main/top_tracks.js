@@ -47,7 +47,7 @@ function do_top_tracks({
 		
 		//Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			handleList = do_remove_duplicatesV2(handleList, sortBy, checkDuplicatesBy);
+			handleList = do_remove_duplicates(handleList, sortBy, checkDuplicatesBy);
 		}
 		
 		// Output n tracks

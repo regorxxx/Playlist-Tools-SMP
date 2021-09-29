@@ -57,7 +57,7 @@ function do_top_rated_tracks({
 			catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 			//Find and remove duplicates
 			if (checkDuplicatesBy !== null) {
-				handleList_i = do_remove_duplicatesV2(handleList_i, sortBy, checkDuplicatesBy);
+				handleList_i = do_remove_duplicates(handleList_i, sortBy, checkDuplicatesBy);
 			}
 			handleList.AddRange(handleList_i);
 			currRating--;

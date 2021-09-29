@@ -87,12 +87,12 @@ if (!barProperties.firstPopup[1]) {
 }
 
 // Global toolbar color
-toolbarColor = barProperties.toolbarColor[1];
-textColor = barProperties.textColor[1];
+toolbarColor = barProperties.toolbarColor[1]; // buttons_xxx.js
+textColor = barProperties.textColor[1]; // buttons_xxx.js
 bToolbar = toolbarColor !== -1 ? true : false; // Change this on buttons bars files to set the background color
 
 // Tooltip at empty bar
-toolbarTooltip = 'Shift + L. Click to configure...';
+toolbarTooltip = 'R. Click to configure...';
 
 // Buttons
 const buttonsPathDef = [	 // Add here your buttons path

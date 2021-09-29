@@ -239,7 +239,7 @@ function do_search_same_by({
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			queryhandle_list = do_remove_duplicatesV2(queryhandle_list, sortBy, checkDuplicatesBy);
+			queryhandle_list = do_remove_duplicates(queryhandle_list, sortBy, checkDuplicatesBy);
 		}
 		
 		let oldCount = queryhandle_list.Count;
