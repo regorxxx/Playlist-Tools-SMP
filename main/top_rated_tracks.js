@@ -8,13 +8,13 @@
  */
 
 include('remove_duplicates.js');
-if (!utils.CheckComponent("foo_playcount")) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
+if (!utils.CheckComponent('foo_playcount')) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Rated Tracks
 function do_top_rated_tracks({
 						playlistLength = 50, 
-						sortBy = "$sub(99999,%play_count%)", 
-						checkDuplicatesBy = ["title", "artist", "date"],
+						sortBy = '$sub(99999,%play_count%)', 
+						checkDuplicatesBy = ['title', 'artist', 'date'],
 						forcedQuery = '',
 						ratingLimits = [1,5],
 						ratingTag = 'rating',
@@ -52,7 +52,7 @@ function do_top_rated_tracks({
 			let query = (bFunc ? '"' + ratingTag + '"' : ratingTag) + ' EQUAL ' + currRating;
 			let handleList_i;
 			query = forcedQuery.length ? '(' + query + ') AND (' + forcedQuery + ')' : query;
-			console.log("Query created: " + query);
+			console.log('Query created: ' + query);
 			try {handleList_i = fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 			catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 			//Find and remove duplicates
@@ -74,6 +74,6 @@ function do_top_rated_tracks({
 		//Insert to playlist
 		plman.InsertPlaylistItems(plman.ActivePlaylist, 0, handleList);
 		
-        console.log("Playlist created: " + playlistName);
-		console.log("Items retrieved by query: " + handleList.Count  + " tracks");
+        console.log('Playlist created: ' + playlistName);
+		console.log('Items retrieved by query: ' + handleList.Count  + ' tracks');
 }

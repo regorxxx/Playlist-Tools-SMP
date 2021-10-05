@@ -3,7 +3,7 @@
 /* 
 	Automatic tagging...
 	File processing takes time, specially for some functions (ReplayGain, etc.), so we delay next step execution some ms
-	according to step and track selected count. Naive approach but works, no "blocked file" while processing.
+	according to step and track selected count. Naive approach but works, no 'blocked file' while processing.
 	
 	Note there is no way to know when some arbitrary plugin finish their processing. Callbacks for meta changes are dangerous here.
 	Some plugins expect user input for final tagging after processing the files (ReplayGain for ex.), so that approach would delay 
@@ -13,7 +13,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\tags_automation.js');
 include('..\\helpers\\helpers_xxx_properties.js');
-var prefix = "";
+var prefix = '';
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Automate Tags', {author:'xxx'});
@@ -24,7 +24,7 @@ try { //May be loaded along other buttons
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Automate Tags Button loaded.');
 }
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = {	//You can simply add new properties here
 };
@@ -37,7 +37,7 @@ var newButtons = {
 		let t1 = 0;
         tagsAutomation();
 		t1 = Date.now();
-		console.log("Call to Automate Tags took " + (t1 - t0) + " milliseconds.");
+		console.log('Call to Automate Tags took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font, 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags),
 };
 // Check if the button list already has the same button ID

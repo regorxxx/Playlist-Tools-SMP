@@ -13,11 +13,11 @@
 include('..\\helpers\\helpers_xxx.js');
  
 // Script
-const bRgScan = utils.CheckComponent("foo_rgscan", true);
-const bBiometric = utils.CheckComponent("foo_biometric", true);
-const bMassTag = utils.CheckComponent("foo_masstag", true);
-const bDynamicRange = utils.CheckComponent("foo_dynamic_range", true);
-const bAudioMd5 = utils.CheckComponent("foo_audiomd5", true);
+const bRgScan = utils.CheckComponent('foo_rgscan', true);
+const bBiometric = utils.CheckComponent('foo_biometric', true);
+const bMassTag = utils.CheckComponent('foo_masstag', true);
+const bDynamicRange = utils.CheckComponent('foo_dynamic_range', true);
+const bAudioMd5 = utils.CheckComponent('foo_audiomd5', true);
 var sel_items = null;
 var count_items = null;
 var iStep = null;
@@ -142,19 +142,19 @@ function step(i) {
 	iStep++;
 	switch (i) {
 		case 0: // Less than 100 ms / track?
-			if (bRgScan) {bSucess = fb.RunContextCommandWithMetadb("ReplayGain/Remove ReplayGain information from files", sel_items, 8);} // Replay gain info is not always removed
+			if (bRgScan) {bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', sel_items, 8);} // Replay gain info is not always removed
 			else {bSucess = false;}
 			break;
 		case 1:  // Takes 260 ms / track
-			if (bBiometric) {bSucess = fb.RunContextCommandWithMetadb("Save fingerprint to file(s)", sel_items, 8);}
+			if (bBiometric) {bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', sel_items, 8);}
 			else {bSucess = false;}
 			break;
 		case 2: // Less than 170 ms / track?
-			if (bMassTag) {bSucess = fb.RunContextCommandWithMetadb("Tagging/Scripts/MD5", sel_items, 8);}
+			if (bMassTag) {bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', sel_items, 8);}
 			else {bSucess = false;}
 			break;
 		case 3: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-			if (bDynamicRange) {bSucess = fb.RunContextCommandWithMetadb("Dynamic Range Meter", sel_items, 8);}
+			if (bDynamicRange) {bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', sel_items, 8);}
 			else {bSucess = false;}
 			break;
 		case 4: // These require user input before saving, so they are read only operations and can be done at the same time
@@ -163,13 +163,13 @@ function step(i) {
 				let cacheSel_items = sel_items.Clone();
 				if (bAudioMd5) {
 					setTimeout(function(){
-						bSucess = fb.RunContextCommandWithMetadb("Utilities/Create Audio MD5 checksum", cacheSel_items, 8);
+						bSucess = fb.RunContextCommandWithMetadb('Utilities/Create Audio MD5 checksum', cacheSel_items, 8);
 					}, currentTime); // Takes 170 ms / track
 					currentTime += 200 * count_items; // But we give them some time to run before firing the next one
 				}
 				if (bRgScan) {
 					setTimeout(function(){
-						bSucess = fb.RunContextCommandWithMetadb("ReplayGain/Scan as albums (by tags)", cacheSel_items, 8);
+						bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSel_items, 8);
 					}, currentTime); // Takes ~500 ms / track
 					currentTime += 510 * count_items; // But we give them some time to run before firing the next one
 				}

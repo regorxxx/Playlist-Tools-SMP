@@ -8,7 +8,7 @@
  */
 
 include('remove_duplicates.js');
-if (!utils.CheckComponent("foo_playcount")) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
+if (!utils.CheckComponent('foo_playcount')) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
 
 const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
 
@@ -23,7 +23,7 @@ function do_top_tracks_from_date({
 						forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)',
 						} = {}) {
 		// Sanity checks
-		if (!utils.CheckComponent("foo_enhanced_playcount"))  {fb.ShowPopupMessage('foo_enhanced_playcount is not installed and is required.', 'do_top_tracks_from_date'); return;}
+		if (!utils.CheckComponent('foo_enhanced_playcount'))  {fb.ShowPopupMessage('foo_enhanced_playcount is not installed and is required.', 'do_top_tracks_from_date'); return;}
 		if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_top_tracks_from_date: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);}
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'do_top_tracks_from_date'); return;}
@@ -148,7 +148,7 @@ function do_top_tracks_from_date({
 		// Add to playlist
 		plman.InsertPlaylistItems(plman.ActivePlaylist, 0, handleList);
 		
-		console.log("Playlist created: " + playlist_name);
+		console.log('Playlist created: ' + playlist_name);
 }
 
 function weeksBetween(d1, d2) { // d1 and d2 are Dates objects

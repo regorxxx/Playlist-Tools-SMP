@@ -3,9 +3,9 @@
 /*	
 	Scatter by tags v 0.1 21/04/21
 	-----------------------------------
-	Reorders selection to avoid consecutive tracks with the same "tagValue" on tags ("tagName").
+	Reorders selection to avoid consecutive tracks with the same 'tagValue' on tags ('tagName').
 	Can be used to scatter instrumental tracks, an specific genre, etc.
-	Output is sent to active playlist or as a handle list by setting "bSendToActivePls".
+	Output is sent to active playlist or as a handle list by setting 'bSendToActivePls'.
 */ 
 
 function do_scatter_by_tags({
@@ -53,12 +53,12 @@ function do_scatter_by_tags({
 	// And output
 	selItemsArray = new FbMetadbHandleList(selItemsArray);
 	if (bSendToActivePls) {
-		// "Hack" Inserts on focus (may be at any place of selection), but then removes the original selection, 
+		// 'Hack' Inserts on focus (may be at any place of selection), but then removes the original selection, 
 		// so inserted tracks get sent to the right position. Only works for contiguous selections!
 		plman.UndoBackup(plman.ActivePlaylist);
 		plman.InsertPlaylistItems(plman.ActivePlaylist, plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist), selItemsArray);
 		plman.RemovePlaylistSelection(plman.ActivePlaylist); 
-		console.log('Selection scattered by tag(s) "' + tagValue.join(',') + '" (' + tagName.join(', ') + ') on playlist: ' + plman.GetPlaylistName(plman.ActivePlaylist));
+		console.log('Selection scattered by tag(s) \'' + tagValue.join(',') + '\' (' + tagName.join(', ') + ') on playlist: ' + plman.GetPlaylistName(plman.ActivePlaylist));
 	}
 	return selItemsArray;
 

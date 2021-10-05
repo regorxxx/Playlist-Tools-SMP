@@ -4,7 +4,7 @@
 	Search same by v 1.0 06/04/21
 	Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
 	Note this ONLY USES already existing tags, it will not calculate similarity or anything else. 
-	i.e. "dynamic_genre" tag will not be calculated on the fly. Use "search_bydistance.js" for that.
+	i.e. 'dynamic_genre' tag will not be calculated on the fly. Use 'search_bydistance.js' for that.
 	If some tags are missing, then they get skipped.
 	
 	Conditions are set as an object with keys (tags) and values (number of coincidences):
@@ -32,7 +32,7 @@
     You can change sorting, playlist name and/or force a final query (added to the other requisites).
 	
 	- Tags logic - 
-	Title-format only tags, like "rating" or "$year(%date%)" are acquired via TF, but must be written without "%", like the rest. See dynamicTags.
+	Title-format only tags, like 'rating' or '$year(%date%)' are acquired via TF, but must be written without '%', like the rest. See dynamicTags.
 	ONLY expressions defined there can be used. Why? No way to know if the output is a number, a string, etc. if arbitrary TF expressions are allowed.
 	
 	When the tags are not strings (genre, etc.) but numeric values (date, etc.), the pair {key: value} work as a range. See numericTags.
@@ -124,7 +124,7 @@ function do_search_same_by({
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
 		if (logicDic.indexOf(logic) === -1) {
-			console.log("do_search_same_by(): logic (" + logic + ") is wrong");
+			console.log('do_search_same_by(): logic (' + logic + ') is wrong');
 			return false;
 		}
 		

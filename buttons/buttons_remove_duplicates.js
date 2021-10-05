@@ -9,7 +9,7 @@
 	i.e. Checking artist/date, effectively outputs only 1 track per year for every artist.
 		
 	Remove DuplicatesV3 allows a configurable number of duplicates allowed:
-	number of final duplicates is always nAllowed + 1, since you allow n duplicates and the "main" copy.
+	number of final duplicates is always nAllowed + 1, since you allow n duplicates and the 'main' copy.
 	
 	Tooltip texts are changed according to the variables set!
 */
@@ -17,7 +17,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\remove_duplicates.js');
 include('..\\helpers\\helpers_xxx_properties.js');
-var prefix = "rd_";
+var prefix = 'rd_';
 
 try { //May be loaded along other buttons
 	window.DefinePanel('Remove Duplicates Button', {author:'xxx'});
@@ -28,14 +28,18 @@ try { //May be loaded along other buttons
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset properties
 	console.log('Remove Duplicates Button loaded.');
 }
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	sortInputA:	["Tag or titleformat expression to check", "artist"	],
-	sortInputB:	["Tag or titleformat expression to check", "date"	],
-	sortInputC:	["Tag or titleformat expression to check", "title"	],
-	nAllowed:	["Number of duplicates allowed (n + 1)"	 , 1		]
+	sortInputA:	['Tag or titleformat expression to check', 'artist'	],
+	sortInputB:	['Tag or titleformat expression to check', 'date'	],
+	sortInputC:	['Tag or titleformat expression to check', 'title'	],
+	nAllowed:	['Number of duplicates allowed (n + 1)'	 , 1		]
 };
+newButtonsProperties['sortInputA'].push({func: isStringWeak}, newButtonsProperties['sortInputA'][1]);
+newButtonsProperties['sortInputB'].push({func: isStringWeak}, newButtonsProperties['sortInputB'][1]);
+newButtonsProperties['sortInputC'].push({func: isStringWeak}, newButtonsProperties['sortInputC'][1]);
+newButtonsProperties['nAllowed'].push({greaterEq: 0, func: isInt}, newButtonsProperties['nAllowed'][1]);
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
@@ -51,7 +55,7 @@ var newButtons = {
 		let sortInput = badSortInput.filter((n) => n); //Filter the holes, since they can appear at any place!
         do_remove_duplicates(null, null, sortInput);
 		t1 = Date.now();
-		console.log("Call to do_remove_duplicatesV3 took " + (t1 - t0) + " milliseconds.");
+		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
 	
 	RemoveDuplicatesV3: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Filter playlist', function () {
@@ -62,7 +66,7 @@ var newButtons = {
 		let sortInput = badSortInput.filter((n) => n); //Filter the holes, since they can appear at any place!
         do_remove_duplicates(null, null, sortInput, nAllowed);
 		t1 = Date.now();
-		console.log("Call to do_remove_duplicatesV3 took " + (t1 - t0) + " milliseconds.");
+		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter), // Changes a bit the tooltip to show duplicates number separated
 };
 // Check if the button list already has the same button ID

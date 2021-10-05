@@ -5,7 +5,7 @@
 	Search n tracks (randomly) on library matching at least 2 styles and 6 moods from the current selected track.
 	You can configure the number of tracks at properties panel. Also forced query to pre-filter tracks.
 		
-	NOTE: If you want to use arbitrary tags, use "search_same_by.js" instead.
+	NOTE: If you want to use arbitrary tags, use 'search_same_by.js' instead.
  */
 
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -13,14 +13,14 @@ include('..\\helpers\\helpers_xxx_math.js');
 include('remove_duplicates.js');
  
 function do_search_same_style_moods(	playlistLength = 50, 
-										forcedQuery = "NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad",
-										sortBy = "", 
-										checkDuplicatesBy = ["title", "artist", "date"]
+										forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
+										sortBy = '', 
+										checkDuplicatesBy = ['title', 'artist', 'date']
 									) {
 		if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_search_same_style_moods: playlistLength (' + playlistLength + ') must be greater than zero'); return;}							
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
-        let playlist_name = "Search...";
+        let playlist_name = 'Search...';
 		let sel = fb.GetFocusItem();
         if (!sel) {
 			console.log('No track selected for mix.');
@@ -45,10 +45,10 @@ function do_search_same_style_moods(	playlistLength = 50,
         let query = [];
 		let sel_info = sel.GetFileInfo();
         //Loop styles
-		let styleIdx = sel_info.MetaFind("style");
+		let styleIdx = sel_info.MetaFind('style');
         let styleNumber = (styleIdx !== -1) ? sel_info.MetaValueCount(styleIdx) : 0;
 		if (styleNumber === 0) {
-			console.log('Track selected has no "style" tag');
+			console.log('Track selected has no \'style\' tag');
 			return;
 		}
         let style = [];
@@ -61,14 +61,14 @@ function do_search_same_style_moods(	playlistLength = 50,
         }
 		let k = styleNumber >= 2 ? 2 : 1; //on combinations of 2
 		style = k_combinations(style, k); 
-		query[ql] = "";
-		query[ql] += query_combinations(style, "style", "OR", "AND");
+		query[ql] = '';
+		query[ql] += query_combinations(style, 'style', 'OR', 'AND');
 				
         //Loop moods
-		let moodIdx = sel_info.MetaFind("mood");
+		let moodIdx = sel_info.MetaFind('mood');
         let moodNumber = (moodIdx !== -1) ? sel_info.MetaValueCount(moodIdx) : 0;
 		if (moodNumber === 0) {
-			console.log('Track selected has no "mood" tag');
+			console.log('Track selected has no \'mood\' tag');
 			return;
 		}
         let mood = [];
@@ -81,14 +81,14 @@ function do_search_same_style_moods(	playlistLength = 50,
         }
 		k = moodNumber >= 6 ? 6 : moodNumber; //on combinations of 6
 		mood = k_combinations(mood, k);
-		query[ql] = "";
-		query[ql] += query_combinations(mood, "mood", "OR", "AND");
+		query[ql] = '';
+		query[ql] += query_combinations(mood, 'mood', 'OR', 'AND');
 		
         //Query
 		ql = query.length;
-		query[ql] = query_join(query, "AND"); //join previous query's
+		query[ql] = query_join(query, 'AND'); //join previous query's
 		if (forcedQuery) {
-			query[ql] = "(" + query[ql] + ") AND " + forcedQuery;
+			query[ql] = '(' + query[ql] + ') AND ' + forcedQuery;
 		}
 		
 		//Load query
@@ -114,7 +114,7 @@ function do_search_same_style_moods(	playlistLength = 50,
 		//Create playlist
 		plman.InsertPlaylistItems(plman.ActivePlaylist, 0, queryhandle_list);
 
-        console.log("Playlist created: " + query[ql]);
-		console.log("Items retrieved by query: " + oldCount + " tracks");
-		console.log("Final selection: " +  queryhandle_list.Count  + " tracks");
+        console.log('Playlist created: ' + query[ql]);
+		console.log('Items retrieved by query: ' + oldCount + ' tracks');
+		console.log('Final selection: ' +  queryhandle_list.Count  + ' tracks');
 }

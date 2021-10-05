@@ -3,7 +3,7 @@ include('..\\..\\helpers\\helpers_xxx.js');
 
 // include('EDIT.js');
 include('..\\..\\helpers\\helpers_xxx_properties.js');
-var prefix = "EDIT";
+var prefix = 'EDIT';
  
 //Always loaded along other buttons and panel
 include('..\\..\\helpers\\buttons_panel_xxx.js');
@@ -11,10 +11,10 @@ var g_font = _gdiFont('Segoe UI', 12);
 var buttonCoordinates = {x: 0, y: window.Height - 22, w: 98, h: 22};
 var buttonOrientation = 'x';
 
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	EDIT: ["EDIT", 0],
+	EDIT: ['EDIT', 0],
 };
 // newButtonsProperties = {...defaultProperties, ...newButtonsProperties}; // Add default properties at the beginning to be sure they work 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
@@ -30,7 +30,7 @@ var newButtons = {
 		let [EDIT] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
 		// EDIT();
 		t1 = Date.now();
-		console.log("Call to EDIT took " + (t1 - t0) + " milliseconds.");
+		console.log('Call to EDIT took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'EDIT', prefix, newButtonsProperties),
 };
 // Check if the button list already has the same button ID

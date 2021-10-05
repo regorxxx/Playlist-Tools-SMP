@@ -18,8 +18,8 @@ try { //May be loaded along other buttons
 	console.log('Playlist Tools Macros (CUSTOM) Button loaded.');
 }
 
-var prefix = "ptc_";
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+var prefix = 'ptc_';
+prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
 	customName: ['Name for the custom UI button', 'Customize!'],
 	menu: 		['Menu entry', ''],

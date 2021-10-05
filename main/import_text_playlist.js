@@ -3,6 +3,7 @@
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\helpers\\helpers_xxx_playlists_files.js');
 include('remove_duplicates.js');
 
 // queryFilters will apply different conditions to the possible matches, and the ones which satisfy more will be selected
@@ -11,7 +12,7 @@ include('remove_duplicates.js');
 // Track A by Artist A -> (importTextPlaylist) -> output:
 // 		01 - Track A -> Artist: Artist A//Artist B
 // 		01 - Track A -> Artist: Artist A
-// Since the default filter compares title and artist, both tracks are "different" since only one artist
+// Since the default filter compares title and artist, both tracks are 'different' since only one artist
 // is matched. Thus both tracks would be sent to the playlist. This behavior is preferred to only use
 // title on the filter by default, since there could be cases where a list has same titles by different artists:
 // Track A by Artist A
@@ -30,6 +31,8 @@ function importTextPlaylist({
 	let text = '';
 	if (_isFile(path)) {
 		text = utils.ReadTextFile(path);
+		const codePage = checkCodePage(text.split('\r\n'), '.' + path.split('.').pop(), true);
+		if (codePage !== -1) {text = utils.ReadTextFile(path, codePage);}
 		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
 	} else if (path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1) {
 		let request = new ActiveXObject('Microsoft.XMLHTTP');
@@ -39,7 +42,7 @@ function importTextPlaylist({
 			if (request.readyState === 4) {
 				if (request.status === 200) {
 					var type = request.getResponseHeader('Content-Type');
-					if (type.indexOf("text") !== 1) {
+					if (type.indexOf('text') !== 1) {
 						text = request.responseText;
 						return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
 					} else {console.log('importTextPlaylist(): could not retrieve any text from ' + path); return -1;}
@@ -87,6 +90,54 @@ function extractTags(text, formatMask) {
 		for (let j = 0; j < lines; j++) {
 			const line = text[j];
 			let breakPoint = [];
+			let prevIdx = 0;
+			let bPrevTag = false;
+			formatMask.forEach((mask, index) => {
+				if (mask.length) { // It's a string to extract
+					const nextIdx = line.indexOf(mask, prevIdx);
+					if (mask.indexOf('%') === -1) { // It's breakpoint
+						if (nextIdx !== -1 && bPrevTag) {breakPoint.push(nextIdx);};
+						bPrevTag = false;
+					} else if (index === 0) { // Or fist value is a tag, so extract from start
+						breakPoint.push(0);
+						bPrevTag = true;
+					} else if (index === maskLength - 1) { // Or last value is a tag, so extract until the end
+						breakPoint.push(prevIdx + formatMask[index - 1].length);
+						breakPoint.push(line.length + 1);
+					} else {
+						breakPoint.push(prevIdx + formatMask[index - 1].length);
+						bPrevTag = true;
+					}
+					if (nextIdx !== -1) {prevIdx = nextIdx;}
+				}
+			});
+			let lineTags = {};
+			if (breakPoint.length) {
+				let idx = 0;
+				formatMask.forEach((tag, i) => {
+					if (tag.length) { // It's a string to extract
+						if (tag.indexOf('%') !== -1) { // It's a tag to extract
+							lineTags[tag.replace(/%/g,'').toLowerCase()] = line.slice(breakPoint[idx], breakPoint[idx + 1]).toLowerCase();
+							idx += 2;
+						}
+					}
+				});
+			}
+			if (!Object.keys(lineTags).length) {console.log('extractTags(): line ' + (j + 1)+ ' does not have tags matched by mask');}
+			tags.push(lineTags);
+		}
+	} else {console.log('extractTags(): no text was provided.')}
+	return tags.length ? tags : null;
+}
+
+function extractTagsV2(text, formatMask) {
+	let tags = [];
+	if (typeof text !== 'undefined' && text.length) {
+		const maskLength = formatMask.length;
+		let lines = text.length;
+		for (let j = 0; j < lines; j++) {
+			const line = text[j];
+			let breakPoint = [];
 			formatMask.forEach((mask, index) => {
 				if (mask.length) { // It's a string to extract
 					if (mask.indexOf('%') === -1) { // It's breakpoint
@@ -125,7 +176,6 @@ function extractTags(text, formatMask) {
 	return tags.length ? tags : null;
 }
 
-
 function getQueryMatches(tags, queryFilters) {
 	let matches = new FbMetadbHandleList();
 	let notFound = [];
@@ -134,18 +184,28 @@ function getQueryMatches(tags, queryFilters) {
 	tags.forEach((handleTags, idx) => {
 		if (Object.keys(handleTags).length) {
 			const queryTags = Object.keys(handleTags).map((key) => {
-					const query = key + ' IS ' + handleTags[key];
-					if (key === 'artist' || key === 'album artist') {
-						const tfoKey = '"$stripprefix(%' +  key + '%,' + stripPrefix.join(',') + ')"';
-						const tagVal = sanitizeTagTfo(handleTags[key]); // Quote special chars
-						const tfo = '$stripprefix(' +  tagVal + ',' + stripPrefix.join(',') + ')';		
-						const tfoKeyVal = fb.TitleFormat(tfo).Eval(true);
-						if (!tfoKeyVal.length) {console.log('Error creating query: ' + tfo);}
-						const tfoQuery = tfoKey + ' IS ' + tfoKeyVal;
-						return query + ' OR ' + tfoQuery;
-					} else {
-						return query;
+				const query = key + ' IS ' + handleTags[key];
+				if (key === 'artist' || key === 'album artist' || key === 'title') {
+					const tfoKey = '"$stripprefix(%' +  key + '%,' + stripPrefix.join(',') + ')"';
+					const tagVal = sanitizeTagTfo(handleTags[key]); // Quote special chars
+					const tfo = '$stripprefix(' +  tagVal + ',' + stripPrefix.join(',') + ')';
+					const tfoKeyVal = fb.TitleFormat(tfo).Eval(true);
+					if (!tfoKeyVal.length) {console.log('Error creating query: ' + tfo);}
+					const tfoQuery = tfoKey + ' IS ' + tfoKeyVal;
+					let extraQuery = [];
+					if ((key === 'artist' || key === 'album artist') && !handleTags[key].startsWith('the')) {
+						extraQuery.push(key + ' IS the ' + handleTags[key]); // Done to match multivalued tags with 'the' on any item
+					} else if (key === 'title') {
+						if (handleTags[key].indexOf(',') !== -1) {
+							extraQuery.push(key + ' IS ' + handleTags[key].replace(/,/g,''));
+						}
+						extraQuery.push('"$replace(%' + key + '%,\',\',)" IS ' + handleTags[key]);
 					}
+					if (extraQuery.length) {extraQuery = query_join(extraQuery, 'OR');}
+					return query + ' OR ' + tfoQuery + (extraQuery.length ? ' OR ' + extraQuery : '');
+				} else {
+					return query;
+				}
 			});
 			const query = query_join(queryTags, 'AND');
 			const handles = checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null;

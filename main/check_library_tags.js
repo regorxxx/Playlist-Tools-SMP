@@ -17,20 +17,20 @@
 	Excluding tags to be check against dictionary greatly speeds up the process. For example for composers, etc.
 	
 	(*) The rationale is simple. Minor lexical errors on the values are expected to happen only from time to time.
-	That implies there could be a "right value", with much higher freq. of apparition, which may be known or not.
-	Which values are lexical errors and which ones are "right values" is done only by freq. comparison:
+	That implies there could be a 'right value', with much higher freq. of apparition, which may be known or not.
+	Which values are lexical errors and which ones are 'right values' is done only by freq. comparison:
 	
 	Notes:
 		- False positives are expected. I.e. a rare tag only present on a few tracks on the library, may be considered 
-		as "possible error" but without a known "right value" as alternative.
+		as 'possible error' but without a known 'right value' as alternative.
 		
 		- False positives are easily recognizable. Alternative values are usually reported, if a positive has no 
 		alternative value, then it should be pretty easy to see if it's a real error or not. Rare tags may be added
 		to the exclusion list for that purpose.
 		
 		- False negatives are possible. If you write systematically a wrong tag value in your tracks then,
-		by freq. comparison, that value would be considered to be right. It may be "Rockj" in your entire library. 
-		A track with "Rock", would be reported as the wrong value. A check against a dictionary would be required
+		by freq. comparison, that value would be considered to be right. It may be 'Rockj' in your entire library. 
+		A track with 'Rock', would be reported as the wrong value. A check against a dictionary would be required
 		to catch those errors, so that's left to the user responsibility.
 		
 		- False negatives are hard to recognize. Since they are not a random (low freq.) error , but a systematic one,
@@ -57,7 +57,7 @@ include('..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://gi
 const checkTags_properties = {
 	tagNamesToCheck: 	['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople'],
 	tagsToCompare:	 	['Tags to compare against (\'tag name,...\')', 'genre,style;composer,involvedpeople,artist'],
-	tagValuesExcluded: 	['Tag values to be excluded (\'tag name,value;...\')', ''],
+	tagValuesExcludedPath: 	['File listing tag values to be excluded', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'check_library_tags_exclusion.json'],
 	tagNamesExcludedDic:['Tags to be excluded at dictionary checking (\'tag name,...\')', 'album,composer,involvedpeople,artist'],
 	bAskForConfigTags: 	['Enables popup asking to config excluded tags', false],
 	bUseDic:		 	['Enables dictionary checking for every tag value (slow!)', false],
@@ -66,7 +66,7 @@ const checkTags_properties = {
 };
 checkTags_properties['tagNamesToCheck'].push({func: isString}, checkTags_properties['tagNamesToCheck'][1]);
 checkTags_properties['tagsToCompare'].push({func: isStringWeak}, checkTags_properties['tagsToCompare'][1]);
-checkTags_properties['tagValuesExcluded'].push({func: isStringWeak}, checkTags_properties['tagValuesExcluded'][1]);
+checkTags_properties['tagValuesExcludedPath'].push({func: isString, portable: true}, checkTags_properties['tagValuesExcludedPath'][1]);
 checkTags_properties['tagNamesExcludedDic'].push({func: isStringWeak}, checkTags_properties['tagNamesExcludedDic'][1]);
 checkTags_properties['dictName'].push({func: isString}, checkTags_properties['dictName'][1]);
 checkTags_properties['dictPath'].push({func: isString, portable: true}, checkTags_properties['dictPath'][1]); // No need for a popup since the default dic will always be there
@@ -97,7 +97,7 @@ if (typeof buttons === 'undefined' && typeof bNotProperties === 'undefined') { /
 function checkTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 					properties = getPropertiesPairs(checkTags_properties, checkTags_prefix),
-					freqThreshold = 0.2, // Any tag value appearing lower than this value in % is considered as "possible error"
+					freqThreshold = 0.2, // Any tag value appearing lower than this value in % is considered as 'possible error'
 					maxSizePerTag = 30, // From the previous pool, only the first X values are shown
 					stringSimilThreshold = 0.85, // How much tag values must be similar to be considered as alternative values
 					bUseDic = properties['bUseDic'][1],
@@ -131,11 +131,8 @@ function checkTags({
 	const keySplit = '***'; // For the map
 	
 	// Skipped values at pre-filter
-	let tagValuesExcluded = {}; // i x k
-	let inputTags = [...new Set(properties['tagValuesExcluded'][1].split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
-	if (inputTags.length) {
-		mergeStringToTagsObject(tagValuesExcluded, inputTags);
-	}
+	const tagValuesExcluded = loadTagsExcluded(properties['tagValuesExcludedPath'][1]); // i x k sets
+	
 	const tagsToCheck = [...new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean))]; // i, filter holes and remove duplicates
 	if (!tagsToCheck.length) {
 		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
@@ -500,18 +497,13 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 	fb.ShowPopupMessage(textA, popupTitle + ': possible errors');
 	// Set verified tags known to be right Popup
 	if (properties['bAskForConfigTags'][1]) {
-		let currentTags = [];
-		Object.keys(tagValuesExcluded).forEach( (key) => {currentTags.push([...tagValuesExcluded[key]].map((value) => {return key + ',' + value;}).join(';'));});
+		let currentTags = objectToPairs(tagValuesExcluded);
 		let answer = WshShell.Popup('Do you want to add new tags for exclusion in future reports?', 0, window.Name, popup.question + popup.yes_no);
 		if (answer === popup.yes) {
-			let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, currentTags.join(';'));
-			if (inputTags.length && currentTags.join(';') !== inputTags) {
-				tagValuesExcluded = {};
-				mergeStringToTagsObject(tagValuesExcluded, inputTags);
-				let currentTags = [];
-				Object.keys(tagValuesExcluded).forEach( (key) => {currentTags.push([...tagValuesExcluded[key]].map((value) => {return key + ',' + value;}).join(';'));});
-				properties['tagValuesExcluded'][1] = currentTags.join(';'); // Instead of inputTags, to remove duplicates
-				overwriteProperties(properties);
+			let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, currentTags);
+			if (currentTags !== inputTags) {
+				tagValuesExcluded = pairsToObj(inputTags);
+				_save(properties['tagValuesExcludedPath'][1], JSON.stringify(tagValuesExcluded, null, '\t'));
 			}
 		}
 	}
@@ -542,26 +534,49 @@ function addTagsToExclusionPopup({
 					properties = getPropertiesPairs(checkTags_properties, checkTags_prefix),
 					} = {}){
 	// Skipped values at pre-filter
-	const propertyTags = [...new Set(properties['tagValuesExcluded'][1].split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
+	const propertyTagsObj = _isFile(properties['tagValuesExcludedPath'][1]) ? _jsonParseFile(properties['tagValuesExcludedPath'][1], convertCharsetToCodepage('UTF-8')) : {}; // filter holes and remove duplicates
+	const propertyTags = objectToPairs(propertyTagsObj);
 	let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, propertyTags);
 	if (inputTags.length) {
-		inputTags = [...new Set(inputTags.split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates;
-		if (propertyTags !== inputTags) {
-			properties['tagValuesExcluded'][1] = inputTags;
-			overwriteProperties(properties);
+		const inputTagsObj = pairsToObj(inputTags);
+		const inputTagsObjStr = JSON.stringify(inputTagsObj, null, '\t');
+		const propertyTagsStr = JSON.stringify(propertyTagsObj, null, '\t');
+		if (propertyTagsStr !== inputTagsObjStr) {
+			_save(properties['tagValuesExcludedPath'][1], inputTagsObjStr);
 		}
 	}
 }
 
-function mergeStringToTagsObject(tagValuesExcluded, inputTags) {
-	inputTags = inputTags.split(';');
-	inputTags.forEach( (pair) => {
-		let [tag, value] = pair.split(',');
-		if (!tagValuesExcluded.hasOwnProperty(tag)){
-			tagValuesExcluded[tag] = new Set();
+function objectToPairs(inputObj) { // {A:[x,y],B:[z], ...} -> A,x;A,y;B,z;...
+	let outputStr = '';
+	let outputSet = new Set();
+	for (const key in inputObj) {
+		const arr = typeof inputObj[key] === 'array' ? inputObj[key].sort() : [...inputObj[key]].sort();
+		for (let value of arr) {
+			if (value) {outputSet.add(key + ',' + value);}
 		}
-		tagValuesExcluded[tag].add(value);
+	}
+	outputStr = [...outputSet].join(';');
+	return outputStr; // A,B;C,D;...
+}
+
+function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[z], ...}
+	const inputArr = [...new Set(inputStr.split(';').filter(Boolean))]; // filter holes and remove duplicates
+	let outputObj = {};
+	inputArr.forEach((pair) => {
+		const [key, value] = pair.split(',');
+		if (!outputObj.hasOwnProperty(key)) {outputObj[key] = bSet ? new Set() : [];}
+		if (!bSet) {outputObj[key].push(value);}
+		else {outputObj[key].add(value);}
 	});
+	if (!bSet) {for (const key in outputObj) {outputObj[key].sort();}}
+	return outputObj;
+}
+
+function loadTagsExcluded(path) { // filter holes and remove duplicates
+	let obj = _isFile(path) ? _jsonParseFile(path, convertCharsetToCodepage('UTF-8')) : {};
+	for (const key in obj) {obj[key] = new Set(obj[key].filter(Boolean));}
+	return obj;
 }
 
 // Levenshtein distance

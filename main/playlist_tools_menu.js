@@ -60,8 +60,13 @@ const menu_panelProperties = {
 };
 
 // Checks
-menu_properties['playlistLength'].push({greater: 0, func: Number.isSafeInteger}, menu_properties['playlistLength'][1]);
+menu_properties['playlistLength'].push({greater: 0, func: isInt}, menu_properties['playlistLength'][1]);
 menu_properties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['forcedQuery'][1]);
+menu_properties['forcedQueryMenusEnabled'].push({func: isJSON}, menu_properties['forcedQueryMenusEnabled'][1]);
+menu_properties['presets'].push({func: isJSON}, menu_properties['presets'][1]);
+menu_properties['keyTag'].push({func: (x) => {return (x === null || isString());}}, menu_properties['keyTag'][1]);
+menu_properties['styleGenreTag'].push({func: isJSON}, menu_properties['styleGenreTag'][1]);
+menu_properties['async'].push({func: isJSON}, menu_properties['async'][1]);
 menu_properties['ratingLimits'].push({func: (str) => {return (isString(str) && str.length === 3 && str.indexOf(',') === 1);}}, menu_properties['ratingLimits'][1]);
 
 /* 
@@ -386,6 +391,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Create new properties with previous args
 				menu_properties['sameByQueries'] = [name + ' queries', JSON.stringify(sameByQueries)];
 				menu_properties['sameByCustomArg'] = [name + ' Dynamic menu custom args', convertObjectToString(selArg.args.sameBy)];
+				// Checks
+				menu_properties['sameByQueries'].push({func: isJSON}, menu_properties['sameByQueries'][1]);
+				menu_properties['sameByCustomArg'].push({func: isString}, menu_properties['sameByCustomArg'][1]);
+				// Args
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED});
@@ -584,6 +593,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Create new properties with previous args
 				menu_properties['searchQueries'] = [name + ' queries', JSON.stringify(queryFilter)];
 				menu_properties['searchCustomArg'] = [name + ' Dynamic menu custom args', JSON.stringify(selArg)];
+				// Checks
+				menu_properties['searchQueries'].push({func: isJSON}, menu_properties['searchCustomArg'][1]);
+				menu_properties['searchCustomArg'].push({func: isJSON}, menu_properties['searchCustomArg'][1]);
+				// Args
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Standard search with queries:', func: null, flags: MF_GRAYED});
@@ -729,6 +742,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Create new properties with previous args
 				menu_properties['dynamicQueries'] = [name + ' queries', JSON.stringify(queryFilter)];
 				menu_properties['dynamicQueriesCustomArg'] = [name + ' Dynamic menu custom args', selArg.query];
+				// Checks
+				menu_properties['dynamicQueries'].push({func: isJSON}, menu_properties['dynamicQueries'][1]);
+				menu_properties['dynamicQueriesCustomArg'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['dynamicQueriesCustomArg'][1]);
+				// Args
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED});
@@ -892,6 +909,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			// And merge
 			menu_properties = {...menu_properties, ...toMerge};
 			menu_properties['similarBy'] = ['Search similar by Graph\\Dyngenre\\Weight... args', JSON.stringify(similarBy)];
+			// Check
+			menu_properties['similarBy'].push({func: isJSON}, menu_properties['similarBy'][1]);
 			// Set default args
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}], genreWeight: 0, styleWeight: 0, dyngenreWeight: 0, moodWeight: 0, keyWeight: 0, dateWeight: 0, bpmWeight: 0, composerWeight: 0, customStrWeight: 0, customNumWeight: 0, dyngenreRange: 0, keyRange: 0, dateRange: 0, bpmRange: 0, customNumRange: 0, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, sbd_max_graph_distance: 100, poolFilteringTag: '', poolFilteringN: 3, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: true, bProgressiveListOrder: false, bScatterInstrumentals: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN: 3, bCreatePlaylist: true};
 			// Menus
@@ -1182,7 +1201,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu_properties['sortInputFilter'] = [menuName + '\\' + name + ' Tags to filter playlists', sortInputFilter.join(',')];
 					menu_properties['nAllowed'] = [menuName + '\\' + name + ' Filtering number allowed (n + 1)', nAllowed];
 					// Checks
-					menu_properties['nAllowed'].push({greaterEq: 0, func: Number.isSafeInteger}, menu_properties['nAllowed'][1]);
+					menu_properties['sortInputDuplic'].push({func: isString}, menu_properties['sortInputDuplic'][1]);
+					menu_properties['sortInputFilter'].push({func: isString}, menu_properties['sortInputFilter'][1]);
+					menu_properties['nAllowed'].push({greaterEq: 0, func: isInt}, menu_properties['nAllowed'][1]);
 					// Merge
 					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
@@ -1271,6 +1292,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Create new properties with previous args
 					menu_properties['queryFilter'] = [menuName + '\\' + name + ' queries', JSON.stringify(queryFilter)];
 					menu_properties['queryFilterCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', selArg.query];
+					// Check
+					menu_properties['queryFilter'].push({func: isJSON}, menu_properties['queryFilter'][1]);
+					menu_properties['queryFilter'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['queryFilter'][1]);
+					// Args
 					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
@@ -1475,7 +1500,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				if (!menu_properties.hasOwnProperty('playlistSplitSize')) {
 					menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
 					// Checks
-					menu_properties['playlistSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['playlistSplitSize'][1]);
+					menu_properties['playlistSplitSize'].push({greater: 1, func: isInt}, menu_properties['playlistSplitSize'][1]);
 				}
 				// Bools
 				const bMerge = !menusEnabled.hasOwnProperty(nameMerge) || menusEnabled[nameMerge] === true;
@@ -1644,7 +1669,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				if (!menu_properties.hasOwnProperty('playlistSplitSize')) {
 					menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
 					// Checks
-					menu_properties['playlistSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['playlistSplitSize'][1]);
+					menu_properties['playlistSplitSize'].push({greater: 1, func: isInt}, menu_properties['playlistSplitSize'][1]);
 				}
 				// Bools
 				const bSend = !menusEnabled.hasOwnProperty(nameSend) || menusEnabled[nameSend] === true;
@@ -1781,6 +1806,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Create new properties with previous args
 					menu_properties['sortLegacy'] = [menuName + '\\' + name + '  entries', JSON.stringify(sortLegacy)];
 					menu_properties['sortLegacyCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', JSON.stringify(selArg)];
+					// Check
+					menu_properties['sortLegacy'].push({func: isJSON}, menu_properties['sortLegacy'][1]);
+					menu_properties['sortLegacyCustomArg'].push({func: isJSON}, menu_properties['sortLegacyCustomArg'][1]);
+					// Args
 					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Sort selection (legacy):', func: null, flags: MF_GRAYED});
@@ -1989,8 +2018,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Checks
 					menu_properties['bFindShowCurrent'].push({func: isBoolean}, menu_properties['bFindShowCurrent'][1]);
 					menu_properties['bRemoveShowLocked'].push({func: isBoolean}, menu_properties['bRemoveShowLocked'][1]);
-					menu_properties['findRemoveSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['findRemoveSplitSize'][1]);
-					menu_properties['maxSelCount'].push({greater: 0, func: Number.isSafeInteger}, menu_properties['maxSelCount'][1]);
+					menu_properties['findRemoveSplitSize'].push({greater: 1, func: isInt}, menu_properties['findRemoveSplitSize'][1]);
+					menu_properties['maxSelCount'].push({greater: 0, func: isInt}, menu_properties['maxSelCount'][1]);
 					// Menus
 					{	// Find now playing in
 						if (!menusEnabled.hasOwnProperty(nameNowFind) || menusEnabled[nameNowFind] === true) {
@@ -2271,7 +2300,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				if (!menu_properties.hasOwnProperty('playlistSplitSize')) {
 					menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
 					// Checks
-					menu_properties['playlistSplitSize'].push({greater: 1, func: Number.isSafeInteger}, menu_properties['playlistSplitSize'][1]);
+					menu_properties['playlistSplitSize'].push({greater: 1, func: isInt}, menu_properties['playlistSplitSize'][1]);
 				}
 				// Menus
 				const subMenuNameSend = menu.newMenu(name, menuName);
@@ -2812,8 +2841,16 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify(['%channels% LESS 3 AND NOT COMMENT HAS Quad', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', '(NOT GENRE IS live AND NOT STYLE IS live) OR ((GENRE IS live OR STYLE IS live) AND style IS hi-fi)', 'NOT GENRE IS live AND NOT STYLE IS live'])];
 						// Checks
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
+						menu_properties['importPlaylistMask'].push({func: isJSON}, menu_properties['importPlaylistMask'][1]);
+						menu_properties['importPlaylistFilters'].push({func: (x) => {return isJSON(x) && JSON.parse(x).every((query) => {return checkQuery(query, true);});}}, menu_properties['importPlaylistFilters'][1]);
 						// Merge
 						const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+						// Presets
+						const maskPresets = [
+							{name: 'Numbered Track list', val: JSON.stringify(['. ','%title%',' - ','%artist%'])},
+							{name: 'Track list', val: JSON.stringify(['%title%',' - ','%artist%'])},
+							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',','%artist%',' - ','%title%'])}
+						];
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -2824,16 +2861,25 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							catch (e) {return;}
 							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {console.log('File does not exist.'); return ;}
 							let formatMask;
-							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%title%\', \' - \', \'%artist%\'] matches something like:\n1. Respect - Aretha Franklin', scriptName + ': ' + name, args.properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%title%\', \' - \', \'%artist%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, args.properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
-							try {formatMask = JSON.parse(formatMask);}
+							try { 
+								// Load preset if possible
+								if (formatMask.search(/^\[[0-9]*\]/g) !== -1) {
+									const idx = formatMask.slice(1, -1);
+									formatMask = idx >= 0 && idx < maskPresets.length ? maskPresets[idx].val : null;
+									if (!formatMask) {console.log('Playlist Tools: Invalid format mask preset'); return;}
+								} 
+								// Parse mask
+								formatMask = JSON.parse(formatMask);
+							}
 							catch (e) {console.log('Playlist Tools: Invalid format mask'); return;}
 							if (!formatMask) {return;}
 							const queryFilters = JSON.parse(args.properties.importPlaylistFilters[1]);
 							const idx = importTextPlaylist({path, formatMask, queryFilters})
 							if (idx !== -1) {plman.ActivePlaylist = idx;}
 							args.properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
-							overwriteProperties(args.properties); // Updates panel							
+							overwriteProperties(args.properties); // Updates panel
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'Import from file (path at properties)', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
@@ -2846,7 +2892,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuName, entryText: 'Configure filters...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n ["%channels% LESS 3", "%rating% GREATER 2"]', scriptName + ': ' + name, args.properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n [\'%channels% LESS 3\', \'%rating% GREATER 2\']', scriptName + ': ' + name, args.properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							if (!input.length) {input = '[]';}
 							try {JSON.parse(input);}
@@ -2951,6 +2997,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			// Create new properties with previous args
 			menu_properties['pools'] = [name + ' entries', JSON.stringify(pools)];
 			menu_properties['poolsCustomArg'] = [name + '\\Custom pool args', JSON.stringify(selArg)];
+			// Checks
+			menu_properties['pools'].push({func: isJSON}, menu_properties['pools'][1]);
+			menu_properties['poolsCustomArg'].push({func: isJSON}, menu_properties['poolsCustomArg'][1]);
+			//Args
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Functions
 			const pickMethods = {
@@ -3470,6 +3520,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			]; 
 			// {name, entry: []}
 			menu_properties['macros'] = ['Saved macros', JSON.stringify(macrosDefaults)];
+			// Checks
+			menu_properties['macros'].push({func: isJSON}, menu_properties['macros'][1]);
+			// Args
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Menus
 			menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', func: null, flags: MF_GRAYED});
@@ -3571,6 +3624,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					var mainMenuSMP = Object.values(on_main_menu_entries);
 					const mainMenuSMPDefaults = Object.values(on_main_menu_entries);
 					menu_properties['mainMenuSMP'] = [menuName + '\\' + name + ' entries', JSON.stringify(mainMenuSMP)]; // On main_menu_custom.js
+					menu_properties['mainMenuSMP'].push({func: isJSON}, menu_properties['mainMenuSMP'][1]);
 					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					const plsListener = 'pt:listener';
 					// Helpers
@@ -3622,10 +3676,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					var exportComponents = function exportComponents(path) {
 						if (!isCompatible('1.4.0')) {console.log('exportComponents: not compatible with SMP < 1.4'); return false;}
 						const listExport = {
-							foo_run_main: utils.CheckComponent("foo_run_main", true),
-							foo_runcmd: utils.CheckComponent("foo_runcmd", true),
-							foo_quicksearch: utils.CheckComponent("foo_quicksearch", true),
-							foo_youtube: utils.CheckComponent("foo_youtube", true)
+							foo_run_main: utils.CheckComponent('foo_run_main', true),
+							foo_runcmd: utils.CheckComponent('foo_runcmd', true),
+							foo_quicksearch: utils.CheckComponent('foo_quicksearch', true),
+							foo_youtube: utils.CheckComponent('foo_youtube', true)
 						};
 						return _save(path + 'components.json', JSON.stringify(listExport, null, '\t'));
 					}
@@ -3910,6 +3964,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				let scriptIncluded = [];
 				let scriptIncludedDefaults = [];
 				menu_properties['scriptIncluded'] = [menuName + '\\' + name + ' scripts', JSON.stringify(scriptIncluded)];
+				menu_properties['scriptIncluded'].push({func: isJSON}, menu_properties['scriptIncluded'][1]);
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				deferFunc.push({name, func: (properties) => {
 					const scriptIncluded = JSON.parse(properties['scriptIncluded'][1]);

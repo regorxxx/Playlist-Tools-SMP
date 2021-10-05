@@ -55,7 +55,7 @@ function playlistRevive({
 	});
 	// instead of using this, which would combine the different tags too
 	// const query =  query_join(query_combinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');
-	const query = query_join(queryArr.filter(Boolean), "OR");
+	const query = query_join(queryArr.filter(Boolean), 'OR');
 	if (bSimulate) {console.log('Filtered library by: ' + query);}
 	try {fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
@@ -69,7 +69,7 @@ function playlistRevive({
 	items.Convert().forEach( (handle, index) => {
 		let alternativesSet = new Set();
 		let alternativesObj = []; // {idx: , simil: , bExact: }
-		if (isCompatible('1.4.0') ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, "e")) {return;}
+		if (isCompatible('1.4.0') ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, 'e')) {return;}
 		const info = handle.GetFileInfo();
 		if (!info) {return;}
 		let numTags = 0;
@@ -179,7 +179,7 @@ function findDeadItems() {
 			const selItems = plman.GetPlaylistItems(i);
 			let count = 0;
 			selItems.Convert().forEach( (handle) => {
-				if (bComp ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, "e")) {return;}
+				if (bComp ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, 'e')) {return;}
 				if (handle.RawPath.indexOf('file://') === -1) {return;} // Exclude streams and title-only tracks
 				count++;
 			});

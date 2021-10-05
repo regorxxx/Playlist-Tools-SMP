@@ -35,7 +35,7 @@ try { //May be loaded along other buttons
 	}
 }
 var prefix = menu_prefix;
-prefix = getUniquePrefix(prefix, ''); // Puts new ID before "_"
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 menu_prefix = prefix; // update var for internal use of playlist_tools_menu
 
 var newButtonsProperties = {
@@ -47,7 +47,7 @@ updateMenuProperties(getPropertiesPairs(newButtonsProperties, prefix, 0)); // Up
 buttonsBar.list.push({...getPropertiesPairs(newButtonsProperties, prefix, 0), ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Playlist Tools", function (mask) {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Playlist Tools', function (mask) {
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.x, this.y + this.h);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names

@@ -8,7 +8,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\search_same_style_moods.js');
 include('..\\helpers\\helpers_xxx_properties.js');
-var prefix = "ss_";
+var prefix = 'ss_';
  
 try { //May be loaded along other buttons
 	window.DefinePanel('Search Similar Button', {author:'xxx'});
@@ -19,14 +19,16 @@ try { //May be loaded along other buttons
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Same Styles/Moods Button loaded.');
 }
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	playlistLength: ["Max Playlist Mix length","50"],
-	query: ["Forced query to filter database (added to any other internal query)", 
-				"NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad"
+	playlistLength: ['Max Playlist Mix length', 50],
+	query: ['Forced query to filter database (added to any other internal query)', 
+				'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'
 				],
 };
+newButtonsProperties['playlistLength'].push({greater: 0, func: isInt}, newButtonsProperties['playlistLength'][1]);
+newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
@@ -39,7 +41,7 @@ var newButtons = {
 		let [playlistLength , query] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel propierties at once
         do_search_same_style_moods(Number(playlistLength), query);
 		t1 = Date.now();
-		console.log("Call to do_search_similar took " + (t1 - t0) + " milliseconds.");
+		console.log('Call to do_search_similar took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Random playlist matching at least 2 styles and 6 moods of the current selected track', prefix, newButtonsProperties, chars.link),
 };
 // Check if the button list already has the same button ID

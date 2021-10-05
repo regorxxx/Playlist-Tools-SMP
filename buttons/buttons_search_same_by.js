@@ -3,7 +3,7 @@
 /* 
 	Search same by v 1.0 28/01/20
 	Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
-	Note this ONLY USES existing tags, it will not calculate similarity or anything else. i.e. "dynamic_genre" tag will not be calculated on the fly. 
+	Note this ONLY USES existing tags, it will not calculate similarity or anything else. i.e. 'dynamic_genre' tag will not be calculated on the fly. 
 	If some tags are missing, then they get skipped.
 	
 	Conditions are set as an object with keys (tags) and values (number of coincidences):
@@ -31,7 +31,7 @@
     You can change sorting, playlist name and/or force a final query (added to the other requisites).
 	
 	- Tags logic - 
-	Title-format only tags, like rating are acquired via TF, but must be written without "%", like the rest. See dynamicTags.
+	Title-format only tags, like rating are acquired via TF, but must be written without '%', like the rest. See dynamicTags.
 	
 	When the tags are not strings (genre, etc.) but numeric values (date, etc.), the pair {key: value} work as a range. See numericTags.
 	sameBy = {genre: -1, date: 10} -> Must match all genre values and dates between (-10,+10).
@@ -65,7 +65,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\search_same_by.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
-var prefix = "ssby_";
+var prefix = 'ssby_';
  
  
 try { //May be loaded along other buttons
@@ -77,18 +77,18 @@ try { //May be loaded along other buttons
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Search Same By Button loaded.');
 }
-prefix = getUniquePrefix(prefix, "_"); // Puts new ID before "_"
+prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	playlistLength: 	["Max Playlist Mix length", 50],
-	forcedQuery: 		["Forced query to filter database (added to any other internal query)", 
-				"NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad"
+	playlistLength: 	['Max Playlist Mix length', 50],
+	forcedQuery: 		['Forced query to filter database (added to any other internal query)', 
+				'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'
 				],
-	checkDuplicatesBy:	["Tags to look for duplicates", "title,artist,date"],
-	sameBy: 			["Tags to look for similarity", JSON.stringify({genre:1 , style: 2, mood: 5})],
-	playlistName:		["Playlist name","Search..."],
+	checkDuplicatesBy:	['Tags to look for duplicates', 'title,artist,date'],
+	sameBy: 			['Tags to look for similarity', JSON.stringify({genre:1 , style: 2, mood: 5})],
+	playlistName:		['Playlist name','Search...'],
 };
-newButtonsProperties['playlistLength'].push({greater: 0, func: Number.isSafeInteger}, newButtonsProperties['playlistLength'][1]);
+newButtonsProperties['playlistLength'].push({greater: 0, func: isInt}, newButtonsProperties['playlistLength'][1]);
 newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
 newButtonsProperties['checkDuplicatesBy'].push({func: isString}, newButtonsProperties['checkDuplicatesBy'][1]);
 newButtonsProperties['sameBy'].push({func: isString}, newButtonsProperties['sameBy'][1]);
@@ -105,12 +105,12 @@ var newButtons = {
 		let t0 = Date.now();
 		let t1 = 0;
 		let args = getProperties(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
-		args.checkDuplicatesBy = args.checkDuplicatesBy.split(",");
+		args.checkDuplicatesBy = args.checkDuplicatesBy.split(',');
 		args.playlistLength = Number(args.playlistLength);
 		args.sameBy = JSON.parse(args.sameBy)
         do_search_same_by(args);
 		t1 = Date.now();
-		console.log("Call to do_search_same_by took " + (t1 - t0) + " milliseconds.");
+		console.log('Call to do_search_same_by took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Random playlist matching ' + getPropertiesValues(newButtonsProperties, prefix)[3] +  ' of the current selected track', prefix, newButtonsProperties, chars.link),
 };
 // Check if the button list already has the same button ID
