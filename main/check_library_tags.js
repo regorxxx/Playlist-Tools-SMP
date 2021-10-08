@@ -181,7 +181,7 @@ function checkTags({
 			const range = Math.round(count / iSteps);
 			const delay = iDelay / 4;
 			let tags = [...Array(tagsToCheck.length)].map((_) => {return [];});
-			let prevProgress = 0;
+			let prevProgress = -1;
 			for (let i = 1; i <= iSteps; i++) {
 				promises.push(new Promise(resolve => {
 					setTimeout(() => {
@@ -228,7 +228,7 @@ function checkTags({
 				const promises = [];
 				if (countArray.length && countArrayFiltered.length) {
 					const total = tagsToCheck.length - 1;
-					let prevProgress = 0;
+					let prevProgress = -1;
 					tagsToCheck.forEach( (tagA, indexA) => {
 						const bCompare = tagsToCompareMap.has(tagA);
 						const toCompareWith = bCompare ? tagsToCompareMap.get(tagA) : null;
