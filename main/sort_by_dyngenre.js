@@ -1,7 +1,8 @@
 'use strict';
+//13/10/21
 
 /*	
-	Sort by Dyngenre v 1.0 25/05/21
+	Sort by Dyngenre
 	-----------------------------------
 	Uses notation described at 'dyngenre_map' on dyngenre_map_xxx.js to sort selection by genre/style.
 */ 

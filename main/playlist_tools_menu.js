@@ -1,4 +1,5 @@
 'use strict';
+//13/10/21
 
 /* 
 	Playlist Tools Menu
@@ -3044,15 +3045,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const bScriptLoaded = !menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
 							if (typeof do_searchby_distance !== undefined && bScriptLoaded) {
 								// Get arguments
-								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFile(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								// Check
+								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
 								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
-								// Check
-								if (!recipe) {
-									console.log('Playlist tools Pools: source recipe not found (' + folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName] + ').');
-									bAbort = true; 
-									return;
-								}
 								const checks = ['sbd_max_graph_distance'];
 								let bDone = true;
 								checks.forEach((key) => {
@@ -3082,15 +3079,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						case plsName.startsWith('_SEARCHBYWEIGHT_'): { // Search by WEIGHT
 							if (typeof do_searchby_distance !== undefined) {
 								// Get arguments
-								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFile(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								// Check
+								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
 								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
-								// Check
-								if (!recipe) {
-									console.log('Playlist tools Pools: source recipe not found (' + folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName] + ').');
-									bAbort = true; 
-									return;
-								}
 								const checks = [];
 								let bDone = true;
 								checks.forEach((key) => {
@@ -3120,15 +3113,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						case plsName.startsWith('_SEARCHBYDYNGENRE_'): { // Search by DYNGENRE
 							if (typeof do_searchby_distance !== undefined) {
 								// Get arguments
-								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFile(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								// Check
+								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
 								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
-								// Check
-								if (!recipe) {
-									console.log('Playlist tools Pools: source recipe not found (' + folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName] + ').');
-									bAbort = true; 
-									return;
-								}
 								const checks = ['dyngenreWeight'];
 								let bDone = true;
 								checks.forEach((key) => {
@@ -3689,7 +3678,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) !== 0 ? plman.GetPlaylistItems(pls[0]).Convert().map((_) => {return {name: _.Path.split('_').pop()};}) : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFile(ajQueryFile, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFile(localFile, convertCharsetToCodepage('UTF-8')) : (plsData ? plsData : null)));
+						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'To execute json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? plsData : null)));
 						if (data) {
 							data.forEach((entry) => {
 								const entryName = entry.hasOwnProperty('name') ? entry.name : '';
@@ -3708,7 +3697,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) === 1 ? plman.GetPlaylistItems(pls[0])[0].Path.split('_').pop() : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFile(ajQueryFile, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFile(localFile, convertCharsetToCodepage('UTF-8')) : (plsData ? {name: plsData} : null)));
+						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'DSP json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'DSP json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? {name: plsData} : null)));
 						if (data) {
 							const entryName = data.hasOwnProperty('name') ? data.name : '';
 							if (entryName.length) {
@@ -3726,7 +3715,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) === 1 ? plman.GetPlaylistItems(pls[0])[0].Path.split('_').pop() : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFile(ajQueryFile, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFile(localFile, convertCharsetToCodepage('UTF-8')) : (plsData ? {name: plsData, device_id: plsData} : null))); 
+						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'Device json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'Device json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? {name: plsData, device_id: plsData} : null))); 
 						if (data) {
 							const entryName = data.hasOwnProperty('name') ? data.name : '';
 							const entryId = data.hasOwnProperty('name') ? data.device_id : '';
@@ -4236,9 +4225,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
 				catch (e) {return;}
 				if (!file.length) {return;}
-				if (!_isFile(file)) {fb.ShowPopupMessage('File does not exist: \n' + file, scriptName)}
-				const newPresets = _jsonParseFile(file, convertCharsetToCodepage('UTF-8'));
-				if (!newPresets) {fb.ShowPopupMessage('File not valid: \n' + file, scriptName); return;}
+				const newPresets = _jsonParseFileCheck(file, 'Presets', scriptName, convertCharsetToCodepage('UTF-8'));
+				if (!newPresets) {return;}
 				// Load description
 				let readme = '';
 				if (newPresets.hasOwnProperty('readme')) {
@@ -4489,7 +4477,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 
 function updateShortcutsNames(keys = {}) {
 	if (_isFile(shortcutsPath)) {
-		const data = _jsonParseFile(shortcutsPath, convertCharsetToCodepage('UTF-8'));
+		const data = _jsonParseFileCheck(shortcutsPath, 'Shortcuts json', scriptName, convertCharsetToCodepage('UTF-8'));
 		if (data) {
 			if (Object.keys(keys).length) {
 				const sortInputDuplic = keys.hasOwnProperty('sortInputDuplic') ? keys.sortInputDuplic.replace(/,/g, ', ') : null;

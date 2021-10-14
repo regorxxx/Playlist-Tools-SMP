@@ -1,7 +1,8 @@
 'use strict';
+//13/10/21
 
 /*	
-	Sort by Key v 1.0 25/05/21
+	Sort by Key
 	-----------------------------------
 	Uses notation described at 'camelotWheel' on camelot_wheel_xxx.js to sort selection by key.
 */ 

@@ -1,7 +1,8 @@
 'use strict';
+//13/10/21
 
 /*	
-	Harmonic Mixing 03/05/21
+	Harmonic Mixing
 	-----------------------------------
 	DJ-like playlist creation with key changes following harmonic mixing rules... Uses 9 movements described at 'camelotWheel' on camelot_wheel_xxx.js
 	The movements creates a 'path' along the track keys, so even changing or skipping one movement changes drastically the path;

@@ -1,4 +1,5 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
 	-> EDIT
@@ -9,7 +10,7 @@ include('..\\main\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
  
 try { //May be loaded along other buttons
-	window.DefinePanel('EDIT', {author:'xxx'});
+	window.DefinePanel('Save tags button', {author:'xxx'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 	var buttonOrientation = 'x';
@@ -41,7 +42,7 @@ var newButtons = {
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}
 		if (!file.length) {return;}
-		const toTags =  _jsonParseFile(file, convertCharsetToCodepage('UTF-8'));
+		const toTags =  _jsonParseFileCheck(file, 'Tags file', 'Save tags', convertCharsetToCodepage('UTF-8'));
 		if (!toTags || !toTags.length) {return;}
 		let toTagsFolder;
 		try {toTagsFolder = utils.InputBox(window.ID, 'Root path of the original file tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true);}

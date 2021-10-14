@@ -1,7 +1,8 @@
 'use strict';
+//13/10/21
 
 /*	
-	Scatter by tags v 0.1 21/04/21
+	Scatter by tags
 	-----------------------------------
 	Reorders selection to avoid consecutive tracks with the same 'tagValue' on tags ('tagName').
 	Can be used to scatter instrumental tracks, an specific genre, etc.

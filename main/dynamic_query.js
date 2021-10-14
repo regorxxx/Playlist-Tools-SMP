@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /*
-	Dynamic Query 0.1 28/04/21
+	Dynamic Query
 	Filters library using query evaluated with selection
 */	
 

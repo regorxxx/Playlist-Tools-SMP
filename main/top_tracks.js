@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Top Tracks v 1.0 28/01/20
+	Top Tracks
 	Search n most played tracks on library. Sorting is done by play count by default.
 	Duplicates by title - artist - date are removed, so it doesn't output the same tracks
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).

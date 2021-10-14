@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Search same style v 1.0 28/01/20
+	Search same style
 	Search n tracks (randomly) on library with the same style(s) than the current selected track.
 	You can configure the number of tracks at properties panel. Also forced query to pre-filter tracks.
 	

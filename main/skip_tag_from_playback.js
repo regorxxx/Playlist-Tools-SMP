@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Add Skip Tag From Playback v 1.1 23/06/21
+	Add Skip Tag From Playback
 	Adds a 'SKIP' tag using current playback. Meant to be used along Skip Track (foo_skip) component.
 	Has an intelligent switch which sets behavior according to playback time:
 		- If time > half track length -> Track will play as usually up to the 'SKIP' time, where it jumps to next track.

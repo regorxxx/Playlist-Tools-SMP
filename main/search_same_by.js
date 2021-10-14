@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Search same by v 1.0 06/04/21
+	Search same by
 	Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
 	Note this ONLY USES already existing tags, it will not calculate similarity or anything else. 
 	i.e. 'dynamic_genre' tag will not be calculated on the fly. Use 'search_bydistance.js' for that.

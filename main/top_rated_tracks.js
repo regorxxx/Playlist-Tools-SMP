@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Top Rated Tracks v 1.0 15/04/21
+	Top Rated Tracks
 	Search n most rated tracks on library. Sorting is done by play count by default.
 	Duplicates by title - artist - date are removed, so it doesn't output the same tracks
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).

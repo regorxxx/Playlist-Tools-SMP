@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Search same style and moods v 1.0 28/01/20
+	Search same style and moods
 	Search n tracks (randomly) on library matching at least 2 styles and 6 moods from the current selected track.
 	You can configure the number of tracks at properties panel. Also forced query to pre-filter tracks.
 		

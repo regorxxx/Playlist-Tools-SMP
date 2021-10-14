@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /*
-	Check Library Tags v 0.4 09/04/21
+	Check Library Tags
 	Checks all tag values from selected tracks for spelling errors or misplacing values in wrong tags.
 	First checks all tags for easily recognizable errors (empty tags, blank spaces, multivalued tags not split).
 	Then selects tags with lower freq. of apparition ('freqThreshold') (*), and filters them to a max
@@ -88,7 +89,7 @@ if (typeof buttons === 'undefined' && typeof bNotProperties === 'undefined') { /
 	if (bUseDic) {
 		if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
 			dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
-		} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.name);}
+		} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name);}
 	}
 } else {  // With buttons, set these properties only once per panel
 	dictionary = new Typo(); // Load dict later at first use
@@ -121,9 +122,9 @@ function checkTags({
 			if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
 				dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
 		// Warn if not found
-			} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.name);return;}
+			} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name);return;}
 		} else if (!_isFile(dictSettings.dicPath()) || !_isFile(dictSettings.affPath())) {
-			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.name);return;
+			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name);return;
 		}
 	}
 	// Constants
@@ -534,7 +535,7 @@ function addTagsToExclusionPopup({
 					properties = getPropertiesPairs(checkTags_properties, checkTags_prefix),
 					} = {}){
 	// Skipped values at pre-filter
-	const propertyTagsObj = _isFile(properties['tagValuesExcludedPath'][1]) ? _jsonParseFile(properties['tagValuesExcludedPath'][1], convertCharsetToCodepage('UTF-8')) : {}; // filter holes and remove duplicates
+	const propertyTagsObj = _isFile(properties['tagValuesExcludedPath'][1]) ? _jsonParseFileCheck(properties['tagValuesExcludedPath'][1], 'Exclusion list json', window.Name, convertCharsetToCodepage('UTF-8')) || {} : {}; // filter holes and remove duplicates
 	const propertyTags = objectToPairs(propertyTagsObj);
 	let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, propertyTags);
 	if (inputTags.length) {
@@ -574,7 +575,7 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 }
 
 function loadTagsExcluded(path) { // filter holes and remove duplicates
-	let obj = _isFile(path) ? _jsonParseFile(path, convertCharsetToCodepage('UTF-8')) : {};
+	let obj = _isFile(path) ? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, convertCharsetToCodepage('UTF-8')) || {} : {};
 	for (const key in obj) {obj[key] = new Set(obj[key].filter(Boolean));}
 	return obj;
 }

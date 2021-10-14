@@ -1,7 +1,8 @@
 'use strict';
+//13/10/21
 
 /*
-	Playlist Revive v 0.1 09/04/21
+	Playlist Revive
 	Alternative to foo_playlist_revive.
 	Playlist Revive makes dead items in a playlist alive again by replacing them with the matching ones in media library.
 	A handy utility for those who often move or rename their media files/folders.

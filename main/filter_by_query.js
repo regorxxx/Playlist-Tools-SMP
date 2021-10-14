@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /*
-	Filter by Query 0.1 06/04/21
+	Filter by Query
 	Filters handle list or playlist using query
 */	
 

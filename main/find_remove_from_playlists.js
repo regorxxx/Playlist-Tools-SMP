@@ -1,7 +1,8 @@
 'use strict';
+//13/10/21
 
 /*
-	Find/Remove From Playlist(s) 0.1 29/03/21
+	Find/Remove From Playlist(s)
 	Finds or delete the selection from a different playlist. Returns all the playlists they are actually in.
 	Also see 'playlist_tools_menu.js' for menu generation with playlist names from findInPlaylists().
 */

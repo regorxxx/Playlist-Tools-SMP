@@ -1,7 +1,8 @@
 ﻿'use strict';
+//13/10/21
 
 /* 
-	Top X Tracks From Date v 0.1 16/03/20
+	Top X Tracks From Date
 	Search n most played tracks from a given year on library. Sorting is done by play count by default.
 	Duplicates by title - artist - date are removed, so it doesn't output the same tracks
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).
