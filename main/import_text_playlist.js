@@ -1,9 +1,10 @@
 ﻿'use strict';
-//13/10/21
+//18/10/21
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\helpers\\helpers_xxx_file.js');
 include('..\\helpers\\helpers_xxx_playlists_files.js');
 include('remove_duplicates.js');
 
@@ -32,7 +33,7 @@ function importTextPlaylist({
 	let text = '';
 	if (_isFile(path)) {
 		text = utils.ReadTextFile(path);
-		const codePage = checkCodePage(text.split('\r\n'), '.' + path.split('.').pop(), true);
+		const codePage = checkCodePage(text.split(/\r\n|\n\r|\n|\r/), '.' + path.split('.').pop(), true);
 		if (codePage !== -1) {text = utils.ReadTextFile(path, codePage);}
 		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
 	} else if (path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1) {
@@ -73,7 +74,7 @@ function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFil
 function getHandlesFromText(text, formatMask, queryFilters) {
 	let handlePlaylist = new FbMetadbHandleList();
 	if (text && text.length) {
-		const tags = extractTags(text.split('\r\n'), formatMask);
+		const tags = extractTags(text.split(/\r\n|\n\r|\n|\r/), formatMask);
 		if (tags && tags.length) {
 			const {matches, notFound} = getQueryMatches(tags, queryFilters);
 			if (matches && matches.Count) {handlePlaylist.AddRange(matches);}
@@ -209,7 +210,8 @@ function getQueryMatches(tags, queryFilters) {
 				}
 			});
 			const query = query_join(queryTags, 'AND');
-			const handles = checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null;
+			const handles =  queryCache.has(query) ? queryCache.get(query) : (checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null);
+			if (!queryCache.has(query)) {queryCache.set(query, handles);}
 			let bDone = false;
 			if (handles && handles.Count) { // Filter the results step by step to see which ones satisfy more conditions
 				if (queryFiltersLength) {
