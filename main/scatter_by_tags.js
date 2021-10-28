@@ -1,5 +1,5 @@
 'use strict';
-//13/10/21
+//28/10/21
 
 /*	
 	Scatter by tags
@@ -9,6 +9,7 @@
 	Output is sent to active playlist or as a handle list by setting 'bSendToActivePls'.
 */ 
 
+// For an specific value (tagValue) for a given tag (tagName)
 function do_scatter_by_tags({
 							tagName = 'genre,style',
 							tagValue = 'Instrumental',
@@ -26,7 +27,7 @@ function do_scatter_by_tags({
 	const tagValueSet = new Set(tagValue);
 	let selItemsArray = selItems.Clone().Convert();
 	// Get tag values and find tag value
-	const tagValues = getTagsValuesV3(selItems, tagName, true);	
+	const tagValues = getTagsValuesV3(selItems, tagName, true);
 	let newOrder = [];
 	for (let i = 0; i < totalTracks; i++) {
 		const tagValue_i = tagValues[i].filter(Boolean).map((item) => {return item.toLowerCase();});
@@ -62,5 +63,54 @@ function do_scatter_by_tags({
 		console.log('Selection scattered by tag(s) \'' + tagValue.join(',') + '\' (' + tagName.join(', ') + ') on playlist: ' + plman.GetPlaylistName(plman.ActivePlaylist));
 	}
 	return selItemsArray;
+}
 
+// Does the same but for any value for a given tag
+function do_intercalate_by_tags({
+							tagName = 'artist',
+							selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+							bSendToActivePls = true,
+							} = {}) {
+	// Safety checks
+	if (!tagName.length) {return;}
+	if (!selItems || selItems.Count <= 2) {return;}
+	// Convert input
+	const totalTracks = selItems.Count;
+	tagName = tagName.split(',');
+	let selItemsArray = selItems.Convert();
+	let selItemsArrayOut = [];
+	// Get tag values and find tag value
+	const tagValues = getTagsValuesV3(selItems, tagName, true).map((item) => {return item.filter(Boolean).sort().map((item) => {return item.toLowerCase();}).join(',');});
+	// Split elements by equal value, by reverse order
+	let valMap = new ReverseIterableMap();
+	for (let i = totalTracks - 1; i >= 0; i--) {
+		const val = tagValues[i];
+		if (valMap.has(val)) {
+			const newVal = valMap.get(val);
+			newVal.push(i);
+			valMap.set(val, newVal);
+		} else {
+			valMap.set(val, [i]);
+		}
+	}
+	// Intercalate them by reverse order again
+	while (valMap.size) {
+		let toDelete = [];
+		valMap.forEachReverse((value, key) => {
+			selItemsArrayOut.push(selItemsArray[value.pop()]);
+			if (!value.length) {toDelete.push(key);}
+		});
+		toDelete.forEach((key) => {valMap.delete(key);});
+	}
+	// And output
+	selItemsArray = new FbMetadbHandleList(selItemsArrayOut);
+	if (bSendToActivePls) {
+		// 'Hack' Inserts on focus (may be at any place of selection), but then removes the original selection, 
+		// so inserted tracks get sent to the right position. Only works for contiguous selections!
+		plman.UndoBackup(plman.ActivePlaylist);
+		plman.InsertPlaylistItems(plman.ActivePlaylist, plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist), selItemsArray);
+		plman.RemovePlaylistSelection(plman.ActivePlaylist); 
+		console.log('Selection scattered by tag(s) \'' + tagName.join(',') + '\' on playlist: ' + plman.GetPlaylistName(plman.ActivePlaylist));
+	}
+	return selItemsArray;
 }

@@ -1,5 +1,5 @@
 'use strict';
-//13/10/21
+//28/10/21
 
 /* 
 	Playlist Tools Menu
@@ -1984,6 +1984,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						{name: 'sep'},
 						{name: 'Scatter sad mood tracks'		,	args: {tagName: 'mood', tagValue: 'Sad'}},
 						{name: 'Scatter aggressive mood tracks', 	args: {tagName: 'mood', tagValue: 'Aggressive'}},
+						{name: 'sep'},
+						{name: 'Scatter same artist tracks'		,	args: {tagName: 'artist', tagValue: null}}
+						{name: 'Scatter same genre tracks'		,	args: {tagName: 'genre', tagValue: null}}
+						{name: 'Scatter same style tracks'		,	args: {tagName: 'style', tagValue: null}}
 					];
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reorder selection according to tags:', func: null, flags: MF_GRAYED});
@@ -1994,7 +1998,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						} else {
 							let entryText = selArg.name;
 							menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
-								do_scatter_by_tags(args);
+							if (args.tagValue !== null) {do_scatter_by_tags(args);} else {do_intercalate_by_tags(args);}
 							}, flags: multipleSelectedFlagsReorder});
 						}
 					});
