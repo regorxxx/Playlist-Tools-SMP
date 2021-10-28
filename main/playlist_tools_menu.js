@@ -1985,8 +1985,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						{name: 'Scatter sad mood tracks'		,	args: {tagName: 'mood', tagValue: 'Sad'}},
 						{name: 'Scatter aggressive mood tracks', 	args: {tagName: 'mood', tagValue: 'Aggressive'}},
 						{name: 'sep'},
-						{name: 'Scatter same artist tracks'		,	args: {tagName: 'artist', tagValue: null}}
-						{name: 'Scatter same genre tracks'		,	args: {tagName: 'genre', tagValue: null}}
+						{name: 'Scatter same artist tracks'		,	args: {tagName: 'artist', tagValue: null}},
+						{name: 'Scatter same genre tracks'		,	args: {tagName: 'genre', tagValue: null}},
 						{name: 'Scatter same style tracks'		,	args: {tagName: 'style', tagValue: null}}
 					];
 					// Menus
