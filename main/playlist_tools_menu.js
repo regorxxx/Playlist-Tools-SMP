@@ -1,5 +1,5 @@
 'use strict';
-//28/10/21
+//13/12/21
 
 /* 
 	Playlist Tools Menu
@@ -125,6 +125,7 @@ var shortcuts = {
 
 // Other script integration
 // Callbacks: append to any previously existing callback
+const plmPromises = [];
 function onNotifyData(name, info) { 
 	switch (name) {
 		case 'Playlist manager: playlistPath': {
@@ -147,6 +148,12 @@ function onNotifyData(name, info) {
 					properties.playlistPath[1] = JSON.stringify(playlistPath);
 					overwriteProperties(properties); // Updates panel
 				}
+			}
+			break;
+		}
+		case 'Playlist manager: handleList': {
+			if (info) {
+				plmPromises.push(Promise.resolve(info));
 			}
 			break;
 		}
@@ -1985,9 +1992,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						{name: 'Scatter sad mood tracks'		,	args: {tagName: 'mood', tagValue: 'Sad'}},
 						{name: 'Scatter aggressive mood tracks', 	args: {tagName: 'mood', tagValue: 'Aggressive'}},
 						{name: 'sep'},
-						{name: 'Scatter same artist tracks'		,	args: {tagName: 'artist', tagValue: null}},
-						{name: 'Scatter same genre tracks'		,	args: {tagName: 'genre', tagValue: null}},
-						{name: 'Scatter same style tracks'		,	args: {tagName: 'style', tagValue: null}}
+						{name: 'Intercalate same artist tracks'		,	args: {tagName: 'artist', tagValue: null}},
+						{name: 'Intercalate same genre tracks'		,	args: {tagName: 'genre', tagValue: null}},
+						{name: 'Intercalate same style tracks'		,	args: {tagName: 'style', tagValue: null}}
 					];
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reorder selection according to tags:', func: null, flags: MF_GRAYED});
@@ -2457,6 +2464,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					plman.ClearPlaylistSelection(plman.ActivePlaylist);
 					plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
 				}, flags: playlistCountFlags});
+				menu.newEntry({menuName: subMenuName, entryText: 'Select next tracks...', func: (args = {...scriptDefaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+					let input = args.properties.playlistLength[1];
+					try {input = Number(utils.InputBox(window.ID, 'Enter num of next items to select from focused item:\n(< 0 will go backwards)\n(= 1 will only select the focused item)', scriptName + ': ' + name, input, true));}
+					catch (e) {return;}
+					if (!Number.isFinite(input)) {return;}
+					if (!input) {return;}
+					let start = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
+					if (start !== -1 && !plman.IsPlaylistItemSelected(plman.ActivePlaylist, start)) {start = -1;}
+					const end = plman.PlaylistItemCount(plman.ActivePlaylist);
+					const numbers = input < 0 ? (start !== -1 ? range(0, start, 1) : range(0, end, 1)) : range(start !== -1 ? start : 0, end, 1);
+					plman.ClearPlaylistSelection(plman.ActivePlaylist);
+					plman.SetPlaylistSelection(plman.ActivePlaylist, input < 0 ? numbers.slice(input) : numbers.slice(0, input), true); // Take n first ones
+				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Delete selected tracks', func: () => {plman.RemovePlaylistSelection(plman.ActivePlaylist);}, flags: selectedFlagsRem});
 				menu.newEntry({menuName: subMenuName, entryText: 'Delete Non selected tracks', func: () => {plman.RemovePlaylistSelection(plman.ActivePlaylist, true);}, flags: playlistCountFlagsRem});
@@ -2761,9 +2782,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					const subMenuName = menu.newMenu(name, menuName);
+					const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
+					const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
 					menu.newEntry({menuName: subMenuName, entryText: () => {return getTagsAutomationDescription() + ':'}, func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Add tags on batch to selected tracks', func: tagsAutomation, flags: focusFlags});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: nextStepTag, flags: firedFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: stopStepTag, flags: firedFlags});
 					menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
@@ -3154,6 +3180,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							if (idxFrom === -1) { // Playlist file
 								let bDone = false;
 								let plsMatch = {};
+								// window.NotifyOthers('Playlist manager: get handleList', plsName); // Ask to share handle lists
+								// if (plmPromises.length) {
+									// handleListFrom = new FbMetadbHandleList();
+									// Promise.all(plmPromises).then((handleList) => {
+											// handleListFrom.AddRange(new FbMetadbHandleList(...handleList));
+										// }).finally(() => {bDone = true; plmPromises.length = 0; console.log(handleListFrom);});
+								// } 
 								if (isPlsMan) {
 									const propertiesPanel =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), menu_prefix_panel, 0);
 									const playlistPath = JSON.parse(propertiesPanel.playlistPath[1]); // This is retrieved everytime the menu is called
@@ -4544,7 +4577,16 @@ function menuTooltip() {
 		info = 'Playlist:		' + plman.GetPlaylistName(plman.ActivePlaylist) + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);
 	}
-	if (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]) {
+	// Modifiers
+	const bShift = utils.IsKeyPressed(VK_SHIFT);
+	const bControl = utils.IsKeyPressed(VK_CONTROL);
+	if (bShift & !bControl) {
+		info += '\n-----------------------------------------------------'
+		info += '\n(Shift + L. Click to switch enabled menus)';
+	} else if (!bShift & bControl) {
+		info += '\n-----------------------------------------------------'
+		info += '\n(Ctrl + L. Click to copy menu names to clipboard)';
+	} else if (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]) {
 		info += '\n-----------------------------------------------------'
 		info += '\n(L. Click for tools menu)\n(Shift + L. Click to switch enabled menus)\n(Ctrl + L. Click to copy menu names to clipboard)';
 	}

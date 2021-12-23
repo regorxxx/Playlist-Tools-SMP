@@ -1,0 +1,21 @@
+﻿Button for all Fingerprint Tools: fingerprint search and tagging.
+
+	-Search: Search the entire Foobar2000 library for tracks with
+	similar fingerprint to the currently selected tracks. 
+
+	-Tag: Tag the currently selected tracks with fingerprints.
+	For Chromaprint, the raw fingerprint is saved, not the
+	encoded version provided by default by fpcalc.exe or other
+	software like MusisBrainz Picard. Also the entire file
+	is fingerprinted, not just the first 120 secs.
+	
+	-Chromaprint database: Creates a reverse indexed database
+	for faster lookups. Specially useful for large libraries.
+	Requires to be recreated on library changes (automatically
+	checked).
+	
+	-FooID tagging: requires 'foo_biometric' to be installed 
+	on Foobar2000, 	along its 'Fooid.dll'. All files required
+	can be found at '_resources', along installation notes.
+
+FooID or Chromaprint versions available.

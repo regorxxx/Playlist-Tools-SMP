@@ -22,7 +22,7 @@ include('..\\helpers\\playlist_history.js');
 buttonsBar.list.push({});
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Prev. Playlist", function (mask) {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
 			createHistoryMenu().btn_up(this.x, this.y + this.h);
 		} else {

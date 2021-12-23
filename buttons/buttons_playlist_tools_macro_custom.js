@@ -83,7 +83,7 @@ var newButtons = {
 				}
 			}
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.', 'Playlist Tools');}
-	}, null, g_font, (parent) => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu assigned macros:\n' + (parent.buttonsProperties.macro[1] || '-None-') + '\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)' : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.';}, null, newButtonsProperties, chars.hourglass),
+	}, null, g_font, (parent) => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu assigned macros:\n' + (parent.buttonsProperties.macro[1] || '-None-') + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.';}, null, newButtonsProperties, chars.hourglass),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

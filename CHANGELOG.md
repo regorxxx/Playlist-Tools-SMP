@@ -2,7 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0](#300---2021-08-11)
+- [3.0.0-beta.1](#300-beta1---2021-12-23)
 - [2.0.2](#202---2021-06-20)
 - [2.0.1](#201---2021-06-17)
 - [2.0.0](#200---2021-06-15)
@@ -15,6 +15,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.1] - 2021-12-23
+### Added
 - Helpers: added full script console logging to file at foobar profile folder ('console.log'). File is reset when reaching 5 MB. Logging is also sent to foobar2000's console (along other components logging).
 - Playlist manipulation: Merge, intersect and compute difference between playlists. New tools to join the tracks from 2 playlists (without duplicates), make an intersection of both or the difference. Overwrites currently selected playlist.
 - Pools: added new property to pools named 'insertMethod' which may be assigned a value. 'standard' or 'intercalate' methods are currently allowed. Standard works as previous behavior, where items from sources are added to the end of the previous sources (before final sorting), therefore the list being source 1 tracks then Source 2 tracks then... Intercalate method inserts items from each source intercalating them (Source 1 Track 1, Source 2  Track 2, Source 3  Track 3, Source 1 Track 2, ...). Note intercalate method is meant to be used without final sorting, otherwise it would be overridden. This may be used to alternately play one song from a set of playlists [(instead of using foo_scheduler which has some problems for that specific use-case)](https://hydrogenaud.io/index.php?topic=121432.msg1002053;topicseen#new).
@@ -23,6 +29,8 @@
 - Selection manipulation\Move selection to...: new tool to move selection within current playlist to different positions (delta value, middle of the playlist or after now playing track). Readme included at readmes menu.
 - Selection manipulation\Expand...: new tool to expand selection on current playlist with tracks matching a set of tags or TF expression (artist, date, ...). For ex. used to select all tracks by same artist on the playlist. Note this is equivalent to 'Playlist manipulation\Query filtering' entry, but instead of creating a new playlist, just selects the matched tracks. Readme included at readmes menu.
 - Selection manipulation\Jump...: new tool to jump to next/previous track which doesn't match a set of tags or TF expression (artist, date, ...). For ex. used to jump to next album. Readme included at readmes menu.
+- Selection manipulation\Scatter by tags: new tool to avoid consecutive tracks with same artist, genre or style... instead of scattering an specific tag value ('instrumental' tracks), tries to intercalate any value without repetitions for the given tag ('genre'). As seen [here](https://hydrogenaud.io/index.php?topic=121029.msg1004396#msg1004396) or [here](https://hydrogenaud.io/index.php?topic=121432.msg1002053#msg1002053) This is the selection counterpart to pool's intercalate insertion method. Readme at config is also updated.
+- Selection manipulation\Select...: new entry 'Select next tracks...' which allows to select the X next/previous tracks to the focused track according to input. Negative input will select previous tracks. Remember the focused track is always displayed on the tooltip, even for multiple selected items.
 - Select...\Invert selection: inverts current selection on active playlist.
 - Other tools\Import track list: Reads a txt file containing a track list and finds matches, if possible, on library. The results are output to a new playlist ('Import'). The input path may be a file path or an url pointing to a txt file. Specially useful to easily create playlists (with matches from your library) from online playlists, charts, etc. (like '100 greatest rock songs', ...), skipping the need to manually add one by one the tracks to your own version of the playlist. Not found tracks are reported with a popup. Format mask is saved between calls. Also configurable filters may be set, which are not a requisite but only a preference. i.e. a track satisfying all of them is preferred over one which only satisfies a few.
 - Buttons: new button. Customizable macro, which calls an specific macro of Playlist tools. Just a shortcut, to create your own buttons with arbitrary macros. Note a macro allows to simply call a single menu entry, so this is a simple way to create a button for any tool preset without requiring Js knowledge.
@@ -53,6 +61,7 @@
 - Search by distance: added a submenu on customizable button to set additional query filters (along the forced query): Acoustic, Instrumental and Female Vocal tracks. They can work in conjunction with any recipe as long as the recipe does not force a query too. Filters may be added or edited on 'xxx-scripts\presets\Search by\filters\custom_button_filters.json'.
 - Presets: scripts for Picard to retrieve high level tags (gender, valence, danceability, speechiness, ...) from AcousticBrainz high level data. Tags are easily configurable. AcousticBrainz Tags plugin 2.2+ is required (within Picard). Those tags are meant as a direct replacement, using an open source data model, of Spotify's tags... which can only be retrieved with an API in some software and rely on closed source models and data (new data can not be added by users). If some tracks are not in AcousticBrainz database, they may be [analyzed locally to then send send the results to their server](https://musicbrainz.org/doc/How_to_Submit_Analyses_to_AcousticBrainz) and later get the results on Picard.
 ### Changed
+- Import Track List: caches query results for searches performed afterwards.
 - Remove duplicates: optimized the code, now runs at least x2 times faster. Updated all instances where the functions were being used to call the new version (playlist revive, search by distance, queries, etc).
 - All tool entries now have specific lock status checks according to their functionality (adding items, reordering, etc.) instead of checking if playlist is globally locked. Therefore some entries may now work on locked playlist, as long as the action to be performed is allowed.
 - Requisites: Script requires at minimum SMP 1.5.2. now.
@@ -75,6 +84,10 @@
 - Buttons: loading buttons using the customizable toolbar will show their associated readme (if it exists).
 - Buttons: restoring defaults buttons on the toolbar will show the readme of all the restored buttons.
 - Buttons: replaced the readme entry on the toolbar menu with a submenu pointing to all readmes of every button (note this does not replace but complement the Playlist Tools' readmes).
+- Buttons: submenu custom button now also allows to set nested submenus, not only the main ones. Therefore any tool may be easily accessible on its own button. For ex: 'Playlist Manipulation\Select...\' instead of only 'Playlist Manipulation\'.
+- Buttons: tooltips for buttons associated to Playlist Tools now follow the global "show shortcuts" config. i.e. if shortcuts are hidden in the main button's tooltip, then they will also be hidden on the associated buttons' tooltip.
+- Buttons: key modifiers are always shown on the tooltip as long as the key is being pressed, independently of the "show shortcuts" config. i.e. they can be hidden by default but will be shown as soon as you press the right key.
+- Buttons: the list of buttons when adding a new one is now split by categories to easily found them according to their functionality. Same with their readme popup.
 - Search by Distance: influences were not being correctly parsed when the original or the final node was a substitution (zero weight). Now adjacent nodes which may be substitutions are also checked at both sides, for ex for this path: Hip-Hop <- Rap_supergenre <- Rap_cluster <- Rythm Music_supercluster <- Blue_Note_cluster <- Blues_supergenre <- Blues. Where Hip-Hop is a substitution for Rap_supergenre,  Rap_supergenre is checked against Blues_supergenre and/or Blues for (anti)influences. Note it doesn't check for links at Hip-Hop since the influences link are always added to the generic items by design (in this case Rap_supergenre_supergenre), so there is max. 1 possible link. (note this may be overridden by the default behavior listed at top)
 - Search by Distance: Graph links cache is now calculated asynchronously whenever it's required (on first initialization or when manually forced to do so, thus improving the startup time the first time the panel it's loaded and not blocking the UI on posterior updates.
 - Search by distance: Custom Search by Distance button rewritten, no functionality changes. Theme/recipe info values are now saved without the entire text, cleaner.
@@ -86,10 +99,12 @@
 - Installation: Installation path may now be changed by editing 'folders.xxxName' variable at '.\helpers\helpers_xxx.js'. This is a workaround for some SMP limitations when working with relative paths and text files, images or dynamic file loading.
 - Helpers: updated. Whenever a folder needs to be created to save a new file, the entire tree is now created if needed. Previously it would fail as soon as any folder did not exist. This greatly speeds up setting panels since now the final folder does not need to exists at all to work, since it will be created on the fly.
 - Helpers: Split 'helpers_xxx_playlists.js' into 2 files (new one is 'helpers_xxx_playlists_files.js').
+- Helpers: additional checks at json loading on all scripts. Warnings via popup when a corrupted file is found.
 - Properties: added extensive checks to most properties (specially to check json strings).
 - All json files are now saved as UTF-8 without BOM. All json files are now read as UTF-8 (forced).
 ### Removed
 ### Fixed
+- Import Track List: while reading text files, they are now split by lines using any of the possible [escape sequence combinations](https://en.wikipedia.org/wiki/Newline) and not only windows ones (\r\n). This should allow to correctly read any file created in any SO (no longer limited to Windows ecosystem).
 - Pools: output playlist was not being checked for locked status properly.
 - Pools: Playlist files from Playlist-Manager-SMP were not being read properly due to a typo on path detection.
 - Macros: Typo on one of the entries of the 'Test tools' macro (so it was being skipped instead of executed).
@@ -309,8 +324,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0...HEAD
-[3.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v3.0.0
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.1...HEAD
+[3.0.0-beta.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v3.0.0-beta.1
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v1.4.0...v2.0.0

@@ -21,7 +21,7 @@ try { //May be loaded along other buttons
 buttonsBar.list.push({});
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, "Macros", function (mask) {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Macros', function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
@@ -45,7 +45,7 @@ var newButtons = {
 			}});
 			configMenu.btn_up(this.x, this.y + this.h);
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.', 'Playlist Tools');}
-	}, null, g_font, () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu macros.\n(L. Click to show list)' : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.';}, null, null, chars.hourglass),
+	}, null, g_font, () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu macros.' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.';}, null, null, chars.hourglass),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

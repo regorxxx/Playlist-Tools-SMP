@@ -1,0 +1,8 @@
+Asynchronous execution refers to the execution of some code done on the background (usually
+on iterative steps) For ex. external playlist files loading on native Foobar2000.
+
+Enabling asynchronous processing for specific tools will not block the UI while executing them, 
+allowing to continue using Foobar2000 without interruptions, but as a side-effect they will
+also take more time to finish.
+
+Feature is only noticeable when processing a high number of tracks or computationally heavy tasks.

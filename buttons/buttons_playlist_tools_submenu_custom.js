@@ -16,7 +16,7 @@ try { //May be loaded along other buttons
 	var buttonOrientation = 'x';
 } catch (e) {
 	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Playlist Tools Macros (CUSTOM) Button loaded.');
+	console.log('Playlist Tools SubMenu (CUSTOM) Button loaded.');
 }
 
 var prefix = 'ptc_';
@@ -36,16 +36,34 @@ var newButtons = {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];
-			if (mask === MK_SHIFT || this.buttonsProperties['customName'][1] === 'Customize!') {
+			if (mask === MK_SHIFT || this.buttonsProperties['customName'][1] === 'Customize!' || !this.buttonsProperties['menu'][1].length) {
 				const menuList = menu.getMenus().slice(1).filter((menuObj) => {return menuObj.subMenuFrom === mainMenu.menuName;});
 				menuList.forEach((menuObj) => {
-					buttonMenu.newEntry({entryText: menuObj.menuName, func: () => {
-						this.buttonsProperties['menu'][1] = menuObj.menuName;
-						this.buttonsProperties.customName[1] = menuObj.menuName;
-						this.text = menuObj.menuName;
-						overwriteProperties(this.buttonsProperties); // Force overwriting
-						window.Reload();
-					}});
+					const subMenuList = [menuObj, 'sep'].concat(menu.getMenus().slice(1).filter((newMenuObj) => {return newMenuObj.subMenuFrom === menuObj.menuName;}));
+					if (subMenuList.length === 2) {
+						buttonMenu.newEntry({entryText: menuObj.menuName + '\t (main)', func: () => {
+							this.buttonsProperties['menu'][1] = menuObj.menuName;
+							this.buttonsProperties.customName[1] = menuObj.menuName;
+							this.text = menuObj.menuName;
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+							window.Reload();
+						}});
+					} else {
+						const menuName = buttonMenu.newMenu(menuObj.menuName);
+						subMenuList.forEach((subMenuObj, i, arr) => {
+							if (subMenuObj === 'sep') {
+								buttonMenu.newEntry({menuName, entryText: 'separator'});
+							} else {
+								buttonMenu.newEntry({menuName, entryText: subMenuObj.menuName + (i === 0 ? '\t (main)' : ''), func: () => {
+									this.buttonsProperties['menu'][1] = subMenuObj.menuName;
+									this.buttonsProperties.customName[1] = subMenuObj.menuName;
+									this.text = subMenuObj.menuName;
+									overwriteProperties(this.buttonsProperties); // Force overwriting
+									window.Reload();
+								}});
+							}
+						});
+					}
 				});
 				buttonMenu.btn_up(this.x, this.y + this.h);
 			} else {
@@ -71,7 +89,7 @@ var newButtons = {
 						} else {
 							const menuName = entryObj.menuName === currentMenu ? mainMenu.menuName : entryObj.menuName;
 							buttonMenu.newEntry({entryText: entryObj.entryText, menuName, func: () => {
-								menu.btn_up(void(0), void(0), void(0), menuName + '\\' + entryObj.entryText); // Don't clear menu on last call
+								menu.btn_up(void(0), void(0), void(0), entryObj.menuName + '\\' + (_isFunction(entryObj.entryText) ? entryObj.entryText() : entryObj.entryText)); // Don't clear menu on last call
 							}, flags: entryObj.flags});
 						}
 					});
@@ -85,7 +103,8 @@ var newButtons = {
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.', 'Playlist Tools');}
 	}, null, g_font, (parent) => {
 		return (isPlaylistToolsLoaded() ? (
-			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu:\n(L. Click to configure sub-menu)'
+			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu.' + 
+				(getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)' : '')
 			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.');
 	}, null, newButtonsProperties, chars.wrench),
 };

@@ -1,0 +1,5 @@
+﻿Shortcut button for Fingerprint Tools' entry.
+
+Search the entire Foobar2000 library for tracks with similar
+fingerprint to the currently selected tracks. 
+FooID or Chromaprint versions available.

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//21/11/21
 
 /*
 	Check Library Tags
@@ -53,6 +53,7 @@ include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_file.js');
+include('..\\helpers\\helpers_xxx_levenshtein.js');
 include('..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
 
 const checkTags_properties = {
@@ -188,7 +189,7 @@ function checkTags({
 					setTimeout(() => {
 						const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
 						tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
-						const progress = i / iSteps * 100;
+						const progress = Math.round(i / iStepsi / iSteps * 100);
 						if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Retrieving tags ' + Math.round(progress) + '%.');}
 						resolve();
 					}, delay * i);
@@ -578,49 +579,4 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 	let obj = _isFile(path) ? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, convertCharsetToCodepage('UTF-8')) || {} : {};
 	for (const key in obj) {obj[key] = new Set(obj[key].filter(Boolean));}
 	return obj;
-}
-
-// Levenshtein distance
-// https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
-function similarity(s1, s2) {
-	var longer = s1;
-	var shorter = s2;
-	if (s1.length < s2.length) {
-		longer = s2;
-		shorter = s1;
-	}
-	var longerLength = longer.length;
-	if (longerLength === 0) {
-		return 1.0;
-	}
-	return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
-}
-
-function editDistance(s1, s2) {
-s1 = s1.toLowerCase();
-s2 = s2.toLowerCase();
-
-var costs = new Array();
-	for (var i = 0; i <= s1.length; i++) {
-		var lastValue = i;
-		for (var j = 0; j <= s2.length; j++) {
-			if (i === 0) {
-				costs[j] = j;
-			} else {
-				if (j > 0) {
-					var newValue = costs[j - 1];
-					if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
-						newValue = Math.min(Math.min(newValue, lastValue),
-						costs[j]) + 1;
-					}
-					costs[j - 1] = lastValue;
-					lastValue = newValue;
-				}
-			}
-		}
-		if (i > 0) {
-			costs[s2.length] = lastValue;
-		}
-	}
-	return costs[s2.length];
 }

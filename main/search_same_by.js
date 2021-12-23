@@ -83,7 +83,7 @@ function do_search_same_by({
 								logic = 'AND',
 								remapTags = {},
 								bOnlyRemap = false,
-								bSendToPls = true,
+								bSendToPls = true
 								} = {}) {
 		
 		// - Tags logic - from helpers
@@ -123,7 +123,7 @@ function do_search_same_by({
 			}
 		}
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
-		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
+		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return false;}
 		if (logicDic.indexOf(logic) === -1) {
 			console.log('do_search_same_by(): logic (' + logic + ') is wrong');
 			return false;
@@ -132,7 +132,7 @@ function do_search_same_by({
 		let sel = fb.GetFocusItem();
         if (!sel) {
 			console.log('No track selected for mix.');
-            return true;
+            return false;
 		}
 		
 		let query = [];
@@ -274,5 +274,5 @@ function do_search_same_by({
 			console.log('Final selection: ' +  queryhandle_list.Count  + ' tracks');
 			plman.InsertPlaylistItems(plman.ActivePlaylist, 0, queryhandle_list);
 		}
-		return true;
+		return queryhandle_list;
 }
