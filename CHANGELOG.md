@@ -16,6 +16,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Other Tools\Write tags: menu entry to process selection is now disabled when the tool is already running on other tracks.
 ### Removed
 ### Fixed
 

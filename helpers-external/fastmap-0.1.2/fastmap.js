@@ -13,11 +13,11 @@ exports.default = fastmap;
  * calling `Object.create(null)` to get a "bare"
  * empty object. Then emulate the basics of a map.
  * has, set, get, forEach
- * A valid value can NOT be 0, null or undefined
+ * A valid value can not be null or undefined
  */
 function EmptyObject() {}
 EmptyObject.prototype = Object.create(null);
-EmptyObject.prototype.has = function has(key) {return this[key] ? true : false;};
+EmptyObject.prototype.has = function has(key) {return (this[key] ? true : (this[key] === 0 ? true : false));};
 EmptyObject.prototype.set = function set(key, value) {return this[key] = value;};
 EmptyObject.prototype.get = function get(key) {return this[key];};
 EmptyObject.prototype.forEach = function forEach(fn) {return Object.entries(this).forEach((pair) => {return fn(pair[1], pair[0]);});};

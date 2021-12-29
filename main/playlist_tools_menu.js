@@ -2784,9 +2784,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					const subMenuName = menu.newMenu(name, menuName);
 					const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
 					const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
+					const allFlags = () => {return (!bFired() ? focusFlags() : MF_GRAYED);}
 					menu.newEntry({menuName: subMenuName, entryText: () => {return getTagsAutomationDescription() + ':'}, func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Add tags on batch to selected tracks', func: tagsAutomation, flags: focusFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tagsAutomation, flags: allFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: nextStepTag, flags: firedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: stopStepTag, flags: firedFlags});
