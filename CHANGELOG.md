@@ -16,6 +16,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Playlist Revive: for items already deleted from cache, only filename and path are maintained on playlists. Playlist Revive will try to compare those to find matches: using Levenshtein distance for string comparison, comparing track numbers on filenames if possible, ..., even if tags can not be compared. That should cover cases where the files were deleted long time ago or renamed. Only available when the similarity threshold is set below 100%, since they are not exact matches by definition.
 - Other Tools\Write tags: menu entry to process selection is now disabled when the tool is already running on other tracks.
 - Config: tag remap menu entries now show the current tag value(s).
 ### Removed
