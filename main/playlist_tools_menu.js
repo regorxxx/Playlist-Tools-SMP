@@ -1097,18 +1097,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 								menu.newEntry({menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED})
 								menu.newEntry({menuName: submenuTwo, entryText: 'sep'})
-								options.forEach((tagName) => {
-									menu.newEntry({menuName: submenuTwo, entryText: capitalize(tagName), func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+								menu.newCondEntry({entryText: 'Tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+									args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
+									options.forEach((tagName) => {
 										const key = tagName + 'Tag';
-										const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, args.properties[key][1]);
-										if (!input.length) {return;}
-										if (args.properties[tagName + 'Tag'][1] === input) {return;}
-										if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
-										args.properties[key][1] = input;
-										overwriteProperties(args.properties); // Updates panel
-									}});
-								});
+										menu.newEntry({menuName: submenuTwo, entryText: capitalize(tagName) + '\t[' + args.properties[key][1] + ']', func: () => {
+											const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, args.properties[key][1]);
+											if (!input.length) {return;}
+											if (args.properties[tagName + 'Tag'][1] === input) {return;}
+											if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
+											args.properties[key][1] = input;
+											overwriteProperties(args.properties); // Updates panel
+										}});
+									});
+								}});
 							}
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
@@ -4145,19 +4147,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Set the tags used by tools:', func: null, flags: MF_GRAYED})
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-				options.forEach((tagName) => {
-					menu.newEntry({menuName: subMenuName, entryText: capitalize(tagName), func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu)
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+				menu.newCondEntry({entryText: 'Tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
+					options.forEach((tagName) => {
 						const key = tagName + 'Tag';
-						const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, args.properties[key][1]);
-						if (!input.length) {return;}
-						if (args.properties[tagName + 'Tag'][1] === input) {return;}
-						defaultArgs[key] = input;
-						args.properties[key][1] = input;
-						overwriteProperties(args.properties); // Updates panel
-					}});
-				});
+						menu.newEntry({menuName: subMenuName, entryText: capitalize(tagName) + '\t[' + args.properties[key][1] + ']', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+							fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu)
+							const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, args.properties[key][1]);
+							if (!input.length) {return;}
+							if (args.properties[tagName + 'Tag'][1] === input) {return;}
+							defaultArgs[key] = input;
+							args.properties[key][1] = input;
+							overwriteProperties(args.properties); // Updates panel
+						}});
+					});
+				}});
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});

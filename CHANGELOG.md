@@ -17,8 +17,11 @@
 ### Added
 ### Changed
 - Other Tools\Write tags: menu entry to process selection is now disabled when the tool is already running on other tracks.
+- Config: tag remap menu entries now show the current tag value(s).
 ### Removed
 ### Fixed
+- Buttons bar: menu entry to change buttons position was not working properly.
+- Other Tools\Write tags: crash due to missing Chromaprint dependency.
 
 ## [3.0.0-beta.1] - 2021-12-23
 ### Added
