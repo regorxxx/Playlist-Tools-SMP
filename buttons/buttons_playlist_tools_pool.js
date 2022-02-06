@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//03/02/22
 
 /* 
 	Playlist History
@@ -12,16 +12,15 @@ try { //May be loaded along other buttons
 	window.DefinePanel('Playlist Tools Macros', {author:'xxx'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Playlist Tools Pools Button loaded.');
 }
 
 buttonsBar.list.push({});
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Pools', function (mask) {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Pools', function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
@@ -43,8 +42,8 @@ var newButtons = {
 				if (!propPools.length) {configMenu.newEntry({entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 			}});
 			configMenu.btn_up(this.x, this.y + this.h);
-		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.', 'Playlist Tools');}
-	}, null, g_font, () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu pool.' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.';}, null, null, chars.music),
+		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
+	}, null, g_font, () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu pool' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, null, chars.music),
 };
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {

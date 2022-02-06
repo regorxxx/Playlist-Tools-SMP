@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//03/02/22
 
 /* 
 	Automatic tagging...
@@ -20,9 +20,8 @@ try { //May be loaded along other buttons
 	window.DefinePanel('Automate Tags', {author:'xxx'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Automate Tags Button loaded.');
 }
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
@@ -33,7 +32,7 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 var newButtons = {
-	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Auto. Tags', function () {
+	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Auto. Tags', function () {
 		let t0 = Date.now();
 		let t1 = 0;
         tagsAutomation();

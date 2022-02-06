@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//04/02/22
 
 /*
 	Save tags
@@ -57,7 +57,7 @@ function saveTags({
 		tags.push(handleInfo);
 	}
 	if (!_isFolder(folders.data)) {_createFolder(folders.data);}
-	_save(file, JSON.stringify(tags, null, 3));
+	_save(file, JSON.stringify(tags, null, '\t'));
 }
 
 function compareTags({

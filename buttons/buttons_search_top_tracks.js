@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//03/02/22
 
 /* 
 	Top Tracks v 1.0 28/01/20
@@ -16,9 +16,8 @@ try { //May be loaded along other buttons
 	window.DefinePanel('Top Tracks Button', {author:'xxx'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Top Tracks Button loaded.');
 }
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
@@ -34,10 +33,10 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 // we change the default coordinates here to accommodate text
-if (buttonOrientation === 'x') {buttonCoordinates.w += 5;}
+if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 5;}
 
 var newButtons  = {
-    TopTracks: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks', function () {
+    TopTracks: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		const [playlistLength, forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once

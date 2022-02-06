@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//03/02/22
 
 /* 
 	Playlist History
@@ -13,9 +13,8 @@ try { //May be loaded along other buttons
 	window.DefinePanel('Playlist Tools Macros', {author:'xxx'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Playlist Tools SubMenu (CUSTOM) Button loaded.');
 }
 
@@ -32,7 +31,7 @@ buttonsBar.list.push(newButtonsProperties);
 buttonCoordinates.w = _gr.CalcTextWidth(newButtonsProperties.customName[1], g_font) + 50;
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, newButtonsProperties.customName[1], function (mask) {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];
@@ -100,12 +99,12 @@ var newButtons = {
 					}
 				}
 			}
-		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.', 'Playlist Tools');}
+		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
 	}, null, g_font, (parent) => {
 		return (isPlaylistToolsLoaded() ? (
-			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu.' + 
+			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu' + 
 				(getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)' : '')
-			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS.');
+			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
 	}, null, newButtonsProperties, chars.wrench),
 };
 // Check if the button list already has the same button ID

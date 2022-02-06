@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//03/02/22
 
 /* 
 	Playlist Tools Menu
@@ -16,9 +16,8 @@ try { //May be loaded along other buttons
 	window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0', features: {drag_n_drop: false}});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Playlist Tools Menu Button loaded.');
 }
 
@@ -44,11 +43,16 @@ var newButtonsProperties = {
 };
 
 setProperties(newButtonsProperties, prefix, 0); // This sets all the panel properties at once
-updateMenuProperties(getPropertiesPairs(newButtonsProperties, prefix, 0)); // Update manually the default args
-buttonsBar.list.push({...getPropertiesPairs(newButtonsProperties, prefix, 0), ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
+{
+	const properties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+	updateMenuProperties(properties); // Update manually the default args
+	buttonsBar.list.push({...properties, ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
+	// Update cache with user set tags
+	doOnce('Update SBD cache', debounce(updateCache, 3000))({properties});
+}
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation, buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Playlist Tools', function (mask) {
+	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation, buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Playlist Tools', function (mask) {
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.x, this.y + this.h);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names

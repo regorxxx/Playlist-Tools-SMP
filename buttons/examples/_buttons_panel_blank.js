@@ -1,5 +1,5 @@
 'use strict';
-//13/10/21
+//03/02/22
 
 include('..\\..\\helpers\\helpers_xxx.js');
 
@@ -11,7 +11,7 @@ var prefix = 'EDIT';
 include('..\\..\\helpers\\buttons_panel_xxx.js');
 var g_font = _gdiFont('Segoe UI', 12);
 var buttonCoordinates = {x: 0, y: window.Height - 22, w: 98, h: 22};
-var buttonOrientation = 'x';
+buttonsPanel.config.buttonOrientation = 'x';
 
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
@@ -22,11 +22,11 @@ var newButtonsProperties = { //You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
-// if (buttonOrientation === 'x') {buttonCoordinates.w += 0;}
-// if (buttonOrientation === 'y') {buttonCoordinates.h += 0;}
+// if (buttonsPanel.config.buttonOrientation === 'x') {buttonCoordinates.w += 0;}
+// if (buttonsPanel.config.buttonOrientation === 'y') {buttonCoordinates.h += 0;}
 
 var newButtons = {
-	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'EDIT', function () {
+	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsPanel.config.buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsPanel.config.buttonOrientation, false).y, buttonCoordinates.w, buttonCoordinates.h, 'EDIT', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [EDIT] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
@@ -46,3 +46,12 @@ for (var buttonName in newButtons) {
 }
 // Adds to current buttons
 buttons = {...buttons, ...newButtons};
+
+// Drawing must be integrated on main script calling the helper
+if (on_paint) {
+	const on_paint = on_paint_buttn;
+	on_paint = function(gr) {
+		oldFunc(gr);
+		on_paint_buttn(gr);
+	};
+} else {var on_paint = on_paint_buttn;}

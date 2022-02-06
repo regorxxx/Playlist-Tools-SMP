@@ -1,5 +1,5 @@
 'use strict';
-//05/01/22
+//04/02/22
 
 /*
 	Playlist Revive
@@ -73,7 +73,7 @@ function playlistRevive({
 	items.Convert().forEach( (handle, index) => {
 		let alternativesSet = new Set();
 		let alternativesObj = []; // {idx: , simil: , bExact: }
-		if (isCompatible('1.4.0') ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, 'e')) {return;}
+		if (utils.IsFile(handle.Path)) {return;}
 		const info = handle.GetFileInfo();
 		if (!info) { // When the old item has already been deleted from cache, no tags can be retrieved, compare filenames
 			if (simThreshold === 1) {return;} // only items with same path would pass and if the path is the same, then it's not a dead item.
@@ -213,13 +213,12 @@ function playlistRevive({
 
 function findDeadItems() {
 	let deadItems = [];
-	const bComp = isCompatible('1.4.0') ;
 	for (let i = 0; i < plman.PlaylistCount; i++) {
 		if (!plman.IsAutoPlaylist(i)) { // Autoplaylist are created on startup, no need to check for dead items
 			const selItems = plman.GetPlaylistItems(i);
 			let count = 0;
 			selItems.Convert().forEach( (handle) => {
-				if (bComp ? utils.IsFile(handle.Path) : utils.FileTest(handle.Path, 'e')) {return;}
+				if (utils.IsFile(handle.Path)) {return;}
 				if (handle.RawPath.indexOf('file://') === -1) {return;} // Exclude streams and title-only tracks
 				count++;
 			});

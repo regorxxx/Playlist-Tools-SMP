@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//03/02/22
 
 /* 
 	-> EDIT
@@ -13,21 +13,20 @@ try { //May be loaded along other buttons
 	window.DefinePanel('Save tags button', {author:'xxx'});
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-	var buttonOrientation = 'x';
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Sace Tags Buttons loaded.');
 }
 
 buttonsBar.list.push({});
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
-// if (buttonOrientation === 'x') {buttonCoordinates.w += 0;}
-// if (buttonOrientation === 'y') {buttonCoordinates.h += 0;}
+// if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 0;}
+// if (buttonsBar.config.buttonOrientation === 'y') {buttonCoordinates.h += 0;}
 
 var newButtons = {
-	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Save tags', function () {
+	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
-		if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
+		if (_isFile(readmePath)) {
 			const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
 			if (readme.length) {fb.ShowPopupMessage(readme, 'Save tags and comparison');}
 		}
@@ -37,7 +36,7 @@ var newButtons = {
 		if (!file.length) {return;}
 		saveTags({file});
 	}, null, g_font,'Save all tags from selected tracks to json', void(0), void(0), chars.save),
-	TwoButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Compare', function () {
+	TwoButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Compare', function () {
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}

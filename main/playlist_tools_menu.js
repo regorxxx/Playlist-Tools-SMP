@@ -1,5 +1,5 @@
 'use strict';
-//13/12/21
+//03/02/22
 
 /* 
 	Playlist Tools Menu
@@ -48,7 +48,8 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
 	keyTag:						['Key tag remap', 'key'], // It may be overwritten by Search by distance property too, are equivalent!
 	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])],
-	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Pools': true, 'Search by distance': true, 'Remove duplicates': true, 'Import track list': true})]
+	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Pools': true, 'Search by distance': true, 'Remove duplicates': true, 'Import track list': true})],
+	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})]
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
@@ -65,9 +66,10 @@ menu_properties['playlistLength'].push({greater: 0, func: isInt}, menu_propertie
 menu_properties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['forcedQuery'][1]);
 menu_properties['forcedQueryMenusEnabled'].push({func: isJSON}, menu_properties['forcedQueryMenusEnabled'][1]);
 menu_properties['presets'].push({func: isJSON}, menu_properties['presets'][1]);
-menu_properties['keyTag'].push({func: (x) => {return (x === null || isString());}}, menu_properties['keyTag'][1]);
+menu_properties['keyTag'].push({func: (x) => {return (x === null || isStringWeak(x));}}, menu_properties['keyTag'][1]);
 menu_properties['styleGenreTag'].push({func: isJSON}, menu_properties['styleGenreTag'][1]);
 menu_properties['async'].push({func: isJSON}, menu_properties['async'][1]);
+menu_properties['dynQueryEvalSel'].push({func: isJSON}, menu_properties['dynQueryEvalSel'][1]);
 menu_properties['ratingLimits'].push({func: (str) => {return (isString(str) && str.length === 3 && str.indexOf(',') === 1);}}, menu_properties['ratingLimits'][1]);
 
 /* 
@@ -261,13 +263,26 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 
 
 /* 
+	Global variables evaluated on call
+*/
+{
+	menu.newCondEntry({entryText: 'Update global variables... (cond)', condFunc: () => {
+		const properties = getPropertiesPairs(menu_properties, menu_prefix, 0); // Update properties from the panel. Note () call on second arg
+		for (let key in properties) {
+			menu_properties[key][1] = properties[key][1];
+		}
+	}});
+
+}
+
+/* 
 	Menus
 */
 // Top Tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\top_tracks_from_date.js';
 	const scriptPathElse = folders.xxx + 'main\\top_tracks.js';
-	if (utils.CheckComponent('foo_enhanced_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e'))) {
+	if (utils.CheckComponent('foo_enhanced_playcount') && _isFile(scriptPath)) {
 		const name = 'Most played Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
@@ -284,7 +299,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					});
 			}
 			menu.newEntry({menuName, entryText: 'sep'});
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, 'e')){
+			if (_isFile(scriptPathElse)){
 				// All years
 				include(scriptPathElse);
 				menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {do_top_tracks(args);}});
@@ -311,7 +326,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}
 			menu.newEntry({entryText: 'sep'});
 		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
-	} else if (utils.CheckComponent('foo_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPathElse) : utils.FileTest(scriptPathElse, 'e'))) { //TODO: Deprecated
+	} else if (utils.CheckComponent('foo_playcount') && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
@@ -326,7 +341,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 // Top rated Tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\top_rated_tracks.js';
-	if (utils.CheckComponent('foo_playcount') && (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e'))) {
+	if (utils.CheckComponent('foo_playcount') && _isFile(scriptPath)) {
 		const name = 'Top rated Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
@@ -380,7 +395,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 // Same by...
 {
 	const scriptPath = folders.xxx + 'main\\search_same_by.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+	if (_isFile(scriptPath)){
 		const name = 'Search same by tags...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
@@ -488,7 +503,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									const selInfo = sel.GetFileInfo();
 									if (!Object.keys(input.args.sameBy).every((key) => {return selInfo.MetaFind(key) === -1})) {
 										try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
-										catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName);return;}
+										catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName); return;}
 									}
 								}
 							}
@@ -571,7 +586,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 // Standard Queries...
 {
 	const scriptPath = folders.xxx + 'main\\dynamic_query.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+	if (_isFile(scriptPath)){
 		const name = 'Standard Queries...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
@@ -730,7 +745,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 // Dynamic queries...
 {
 	const scriptPath = folders.xxx + 'main\\dynamic_query.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+	if (_isFile(scriptPath)){
 		const name = 'Dynamic Queries...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
@@ -759,6 +774,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
 				menu.newCondEntry({entryText: 'Dynamic Queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
+					const bEvalSel = options['Dynamic queries'];
 					// Entry list
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					queryFilter = JSON.parse(args.properties['dynamicQueries'][1]);
@@ -779,7 +796,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										query = '(' + query + ') AND (' + args.forcedQuery + ')';
 									} else if (!query.length) {query = args.forcedQuery;} // Empty uses forced query or ALL
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
-								do_dynamic_query({query, sort: queryObj.sort});
+								if (bEvalSel) {do_dynamic_query({query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)})}
+								else{do_dynamic_query({query, sort: queryObj.sort});}
 							}, flags: focusFlags});
 						}
 					});
@@ -790,16 +808,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							args.query = selArg.query = args.properties['dynamicQueriesCustomArg'][1];
 							// Input
-							let query = '';
-							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
+							let input = '';
+							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.'), scriptName + ': ' + name, args.query, true);}
 							catch (e) {return;}
-							if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, scriptName); return;}
+							if (input.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return;}
 							// Playlist
-							let handleList = do_dynamic_query({query: forcedQueryMenusEnabled[name] && args.forcedQuery.length ? (query.length && query.toUpperCase() !== 'ALL' ? '(' + query + ') AND (' + args.forcedQuery + ')' : query) : (!query.length ? 'ALL' : query)});
+							const query = forcedQueryMenusEnabled[name] && args.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + args.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
+							const handleList = bEvalSel ? do_dynamic_query({query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)}) : do_dynamic_query({query});
 							if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 							// For internal use original object
-							selArg.query = query; 
-							args.properties['dynamicQueriesCustomArg'][1] = query; // And update property with new value
+							selArg.query = input; 
+							args.properties['dynamicQueriesCustomArg'][1] = input; // And update property with new value
 							overwriteProperties(args.properties); // Updates panel
 						}, flags: focusFlags});
 						// Menu to configure property
@@ -883,7 +902,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 // Similar by...Graph\Dyngenre\Weight
 {
 	const scriptPath = folders.xxx + 'main\\search_bydistance.js';
-	if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+	if (_isFile(scriptPath)){
 		const nameGraph = 'Search similar by Graph...';
 		const nameDynGenre = 'Search similar by DynGenre...';
 		const nameWeight = 'Search similar by Weight...';
@@ -908,7 +927,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			// Delete unused properties
 			const toDelete = ['genreWeight', 'styleWeight', 'dyngenreWeight', 'dyngenreRange', 'moodWeight', 'keyWeight', 'keyRange', 'dateWeight', 'dateRange', 'bpmWeight', 'bpmRange', 'composerWeight', 'customStrWeight', 'customNumWeight', 'customNumRange', 'forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'sbd_max_graph_distance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN'];
 			let toMerge = {}; // Deep copy
-			Object.keys(SearchByDistance_properties).forEach( (key) => {
+			Object.keys(SearchByDistance_properties).forEach((key) => {
 				if (toDelete.indexOf(key) === -1) {
 					toMerge[key] = [...SearchByDistance_properties[key]];
 					toMerge[key][0] = '\'Search similar\' ' + toMerge[key][0];
@@ -1058,7 +1077,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const missing = tags.difference(nodeList).difference(tagValuesExcluded).difference(music_graph_descriptors.map_distance_exclusions);
 								// Report
 								const userFile = folders.xxx + 'helpers\\music_graph_descriptors_xxx_user.js';
-								const UserFileFound = (isCompatible('1.4.0') ? utils.IsFile(userFile) : utils.FileTest(userFile, 'e')) ? '' : ' (not found)';
+								const UserFileFound = _isFile(userFile) ? '' : ' (not found)';
 								const UserFileEmpty = UserFileFound &&  Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
 								const report = 'Graph descriptors:\n' +
 												'.\helpers\music_graph_descriptors_xxx.js\n' +
@@ -1154,18 +1173,18 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						{ // Open descriptors
 							menu.newEntry({menuName: submenu, entryText: 'Open main descriptor', func: () => {
 								const file = folders.xxx + 'helpers\\music_graph_descriptors_xxx.js';
-								if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
+								if (_isFile(file)){_run('notepad.exe', file);}
 							}});
 							menu.newEntry({menuName: submenu, entryText: 'Open user descriptor', func: () => {
 								const file = folders.xxx + 'helpers\\music_graph_descriptors_xxx_user.js';
-								if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run('notepad.exe', file);}
+								if (_isFile(file)){_run('notepad.exe', file);}
 							}});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{ // Open graph html file
 							menu.newEntry({menuName: submenu, entryText: 'Show Music Graph on Browser', func: () => {
 								const file = folders.xxx + 'Draw Graph.html';
-								if (isCompatible('1.4.0') ? utils.IsFile(file) : utils.FileTest(file, 'e')){_run(file);}
+								if (_isFile(file)){_run(file);}
 							}});
 						}
 					}
@@ -1197,7 +1216,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		let menuName = menu.newMenu(name);
 		{	// Remove Duplicates
 			const scriptPath = folders.xxx + 'main\\remove_duplicates.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Duplicates and tag filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -1275,7 +1294,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Filter by Query
 			const scriptPath = folders.xxx + 'main\\filter_by_query.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Query filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -1311,6 +1330,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Filter playlists using queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
+						const bEvalSel = options['Dynamic queries'];
 						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						queryFilter = JSON.parse(args.properties['queryFilter'][1]);
 						queryFilter.forEach( (queryObj) => {
@@ -1329,7 +1350,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 									// Test
 									let focusHandle = fb.GetFocusItem(true);
-									if (focusHandle && query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, focusHandle);}
+									if (focusHandle && query.indexOf('#') !== -1) {
+										if (bEvalSel) {
+											query = query_join(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}), 'OR')
+										} else {
+											query = queryReplaceWithCurrent(query, focusHandle);
+										}
+									}
 									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 									// Execute
@@ -1353,14 +1380,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 							// Test
 							let focusHandle = fb.GetFocusItem(true);
-							if (focusHandle && query.indexOf('#') !== -1) {query = queryReplaceWithCurrent(query, focusHandle);}
+							if (focusHandle && query.indexOf('#') !== -1) {
+								if (bEvalSel) {
+									query = query_join(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}), 'OR')
+								} else {
+									query = queryReplaceWithCurrent(query, focusHandle);
+								}
+							}
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 							// Execute
 							do_filter_by_query(null, query);
 							// For internal use original object
 							selArg.query = input; 
-							args.properties['queryFilterCustomArg'][1] = query; // And update property with new value
+							args.properties['queryFilterCustomArg'][1] = input; // And update property with new value
 							overwriteProperties(args.properties); // Updates panel
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -1426,7 +1459,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Create harmonic mix from playlist
 			const scriptPath = folders.xxx + 'main\\harmonic_mixing.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Harmonic mix';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -1945,7 +1978,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const selArgs = [];
 				{	// Sort by key
 					const scriptPath = folders.xxx + 'main\\sort_by_key.js';
-					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+					if (_isFile(scriptPath)){
 						include(scriptPath);
 						readmes[name + '\\' + 'Sort by Key'] = folders.xxx + 'helpers\\readme\\sort_by_key.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
@@ -1957,7 +1990,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}
 				{	// Sort by DynGenre
 					const scriptPath = folders.xxx + 'main\\sort_by_dyngenre.js';
-					if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+					if (_isFile(scriptPath)){
 						include(scriptPath);
 						readmes[name + '\\' + 'Sort by DynGenre'] = folders.xxx + 'helpers\\readme\\sort_by_dyngenre.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
@@ -1979,7 +2012,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Scatter
 			const scriptPath = folders.xxx + 'main\\scatter_by_tags.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Scatter by tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -2017,7 +2050,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Remove and find in playlists
 			const scriptPath = folders.xxx + 'main\\find_remove_from_playlists.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const nameNowFind = 'Find now playing track in...';
 				const nameFind = 'Find track(s) in...';
 				const nameRemove = 'Remove track(s) from...';
@@ -2648,7 +2681,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		let menuName = menu.newMenu(name);
 		{	// Check tags
 			const scriptPath = folders.xxx + 'main\\check_library_tags.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Check tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -2760,7 +2793,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							if (args.properties['dictName'][1] === input) {return;}
 							if (!input.length) {return;}
 							const dictPath = args.properties['dictPath'][1] + '\\' + input;
-							if (isCompatible('1.4.0') ? !utils.IsDirectory(dictPath) : !utils.FileTest(dictPath, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return;}
+							if (!_isFolder(dictPath)) {fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return;}
 							args.properties['dictName'][1] = input;
 							overwriteProperties(args.properties); // Updates panel
 						}});
@@ -2769,7 +2802,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(set to empty to restore default path)', scriptName + ': ' + name, args.properties['dictPath'][1]);
 							if (args.properties['dictPath'][1] === input) {return;}
 							if (!input.length) {input = args.properties['dictPath'][3];}
-							if (isCompatible('1.4.0') ? !utils.IsDirectory(input) : !utils.FileTest(input, 'd')) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
+							if (!_isFolder(input)) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
 							args.properties['dictPath'][1] = input;
 							overwriteProperties(args.properties); // Updates panel
 						}});
@@ -2779,7 +2812,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Automate tags
 			const scriptPath = folders.xxx + 'main\\tags_automation.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Write tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -2799,7 +2832,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Playlist revive
 			const scriptPath = folders.xxx + 'main\\playlist_revive.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Playlist Revive';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -2862,7 +2895,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Import track list
 			const scriptPath = folders.xxx + 'main\\import_text_playlist.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Import track list';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -2941,7 +2974,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		{	// Playlist History
 			const scriptPath = folders.xxx + 'helpers\\playlist_history.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'Playlist History';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -3489,7 +3522,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		let menuName = menu.newMenu(name);
 		const scriptPath = folders.xxx + 'helpers\\playlist_tools_menu_macros.js';
-		if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+		if (_isFile(scriptPath)){
 			include(scriptPath);
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_macros.txt';
 			// Create new properties
@@ -3643,7 +3676,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		let menuName = menu.newMenu(name);
 		{	// Main menu editor
 			const scriptPath = folders.xxx + 'main\\main_menu_custom.js';
-			if (isCompatible('1.4.0') ? utils.IsFile(scriptPath) : utils.FileTest(scriptPath, 'e')){
+			if (_isFile(scriptPath)){
 				const name = 'SMP Main menu';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
@@ -3693,17 +3726,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 					// Global scope
 					var exportDSP = function exportDSP(path) {
-						if (!isCompatible('1.4.0')) {console.log('exportDSP: not compatible with SMP < 1.4'); return false;}
 						const listExport = JSON.parse(fb.GetDSPPresets()); // Reformat with tabs
 						return _save(path + 'dsp.json', JSON.stringify(listExport, null, '\t'));
 					}
 					var exportDevices = function exportDevices(path) {
-						if (!isCompatible('1.4.0')) {console.log('exportDevices: not compatible with SMP < 1.4'); return false;}
 						const listExport = JSON.parse(fb.GetOutputDevices()); // Reformat with tabs
 						return _save(path + 'devices.json', JSON.stringify(listExport, null, '\t'));
 					}
 					var exportComponents = function exportComponents(path) {
-						if (!isCompatible('1.4.0')) {console.log('exportComponents: not compatible with SMP < 1.4'); return false;}
 						const listExport = {
 							foo_run_main: utils.CheckComponent('foo_run_main', true),
 							foo_runcmd: utils.CheckComponent('foo_runcmd', true),
@@ -3731,7 +3761,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						} else {console.log('executeByName: Error reading source file(s): ' + ajQueryFile);}
 					};
 					var setDSP = function setDSP(path) {
-						if (!isCompatible('1.4.0')) {console.log('setDSP: not compatible with SMP < 1.4'); return;}
 						const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 						const localFile = folders.data + 'toexecute.json';
 						const pls = getPlaylistIndexArray(plsListener);
@@ -3749,7 +3778,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						} else {console.log('setDSP: Error reading source file(s): ' + ajQueryFile);}
 					};
 					var setDevice = function setDevice(path) { 
-						if (!isCompatible('1.4.0')) {console.log('setDevice: not compatible with SMP < 1.4'); return;}
 						const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 						const localFile = folders.data + 'toexecute.json';
 						const pls = getPlaylistIndexArray(plsListener);
@@ -3871,26 +3899,19 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to be able to call an arbitrary number of tools by their menu names.\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
 									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
 								}},
+								{name: 'Set output device', func: (idx) => {
+									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
+									const localFile = folders.data + 'toexecute.json';
+									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to set ouput device by name.\nThe device name is read from a local json file which should be edited on demand by the server to set the desired device when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
+									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Set output device', funcName: 'setDevice' , path: '', icon: 'ui-icon ui-icon-volume-on'};
+								}},
+								{name: 'Set DSP preset', func: (idx) => {
+									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
+									const localFile = folders.data + 'toexecute.json';
+									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to set DSP entry by name.\nThe DSP name is read from a local json file which should be edited on demand by the server to set the desired DSP when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
+									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Set DSP preset', funcName: 'setDSP' , path: '', icon: 'ui-icon ui-icon-script'};
+								}}
 							];
-							// Add this options on > 1.4.0
-							if (isCompatible('1.4.0')) {
-								options.push(
-									{name: 'Set output device', func: (idx) => {
-										const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
-										const localFile = folders.data + 'toexecute.json';
-										fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to set ouput device by name.\nThe device name is read from a local json file which should be edited on demand by the server to set the desired device when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
-										on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Set output device', funcName: 'setDevice' , path: '', icon: 'ui-icon ui-icon-volume-on'};
-									}}
-								);
-								options.push(
-									{name: 'Set DSP preset', func: (idx) => {
-										const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
-										const localFile = folders.data + 'toexecute.json';
-										fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to set DSP entry by name.\nThe DSP name is read from a local json file which should be edited on demand by the server to set the desired DSP when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
-										on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Set DSP preset', funcName: 'setDSP' , path: '', icon: 'ui-icon ui-icon-script'};
-									}}
-								);
-							}
 							range(1, 9, 1).forEach((idx) => {
 								subMenuNameThree.push(menu.newMenu('Menu ' + idx, subMenuNameTwo));
 								options.forEach( (entry, index) => {
@@ -3970,7 +3991,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					if (!args.properties.bPlaylistNameCommands[1]) {
-						if ((isCompatible('1.4.0') ? utils.IsFile(readmes[menuName + '\\' + name]) : utils.FileTest(readmes[menuName + '\\' + name], 'e'))) {
+						if (_isFile(readmes[menuName + '\\' + name])) {
 							const readme = utils.ReadTextFile(readmes[menuName + '\\' + name], convertCharsetToCodepage('UTF-8'));
 							if (readme.length) {
 								const answer = WshShell.Popup(readme, 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
@@ -4037,7 +4058,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							if (_isFile(path)) {
 								try {include(path);}
 								catch (e) {return;}
-								const arr = isCompatible('1.4.0') ? utils.SplitFilePath(path) : utils.FileTest(path, 'split'); //TODO: Deprecated
+								const arr = utils.SplitFilePath(path);
 								const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
 								input = {name , path};
 							}
@@ -4097,6 +4118,60 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		if (!menu.hasMenu(configMenu)) {
 			menu.newMenu(configMenu);
 		}
+		{	// Menu to configure queries behavior
+			const subMenuName = menu.newMenu('Queries and Dynamic queries', configMenu);
+			{
+				const subMenuNameTwo = menu.newMenu('Dynamic queries evaluation', subMenuName);
+				{	// Menu to configure properties: dynQueryEvalSel
+					menu.newEntry({menuName: subMenuNameTwo, entryText: 'Evaluate on entire selection:', func: null, flags: MF_GRAYED})
+					menu.newEntry({menuName: subMenuNameTwo, entryText: 'sep'})
+					menu.newCondEntry({entryText: 'dynQueryEvalSel', condFunc: () => {
+						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
+						Object.keys(options).forEach((key) => {
+							menu.newEntry({menuName: subMenuNameTwo, entryText: key, func: () => {
+								fb.ShowPopupMessage('Controls wether dynamic queries are evaluated only on the focused item (single item) or the entire selection.\n\nWhen evaluated  on multiple selected tracks, a query evaluated on 3 items would look like this:\n\nTITLE IS #TITLE#\n(TITLE IS O Dromos To Gramma) OR (TITLE IS Gyal Bad) OR (TITLE IS Say Me)', scriptName + ': ' + configMenu);
+								options[key] = !options[key];
+								menu_properties.dynQueryEvalSel[1] = JSON.stringify(options);
+								setProperties(menu_properties, menu_prefix, 0, false, true);
+							}});
+							menu.newCheckMenu(subMenuNameTwo, key, void(0), () => {return options[key];});
+						});
+					}});
+				}
+			}
+			{
+				const subMenuNameTwo = menu.newMenu('Global Forced Query', subMenuName);
+				{	// Menu to configure properties: forcedQuery
+					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
+					menu.newEntry({menuName: subMenuNameTwo, entryText: 'Switch forced query functionality:', func: null, flags: MF_GRAYED})
+					menu.newEntry({menuName: subMenuNameTwo, entryText: 'sep'})
+					menu.newCondEntry({entryText: 'forcedQueryMenusEnabled', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+						forcedQueryMenusEnabled = {...forcedQueryMenusEnabled, ...JSON.parse(args.properties['forcedQueryMenusEnabled'][1])}; // Merge with properties
+						overwriteProperties({forcedQueryMenusEnabled: args.properties['forcedQueryMenusEnabled']}); // Updates panel
+						Object.keys(forcedQueryMenusEnabled).forEach((key) => {
+							menu.newEntry({menuName: subMenuNameTwo, entryText: key, func: () => {
+								forcedQueryMenusEnabled[key] = !forcedQueryMenusEnabled[key];
+								args.properties['forcedQueryMenusEnabled'][1] = JSON.stringify(forcedQueryMenusEnabled);
+								overwriteProperties(args.properties); // Updates panel
+							}});
+							menu.newCheckMenu(subMenuNameTwo, key, void(0), () => {return forcedQueryMenusEnabled[key];});
+						});
+						menu.newEntry({menuName: subMenuNameTwo, entryText: 'sep'})
+						menu.newEntry({menuName: subMenuNameTwo, entryText: 'Set Global Forced Query...', func: () => {
+							const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, args.properties['forcedQuery'][1]);
+							if (args.properties['forcedQuery'][1] === input) {return;}
+							try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
+							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
+							defaultArgs.forcedQuery = input;
+							args.properties['forcedQuery'][1] = input;
+							overwriteProperties(args.properties); // Updates panel
+						}});
+					}});
+				}
+			}
+		}
+		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Menu to configure properties: playlistLength
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			menu.newEntry({menuName: configMenu, entryText: 'Set Global Playlist Length... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
@@ -4110,38 +4185,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}});
 		}
 		{
-			const subMenuName = menu.newMenu('Global Forced Query', configMenu);
-			{	// Menu to configure properties: forcedQuery
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newEntry({menuName: subMenuName, entryText: 'Switch forced query functionality:', func: null, flags: MF_GRAYED})
-				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-				menu.newCondEntry({entryText: 'forcedQueryMenusEnabled', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					forcedQueryMenusEnabled = {...forcedQueryMenusEnabled, ...JSON.parse(args.properties['forcedQueryMenusEnabled'][1])}; // Merge with properties
-					overwriteProperties({forcedQueryMenusEnabled: args.properties['forcedQueryMenusEnabled']}); // Updates panel
-					Object.keys(forcedQueryMenusEnabled).forEach((key) => {
-						menu.newEntry({menuName: subMenuName, entryText: key, func: () => {
-							forcedQueryMenusEnabled[key] = !forcedQueryMenusEnabled[key];
-							args.properties['forcedQueryMenusEnabled'][1] = JSON.stringify(forcedQueryMenusEnabled);
-							overwriteProperties(args.properties); // Updates panel
-						}});
-						menu.newCheckMenu(subMenuName, key, void(0), () => {return forcedQueryMenusEnabled[key];});
-					});
-					menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-					menu.newEntry({menuName: subMenuName, entryText: 'Set Global Forced Query...', func: () => {
-						const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, args.properties['forcedQuery'][1]);
-						if (args.properties['forcedQuery'][1] === input) {return;}
-						try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
-						catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
-						defaultArgs.forcedQuery = input;
-						args.properties['forcedQuery'][1] = input;
-						overwriteProperties(args.properties); // Updates panel
-					}});
-				}});
-			}
-		}
-		{
-			const subMenuName = menu.newMenu('Tag remapping...', configMenu);
+			const subMenuName = menu.newMenu('Tag remapping', configMenu);
 			{	// Menu to configure properties: tags
 				const options = ['key', 'styleGenre'];
 				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
@@ -4152,7 +4196,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					options.forEach((tagName) => {
 						const key = tagName + 'Tag';
 						menu.newEntry({menuName: subMenuName, entryText: capitalize(tagName) + '\t[' + args.properties[key][1] + ']', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu)
+							fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu);
 							const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, args.properties[key][1]);
 							if (!input.length) {return;}
 							if (args.properties[tagName + 'Tag'][1] === input) {return;}
@@ -4369,11 +4413,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			let iCount = 0;
 			if (Object.keys(readmes).length) {
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
-					if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) { 
+					if (_isFile(value)) { 
 						const readme = utils.ReadTextFile(value, convertCharsetToCodepage('UTF-8')); // Executed on script load
 						if (readme.length) {
 							menu.newEntry({menuName: subMenuName, entryText: key, func: () => { // Executed on menu click
-								if ((isCompatible('1.4.0') ? utils.IsFile(value) : utils.FileTest(value, 'e'))) {
+								if (_isFile(value)) {
 									const readme = utils.ReadTextFile(value, convertCharsetToCodepage('UTF-8'));
 									if (readme.length) {fb.ShowPopupMessage(readme, key);}
 								} else {console.log('Readme not found: ' + value);}
@@ -4482,7 +4526,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		const readmeKeys = ['Playlist Tools Menu', 'Macros']; // Must read files on first execution
 		readmeKeys.forEach( (key) => {
 			const readmePath = readmes[key];
-			if ((isCompatible('1.4.0') ? utils.IsFile(readmePath) : utils.FileTest(readmePath, 'e'))) {
+			if (_isFile(readmePath)) {
 				const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
 				if (readme.length) {fb.ShowPopupMessage(readme, key);}
 			}
