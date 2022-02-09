@@ -24,7 +24,7 @@ buttonsBar.list.push({});
 // if (buttonsBar.config.buttonOrientation === 'y') {buttonCoordinates.h += 0;}
 
 var newButtons = {
-	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Save tags', function () {
+	OneButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates).x, calcNextButtonCoordinates(buttonCoordinates, void(0), false).y, buttonCoordinates.w, buttonCoordinates.h, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
 		if (_isFile(readmePath)) {
 			const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
@@ -36,7 +36,7 @@ var newButtons = {
 		if (!file.length) {return;}
 		saveTags({file});
 	}, null, g_font,'Save all tags from selected tracks to json', void(0), void(0), chars.save),
-	TwoButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsBar.config.buttonOrientation,false).y, buttonCoordinates.w, buttonCoordinates.h, 'Compare', function () {
+	TwoButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates).x, calcNextButtonCoordinates(buttonCoordinates, void(0), false).y, buttonCoordinates.w, buttonCoordinates.h, 'Compare', function () {
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}
