@@ -53,7 +53,7 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 						folders.xxx + 'buttons\\buttons_search_same_style_moods.js',
 						folders.xxx + 'buttons\\buttons_search_same_by.js',  //+15 w
 						folders.xxx + 'buttons\\buttons_search_top_tracks.js',
-						folders.xxx + 'buttons\\buttons_remove_duplicates.js',  //+25 w
+						folders.xxx + 'buttons\\buttons_playlist_remove_duplicates.js',  //+25 w
 						folders.xxx + 'buttons\\buttons_search_bydistance.js',
 						folders.xxx + 'buttons\\buttons_tags_automation.js',
 						folders.xxx + 'buttons\\buttons_playlist_tools.js',
