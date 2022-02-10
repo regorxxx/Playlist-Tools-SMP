@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Search same by v 1.0 28/01/20
@@ -101,7 +101,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 25;}
 
 var newButtons = {
-    SearchSameBy: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Search Same By...', function () {
+    SearchSameBy: new SimpleButton(buttonCoordinates, 'Search Same By...', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let args = getProperties(this.buttonsProperties, this.prefix); //This gets all the panel properties at once

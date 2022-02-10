@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Playlist History
@@ -31,7 +31,7 @@ buttonsBar.list.push(newButtonsProperties);
 buttonCoordinates.w = _gr.CalcTextWidth(newButtonsProperties.customName[1], g_font) + 50;
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, newButtonsProperties.customName[1], function (mask) {
+	menuButton: new SimpleButton(buttonCoordinates, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];

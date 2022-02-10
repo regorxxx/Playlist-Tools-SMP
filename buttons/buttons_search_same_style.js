@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Search n tracks (randomly) on library with the same style(s) than the current selected track.
@@ -37,7 +37,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 if (buttonsBar.config.buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w -= 5;}
 
 var newButtons = {
-	SameStyles: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Same Styles', function () {
+	SameStyles: new SimpleButton(buttonCoordinates, 'Same Styles', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [playlistLength , forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once

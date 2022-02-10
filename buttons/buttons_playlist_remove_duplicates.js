@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -48,7 +48,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 25;}
 
 var newButtons = {
-	RemoveDuplicates: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Rmv. duplicates', function () {
+	RemoveDuplicates: new SimpleButton(buttonCoordinates, 'Rmv. duplicates', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix, void(0), 4); //This gets all the panel properties at once but 4th
@@ -58,7 +58,7 @@ var newButtons = {
 		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
 	
-	RemoveDuplicatesV3: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Filter playlist', function () {
+	RemoveDuplicatesV3: new SimpleButton(buttonCoordinates, 'Filter playlist', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once

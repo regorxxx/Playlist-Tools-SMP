@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Playlist History
@@ -21,7 +21,7 @@ include('..\\helpers\\playlist_history.js');
 buttonsBar.list.push({});
 
 var newButtons = {
-	menuButton: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Prev. Playlist', function (mask) {
+	menuButton: new SimpleButton(buttonCoordinates, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
 			createHistoryMenu().btn_up(this.x, this.y + this.h);
 		} else {

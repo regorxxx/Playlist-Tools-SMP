@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Automatic tagging...
@@ -32,7 +32,7 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 var newButtons = {
-	Automation: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Auto. Tags', function () {
+	Automation: new SimpleButton(buttonCoordinates, 'Auto. Tags', function () {
 		let t0 = Date.now();
 		let t1 = 0;
         tagsAutomation();

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/22
+//10/02/22
 
 /* 
 	Top Tracks v 1.0 28/01/20
@@ -36,7 +36,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 5;}
 
 var newButtons  = {
-    TopTracks: new SimpleButton(calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? true : false).x, calcNextButtonCoordinates(buttonCoordinates, void(0), buttonsBar.config.buttonOrientation === 'x' ? false : true).y, buttonCoordinates.w, buttonCoordinates.h, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks', function () {
+    TopTracks: new SimpleButton(buttonCoordinates, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		const [playlistLength, forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
