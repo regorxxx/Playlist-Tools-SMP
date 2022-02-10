@@ -16,7 +16,7 @@ try { //May be loaded along other buttons
 	var g_font = _gdiFont('Segoe UI', 12);
 	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
 } catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
+	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
 	console.log('Same Styles Button loaded.');
 }
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
