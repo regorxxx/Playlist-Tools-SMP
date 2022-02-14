@@ -1,5 +1,5 @@
 'use strict';
-//03/02/22
+//14/02/22
 
 /* 
 	Playlist Tools Menu
@@ -60,6 +60,8 @@ const menu_panelProperties = {
 	playlistPath: 	['Playlist manager tracked folders', '[]'],
 	bDebug:			['Enable global debug to console', false]
 };
+let menu_propertiesBack = menu_properties;
+let menu_panelPropertiesBack = menu_panelProperties;
 
 // Checks
 menu_properties['playlistLength'].push({greater: 0, func: isInt}, menu_properties['playlistLength'][1]);
@@ -132,8 +134,7 @@ function onNotifyData(name, info) {
 	switch (name) {
 		case 'Playlist manager: playlistPath': {
 			if (info && info.length) {
-				const properties =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), menu_prefix_panel, 0);
-				const playlistPath = JSON.parse(properties.playlistPath[1]);
+				const playlistPath = JSON.parse(menu_panelProperties.playlistPath[1]);
 				let bDone = false;
 				if (isArrayStrings(info)) {
 					if (!new Set(playlistPath).isSuperset(new Set(info))) {
@@ -147,8 +148,8 @@ function onNotifyData(name, info) {
 					}
 				}
 				if (bDone) {
-					properties.playlistPath[1] = JSON.stringify(playlistPath);
-					overwriteProperties(properties); // Updates panel
+					menu_panelProperties.playlistPath[1] = JSON.stringify(playlistPath);
+					overwritePanelProperties(); // Updates panel
 				}
 			}
 			break;
@@ -170,8 +171,7 @@ if (typeof on_notify_data !== 'undefined') {
 } else {var on_notify_data = onNotifyData;}
 
 function onPlaylistsChanged() {
-	const properties = getPropertiesPairs(menu_properties, menu_prefix, 0);
-	if (properties.bPlaylistNameCommands[1]) {
+	if (menu_properties.bPlaylistNameCommands[1]) {
 		const playlistData = {num: plman.PlaylistCount, name: range(0, plman.PlaylistCount - 1, 1).map((idx) => {return plman.GetPlaylistName(idx);})};
 		playlistData.name.forEach((name, index) => {
 			const lName = name.toLowerCase();
@@ -265,15 +265,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 /* 
 	Global variables evaluated on call
 */
-{
-	menu.newCondEntry({entryText: 'Update global variables... (cond)', condFunc: () => {
-		const properties = getPropertiesPairs(menu_properties, menu_prefix, 0); // Update properties from the panel. Note () call on second arg
-		for (let key in properties) {
-			menu_properties[key][1] = properties[key][1];
-		}
-	}});
-
-}
+// {
+	// menu.newCondEntry({entryText: 'Update global variables... (cond)', condFunc: (bInitMenu = true) => {
+		// if (bInitMenu) { // There are some funcs which may call this entry before creating the entire menu, properties retrieval must be skipped in those cases
+			// console.log('Playlist Tools: updating settings...');
+			// let properties = getPropertiesPairs(menu_properties, menu_prefix, 0); // Update properties from the panel
+			// for (let key in properties) {
+				// menu_properties[key][1] = properties[key][1];
+			// }
+			// properties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0); // Update properties from the panel
+			// for (let key in properties) {
+				// menu_panelProperties[key][1] = properties[key][1];
+			// }
+		// }
+	// }});
+// }
 
 /* 
 	Menus
@@ -350,7 +356,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName, entryText: 'Based on ratings (' + defaultArgs.ratingLimits.join(' to ') + '):', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			const currentYear = new Date().getFullYear();
-			const selYearArr = [ [currentYear], [2000, currentYear], [1990, 2000], [1980, 1990], [1970, 1980], [1960, 1970], [1950, 1940]];
+			const selYearArr = [ [currentYear], [2000, currentYear], [1990, 2000], [1980, 1990], [1970, 1980], [1960, 1970], [1950, 1960], [1940, 1950]];
 			selYearArr.forEach( (selYear) => {
 				let selArgs = { ...defaultArgs};
 				let dateQuery = '';
@@ -417,15 +423,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Checks
 				menu_properties['sameByQueries'].push({func: isJSON}, menu_properties['sameByQueries'][1]);
 				menu_properties['sameByCustomArg'].push({func: isString}, menu_properties['sameByCustomArg'][1]);
-				// Args
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
-				menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: () => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					sameByQueries = JSON.parse(args.properties['sameByQueries'][1]);
+					sameByQueries = JSON.parse(menu_properties['sameByQueries'][1]);
 					sameByQueries.forEach( (queryObj) => {
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
@@ -443,27 +446,26 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
 							queryObj.name = queryName;
 							// Entries
-							const sameByArgs = {...queryObj.args, playlistLength: args.playlistLength, forcedQuery: args.forcedQuery};
+							const sameByArgs = {...queryObj.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
 							menu.newEntry({menuName, entryText: 'By ' + queryName, func: () => {do_search_same_by(sameByArgs);}, flags: focusFlags});
 						}
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
 					{ // Static menu: user configurable
-						menu.newEntry({menuName, entryText: 'By... (pairs of tags)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
+						menu.newEntry({menuName, entryText: 'By... (pairs of tags)', func: () => {
 							// On first execution, must update from property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.sameBy = selArg.args.sameBy = convertStringToObject(args.properties['sameByCustomArg'][1], 'number', ',');
+							selArg.args.sameBy = convertStringToObject(menu_properties['sameByCustomArg'][1], 'number', ',');
 							// Input
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
+							try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true);}
 							catch (e) {return;}
 							if (!input.length) {return;}
 							// For internal use original object
 							selArg.args.sameBy = convertStringToObject(input, 'number', ',');
-							args.properties['sameByCustomArg'][1] = convertObjectToString(selArg.args.sameBy); // And update property with new value
-							overwriteProperties(args.properties); // Updates panel
-							const sameByArgs = {...selArg.args, playlistLength: args.playlistLength, forcedQuery: args.forcedQuery};
+							menu_properties['sameByCustomArg'][1] = convertObjectToString(selArg.args.sameBy); // And update property with new value
+							overwriteMenuProperties(); // Updates panel
+							const sameByArgs = {...selArg.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
 							do_search_same_by(sameByArgs);
 						}, flags: focusFlags});
@@ -471,7 +473,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName, entryText: 'sep'});
 					}
 					{	// Add / Remove
-						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args}) => {
+						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: () => {
 							// Input all variables
 							let input;
 							let entryName = '';
@@ -479,7 +481,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							catch (e) {return;}
 							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
-								try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(args.sameBy, ','), true);}
+								try {input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true);}
 								catch (e) {return;}
 								if (!input.length) {return;}
 								if (input.indexOf(',') === -1) {return;}
@@ -510,13 +512,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Add entry
 							sameByQueries.push(input);
 							// Save as property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries); // And update property with new value
+							menu_properties['sameByQueries'][1] = JSON.stringify(sameByQueries); // And update property with new value
 							// Presets
 							if (!presets.hasOwnProperty('sameByQueries')) {presets.sameByQueries = [];}
 							presets.sameByQueries.push(input);
-							args.properties['presets'][1] = JSON.stringify(presets);
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['presets'][1] = JSON.stringify(presets);
+							overwriteMenuProperties(); // Updates panel
 						}});
 						{
 							const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
@@ -524,27 +525,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									sameByQueries.splice(index, 1);
-									args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries);
+									menu_properties['sameByQueries'][1] = JSON.stringify(sameByQueries);
 									// Presets
 									if (presets.hasOwnProperty('sameByQueries')) {
 										presets.sameByQueries.splice(presets.sameByQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
 										if (!presets.sameByQueries.length) {delete presets.sameByQueries;}
-										args.properties['presets'][1] = JSON.stringify(presets);
+										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
-									overwriteProperties(args.properties); // Updates panel
+									overwriteMenuProperties(); // Updates panel
 								}});
 							});
 							if (!sameByQueries.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								sameByQueries = [...sameByQueriesDefaults];
-								args.properties['sameByQueries'][1] = JSON.stringify(sameByQueries);
+								menu_properties['sameByQueries'][1] = JSON.stringify(sameByQueries);
 								// Presets
 								if (presets.hasOwnProperty('sameByQueries')) {
 									delete presets.sameByQueries;
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 							}});
 						}
 					}
@@ -619,15 +620,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Checks
 				menu_properties['searchQueries'].push({func: isJSON}, menu_properties['searchCustomArg'][1]);
 				menu_properties['searchCustomArg'].push({func: isJSON}, menu_properties['searchCustomArg'][1]);
-				// Args
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Standard search with queries:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
-				menu.newCondEntry({entryText: 'Search library... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: 'Search library... (cond)', condFunc: () => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					queryFilter = JSON.parse(args.properties['searchQueries'][1]);
+					queryFilter = JSON.parse(menu_properties['searchQueries'][1]);
 					queryFilter.forEach( (queryObj) => {
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
@@ -640,10 +638,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Entries
 							menu.newEntry({menuName, entryText: queryName, func: () => {
 								let query = queryObj.query;
-								if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) { // With forced query enabled
+								if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
 									if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-										query = '(' + query + ') AND (' + args.forcedQuery + ')';
-									} else if (!query.length) {query =  args.forcedQuery;} // Empty uses forced query or ALL
+										query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
+									} else if (!query.length) {query =  defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 								do_dynamic_query({query, sort: queryObj.sort}); 
 							}});
@@ -651,27 +649,26 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
 					{ // Static menu: user configurable
-						menu.newEntry({menuName, entryText: 'By... (query)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+						menu.newEntry({menuName, entryText: 'By... (query)', func: () => {
 							// On first execution, must update from property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.query = selArg.query = JSON.parse(args.properties['searchCustomArg'][1]).query;
+							selArg.query = JSON.parse(menu_properties['searchCustomArg'][1]).query;
 							// Input
 							let query;
-							try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, args.query, true);}
+							try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true);}
 							catch (e) {return;}
 							// Playlist
-							let handleList = do_dynamic_query({query: forcedQueryMenusEnabled[name] && args.forcedQuery.length ? (query.length && query.toUpperCase() !== 'ALL' ? '(' + query + ') AND (' + args.forcedQuery + ')' : query) : (!query.length ? 'ALL' : query)});
+							let handleList = do_dynamic_query({query: forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (query.length && query.toUpperCase() !== 'ALL' ? '(' + query + ') AND (' + defaultArgs.forcedQuery + ')' : query) : (!query.length ? 'ALL' : query)});
 							if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 							// For internal use original object
 							selArg.query = query;
-							args.properties['searchCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['searchCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+							overwriteMenuProperties(); // Updates panel
 						}});
 						// Menu to configure property
 						menu.newEntry({menuName, entryText: 'sep'});
 					}
 					{	// Add / Remove
-						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: () => {
 							// Input all variables
 							let input;
 							let entryName = '';
@@ -681,7 +678,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							if (entryName === 'sep') {input = {name: entryName};} // Add separator
 							else { // or new entry
 								let query = '';
-								try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, args.query, true);}
+								try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true);}
 								catch (e) {return;}
 								if (!query.length) {return;}
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return}
@@ -698,13 +695,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Add entry
 							queryFilter.push(input);
 							// Save as property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.properties['searchQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
+							menu_properties['searchQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 							// Presets
 							if (!presets.hasOwnProperty('searchQueries')) {presets.searchQueries = [];}
 							presets.searchQueries.push(input);
-							args.properties['presets'][1] = JSON.stringify(presets);
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['presets'][1] = JSON.stringify(presets);
+							overwriteMenuProperties(); // Updates panel
 						}});
 						{
 							const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
@@ -712,27 +708,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									queryFilter.splice(index, 1);
-									args.properties['searchQueries'][1] = JSON.stringify(queryFilter);
+									menu_properties['searchQueries'][1] = JSON.stringify(queryFilter);
 									// Presets
 									if (presets.hasOwnProperty('searchQueries')) {
 										presets.searchQueries.splice(presets.searchQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
 										if (!presets.searchQueries.length) {delete presets.searchQueries;}
-										args.properties['presets'][1] = JSON.stringify(presets);
+										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
-									overwriteProperties(args.properties); // Updates panel
+									overwriteMenuProperties(); // Updates panel
 								}});
 							});
 							if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								queryFilter = [...queryFilterDefaults];
-								args.properties['searchQueries'][1] = JSON.stringify(queryFilter);
+								menu_properties['searchQueries'][1] = JSON.stringify(queryFilter);
 								// Presets
 								if (presets.hasOwnProperty('searchQueries')) {
 									delete presets.searchQueries;
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 							}});
 						}
 					}
@@ -768,17 +764,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Checks
 				menu_properties['dynamicQueries'].push({func: isJSON}, menu_properties['dynamicQueries'][1]);
 				menu_properties['dynamicQueriesCustomArg'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['dynamicQueriesCustomArg'][1]);
-				// Args
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
-				menu.newCondEntry({entryText: 'Dynamic Queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: 'Dynamic Queries... (cond)', condFunc: () => {
 					const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
 					const bEvalSel = options['Dynamic queries'];
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					queryFilter = JSON.parse(args.properties['dynamicQueries'][1]);
+					queryFilter = JSON.parse(menu_properties['dynamicQueries'][1]);
 					queryFilter.forEach( (queryObj) => {
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
@@ -791,10 +784,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu.newEntry({menuName, entryText: queryObj.name, func: () => {
 								let query = queryObj.query;
 								if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, scriptName); return;}
-								if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) {  // With forced query enabled
+								if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {  // With forced query enabled
 									if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-										query = '(' + query + ') AND (' + args.forcedQuery + ')';
-									} else if (!query.length) {query = args.forcedQuery;} // Empty uses forced query or ALL
+										query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
+									} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 								if (bEvalSel) {do_dynamic_query({query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)})}
 								else{do_dynamic_query({query, sort: queryObj.sort});}
@@ -803,29 +796,28 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
 					{ // Static menu: user configurable
-						menu.newEntry({menuName, entryText: 'By... (query)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+						menu.newEntry({menuName, entryText: 'By... (query)', func: () => {
 							// On first execution, must update from property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.query = selArg.query = args.properties['dynamicQueriesCustomArg'][1];
+							selArg.query = menu_properties['dynamicQueriesCustomArg'][1];
 							// Input
 							let input = '';
-							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.'), scriptName + ': ' + name, args.query, true);}
+							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.'), scriptName + ': ' + name, selArg.query, true);}
 							catch (e) {return;}
 							if (input.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return;}
 							// Playlist
-							const query = forcedQueryMenusEnabled[name] && args.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + args.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
+							const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
 							const handleList = bEvalSel ? do_dynamic_query({query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)}) : do_dynamic_query({query});
 							if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 							// For internal use original object
 							selArg.query = input; 
-							args.properties['dynamicQueriesCustomArg'][1] = input; // And update property with new value
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['dynamicQueriesCustomArg'][1] = input; // And update property with new value
+							overwriteMenuProperties(); // Updates panel
 						}, flags: focusFlags});
 						// Menu to configure property
 						menu.newEntry({menuName, entryText: 'sep'});
 					}
 					{	// Add / Remove
-						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: () => {
 							// Input all variables
 							let input;
 							let entryName = '';
@@ -854,13 +846,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Add entry
 							queryFilter.push(input);
 							// Save as property
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
+							menu_properties['dynamicQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
 							// Presets
 							if (!presets.hasOwnProperty('dynamicQueries')) {presets.dynamicQueries = [];}
 							presets.dynamicQueries.push(input);
-							args.properties['presets'][1] = JSON.stringify(presets);
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['presets'][1] = JSON.stringify(presets);
+							overwriteMenuProperties(); // Updates panel
 						}});
 						{
 							const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
@@ -868,27 +859,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									queryFilter.splice(index, 1);
-									args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
+									menu_properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
 									// Presets
 									if (presets.hasOwnProperty('dynamicQueries')) {
 										presets.dynamicQueries.splice(presets.dynamicQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
 										if (!presets.dynamicQueries.length) {delete presets.dynamicQueries;}
-										args.properties['presets'][1] = JSON.stringify(presets);
+										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
-									overwriteProperties(args.properties); // Updates panel
+									overwriteMenuProperties(); // Updates panel
 								}});
 							});
 							if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								queryFilter = [...queryFilterDefaults];
-								args.properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
+								menu_properties['dynamicQueries'][1] = JSON.stringify(queryFilter);
 								// Presets
 								if (presets.hasOwnProperty('dynamicQueries')) {
 									delete presets.dynamicQueries;
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 							}});
 						}
 					}
@@ -939,7 +930,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			// Check
 			menu_properties['similarBy'].push({func: isJSON}, menu_properties['similarBy'][1]);
 			// Set default args
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}], genreWeight: 0, styleWeight: 0, dyngenreWeight: 0, moodWeight: 0, keyWeight: 0, dateWeight: 0, bpmWeight: 0, composerWeight: 0, customStrWeight: 0, customNumWeight: 0, dyngenreRange: 0, keyRange: 0, dateRange: 0, bpmRange: 0, customNumRange: 0, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, sbd_max_graph_distance: 100, poolFilteringTag: '', poolFilteringN: 3, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: true, bProgressiveListOrder: false, bScatterInstrumentals: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN: 3, bCreatePlaylist: true};
+			const scriptDefaultArgs = {properties: menu_properties, genreWeight: 0, styleWeight: 0, dyngenreWeight: 0, moodWeight: 0, keyWeight: 0, dateWeight: 0, bpmWeight: 0, composerWeight: 0, customStrWeight: 0, customNumWeight: 0, dyngenreRange: 0, keyRange: 0, dateRange: 0, bpmRange: 0, customNumRange: 0, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, sbd_max_graph_distance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: true, bProgressiveListOrder: false, bScatterInstrumentals: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN:1, bCreatePlaylist: true};
 			// Menus
 			function loadMenus(menuName, selArgs, entryArgs = []){
 				selArgs.forEach( (selArg) => {
@@ -950,7 +941,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const entryArg = entryArgs.find((item) => {return item.name === selArg.name;}) || {};
 						let entryText = selArg.name;
 						menu.newEntry({menuName, entryText, func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 							const globQuery = args.properties['forcedQuery'][1];
 							if (args.hasOwnProperty('forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
 								args['forcedQuery'] =  globQuery + ' AND ' + args['forcedQuery'];
@@ -961,9 +951,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				});
 			}
 			function loadMenusCond(menuName, method){
-				menu.newCondEntry({entryText: 'Search similar by Graph\\Dyngenre\\Weight... (cond)', condFunc: (args = {...scriptDefaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					similarBy = JSON.parse(args.properties.similarBy[1]);
+				menu.newCondEntry({entryText: 'Search similar by Graph\\Dyngenre\\Weight... (cond)', condFunc: () => {
+					similarBy = JSON.parse(menu_properties.similarBy[1]);
 					const entries = similarBy.map((item) => {
 						if (!item.hasOwnProperty('method')) {
 							item.method = method;
@@ -1043,9 +1032,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						];
 					// Menus
 					function loadMenusCond(method){
-						menu.newCondEntry({entryText: 'Special playlists... (cond)', condFunc: (args = {...scriptDefaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							similarBy = JSON.parse(args.properties.similarBy[1]);
+						menu.newCondEntry({entryText: 'Special playlists... (cond)', condFunc: () => {
+							similarBy = JSON.parse(menu_properties.similarBy[1]);
 							const entries = similarBy.filter((item) => {return item.method === method;});
 							loadMenus(specialMenu, entries);
 						}});
@@ -1059,14 +1047,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{
 						const submenu = menu.newMenu('Search by Distance', configMenu);
 						{ 	// Find genre/styles not on graph
-							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: (args = {...scriptDefaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the pan
+							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: () => {
 								// Skipped values at pre-filter
-								const tagValuesExcluded = new Set(args.properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
+								const tagValuesExcluded = new Set(menu_properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
 								// Get all tags and their frequency
-								const tagsToCheck = [...new Set(args.properties['genreTag'][1].concat(',', args.properties['styleTag'][1]).split(',').filter(Boolean))]; // Merge and filter
+								const tagsToCheck = [...new Set(menu_properties['genreTag'][1].concat(',', menu_properties['styleTag'][1]).split(',').filter(Boolean))]; // Merge and filter
 								if (!tagsToCheck.length) {
-									fb.ShowPopupMessage('There are no tags to check set at properties panel:\n' + args.properties['genreTag'][0], scriptName);
+									fb.ShowPopupMessage('There are no tags to check set at properties panel:\n' + menu_properties['genreTag'][0], scriptName);
 									return;
 								}
 								// Get tags
@@ -1113,20 +1100,18 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const submenuTwo = menu.newMenu('Tags...', submenu);
 							{	// Menu to configure tags
 								const options = ['genre', 'style', 'mood', 'bpm', 'key', 'composer', 'date', 'customStr', 'customNum'];
-								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 								menu.newEntry({menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED})
 								menu.newEntry({menuName: submenuTwo, entryText: 'sep'})
-								menu.newCondEntry({entryText: 'Tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
+								menu.newCondEntry({entryText: 'Tags... (cond)', condFunc: () => {
 									options.forEach((tagName) => {
 										const key = tagName + 'Tag';
-										menu.newEntry({menuName: submenuTwo, entryText: capitalize(tagName) + '\t[' + args.properties[key][1] + ']', func: () => {
-											const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, args.properties[key][1]);
+										menu.newEntry({menuName: submenuTwo, entryText: capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
+											const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, menu_properties[key][1]);
 											if (!input.length) {return;}
-											if (args.properties[tagName + 'Tag'][1] === input) {return;}
+											if (menu_properties[tagName + 'Tag'][1] === input) {return;}
 											if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
-											args.properties[key][1] = input;
-											overwriteProperties(args.properties); // Updates panel
+											menu_properties[key][1] = input;
+											overwriteMenuProperties(); // Updates panel
 										}});
 									});
 								}});
@@ -1134,16 +1119,15 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{ // Create theme
-							menu.newEntry({menuName: submenu, entryText: 'Create theme file with selected track', func: (args = {...scriptDefaultArgs}) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
+							menu.newEntry({menuName: submenu, entryText: 'Create theme file with selected track', func: () => {
 								// Tag names
-								const genreTag = args.properties['genreTag'][1].split(',').filter(Boolean);
-								const styleTag = args.properties['styleTag'][1].split(',').filter(Boolean);
-								const moodTag = args.properties['moodTag'][1].split(',').filter(Boolean);
-								const dateTag = args.properties['dateTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
-								const composerTag = args.properties['composerTag'][1].split(',').filter(Boolean);
-								const customStrTag = args.properties['customStrTag'][1].split(',').filter(Boolean);
-								const customNumTag = args.properties['customNumTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								const genreTag = menu_properties['genreTag'][1].split(',').filter(Boolean);
+								const styleTag = menu_properties['styleTag'][1].split(',').filter(Boolean);
+								const moodTag = menu_properties['moodTag'][1].split(',').filter(Boolean);
+								const dateTag = menu_properties['dateTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								const composerTag = menu_properties['composerTag'][1].split(',').filter(Boolean);
+								const customStrTag = menu_properties['customStrTag'][1].split(',').filter(Boolean);
+								const customNumTag = menu_properties['customNumTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
 								// Tag Values
 								const selHandleList = new FbMetadbHandleList(fb.GetFocusItem());
 								const genre = genreTag.length ? getTagsValuesV3(selHandleList, genreTag, true).flat().filter(Boolean) : [];
@@ -1233,17 +1217,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu_properties['sortInputDuplic'].push({func: isString}, menu_properties['sortInputDuplic'][1]);
 					menu_properties['sortInputFilter'].push({func: isString}, menu_properties['sortInputFilter'][1]);
 					menu_properties['nAllowed'].push({greaterEq: 0, func: isInt}, menu_properties['nAllowed'][1]);
-					// Merge
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newCondEntry({entryText: 'Remove Duplicates... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+					menu.newCondEntry({entryText: 'Remove Duplicates... (cond)', condFunc: () => {
 						// Update args
-						sortInputDuplic = args.properties.sortInputDuplic[1].split(',');
-						sortInputFilter = args.properties.sortInputFilter[1].split(',');
-						nAllowed = args.properties.nAllowed[1];
+						sortInputDuplic = menu_properties.sortInputDuplic[1].split(',');
+						sortInputFilter = menu_properties.sortInputFilter[1].split(',');
+						nAllowed = menu_properties.nAllowed[1];
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {do_remove_duplicates(null, null, sortInputDuplic);}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {do_remove_duplicates(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlagsAddRem});
@@ -1266,27 +1247,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							if (sortInputDuplic.join(',') === input) {return;}
 							if (!input.length) {return;}
 							sortInputDuplic = input.split(',').filter((n) => n);
-							args.properties['sortInputDuplic'][1] = sortInputDuplic.join(',');
-							overwriteProperties(args.properties); // Updates panel
-							updateShortcutsNames({sortInputDuplic: args.properties['sortInputDuplic'][1]});
+							menu_properties['sortInputDuplic'][1] = sortInputDuplic.join(',');
+							overwriteMenuProperties(); // Updates panel
+							updateShortcutsNames({sortInputDuplic: menu_properties['sortInputDuplic'][1]});
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)...', func: () => {
 							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputFilter.join(','));
 							if (sortInputFilter.join(',') === input) {return;}
 							if (!input.length) {return;}
 							sortInputFilter = input.split(',').filter((n) => n);
-							args.properties['sortInputFilter'][1] = sortInputFilter.join(',');
-							overwriteProperties(args.properties); // Updates panel
-							updateShortcutsNames({sortInputFilter: args.properties['sortInputFilter'][1], nAllowed});
+							menu_properties['sortInputFilter'][1] = sortInputFilter.join(',');
+							overwriteMenuProperties(); // Updates panel
+							updateShortcutsNames({sortInputFilter: menu_properties['sortInputFilter'][1], nAllowed});
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set number allowed (for filtering)...', func: () => {
 							const input = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed));
 							if (nAllowed === input) {return;}
 							if (!Number.isSafeInteger(input)) {return;}
 							nAllowed = input;
-							args.properties['nAllowed'][1] = nAllowed;
-							overwriteProperties(args.properties); // Updates panel
-							updateShortcutsNames({sortInputFilter: args.properties['sortInputFilter'][1], nAllowed});
+							menu_properties['nAllowed'][1] = nAllowed;
+							overwriteMenuProperties(); // Updates panel
+							updateShortcutsNames({sortInputFilter: menu_properties['sortInputFilter'][1], nAllowed});
 						}});
 					}});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
@@ -1324,16 +1305,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Check
 					menu_properties['queryFilter'].push({func: isJSON}, menu_properties['queryFilter'][1]);
 					menu_properties['queryFilter'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['queryFilter'][1]);
-					// Args
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newCondEntry({entryText: 'Filter playlists using queries... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newCondEntry({entryText: 'Filter playlists using queries... (cond)', condFunc: () => {
 						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
 						const bEvalSel = options['Dynamic queries'];
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						queryFilter = JSON.parse(args.properties['queryFilter'][1]);
+						queryFilter = JSON.parse(menu_properties['queryFilter'][1]);
 						queryFilter.forEach( (queryObj) => {
 							if (queryObj.name === 'sep') { // Create separators
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -1343,10 +1321,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + queryName, func: () => {
 									let query = queryObj.query;
 									// Forced query
-									if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) { // With forced query enabled
+									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
 										if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-											query = '(' + query + ') AND (' + args.forcedQuery + ')';
-										} else if (!query.length) {query = args.forcedQuery;} // Empty uses forced query or ALL
+											query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
+										} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 									} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 									// Test
 									let focusHandle = fb.GetFocusItem(true);
@@ -1365,18 +1343,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}
 						});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (query)' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.query = selArg.query = args.properties['queryFilterCustomArg'][1];
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (query)' , func: () => {
+							selArg.query = menu_properties['queryFilterCustomArg'][1];
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, args.query, true);}
+							try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true);}
 							catch (e) {return;}
 							// Forced query
 							let query = input;
-							if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) { // With forced query enabled
+							if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
 								if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-									query = '(' + query + ') AND (' + args.forcedQuery + ')';
-								} else if (!query.length) {query = args.forcedQuery;} // Empty uses forced query or ALL
+									query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
+								} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 							} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 							// Test
 							let focusHandle = fb.GetFocusItem(true);
@@ -1393,11 +1370,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							do_filter_by_query(null, query);
 							// For internal use original object
 							selArg.query = input; 
-							args.properties['queryFilterCustomArg'][1] = input; // And update property with new value
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['queryFilterCustomArg'][1] = input; // And update property with new value
+							overwriteMenuProperties(); // Updates panel
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: () => {
 							let input;
 							let entryName;
 							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
@@ -1415,13 +1392,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								input = {name: entryName, query};
 							}
 							queryFilter.push(input);
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
+							menu_properties['queryFilter'][1] = JSON.stringify(queryFilter);
 							// Presets
 							if (!presets.hasOwnProperty('queryFilter')) {presets.queryFilter = [];}
 							presets.queryFilter.push(input);
-							args.properties['presets'][1] = JSON.stringify(presets);
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['presets'][1] = JSON.stringify(presets);
+							overwriteMenuProperties(); // Updates panel
 						}});
 						{
 							const subMenuSecondName = menu.newMenu('Remove query from list...', subMenuName);
@@ -1429,27 +1405,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 									queryFilter.splice(index, 1);
-									args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
+									menu_properties['queryFilter'][1] = JSON.stringify(queryFilter);
 									// Presets
 									if (presets.hasOwnProperty('queryFilter')) {
 										presets.queryFilter.splice(presets.queryFilter.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
 										if (!presets.queryFilter.length) {delete presets.queryFilter;}
-										args.properties['presets'][1] = JSON.stringify(presets);
+										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
-									overwriteProperties(args.properties); // Updates panel
+									overwriteMenuProperties(); // Updates panel
 								}});
 							});
 							if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								queryFilter = [...queryFilterDefaults];
-								args.properties['queryFilter'][1] = JSON.stringify(queryFilter);
+								menu_properties['queryFilter'][1] = JSON.stringify(queryFilter);
 								// Presets
 								if (presets.hasOwnProperty('queryFilter')) {
 									delete presets.queryFilter;
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 							}});
 						}
 					}});
@@ -1506,21 +1482,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			const name = 'Cut playlist length to...';
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				const selArgs = [
-					{name: '25 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 25);}},
-					{name: '50 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 50);}},
-					{name: '75 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 75);}},
-					{name: '100 tracks', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, 100);}},
+					{name: '25 tracks', func: (idx) => {removeNotSelectedTracks(idx, 25);}},
+					{name: '50 tracks', func: (idx) => {removeNotSelectedTracks(idx, 50);}},
+					{name: '75 tracks', func: (idx) => {removeNotSelectedTracks(idx, 75);}},
+					{name: '100 tracks', func: (idx) => {removeNotSelectedTracks(idx, 100);}},
 					{name: 'sep'},
-					{name: '25 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -25);}},
-					{name: '50 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -50);}},
-					{name: '75 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -75);}},
-					{name: '100 tracks from end', func: () => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -100);}},
+					{name: '25 tracks from end', func: (idx) => {removeNotSelectedTracks(idx, -25);}},
+					{name: '50 tracks from end', func: (idx) => {removeNotSelectedTracks(idx, -50);}},
+					{name: '75 tracks from end', func: (idx) => {removeNotSelectedTracks(idx, -75);}},
+					{name: '100 tracks from end', func: (idx) => {removeNotSelectedTracks(idx, -100);}},
 					{name: 'sep'},
-					{name: (args = {...scriptDefaultArgs}) => {return 'Global Pls. Length: ' + getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]);}},
-					{name: (args = {...scriptDefaultArgs}) => {return 'Global pls. Length (end): ' + getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]}, func: (args = {...scriptDefaultArgs}) => {plman.UndoBackup(plman.ActivePlaylist); removeNotSelectedTracks(plman.ActivePlaylist, -getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1]);}},
-				];	
+					{name: () => {return 'Global Pls. Length: ' + menu_properties.playlistLength[1]}, func: (idx) => {removeNotSelectedTracks(idx, menu_properties.playlistLength[1]);}},
+					{name: () => {return 'Global pls. Length (end): ' + menu_properties.playlistLength[1]}, func: (idx) => {removeNotSelectedTracks(idx, menu_properties.playlistLength[1]);}},
+				];
 				menu.newEntry({menuName: subMenuName, entryText: 'Set playlist length to desired #:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				// Menus
@@ -1529,7 +1504,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					} else {
 						let entryText = selArg.name;
-						menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: playlistCountFlagsRem});
+						menu.newEntry({menuName: subMenuName, entryText, func: () => {
+							const ap = plman.ActivePlaylist;
+							if (ap === -1) {return;}
+							plman.UndoBackup(ap);
+							selArg.func(ap)
+						}, flags: playlistCountFlagsRem});
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
@@ -1567,17 +1547,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}
 				menu.newEntry({menuName, entryText: 'sep'});
 				// Build submenus
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'Merge/Intersect/Difference to Playlists...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: 'Merge/Intersect/Difference to Playlists...', condFunc: () => {
 					if (bProfile) {var profiler = new FbProfiler('Merge/Intersect/Difference to Playlists...');}
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+					const ap = plman.ActivePlaylist;
+					const bPlaylist = ap !== -1;
 					const playlistsNum = plman.PlaylistCount;
-					const bTracks = plman.PlaylistItemCount(plman.ActivePlaylist) !== 0;
-					const bAddLock = addLock();
-					const bAddRemLock = addLock() || removeLock();
+					const bTracks = bPlaylist ? plman.PlaylistItemCount(ap) !== 0 : false;
+					const bAddLock =  bPlaylist ? addLock() : false;
+					const bAddRemLock = bAddLock || (bPlaylist ? removeLock() : false);
 					if (playlistsNum && bTracks && ((bMerge && !bAddLock) || ((bInter || bDiff) && !bAddRemLock))) {
 						// Split entries in sub-menus if there are too many playlists...
-						let ss = args.properties['playlistSplitSize'][1];
+						let ss = menu_properties['playlistSplitSize'][1];
 						const splitBy =  playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 						if (playlistsNum > splitBy) {
 							const subMenusCount =  Math.ceil(playlistsNum / splitBy);
@@ -1599,20 +1579,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
 									const playlist = {name: plman.GetPlaylistName(j), index : j};
 									if (bMerge && !bAddLock) {
-										menu.newEntry({menuName: subMenu_i_merge, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.UndoBackup(plman.ActivePlaylist);
-											const handleListA = plman.GetPlaylistItems(plman.ActivePlaylist);
+										menu.newEntry({menuName: subMenu_i_merge, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+											plman.UndoBackup(ap);
+											const handleListA = plman.GetPlaylistItems(ap);
 											const handleListB = plman.GetPlaylistItems(playlist.index).Convert();
 											handleListA.Sort();
 											const toAdd = new FbMetadbHandleList();
 											handleListB.forEach((handle) => {if (handleListA.BSearch(handle) === -1) {toAdd.Add(handle);}});
-											if (toAdd.Count) {plman.InsertPlaylistItems(plman.ActivePlaylist, plman.PlaylistItemCount(plman.ActivePlaylist), toAdd);}
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+											if (toAdd.Count) {plman.InsertPlaylistItems(ap, plman.PlaylistItemCount(ap), toAdd);}
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 									if (bInter && !bAddRemLock) {
-										menu.newEntry({menuName: subMenu_i_inter, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.UndoBackup(plman.ActivePlaylist);
-											const handleListA = plman.GetPlaylistItems(plman.ActivePlaylist);
+										menu.newEntry({menuName: subMenu_i_inter, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+											plman.UndoBackup(ap);
+											const handleListA = plman.GetPlaylistItems(ap);
 											const handleListAOri = handleListA.Clone().Convert();
 											const handleListB = plman.GetPlaylistItems(playlist.index);
 											handleListA.Sort();
@@ -1621,14 +1601,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											intersect.MakeIntersection(handleListB);
 											const toAdd = new FbMetadbHandleList();
 											handleListAOri.forEach((handle, i) => {if (intersect.BSearch(handle) !== -1) {toAdd.Add(handle);}});
-											plman.ClearPlaylist(plman.ActivePlaylist);
-											if (toAdd.Count) {plman.InsertPlaylistItems(plman.ActivePlaylist, 0, toAdd);}
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+											plman.ClearPlaylist(ap);
+											if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 									if (bDiff && !bAddRemLock) {
-										menu.newEntry({menuName: subMenu_i_diff, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.UndoBackup(plman.ActivePlaylist);
-											const handleListA = plman.GetPlaylistItems(plman.ActivePlaylist)
+										menu.newEntry({menuName: subMenu_i_diff, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+											plman.UndoBackup(ap);
+											const handleListA = plman.GetPlaylistItems(ap)
 											const handleListAOri = handleListA.Clone().Convert();
 											const handleListB = plman.GetPlaylistItems(playlist.index);
 											handleListA.Sort();
@@ -1637,9 +1617,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											difference.MakeDifference(handleListB);
 											const toAdd = new FbMetadbHandleList();
 											handleListAOri.forEach((handle, i) => {if (difference.BSearch(handle) !== -1) {toAdd.Add(handle);}});
-											plman.ClearPlaylist(plman.ActivePlaylist);
-											if (toAdd.Count) {plman.InsertPlaylistItems(plman.ActivePlaylist, 0, toAdd);}
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+											plman.ClearPlaylist(ap);
+											if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 								}
 							}
@@ -1647,20 +1627,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							for (let i = 0; i < playlistsNum; i++) {
 								const playlist = {name: plman.GetPlaylistName(i), index : i};
 								if (bMerge && !bAddLock) {
-									menu.newEntry({menuName: subMenuNameMerge,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-										plman.UndoBackup(plman.ActivePlaylist);
-										const handleListA = plman.GetPlaylistItems(plman.ActivePlaylist);
+									menu.newEntry({menuName: subMenuNameMerge,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										plman.UndoBackup(ap);
+										const handleListA = plman.GetPlaylistItems(ap);
 										const handleListB = plman.GetPlaylistItems(playlist.index).Convert();
 										handleListA.Sort();
 										const toAdd = new FbMetadbHandleList();
 										handleListB.forEach((handle) => {if (handleListA.BSearch(handle) === -1) {toAdd.Add(handle);}});
-										if (toAdd.Count) {plman.InsertPlaylistItems(plman.ActivePlaylist, plman.PlaylistItemCount(plman.ActivePlaylist), toAdd);}
-									}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										if (toAdd.Count) {plman.InsertPlaylistItems(ap, plman.PlaylistItemCount(ap), toAdd);}
+									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 								if (bInter && !bAddRemLock) {
-									menu.newEntry({menuName: subMenuNameInter, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-										plman.UndoBackup(plman.ActivePlaylist);
-										const handleListA = plman.GetPlaylistItems(plman.ActivePlaylist);
+									menu.newEntry({menuName: subMenuNameInter, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										plman.UndoBackup(ap);
+										const handleListA = plman.GetPlaylistItems(ap);
 										const handleListAOri = handleListA.Clone().Convert();
 										const handleListB = plman.GetPlaylistItems(playlist.index);
 										handleListA.Sort();
@@ -1669,14 +1649,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										intersect.MakeIntersection(handleListB);
 										const toAdd = new FbMetadbHandleList();
 										handleListAOri.forEach((handle, i) => {if (intersect.BSearch(handle) !== -1) {toAdd.Add(handle);}});
-										plman.ClearPlaylist(plman.ActivePlaylist);
-										if (toAdd.Count) {plman.InsertPlaylistItems(plman.ActivePlaylist, 0, toAdd);}
-									}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										plman.ClearPlaylist(ap);
+										if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 								if (bDiff && !bAddRemLock) {
-									menu.newEntry({menuName: subMenuNameDiff, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-										plman.UndoBackup(plman.ActivePlaylist);
-										const handleListA = plman.GetPlaylistItems(plman.ActivePlaylist)
+									menu.newEntry({menuName: subMenuNameDiff, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										plman.UndoBackup(ap);
+										const handleListA = plman.GetPlaylistItems(ap)
 										const handleListAOri = handleListA.Clone().Convert();
 										const handleListB = plman.GetPlaylistItems(playlist.index);
 										handleListA.Sort();
@@ -1685,9 +1665,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										difference.MakeDifference(handleListB);
 										const toAdd = new FbMetadbHandleList();
 										handleListAOri.forEach((handle, i) => {if (difference.BSearch(handle) !== -1) {toAdd.Add(handle);}});
-										plman.ClearPlaylist(plman.ActivePlaylist);
-										if (toAdd.Count) {plman.InsertPlaylistItems(plman.ActivePlaylist, 0, toAdd);}
-									}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										plman.ClearPlaylist(ap);
+										if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
 						}
@@ -1735,16 +1715,15 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuNameClose, entryText: 'sep'});
 				}
 				// Build submenus
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'Send/Go/Close to Playlists...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: 'Send/Go/Close to Playlists...', condFunc: () => {
 					if (bProfile) {var profiler = new FbProfiler('Send/Go/Close to Playlists...');}
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					const playlistsNum = plman.PlaylistCount;
-					const playlistsNumNotLocked = playlistCountNoLocked();
-					const bTracks = plman.PlaylistItemCount(plman.ActivePlaylist) !== 0;
-					if (playlistsNum) {
+					const ap = plman.ActivePlaylist;
+					if (playlistsNum && ap !== -1) {
+						const playlistsNumNotLocked = playlistCountNoLocked();
+						const bTracks = plman.PlaylistItemCount(ap) !== 0;
 						// Split entries in sub-menus if there are too many playlists...
-						let ss = args.properties['playlistSplitSize'][1];
+						let ss = menu_properties['playlistSplitSize'][1];
 						const splitBy =  bSend ? playlistsNumNotLocked < ss * 5 ? ss : ss * 2 : playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 						if (playlistsNum > splitBy) {
 							const subMenusCount = bSend ? Math.ceil(playlistsNumNotLocked / splitBy) : Math.ceil(playlistsNum / splitBy);
@@ -1767,21 +1746,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									const playlist = {name: plman.GetPlaylistName(j), index : j};
 									if (bSend && bTracks) {
 										if (!addLock(j)) {
-											menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+											menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
 												plman.UndoBackup(playlist.index);
-												plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(plman.ActivePlaylist));
-											}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+												plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(ap));
+											}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 										} else {skipped++}
 									}
 									if (bGo) {
-										menu.newEntry({menuName: subMenu_i_go, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.ActivePlaylist = playlist.index;
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										menu.newEntry({menuName: subMenu_i_go, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+											ap = playlist.index;
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 									if (bClose) {
-										menu.newEntry({menuName: subMenu_i_close, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										menu.newEntry({menuName: subMenu_i_close, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
 											plman.RemovePlaylist(playlist.index);
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 								}
 							}
@@ -1790,20 +1769,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const playlist = {name: plman.GetPlaylistName(i), index : i};
 								if (bSend && bTracks) {
 									if (!addLock(i)) {
-										menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(plman.ActivePlaylist));
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+											plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(ap));
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 								}
 								if (bGo) {
-									menu.newEntry({menuName: subMenuNameGo, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-										plman.ActivePlaylist = playlist.index;
-									}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+									menu.newEntry({menuName: subMenuNameGo, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										ap = playlist.index;
+									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 								if (bClose) {
-									menu.newEntry({menuName: subMenuNameClose, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									menu.newEntry({menuName: subMenuNameClose, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
 										plman.RemovePlaylist(playlist.index);
-									}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
 						}
@@ -1835,8 +1814,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const subMenuName = menu.newMenu(name, menuName);
 				{	// Legacy Sort (for use with macros!!)
 					const selArgs = [
-						{name: 'Randomize', func: () => {plman.UndoBackup(plman.ActivePlaylist); plman.SortByFormat(plman.ActivePlaylist, '', true);}},
-						{name: 'Reverse', func: () => {plman.UndoBackup(plman.ActivePlaylist); fb.RunMainMenuCommand('Edit/Selection/Sort/Reverse');}},
+						{name: 'Randomize', func: (idx) => {plman.SortByFormat(idx, '', true);}},
+						{name: 'Reverse', func: () => {fb.RunMainMenuCommand('Edit/Selection/Sort/Reverse');}},
 						{name: 'sep'}
 					];
 					let sortLegacy = [
@@ -1852,8 +1831,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Check
 					menu_properties['sortLegacy'].push({func: isJSON}, menu_properties['sortLegacy'][1]);
 					menu_properties['sortLegacyCustomArg'].push({func: isJSON}, menu_properties['sortLegacyCustomArg'][1]);
-					// Args
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Sort selection (legacy):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -1863,13 +1840,16 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						} else {
 							let entryText = selArg.name;
-							menu.newEntry({menuName: subMenuName, entryText, func: (args = selArg.args) => {selArg.func(args)}, flags: multipleSelectedFlagsReorder});
+							menu.newEntry({menuName: subMenuName, entryText, func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
+								selArg.func(ap);
+							}, flags: multipleSelectedFlagsReorder});
 						}
 					});
-					menu.newCondEntry({entryText: 'Sort selection (legacy)... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newCondEntry({entryText: 'Sort selection (legacy)... (cond)', condFunc: () => {
 						// Entry list
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						sortLegacy = JSON.parse(args.properties['sortLegacy'][1]);
+						sortLegacy = JSON.parse(menu_properties['sortLegacy'][1]);
 						sortLegacy.forEach( (sortObj) => {
 							// Add separators
 							if (sortObj.hasOwnProperty('name') && sortObj.name === 'sep') {
@@ -1880,35 +1860,38 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								sortName = sortName.length > 40 ? sortName.substring(0,40) + ' ...' : sortName;
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText: sortName, func: () => {
-									plman.UndoBackup(plman.ActivePlaylist);
-									plman.SortByFormat(plman.ActivePlaylist, sortObj.tfo, true);
+									const ap = plman.ActivePlaylist;
+									if (ap === -1) {return;}
+									plman.UndoBackup(ap);
+									plman.SortByFormat(ap, sortObj.tfo, true);
 								}, flags: multipleSelectedFlagsReorder});
 							}
 						});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						{ // Static menu: user configurable
-							menu.newEntry({menuName: subMenuName, entryText: 'By... (expression)', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+							menu.newEntry({menuName: subMenuName, entryText: 'By... (expression)', func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
 								// On first execution, must update from property
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-								args.tfo = selArg.tfo = JSON.parse(args.properties['sortLegacyCustomArg'][1]).tfo;
+								selArg.tfo = JSON.parse(menu_properties['sortLegacyCustomArg'][1]).tfo;
 								// Input
 								let tfo;
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, args.tfo, true);}
+								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true);}
 								catch (e) {return;}
 								if (!tfo.length) {return;}
 								// Execute
-								plman.UndoBackup(plman.ActivePlaylist);
-								plman.SortByFormat(plman.ActivePlaylist, tfo, true);
+								plman.UndoBackup(ap);
+								plman.SortByFormat(ap, tfo, true);
 								// For internal use original object
 								selArg.tfo = tfo;
-								args.properties['sortLegacyCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
-								overwriteProperties(args.properties); // Updates panel
+								menu_properties['sortLegacyCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+								overwriteMenuProperties(); // Updates panel
 							}, flags: multipleSelectedFlagsReorder});
 							// Menu to configure property
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						}
 						{	// Add / Remove
-							menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+							menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
 								// Input all variables
 								let input;
 								let entryName = '';
@@ -1918,7 +1901,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								if (entryName === 'sep') {input = {name: entryName};} // Add separator
 								else { // or new entry
 									let tfo = '';
-									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, args.tfo, true);}
+									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true);}
 									catch (e) {return;}
 									if (!tfo.length) {return;}
 									input = {name: entryName, tfo};
@@ -1926,13 +1909,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								// Add entry
 								sortLegacy.push(input);
 								// Save as property
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-								args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy); // And update property with new value
+								menu_properties['sortLegacy'][1] = JSON.stringify(sortLegacy); // And update property with new value
 								// Presets
 								if (!presets.hasOwnProperty('sortLegacy')) {presets.sortLegacy = [];}
 								presets.sortLegacy.push(input);
-								args.properties['presets'][1] = JSON.stringify(presets);
-								overwriteProperties(args.properties); // Updates panel
+								menu_properties['presets'][1] = JSON.stringify(presets);
+								overwriteMenuProperties(); // Updates panel
 							}});
 							{
 								const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
@@ -1940,27 +1922,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									const entryText = (sortObj.name === 'sep' ? '------(separator)------' : (sortObj.name.length > 40 ? sortObj.name.substring(0,40) + ' ...' : sortObj.name));
 									menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 										sortLegacy.splice(index, 1);
-										args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
+										menu_properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
 										// Presets
 										if (presets.hasOwnProperty('sortLegacy')) {
 											presets.sortLegacy.splice(presets.sortLegacy.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(sortObj);}), 1);
 											if (!presets.sortLegacy.length) {delete presets.sortLegacy;}
-											args.properties['presets'][1] = JSON.stringify(presets);
+											menu_properties['presets'][1] = JSON.stringify(presets);
 										}
-										overwriteProperties(args.properties); // Updates panel
+										overwriteMenuProperties(); // Updates panel
 									}});
 								});
 								if (!sortLegacy.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 								menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 								menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 									sortLegacy = [...sortLegacyDefaults];
-									args.properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
+									menu_properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
 									// Presets
 									if (presets.hasOwnProperty('sortLegacy')) {
 										delete presets.sortLegacy;
-										args.properties['presets'][1] = JSON.stringify(presets);
+										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
-									overwriteProperties(args.properties); // Updates panel
+									overwriteMenuProperties(); // Updates panel
 								}});
 							}
 						}
@@ -2071,22 +2053,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{	// Find now playing in
 						if (!menusEnabled.hasOwnProperty(nameNowFind) || menusEnabled[nameNowFind] === true) {
 							const subMenuName = menu.newMenu(nameNowFind, menuName);
-							const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-							menu.newCondEntry({entryText: 'Find now playing track in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+							menu.newCondEntry({entryText: 'Find now playing track in... (cond)', condFunc: () => {
 								if (bProfile) {var profiler = new FbProfiler('Find now playing in');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with now playing track:', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 								const nowPlay = fb.GetNowPlaying();
 								if (!nowPlay) {menu.newEntry({menuName: subMenuName, entryText: 'Playback is stopped (no playing track).', func: null, flags: MF_GRAYED}); return;}
 								const sel = new FbMetadbHandleList(nowPlay);
 								var inPlaylist = findInPlaylists(sel);
-								const bShowCurrent = args.properties['bFindShowCurrent'][1];
-								if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
+								const bShowCurrent = menu_properties['bFindShowCurrent'][1];
+								const ap = plman.ActivePlaylist;
+								if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return ap !== playlist.index;});}
 								const playlistsNum = inPlaylist.length;
 								if (playlistsNum) {
 									// Split entries in sub-menus if there are too many playlists...
-									let ss = args.properties['findRemoveSplitSize'][1];
+									let ss = menu_properties['findRemoveSplitSize'][1];
 									const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 									if (playlistsNum > splitBy) {
 										const subMenusCount = Math.ceil(playlistsNum / splitBy);
@@ -2099,12 +2080,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+												menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 											}
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+											menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 										}
 									}
 								} else {
@@ -2117,22 +2098,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{	// Find in Playlists
 						if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
 							const subMenuName = menu.newMenu(nameFind, menuName);
-							const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-							menu.newCondEntry({entryText: 'Find track(s) in... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+							menu.newCondEntry({entryText: 'Find track(s) in... (cond)', condFunc: () => {
 								if (bProfile) {var profiler = new FbProfiler('Find in Playlists');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with same track(s):', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-								const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-								const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
+								const ap = plman.ActivePlaylist;
+								const sel = plman.GetPlaylistSelectedItems(ap);
+								const maxSelCount = menu_properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
 								if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
 								var inPlaylist = findInPlaylists(sel);
-								const bShowCurrent = args.properties['bFindShowCurrent'][1];
-								if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return plman.ActivePlaylist !== playlist.index;});}
+								const bShowCurrent = menu_properties['bFindShowCurrent'][1];
+								if (!bShowCurrent) {inPlaylist = inPlaylist.filter((playlist) => {return ap !== playlist.index;});}
 								const playlistsNum = inPlaylist.length;
 								if (playlistsNum) {
 									// Split entries in sub-menus if there are too many playlists...
-									let ss = args.properties['findRemoveSplitSize'][1];
+									let ss = menu_properties['findRemoveSplitSize'][1];
 									const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 									if (playlistsNum > splitBy) {
 										const subMenusCount = Math.ceil(playlistsNum / splitBy);
@@ -2145,12 +2125,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+												menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 											}
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											menu.newEntry({menuName: subMenuName, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+											menu.newEntry({menuName: subMenuName, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 										}
 									}
 								} else {
@@ -2163,22 +2143,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{	// Remove from Playlists
 						if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
 							const subMenuName = menu.newMenu(nameRemove, menuName);
-							const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-							menu.newCondEntry({entryText: 'Remove track(s) from... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+							menu.newCondEntry({entryText: 'Remove track(s) from... (cond)', condFunc: () => {
 								if (bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Remove track(s) from selected playlist:', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-								const sel = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-								const maxSelCount = args.properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
+								const ap = plman.ActivePlaylist;
+								const sel = plman.GetPlaylistSelectedItems(ap);
+								const maxSelCount = menu_properties['maxSelCount'][1]; // Don't create these menus when selecting more than these # tracks! Avoids lagging when creating the menu
 								if (sel.Count > maxSelCount) {menu.newEntry({menuName: subMenuName, entryText: 'Too many tracks selected: > ' + maxSelCount, func: null, flags: MF_GRAYED}); return;}
 								var inPlaylist = findInPlaylists(sel, ['RemoveItems']);
-								const bShowLocked = args.properties['bRemoveShowLocked'][1];
+								const bShowLocked = menu_properties['bRemoveShowLocked'][1];
 								if (!bShowLocked) {inPlaylist = inPlaylist.filter((playlist) => {return !playlist.bLocked})}
 								const playlistsNum = inPlaylist.length ;
 								if (playlistsNum) {
 									// Split entries in sub-menus if there are too many playlists...
-									let ss = args.properties['findRemoveSplitSize'][1];
+									let ss = menu_properties['findRemoveSplitSize'][1];
 									const splitBy = playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 									if (playlistsNum > splitBy) {
 										const subMenusCount = Math.ceil(playlistsNum / splitBy);
@@ -2191,13 +2170,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
+												const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
 												menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 											}
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '')
+											const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
 											menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 										}
 									}
@@ -2214,52 +2193,39 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							{	// bFindShowCurrent (Find in Playlists)
 								if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
 									const subMenuSecondName = menu.newMenu('Show current playlist?', subMenuName);
-									const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 									const options = ['Yes (greyed entry)', 'No (omit it)'];	
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED});
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-										args.properties['bFindShowCurrent'][1] = true;
-										overwriteProperties(args.properties); // Updates panel
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: () => {
+										menu_properties['bFindShowCurrent'][1] = true;
+										overwriteMenuProperties(); // Updates panel
 									}});
-									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-										args.properties['bFindShowCurrent'][1] = false;
-										overwriteProperties(args.properties); // Updates panel
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: () => {
+										menu_propertiess['bFindShowCurrent'][1] = false;
+										overwriteMenuProperties(); // Updates panel
 									}});
-									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-										return (args.properties['bFindShowCurrent'][1] ? 0 : 1);
-									});
+									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  () => {return (menu_properties['bFindShowCurrent'][1] ? 0 : 1);});
 								}
 							}
 							{	// bRemoveShowLocked (Remove from Playlists)
 								if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
 									const subMenuSecondName = menu.newMenu('Show locked playlist (autoplaylists, etc.)?', subMenuName);
-									const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 									const options = ['Yes (locked, greyed entries)', 'No (omit them)'];	
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED});
 									menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-										args.properties['bRemoveShowLocked'][1] = true;
-										overwriteProperties(args.properties); // Updates panel
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[0], func: () => {
+										menu_properties['bRemoveShowLocked'][1] = true;
+										overwriteMenuProperties(); // Updates panel
 									}});
-									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-										args.properties['bRemoveShowLocked'][1] = false;
-										overwriteProperties(args.properties); // Updates panel
+									menu.newEntry({menuName: subMenuSecondName, entryText: options[1], func: () => {
+										menu_properties['bRemoveShowLocked'][1] = false;
+										overwriteMenuProperties(); // Updates panel
 									}});
-									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-										args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-										return (args.properties['bRemoveShowLocked'][1] ? 0 : 1);
-									});
+									menu.newCheckMenu(subMenuSecondName, options[0], options[1],  () => {return (menu_properties['bRemoveShowLocked'][1] ? 0 : 1);});
 								}
 							}
 							{	// findRemoveSplitSize ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
-								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 								const options = [5, 10, 20, 30, 'Other...'];
 								const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
 								options.forEach( (val, index) => { // Creates menu entries for all options
@@ -2270,32 +2236,28 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
 									optionsIdx[index] = idx; // For later use
 									if (index !== options.length - 1) { // Predefined sizes
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-											args.properties['findRemoveSplitSize'][1] = val;
-											overwriteProperties(args.properties); // Updates panel
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+											menu_properties['findRemoveSplitSize'][1] = val;
+											overwriteMenuProperties(); // Updates panel
 										}});
 									} else { // Last one is user configurable
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-											const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', scriptName + ': ' + subMenuName, args.properties['findRemoveSplitSize'][1]));
-											if (args.properties['findRemoveSplitSize'][1] === input) {return;}
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+											const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', scriptName + ': ' + subMenuName, menu_properties['findRemoveSplitSize'][1]));
+											if (menu_properties['findRemoveSplitSize'][1] === input) {return;}
 											if (!Number.isSafeInteger(input)) {return;}
-											args.properties['findRemoveSplitSize'][1] = input;
-											overwriteProperties(args.properties); // Updates panel
+											menu_properties['findRemoveSplitSize'][1] = input;
+											overwriteMenuProperties(); // Updates panel
 										}});
 									}
 								});
-								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
-									const size = options.indexOf(args.properties['findRemoveSplitSize'][1]);
+								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  () => {
+									const size = options.indexOf(menu_properties['findRemoveSplitSize'][1]);
 									return (size !== -1 ? size : options.length - 1);
 								});
 							}
 							{	// maxSelCount ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
-								const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 								const options = [5, 10, 20, 25, 'Other...'];
 								const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
 								options.forEach( (val, index) => { // Creates menu entries for all options
@@ -2306,26 +2268,23 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
 									optionsIdx[index] = idx; // For later use
 									if (index !== options.length - 1) { // Predefined sizes
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-											args.properties['maxSelCount'][1] = val;
-											overwriteProperties(args.properties); // Updates panel
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+											menu_properties['maxSelCount'][1] = val;
+											overwriteMenuProperties(); // Updates panel
 										}});
 									} else { // Last one is user configurable
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-											args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-											const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', scriptName + ': ' + subMenuName, args.properties['maxSelCount'][1]));
-											if (args.properties['maxSelCount'][1] === input) {return;}
+										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+											const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', scriptName + ': ' + subMenuName, menu_properties['maxSelCount'][1]));
+											if (menu_properties['maxSelCount'][1] === input) {return;}
 											if (!Number.isSafeInteger(input)) {return;}
-											args.properties['maxSelCount'][1] = input;
-											overwriteProperties(args.properties); // Updates panel
+											menu_properties['maxSelCount'][1] = input;
+											overwriteMenuProperties(); // Updates panel
 										}});
 									}
 								});
-								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-									args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
-									const size = options.indexOf(args.properties['maxSelCount'][1]);
+								menu.newCheckMenu(subMenuSecondName, optionsIdx[0], optionsIdx[optionsIdx.length - 1],  () => {
+									const size = options.indexOf(menu_properties['maxSelCount'][1]);
 									return (size !== -1 ? size : options.length - 1);
 								});
 							}
@@ -2354,16 +2313,15 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuNameSend, entryText: 'Sends selected tracks from current playlist to:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuNameSend, entryText: 'sep'});
 				// Build submenus
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'Send selection to...', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: 'Send selection to...', condFunc: () => {
 					if (bProfile) {var profiler = new FbProfiler('Send selection to...');}
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					const playlistsNum = plman.PlaylistCount;
 					const playlistsNumNotLocked = playlistCountNoLocked();
-					const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+					const ap = plman.ActivePlaylist;
+					const handleList = plman.GetPlaylistSelectedItems(ap);
 					if (playlistsNum && playlistsNumNotLocked && handleList.Count) {
 						// Split entries in sub-menus if there are too many playlists...
-						let ss = args.properties['playlistSplitSize'][1];
+						let ss = menu_properties['playlistSplitSize'][1];
 						const splitBy = playlistsNumNotLocked < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 						if (playlistsNumNotLocked > splitBy) {
 							const subMenusCount = Math.ceil(playlistsNumNotLocked / splitBy);
@@ -2379,10 +2337,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
 									if (!addLock(j)) {
 										const playlist = {name: plman.GetPlaylistName(j), index : j};
-										menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
 											plman.UndoBackup(playlist.index);
 											plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
-										}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									} else {skipped++}
 								}
 							}
@@ -2390,9 +2348,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							for (let i = 0; i < playlistsNum; i++) {
 								if (!addLock(i)) {
 									const playlist = {name: plman.GetPlaylistName(i), index : i};
-									menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (plman.ActivePlaylist === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
 										plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
-									}, flags: (plman.ActivePlaylist === playlist.index ? MF_GRAYED : MF_STRING)});
+									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
 						}
@@ -2411,17 +2369,19 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'On current playlist:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'To specified position', func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
 					let pos = 0;
 					try {pos = utils.InputBox(window.ID, 'Move by delta value:\n(positive or negative)', scriptName + ': ' + name, 1, true);}
 					catch (e) {return;}
 					if (!pos) {return;}
-					const ap = plman.ActivePlaylist;
 					const selItems = plman.GetPlaylistSelectedItems(ap);
 					plman.UndoBackup(ap);
 					plman.MovePlaylistSelection(ap, pos);
 				}, flags: selectedFlagsReorder});
 				menu.newEntry({menuName: subMenuName, entryText: 'To the middle', func: () => {
 					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
 					const selItems = plman.GetPlaylistSelectedItems(ap);
 					plman.UndoBackup(ap);
 					plman.RemovePlaylistSelection(ap);
@@ -2436,6 +2396,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					const pp = playingItemLocation.PlaylistIndex;
 					if (pp === -1) {return;}
 					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
 					const selItems = plman.GetPlaylistSelectedItems(ap);
 					plman.UndoBackup(ap);
 					plman.RemovePlaylistSelection(ap);
@@ -2454,68 +2415,92 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			const name = 'Select...';
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select All', func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
 					const start = 0;
-					const end = plman.PlaylistItemCount(plman.ActivePlaylist);
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, range(start, end, 1), true);
+					const end = plman.PlaylistItemCount(ap);
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, range(start, end, 1), true);
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'Invert selection', func: () => {
 					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
 					const toSelect = [];
 					range(0, plman.PlaylistItemCount(ap) - 1, 1).forEach((idx) => {if (!plman.IsPlaylistItemSelected(ap, idx)) {toSelect.push(idx);}});
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, toSelect, true);
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, toSelect, true);
 				}, flags: playlistCountFlags});
-				menu.newEntry({menuName: subMenuName, entryText: 'Clear selection', func: () => {plman.ClearPlaylistSelection(plman.ActivePlaylist);}, flags: selectedFlags});
+				menu.newEntry({menuName: subMenuName, entryText: 'Clear selection', func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					plman.ClearPlaylistSelection(ap);
+				}, flags: selectedFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select first track', func: () => {
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, [0], true);
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, [0], true);
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select last track', func: () => {
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, [plman.PlaylistItemCount(plman.ActivePlaylist) - 1], true);
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, [plman.PlaylistItemCount(ap) - 1], true);
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select random track', func: () => {
-					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, [numbers[0]], true); // Take first one
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					const numbers = range(0, plman.PlaylistItemCount(ap), 1).shuffle(); // Get indexes randomly sorted
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, [numbers[0]], true); // Take first one
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'Select random # tracks', func: () => {
-					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					const numbers = range(0, plman.PlaylistItemCount(ap), 1).shuffle(); // Get indexes randomly sorted
 					const selLength = numbers[0] ? numbers[0] : numbers[1]; // There is only a single zero...
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
 				}, flags: playlistCountFlags});
-				menu.newEntry({menuName: subMenuName, entryText: (args = {...scriptDefaultArgs}) => {return 'Select random ' + getPropertiesPairs(args.properties[0], args.properties[1](), 0).playlistLength[1] + ' tracks'}, func: (args = {...scriptDefaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					const numbers = range(0, plman.PlaylistItemCount(plman.ActivePlaylist), 1).shuffle(); // Get indexes randomly sorted
-					const selLength = args.properties.playlistLength[1];
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
+				menu.newEntry({menuName: subMenuName, entryText: () => {return 'Select random ' + menu_properties.playlistLength[1] + ' tracks'}, func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					const numbers = range(0, plman.PlaylistItemCount(ap), 1).shuffle(); // Get indexes randomly sorted
+					const selLength = menu_properties.playlistLength[1];
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, numbers.slice(0, selLength), true); // Take n first ones, where n is also the first or second value of indexes array
 				}, flags: playlistCountFlags});
-				menu.newEntry({menuName: subMenuName, entryText: 'Select next tracks...', func: (args = {...scriptDefaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					let input = args.properties.playlistLength[1];
+				menu.newEntry({menuName: subMenuName, entryText: 'Select next tracks...', func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					let input = menu_properties.playlistLength[1];
 					try {input = Number(utils.InputBox(window.ID, 'Enter num of next items to select from focused item:\n(< 0 will go backwards)\n(= 1 will only select the focused item)', scriptName + ': ' + name, input, true));}
 					catch (e) {return;}
 					if (!Number.isFinite(input)) {return;}
 					if (!input) {return;}
-					let start = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
-					if (start !== -1 && !plman.IsPlaylistItemSelected(plman.ActivePlaylist, start)) {start = -1;}
-					const end = plman.PlaylistItemCount(plman.ActivePlaylist);
+					let start = plman.GetPlaylistFocusItemIndex(ap);
+					if (start !== -1 && !plman.IsPlaylistItemSelected(ap, start)) {start = -1;}
+					const end = plman.PlaylistItemCount(ap);
 					const numbers = input < 0 ? (start !== -1 ? range(0, start, 1) : range(0, end, 1)) : range(start !== -1 ? start : 0, end, 1);
-					plman.ClearPlaylistSelection(plman.ActivePlaylist);
-					plman.SetPlaylistSelection(plman.ActivePlaylist, input < 0 ? numbers.slice(input) : numbers.slice(0, input), true); // Take n first ones
+					plman.ClearPlaylistSelection(ap);
+					plman.SetPlaylistSelection(ap, input < 0 ? numbers.slice(input) : numbers.slice(0, input), true); // Take n first ones
 				}, flags: playlistCountFlags});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-				menu.newEntry({menuName: subMenuName, entryText: 'Delete selected tracks', func: () => {plman.RemovePlaylistSelection(plman.ActivePlaylist);}, flags: selectedFlagsRem});
-				menu.newEntry({menuName: subMenuName, entryText: 'Delete Non selected tracks', func: () => {plman.RemovePlaylistSelection(plman.ActivePlaylist, true);}, flags: playlistCountFlagsRem});
+				menu.newEntry({menuName: subMenuName, entryText: 'Delete selected tracks', func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					plman.RemovePlaylistSelection(ap);
+				}, flags: selectedFlagsRem});
+				menu.newEntry({menuName: subMenuName, entryText: 'Delete Non selected tracks', func: () => {
+					const ap = plman.ActivePlaylist;
+					if (ap === -1) {return;}
+					plman.RemovePlaylistSelection(ap, true);
+				}, flags: playlistCountFlagsRem});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				const subMenuHalf = menu.newMenu('By halves', subMenuName);
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -2539,11 +2524,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					} else {
 						let entryText = selArg.name;
 						menu.newEntry({menuName: selArg.menu, entryText, func: (args = selArg.args) => {
-							const count = plman.PlaylistItemCount(plman.ActivePlaylist);
+							const ap = plman.ActivePlaylist;
+							if (ap === -1) {return;}
+							const count = plman.PlaylistItemCount(ap);
 							const start = count * args.start;
 							const end = Math.floor(count * args.end);
-							plman.ClearPlaylistSelection(plman.ActivePlaylist);
-							plman.SetPlaylistSelection(plman.ActivePlaylist, range(start, end, 1), true);
+							plman.ClearPlaylistSelection(ap);
+							plman.SetPlaylistSelection(ap, range(start, end, 1), true);
 						}, flags: playlistCountFlags});
 					}
 				});
@@ -2565,10 +2552,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{name: 'By Key', args: ['%KEY%']},
 					{name: 'By Mood', args: ['%MOOD%']},
 					{name: 'sep'},
-					{name: 'By...(tags)', args: () => {
+					{name: 'By... (tags)', args: () => {
 						let input = '%ARTIST%;%ALBUM%';
 						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
-						catch (e) {return;}
+						catch (e) {return [];}
 						if (!input.length) {return [];}
 						input = input.split(';');
 						if (!input.length) {return [];}
@@ -2620,10 +2607,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{name: 'By Key', args: [defaultArgs.keyTag]}, // Uses remapped tag. Probably missing %, fixed later.
 					{name: 'By Mood', args: ['%MOOD%']},
 					{name: 'sep'},
-					{name: 'By...(tags)', args: () => {
+					{name: 'By... (tags)', args: () => {
 						let input = '%ARTIST%;%ALBUM%';
 						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
-						catch (e) {return;}
+						catch (e) {return [];}
 						if (!input.length) {return [];}
 						input = input.split(';');
 						if (!input.length) {return [];}
@@ -2643,14 +2630,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const focusIdx = plman.GetPlaylistFocusItemIndex(ap);
 								const selItems = plman.GetPlaylistSelectedItems(ap);
 								const plsItems = plman.GetPlaylistItems(ap);
-								const count = plman.PlaylistItemCount(ap)
+								const count = plman.PlaylistItemCount(ap);
 								let selIdx = -1;
 								let bDone = false;
 								(_isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
 									if (bDone) {return;}
 									if (tf.indexOf('$') === -1 && tf.indexOf('%') === -1) {tf = '%' + tf + '%';} // Add % to tag names if missing
 									const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
-									for (let i = subMenu === 'Next' ? focusIdx + 1 : focusIdx - 1; i >= 0 && i <= count; subMenu === 'Next' ? i++ : i--) {
+									for (let i = subMenu === 'Next' ? focusIdx + 1 : focusIdx - 1; i >= 0 && i < count; subMenu === 'Next' ? i++ : i--) {
 										if (plman.IsPlaylistItemSelected(ap, i)) {continue;}
 										const tag = fb.TitleFormat(tf).EvalWithMetadb(plsItems[i]);
 										selTags.forEach((selTag) => {
@@ -2698,7 +2685,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					});
 					// And merge
 					menu_properties = {...menu_properties, ...toMerge};
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}], bUseDic: false};
 					// For submenus
 					const tagsToCheck = [
 						{tag: 'genre'						, dscrpt: 'Genre (+ dictionary)'		, bUseDic: true	}, 
@@ -2713,15 +2699,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs}, bAsync = null) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-						args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
-						checkTags(args);
+					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: () => {
+						checkTags({properties: menu_properties, bUseDic: false, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
 					}, flags: multipleSelectedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs,  bUseDic: true}, bAsync = null) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-						args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
-						checkTags(args);
+					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: () => {
+						checkTags({properties: menu_properties, bUseDic: true, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
 						const subMenuSecondName = menu.newMenu('Check only...', subMenuName);
@@ -2729,26 +2711,22 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
-							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, bUseDic: obj.bUseDic}, bAsync = null) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-								args.properties['tagNamesToCheck'][1] = obj.tag;
-								args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
-								checkTags(args);
+							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: () => {
+								const properties = clone(menu_properties)
+								properties['tagNamesToCheck'][1] = obj.tag;
+								checkTags({properties, bUseDic: obj.bUseDic, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
 							}, flags: multipleSelectedFlags});
 						});
 					}
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity}, bAsync = null) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-						args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
-						checkTags(args);
+					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: () => {
+						checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
 					}, flags: multipleSelectedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true}, bAsync = null) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-						args.bAsync =  bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
-						checkTags(args);
+					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: () => {
+						checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
+						
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
 						const subMenuSecondName = menu.newMenu('Report all from...', subMenuName);
@@ -2756,55 +2734,48 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
-							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (args = {...scriptDefaultArgs, ...defaultArgs, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic}, bAsync = null) => {
-								args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-								args.properties['tagNamesToCheck'][1] = obj.tag;
-								args.bAsync = bAsync !== null ? bAsync : JSON.parse(args.properties.async[1])['Check tags'];
-								checkTags(args);
+							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: () => {
+								properties['tagNamesToCheck'][1] = obj.tag;
+								checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
 							}, flags: multipleSelectedFlags});
 						});
 					}
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Configure tags to check...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, args.properties['tagNamesToCheck'][1]);
-						if (args.properties['tagNamesToCheck'][1] === input) {return;}
+					menu.newEntry({menuName: subMenuName, entryText: 'Configure tags to check...', func: () => {
+						const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, menu_properties['tagNamesToCheck'][1]);
+						if (menu_properties['tagNamesToCheck'][1] === input) {return;}
 						if (!input.length) {return;}
-						args.properties['tagNamesToCheck'][1] = [...new Set(input.split(',').filter(Boolean))].join(','); // filter holes and remove duplicates
-						overwriteProperties(args.properties); // Updates panel
+						menu_properties['tagNamesToCheck'][1] = [...new Set(input.split(',').filter(Boolean))].join(','); // filter holes and remove duplicates
+						overwriteMenuProperties(); // Updates panel
 					}});
-					menu.newEntry({menuName: subMenuName, entryText: 'Configure excluded tag values...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); //Update properties from the panel
-						addTagsToExclusionPopup(args);
+					menu.newEntry({menuName: subMenuName, entryText: 'Configure excluded tag values...', func: () => {
+						addTagsToExclusionPopup({properties: menu_properties});
 					}});
 					{
 						const subMenuSecondName = menu.newMenu('Configure dictionary...', subMenuName);
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, args.properties['tagNamesExcludedDic'][1]);
-							if (args.properties['tagNamesExcludedDic'][1] === input) {return;}
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: () => {
+							const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, menu_properties['tagNamesExcludedDic'][1]);
+							if (menu_properties['tagNamesExcludedDic'][1] === input) {return;}
 							if (!input.length) {return;}
-							args.properties['tagNamesExcludedDic'][1] = [...new Set(input.split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['tagNamesExcludedDic'][1] = [...new Set(input.split(';').filter(Boolean))].join(';'); // filter holes and remove duplicates
+							overwriteMenuProperties(); // Updates panel
 						}});
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'Set dictionary...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', scriptName + ': ' + name, args.properties['dictName'][1]);
-							if (args.properties['dictName'][1] === input) {return;}
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'Set dictionary...', func: () => {
+							const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', scriptName + ': ' + name, menu_properties['dictName'][1]);
+							if (menu_properties['dictName'][1] === input) {return;}
 							if (!input.length) {return;}
-							const dictPath = args.properties['dictPath'][1] + '\\' + input;
+							const dictPath = menu_properties['dictPath'][1] + '\\' + input;
 							if (!_isFolder(dictPath)) {fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return;}
-							args.properties['dictName'][1] = input;
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['dictName'][1] = input;
+							overwriteMenuProperties(); // Updates panel
 						}});
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(set to empty to restore default path)', scriptName + ': ' + name, args.properties['dictPath'][1]);
-							if (args.properties['dictPath'][1] === input) {return;}
-							if (!input.length) {input = args.properties['dictPath'][3];}
+						menu.newEntry({menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: () => {
+							let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(set to empty to restore default path)', scriptName + ': ' + name, menu_properties['dictPath'][1]);
+							if (menu_properties['dictPath'][1] === input) {return;}
+							if (!input.length) {input = menu_properties['dictPath'][3];}
 							if (!_isFolder(input)) {fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return;}
-							args.properties['dictPath'][1] = input;
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['dictPath'][1] = input;
+							overwriteMenuProperties(); // Updates panel
 						}});
 					}
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
@@ -2843,50 +2814,41 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu_properties['simThreshold'] = ['\'Other tools\\Playlist Revive\' similarity', 0.50];
 						// Checks
 						menu_properties['simThreshold'].push({range: [[0,1]], func: !Number.isNaN}, menu_properties['simThreshold'][1]);
-						// Merge
-						const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 						// Menus
-						let entryTextFunc = (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							return args.properties['simThreshold'][1];
-						};
+						let entryTextFunc = () => {return menu_properties['simThreshold'][1];};
 						menu.newEntry({menuName: subMenuName, entryText: 'Replaces dead items with ones in library:', func: null, flags: MF_GRAYED});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Find dead items in all playlists', func: findDeadItems});
 						menu.newEntry({menuName: subMenuName, entryText: 'Replace dead items in all playlists', func: playlistReviveAll});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on selection', func:(args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on selection', func:() => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1})
 						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on selection (' + entryTextFunc() * 100 + '% simil.)'}, func:(args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: args.properties['simThreshold'][1]})
+						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on selection (' + entryTextFunc() * 100 + '% simil.)'}, func:() => {
+							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1]})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on current playlist', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: 1})
+						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on current playlist', func: () => {
+							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: 1})
 						}, flags: playlistCountFlagsAddRem});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on current playlist (' + entryTextFunc() * 100 + '% simil.)'}, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: args.properties['simThreshold'][1]})
+						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on current playlist (' + entryTextFunc() * 100 + '% simil.)'}, func: () => {
+							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1]})
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText:'Simulate on selection (see console)', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+						menu.newEntry({menuName: subMenuName, entryText:'Simulate on selection (see console)', func: () => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1, bSimulate: true})
 						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Simulate on selection (' + entryTextFunc() * 100 + '% simil.) (see console)'}, func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: args.properties['simThreshold'][1], bSimulate: true})
+						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Simulate on selection (' + entryTextFunc() * 100 + '% simil.) (see console)'}, func: () => {
+							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bSimulate: true})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, args.properties['simThreshold'][1]));
-							if (args.properties['simThreshold'][1] === input) {return;}
+						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: () => {
+							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, menu_properties['simThreshold'][1]));
+							if (menu_properties['simThreshold'][1] === input) {return;}
 							if (!Number.isFinite(input)) {return;}
 							if (input < 0 || input > 1) {return;}
-							args.properties['simThreshold'][1] = input;
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['simThreshold'][1] = input;
+							overwriteMenuProperties(); // Updates panel
 						}});
 					}
 
@@ -2910,8 +2872,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
 						menu_properties['importPlaylistMask'].push({func: isJSON}, menu_properties['importPlaylistMask'][1]);
 						menu_properties['importPlaylistFilters'].push({func: (x) => {return isJSON(x) && JSON.parse(x).every((query) => {return checkQuery(query, true);});}}, menu_properties['importPlaylistFilters'][1]);
-						// Merge
-						const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 						// Presets
 						const maskPresets = [
 							{name: 'Numbered Track list', val: JSON.stringify(['. ','%title%',' - ','%artist%'])},
@@ -2921,14 +2881,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-							menu.newEntry({menuName: subMenuName, entryText: 'Import from file \\ url...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+							menu.newEntry({menuName: subMenuName, entryText: 'Import from file \\ url...', func: () => {
 							let path;
 							try {path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true);}
 							catch (e) {return;}
 							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {console.log('File does not exist.'); return ;}
 							let formatMask;
-							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%title%\', \' - \', \'%artist%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, args.properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%title%\', \' - \', \'%artist%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							try { 
 								// Load preset if possible
@@ -2942,30 +2901,28 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}
 							catch (e) {console.log('Playlist Tools: Invalid format mask'); return;}
 							if (!formatMask) {return;}
-							const queryFilters = JSON.parse(args.properties.importPlaylistFilters[1]);
+							const queryFilters = JSON.parse(menu_properties.importPlaylistFilters[1]);
 							const idx = importTextPlaylist({path, formatMask, queryFilters})
 							if (idx !== -1) {plman.ActivePlaylist = idx;}
-							args.properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
+							overwriteMenuProperties(); // Updates panel
 						}});
-						menu.newEntry({menuName: subMenuName, entryText: 'Import from file (path at properties)', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-							const path = args.properties.importPlaylistPath[1];
-							const formatMask = JSON.parse(args.properties.importPlaylistMask[1]);
-							const queryFilters = JSON.parse(args.properties.importPlaylistFilters[1]);
+						menu.newEntry({menuName: subMenuName, entryText: 'Import from file (path at properties)', func: () => {
+							const path = menu_properties.importPlaylistPath[1];
+							const formatMask = JSON.parse(menu_properties.importPlaylistMask[1]);
+							const queryFilters = JSON.parse(menu_properties.importPlaylistFilters[1]);
 							importTextPlaylist({path, formatMask, queryFilters})
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Configure filters...', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+						menu.newEntry({menuName: subMenuName, entryText: 'Configure filters...', func: () => {
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n [\'%channels% LESS 3\', \'%rating% GREATER 2\']', scriptName + ': ' + name, args.properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n [\'%channels% LESS 3\', \'%rating% GREATER 2\']', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							if (!input.length) {input = '[]';}
 							try {JSON.parse(input);}
 							catch (e) {console.log('Playlist Tools: Invalid filter array'); return;}
-							if (input !== args.properties.importPlaylistFilters[1]) {args.properties.importPlaylistFilters[1] = input;}
-							overwriteProperties(args.properties); // Updates panel	
+							if (input !== menu_properties.importPlaylistFilters[1]) {menu_properties.importPlaylistFilters[1] = input;}
+							overwriteMenuProperties(); // Updates panel	
 						}});
 					}
 					menu.newEntry({menuName, entryText: 'sep'});
@@ -3067,8 +3024,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			// Checks
 			menu_properties['pools'].push({func: isJSON}, menu_properties['pools'][1]);
 			menu_properties['poolsCustomArg'].push({func: isJSON}, menu_properties['poolsCustomArg'][1]);
-			//Args
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Functions
 			const pickMethods = {
 				random: (handleListFrom, num, count) => {
@@ -3224,8 +3179,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										// }).finally(() => {bDone = true; plmPromises.length = 0; console.log(handleListFrom);});
 								// } 
 								if (isPlsMan) {
-									const propertiesPanel =  getPropertiesPairs((typeof buttons === 'undefined' ? menu_properties : menu_panelProperties), menu_prefix_panel, 0);
-									const playlistPath = JSON.parse(propertiesPanel.playlistPath[1]); // This is retrieved everytime the menu is called
+									const playlistPath = JSON.parse(menu_panelProperties.playlistPath[1]); // This is retrieved everytime the menu is called
 									playlistPath.forEach((path) => { // Find first exact match
 										if (bDone) {return;}
 										const plsArr = loadPlaylistsFromFolder(path);
@@ -3366,12 +3320,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					let entryText = poolObj.name;
 					// Global forced query
 					const pool = clone(poolObj.pool);
-					if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) { // With forced query enabled
+					if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
 						Object.keys(pool.query).forEach((key) => {
 							if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-								pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
+								pool.query[key] = '(' + pool.query[key] + ') AND (' + defaultArgs.forcedQuery + ')';
 							} else if (!pool.query[key].length) { // Empty uses forced query or ALL
-								pool.query[key] = args.forcedQuery;
+								pool.query[key] = defaultArgs.forcedQuery;
 							}
 						});
 					} else {
@@ -3384,10 +3338,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName, entryText, func: () => {do_pool(pool);}});
 				}
 			});
-			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: () => {
 				// Entry list
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-				pools = JSON.parse(args.properties['pools'][1]);
+				pools = JSON.parse(menu_properties['pools'][1]);
 				pools.forEach( (poolObj) => {
 					// Add separators
 					if (poolObj.hasOwnProperty('name') && poolObj.name === 'sep') {
@@ -3396,15 +3349,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Create names for all entries
 						let poolName = poolObj.name;
 						poolName = poolName.length > 40 ? poolName.substring(0,40) + ' ...' : poolName;
-						// Entries
 						// Global forced query
 						const pool = clone(poolObj.pool);
-						if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) {
+						if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {
 							Object.keys(pool.query).forEach((key) => { // With forced query enabled
 								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-									pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
+									pool.query[key] = '(' + pool.query[key] + ') AND (' + defaultArgs.forcedQuery + ')';
 								} else if (!pool.query[key].length) { // Empty uses forced query or ALL
-									pool.query[key] = args.forcedQuery;
+									pool.query[key] = defaultArgs.forcedQuery;
 								}
 							});
 						} else {
@@ -3414,25 +3366,24 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								}
 							});
 						}
-						menu.newEntry({menuName, entryText: poolName, func: () => {do_pool(pool, args.properties);}});
+						menu.newEntry({menuName, entryText: poolName, func: () => {do_pool(pool, menu_properties);}});
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
 				{ // Static menu: user configurable
-					menu.newEntry({menuName, entryText: 'Custom pool...', func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+					menu.newEntry({menuName, entryText: 'Custom pool...', func: () => {
 						// On first execution, must update from property
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						args.tfo = selArg.tfo = JSON.parse(args.properties['poolsCustomArg'][1]).tfo;
+						selArg.tfo = JSON.parse(menu_properties['poolsCustomArg'][1]).tfo;
 						// Input
 						const input = inputPool();
 						if (!input) {return;}
 						const pool = clone(input);
-						if (forcedQueryMenusEnabled[name] && args.forcedQuery.length) {
+						if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {
 							Object.keys(pool.query).forEach((key) => { // With forced query enabled
 								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-									pool.query[key] = '(' + pool.query[key] + ') AND (' + args.forcedQuery + ')';
+									pool.query[key] = '(' + pool.query[key] + ') AND (' + defaultArgs.forcedQuery + ')';
 								} else if (!pool.query[key].length) { // Empty uses forced query or ALL
-									pool.query[key] = args.forcedQuery;
+									pool.query[key] = defaultArgs.forcedQuery;
 								}
 							});
 						} else {
@@ -3443,17 +3394,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							});
 						}
 						// Execute
-						do_pool(pool, args.properties);
+						do_pool(pool, menu_properties);
 						// For internal use original object
 						selArg.pool = input;
-						args.properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
-						overwriteProperties(args.properties); // Updates panel
+						menu_properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+						overwriteMenuProperties(); // Updates panel
 					}});
 					// Menu to configure property
 					menu.newEntry({menuName, entryText: 'sep'});
 				}
 				{	// Add / Remove
-					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs, ...selArg}) => {
+					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: () => {
 						// Input all variables
 						let input;
 						let entryName = '';
@@ -3469,13 +3420,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Add entry
 						pools.push(input);
 						// Save as property
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						args.properties['pools'][1] = JSON.stringify(pools); // And update property with new value
+						menu_properties['pools'][1] = JSON.stringify(pools); // And update property with new value
 						// Presets
 						if (!presets.hasOwnProperty('pools')) {presets.pools = [];}
 						presets.pools.push(input);
-						args.properties['presets'][1] = JSON.stringify(presets);
-						overwriteProperties(args.properties); // Updates panel
+						menu_properties['presets'][1] = JSON.stringify(presets);
+						overwriteMenuProperties(); // Updates panel
 					}});
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
@@ -3483,27 +3433,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const entryText = (pool.name === 'sep' ? '------(separator)------' : (pool.name.length > 40 ? pool.name.substring(0,40) + ' ...' : pool.name));
 							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 								pools.splice(index, 1);
-								args.properties['pools'][1] = JSON.stringify(pools);
+								menu_properties['pools'][1] = JSON.stringify(pools);
 								// Presets
 								if (presets.hasOwnProperty('pools')) {
 									presets.pools.splice(presets.pools.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(pool);}), 1);
 									if (!presets.pools.length) {delete presets.pools;}
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 							}});
 						});
 						if (!pools.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 							pools = [...poolsDefaults];
-							args.properties['pools'][1] = JSON.stringify(pools);
+							menu_properties['pools'][1] = JSON.stringify(pools);
 							// Presets
 							if (presets.hasOwnProperty('pools')) {
 								delete presets.pools;
-								args.properties['presets'][1] = JSON.stringify(presets);
+								menu_properties['presets'][1] = JSON.stringify(presets);
 							}
-							overwriteProperties(args.properties); // Updates panel
+							overwriteMenuProperties(); // Updates panel
 						}});
 					}
 				}
@@ -3539,7 +3489,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					'Select...\\Select last track',
 					'Dynamic Queries...\\Same title (any artist)',
 					'Select...\\Select random track',
-					'Search similar by Graph...\Random Styles/Genres mix, same Mood',
+					'Search similar by Graph...\\Random Styles/Genres mix, same Mood',
 					'Select...\\Select random track',
 					'Special Playlists...\\Influences from any date',
 					'Duplicates and tag filtering\\Remove duplicates by title, artist, date',
@@ -3579,19 +3529,16 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					'Select...\\Select All',
 					'Check tags\\Report all tags by comparison'
 				], bAsync: true}
-			]; 
+			];
 			// {name, entry: []}
 			menu_properties['macros'] = ['Saved macros', JSON.stringify(macrosDefaults)];
 			// Checks
 			menu_properties['macros'].push({func: isJSON}, menu_properties['macros'][1]);
-			// Args
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 			// Menus
 			menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
-			menu.newCondEntry({entryText: 'Macros', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-				let propMacros = JSON.parse(args.properties['macros'][1]);
+			menu.newCondEntry({entryText: 'Macros', condFunc: () => {
+				let propMacros = JSON.parse(menu_properties['macros'][1]);
 				if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
 				// List
 				propMacros.forEach((macro) => {
@@ -3609,28 +3556,26 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				if (!propMacros.length) {menu.newEntry({menuName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 				menu.newEntry({menuName, entryText: 'sep'});
 				// Save
-				menu.newEntry({menuName, entryText: 'Start recording a macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newEntry({menuName, entryText: 'Start recording a macro', func: () => {
 					const macro = initMacro(menu);
 					if (macro && macro.name === 'sep') { // Just add a separator
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 						saveMacro();
-						args.properties['macros'][1] = JSON.stringify(macros);
+						menu_properties['macros'][1] = JSON.stringify(macros);
 						// Presets
 						if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
 						presets.macros.push(macro);
-						args.properties['presets'][1] = JSON.stringify(presets);
-						overwriteProperties(args.properties); // Updates panel
+						menu_properties['presets'][1] = JSON.stringify(presets);
+						overwriteProperties(menu_properties); // Updates panel
 					}
 				}});
-				menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+				menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: () => {
 					const macro = saveMacro();
-					args.properties['macros'][1] = JSON.stringify(macros);
+					menu_properties['macros'][1] = JSON.stringify(macros);
 					// Presets
 					if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
 					presets.macros.push(macro);
-					args.properties['presets'][1] = JSON.stringify(presets);
-					overwriteProperties(args.properties); // Updates panel
+					menu_properties['presets'][1] = JSON.stringify(presets);
+					overwriteProperties(menu_properties); // Updates panel
 				}});
 				// Delete
 				{
@@ -3639,14 +3584,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const entryText = (macro.name === 'sep' ? '------(separator)------' : (macro.name.length > 40 ? macro.name.substring(0,40) + ' ...' : macro.name));
 						menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 							propMacros.splice(index, 1);
-							args.properties['macros'][1] = JSON.stringify(propMacros);
+							menu_properties['macros'][1] = JSON.stringify(propMacros);
 							// Presets
 							if (presets.hasOwnProperty('macros')) {
 								presets.macros.splice(presets.macros.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(macro);}), 1);
 								if (!presets.macros.length) {delete presets.macros;}
-								args.properties['presets'][1] = JSON.stringify(presets);
+								menu_properties['presets'][1] = JSON.stringify(presets);
 							}
-							overwriteProperties(args.properties); // Updates panel
+							overwriteProperties(menu_properties); // Updates panel
 							macros = propMacros; // Discards any non saved macro
 						}});
 					});
@@ -3654,12 +3599,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 						propMacros = [...macrosDefaults];
-						args.properties['macros'][1] = JSON.stringify(propMacros);
+						menu_properties['macros'][1] = JSON.stringify(propMacros);
 						if (presets.hasOwnProperty('macros')) {
 							delete presets.macros;
-							args.properties['presets'][1] = JSON.stringify(presets);
+							menu_properties['presets'][1] = JSON.stringify(presets);
 						}
-						overwriteProperties(args.properties); // Updates panel
+						overwriteMenuProperties(); // Updates panel
 						macros = []; // Discards any non saved macro
 					}});
 				}
@@ -3687,7 +3632,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					const mainMenuSMPDefaults = Object.values(on_main_menu_entries);
 					menu_properties['mainMenuSMP'] = [menuName + '\\' + name + ' entries', JSON.stringify(mainMenuSMP)]; // On main_menu_custom.js
 					menu_properties['mainMenuSMP'].push({func: isJSON}, menu_properties['mainMenuSMP'][1]);
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					const plsListener = 'pt:listener';
 					// Helpers
 					function exportMenus(path) {
@@ -3703,7 +3647,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						let menuList = [];
 						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Global Shortcuts','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Playlist manipulation', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to..', 'Don\'t try to find tracks if selecting more than...', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From year...', 'From last...']);
 						const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists'];
-						menu.getEntriesAll().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
+						menu.getEntriesAll(null, {pos: -1, args: false} /*Skip cond entries which must run only on init*/).filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
 							const entryText = _isFunction(_.entryText) ? _.entryText() : _.entryText;
 							const menuName = _.menuName;
 							// Skip
@@ -3812,19 +3756,20 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								}
 							}
 						});
-						if (defaultArgs.bHttpControl() && !exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
-						if (defaultArgs.bHttpControl() && !exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
-						if (defaultArgs.bHttpControl() && !exportDSP(defaultArgs.httpControlPath)) {console.log('Error saving DSP entries for http Control integration.')}
-						if (defaultArgs.bHttpControl() && !exportDevices(defaultArgs.httpControlPath)) {console.log('Error saving Devices entries for http Control integration.')}
-						if (defaultArgs.bHttpControl() && !exportComponents(defaultArgs.httpControlPath)) {console.log('Error saving Components entries for http Control integration.')}
+						if (defaultArgs.bHttpControl()) {
+							if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
+							if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
+							if (!exportDSP(defaultArgs.httpControlPath)) {console.log('Error saving DSP entries for http Control integration.')}
+							if (!exportDevices(defaultArgs.httpControlPath)) {console.log('Error saving Devices entries for http Control integration.')}
+							if (!exportComponents(defaultArgs.httpControlPath)) {console.log('Error saving Components entries for http Control integration.')}
+						}
 					}});
 					//  Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Config SMP menus:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newCondEntry({entryText: name + ' (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newCondEntry({entryText: name + ' (cond)', condFunc: () => {
 						// Entry list
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						mainMenuSMP = JSON.parse(args.properties['mainMenuSMP'][1]);
+						mainMenuSMP = JSON.parse(menu_properties['mainMenuSMP'][1]);
 						mainMenuSMP.forEach( (entry, index) => {
 							if (!entry) {return;}
 							// Add separators
@@ -3926,8 +3871,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										// Entries
 										menu.newEntry({menuName: currMenu, entryText: scriptName, func: () => {
 											entry.func(idx);
-											args.properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
-											overwriteProperties(args.properties); // Updates panel
+											menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
+											overwriteMenuProperties(); // Updates panel
 											if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
 											if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
 										}});
@@ -3948,14 +3893,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								menu.newEntry({menuName: subMenuSecondName, entryText: entryText  + '\t (' + (index + 1) + ')', func: () => {
 									mainMenuSMP.splice(index, 1);
 									delete on_main_menu_entries[index + 1];
-									args.properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
+									menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 									// Presets
 									if (presets.hasOwnProperty('mainMenuSMP')) {
 										presets.mainMenuSMP.splice(presets.mainMenuSMP.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(entry);}), 1);
 										if (!presets.mainMenuSMP.length) {delete presets.mainMenuSMP;}
-										args.properties['presets'][1] = JSON.stringify(presets);
+										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
-									overwriteProperties(args.properties); // Updates panel
+									overwriteMenuProperties(); // Updates panel
 									if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
 									if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
 								}});
@@ -3964,13 +3909,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 								mainMenuSMP = [...mainMenuSMPDefaults];
-								args.properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
+								menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 								// Presets
 								if (presets.hasOwnProperty('mainMenuSMP')) {
 									delete presets.mainMenuSMP;
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 								if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
 								if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
 							}});
@@ -3984,13 +3929,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\playlist_names_commands.txt';
 				const subMenuName = menu.newMenu(name, menuName);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				//  Menus
 				menu.newEntry({menuName: subMenuName, entryText: 'Switch event listener:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					if (!args.properties.bPlaylistNameCommands[1]) {
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: () => {
+					if (!menu_properties.bPlaylistNameCommands[1]) {
 						if (_isFile(readmes[menuName + '\\' + name])) {
 							const readme = utils.ReadTextFile(readmes[menuName + '\\' + name], convertCharsetToCodepage('UTF-8'));
 							if (readme.length) {
@@ -3999,10 +3942,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}
 						}
 					}
-					args.properties.bPlaylistNameCommands[1] = !args.properties.bPlaylistNameCommands[1];
-					overwriteProperties(args.properties); // Updates panel
+					menu_properties.bPlaylistNameCommands[1] = !menu_properties.bPlaylistNameCommands[1];
+					overwriteMenuProperties(); // Updates panel
 				}});
-				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1](), 0).bPlaylistNameCommands[1];}); 
+				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void(0), () => {return menu_properties.bPlaylistNameCommands[1];}); 
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
@@ -4015,7 +3958,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				let scriptIncludedDefaults = [];
 				menu_properties['scriptIncluded'] = [menuName + '\\' + name + ' scripts', JSON.stringify(scriptIncluded)];
 				menu_properties['scriptIncluded'].push({func: isJSON}, menu_properties['scriptIncluded'][1]);
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				deferFunc.push({name, func: (properties) => {
 					const scriptIncluded = JSON.parse(properties['scriptIncluded'][1]);
 					scriptIncluded.forEach((scrObj) => {
@@ -4026,10 +3968,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				//  Menus
 				menu.newEntry({menuName: subMenuName, entryText: 'Include headless scripts:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-				menu.newCondEntry({entryText: name + ' (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+				menu.newCondEntry({entryText: name + ' (cond)', condFunc: () => {
 					// Entry list
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					scriptIncluded = JSON.parse(args.properties['scriptIncluded'][1]);
+					scriptIncluded = JSON.parse(menu_properties['scriptIncluded'][1]);
 					scriptIncluded.forEach( (scrObj) => {
 						// Add separators
 						if (scrObj.hasOwnProperty('name') && scrObj.name === 'sep') {
@@ -4045,7 +3986,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					if (!scriptIncluded.length) {menu.newEntry({menuName: subMenuName, entryText: '(none set yet)', func: null, flags: MF_GRAYED});}
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					{	// Add / Remove
-					menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
+					menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
 						const answer = WshShell.Popup('This is an utility to easily include (\'merge\') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don\'t require any UI, user interaction, etc.\n\nNote you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\\Spider Monkey Panel) and do nothing more.\n\nThe use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.\n\nIn any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
 						if (answer === popup.no) {return;}
 						// Input all variables
@@ -4066,13 +4007,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Add entry
 						scriptIncluded.push(input);
 						// Save as property
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded); // And update property with new value
+						menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded); // And update property with new value
 						// Presets
 						if (!presets.hasOwnProperty('scriptIncluded')) {presets.scriptIncluded = [];}
 						presets.scriptIncluded.push(input);
-						args.properties['presets'][1] = JSON.stringify(presets);
-						overwriteProperties(args.properties); // Updates panel
+						menu_properties['presets'][1] = JSON.stringify(presets);
+						overwriteMenuProperties(); // Updates panel
 					}});
 					{
 						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
@@ -4080,27 +4020,27 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
 								scriptIncluded.splice(index, 1);
-								args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
+								menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
 								// Presets
 								if (presets.hasOwnProperty('scriptIncluded')) {
 									presets.scriptIncluded.splice(presets.scriptIncluded.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
 									if (!presets.scriptIncluded.length) {delete presets.scriptIncluded;}
-									args.properties['presets'][1] = JSON.stringify(presets);
+									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
-								overwriteProperties(args.properties); // Updates panel
+								overwriteMenuProperties(); // Updates panel
 							}});
 						});
 						if (!scriptIncluded.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 							scriptIncluded = [...scriptIncludedDefaults];
-							args.properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
+							menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
 							// Presets
 							if (presets.hasOwnProperty('scriptIncluded')) {
 								delete presets.scriptIncluded;
-								args.properties['presets'][1] = JSON.stringify(presets);
+								menu_properties['presets'][1] = JSON.stringify(presets);
 							}
-							overwriteProperties(args.properties); // Updates panel
+							overwriteMenuProperties(); // Updates panel
 						}});
 					}
 				}
@@ -4132,7 +4072,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								fb.ShowPopupMessage('Controls wether dynamic queries are evaluated only on the focused item (single item) or the entire selection.\n\nWhen evaluated  on multiple selected tracks, a query evaluated on 3 items would look like this:\n\nTITLE IS #TITLE#\n(TITLE IS O Dromos To Gramma) OR (TITLE IS Gyal Bad) OR (TITLE IS Say Me)', scriptName + ': ' + configMenu);
 								options[key] = !options[key];
 								menu_properties.dynQueryEvalSel[1] = JSON.stringify(options);
-								setProperties(menu_properties, menu_prefix, 0, false, true);
+								overwriteMenuProperties(); // Updates panelmenu_properties, menu_prefix, 0, false, true);
 							}});
 							menu.newCheckMenu(subMenuNameTwo, key, void(0), () => {return options[key];});
 						});
@@ -4142,30 +4082,29 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			{
 				const subMenuNameTwo = menu.newMenu('Global Forced Query', subMenuName);
 				{	// Menu to configure properties: forcedQuery
-					const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 					menu.newEntry({menuName: subMenuNameTwo, entryText: 'Switch forced query functionality:', func: null, flags: MF_GRAYED})
 					menu.newEntry({menuName: subMenuNameTwo, entryText: 'sep'})
-					menu.newCondEntry({entryText: 'forcedQueryMenusEnabled', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						forcedQueryMenusEnabled = {...forcedQueryMenusEnabled, ...JSON.parse(args.properties['forcedQueryMenusEnabled'][1])}; // Merge with properties
-						overwriteProperties({forcedQueryMenusEnabled: args.properties['forcedQueryMenusEnabled']}); // Updates panel
+					menu.newCondEntry({entryText: 'forcedQueryMenusEnabled', condFunc: () => {
+						forcedQueryMenusEnabled = {...forcedQueryMenusEnabled, ...JSON.parse(menu_properties.forcedQueryMenusEnabled[1])}; // Merge with properties
+						menu_properties.forcedQueryMenusEnabled[1] = JSON.stringify(forcedQueryMenusEnabled);
+						overwriteProp({forcedQueryMenusEnabled: menu_properties.forcedQueryMenusEnabled}, menu_prefix);
 						Object.keys(forcedQueryMenusEnabled).forEach((key) => {
 							menu.newEntry({menuName: subMenuNameTwo, entryText: key, func: () => {
 								forcedQueryMenusEnabled[key] = !forcedQueryMenusEnabled[key];
-								args.properties['forcedQueryMenusEnabled'][1] = JSON.stringify(forcedQueryMenusEnabled);
-								overwriteProperties(args.properties); // Updates panel
+								menu_properties.forcedQueryMenusEnabled[1] = JSON.stringify(forcedQueryMenusEnabled);
+								overwriteMenuProperties(); // Updates panel
 							}});
 							menu.newCheckMenu(subMenuNameTwo, key, void(0), () => {return forcedQueryMenusEnabled[key];});
 						});
 						menu.newEntry({menuName: subMenuNameTwo, entryText: 'sep'})
 						menu.newEntry({menuName: subMenuNameTwo, entryText: 'Set Global Forced Query...', func: () => {
-							const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, args.properties['forcedQuery'][1]);
-							if (args.properties['forcedQuery'][1] === input) {return;}
+							const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, menu_properties['forcedQuery'][1]);
+							if (menu_properties['forcedQuery'][1] === input) {return;}
 							try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return;}
 							defaultArgs.forcedQuery = input;
-							args.properties['forcedQuery'][1] = input;
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties['forcedQuery'][1] = input;
+							overwriteMenuProperties(); // Updates panel
 						}});
 					}});
 				}
@@ -4173,39 +4112,33 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Menu to configure properties: playlistLength
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-			menu.newEntry({menuName: configMenu, entryText: 'Set Global Playlist Length... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', scriptName + ': ' + configMenu, args.properties['playlistLength'][1]));
-				if (args.properties['playlistLength'][1] === input) {return;}
+			menu.newEntry({menuName: configMenu, entryText: () => 'Set Global Playlist Length...' + '\t[' + menu_properties['playlistLength'][1] + ']', func: () => {
+				const input = Number(utils.InputBox(window.ID, 'Enter desired Playlist Length for playlist creation.\n', scriptName + ': ' + configMenu, menu_properties['playlistLength'][1]));
+				if (menu_properties['playlistLength'][1] === input) {return;}
 				if (!Number.isSafeInteger(input)) {return;}
 				defaultArgs.playlistLength = input;
-				args.properties['playlistLength'][1] = input;
-				overwriteProperties(args.properties); // Updates panel
+				menu_properties['playlistLength'][1] = input;
+				overwriteMenuProperties(); // Updates panel
 			}});
 		}
-		{
+		{	// Menu to configure properties: tags
 			const subMenuName = menu.newMenu('Tag remapping', configMenu);
-			{	// Menu to configure properties: tags
+			{
 				const options = ['key', 'styleGenre'];
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
 				menu.newEntry({menuName: subMenuName, entryText: 'Set the tags used by tools:', func: null, flags: MF_GRAYED})
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-				menu.newCondEntry({entryText: 'Tags... (cond)', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel
-					options.forEach((tagName) => {
-						const key = tagName + 'Tag';
-						menu.newEntry({menuName: subMenuName, entryText: capitalize(tagName) + '\t[' + args.properties[key][1] + ']', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-							fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu);
-							const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, args.properties[key][1]);
-							if (!input.length) {return;}
-							if (args.properties[tagName + 'Tag'][1] === input) {return;}
-							defaultArgs[key] = input;
-							args.properties[key][1] = input;
-							overwriteProperties(args.properties); // Updates panel
-						}});
-					});
-				}});
+				options.forEach((tagName) => {
+					const key = tagName + 'Tag';
+					menu.newEntry({menuName: subMenuName, entryText: () => capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
+						fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu);
+						const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, menu_properties[key][1]);
+						if (!input.length) {return;}
+						if (menu_properties[tagName + 'Tag'][1] === input) {return;}
+						defaultArgs[key] = input;
+						menu_properties[key][1] = input;
+						overwriteMenuProperties(); // Updates panel
+					}});
+				});
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
@@ -4215,23 +4148,21 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			{	// Enable
 				readmes[configMenu + '\\Global Shortcuts'] = folders.xxx + 'helpers\\readme\\global_shortcuts.txt';
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Global shortcuts', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					if (!args.properties.bShortcuts[1]) {
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Global shortcuts', func: () => {
+					if (!menu_properties.bShortcuts[1]) {
 						const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts can be configured at:\n' + shortcutsPath + '\n\nAre you sure you want to enable it?', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 						if (answer !== popup.yes) {return;}
 					}
-					args.properties.bShortcuts[1] = !args.properties.bShortcuts[1];
-					overwriteProperties(args.properties); // Updates panel
+					menu_properties.bShortcuts[1] = !menu_properties.bShortcuts[1];
+					overwriteMenuProperties(); // Updates panel
 					// Shortcuts
-					if (args.properties.bShortcuts[1]) {
+					if (menu_properties.bShortcuts[1]) {
 						if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
 					} else {
 						if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
 					}
 				}});
-				menu.newCheckMenu(subMenuName, 'Enabled Global shortcuts', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1](), 0).bShortcuts[1];});
+				menu.newCheckMenu(subMenuName, 'Enabled Global shortcuts', void(0), (args = {}) => {return menu_properties.bShortcuts[1];});
 			}
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			menu.newEntry({menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => {_explorer(shortcutsPath);}});
@@ -4242,10 +4173,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
  			{	// Enable
 				readmes[configMenu + '\\Async processing'] = folders.xxx + 'helpers\\readme\\async_processing.txt';
-				const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-				menu.newCondEntry({entryText: 'async', condFunc: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					const async = JSON.parse(args.properties.async[1]);
+				menu.newCondEntry({entryText: 'async', condFunc: () => {
+					const async = JSON.parse(menu_properties.async[1]);
 					const options = Object.keys(async);
 					const notAvailable = ['Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
 					options.forEach((key) => {
@@ -4256,8 +4185,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								if (answer !== popup.yes) {return;}
 							}
 							async[key] = !async[key];
-							args.properties.async[1] = JSON.stringify(async);
-							overwriteProperties(args.properties); // Updates panel
+							menu_properties.async[1] = JSON.stringify(async);
+							overwriteMenuProperties(); // Updates panel
 						}, flags: bNotAvailable ? MF_GRAYED : MF_STRING});
 						menu.newCheckMenu(subMenuName, key, void(0), () => {return !bNotAvailable && async[key];});
 					});
@@ -4270,22 +4199,19 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName: subMenuName, entryText: 'Switch logging functionality:', func: null, flags: MF_GRAYED})
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			{	// bDebug
-				const scriptDefaultArgs = {properties: [{...menu_panelProperties}, menu_prefix_panel]};
-				menu.newEntry({menuName: subMenuName, entryText: 'Enabled extended console debug', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1], 0); // Update properties from the panel
-					args.properties.bDebug[1] = !args.properties.bDebug[1];
-					defaultArgs.bDebug = args.properties.bDebug[1];
-					overwriteProperties(args.properties); // Updates panel
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled extended console debug', func: () => {
+					menu_panelProperties.bDebug[1] = !menu_panelProperties.bDebug[1];
+					defaultArgs.bDebug = menu_panelProperties.bDebug[1];
+					overwritePanelProperties(); // Updates panel
 				}});
-				menu.newCheckMenu(subMenuName, 'Enabled extended console debug', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1], 0).bDebug[1];});
+				menu.newCheckMenu(subMenuName, 'Enabled extended console debug', void(0), () => {return menu_panelProperties.bDebug[1];});
 				// bProfile
-				menu.newEntry({menuName: subMenuName, entryText: 'Enabled profiler console log', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1], 0); // Update properties from the panel
-					args.properties.bProfile[1] = !args.properties.bProfile[1];
-					defaultArgs.bProfile = args.properties.bProfile[1];
-					overwriteProperties(args.properties); // Updates panel
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled profiler console log', func: () => {
+					menu_panelProperties.bProfile[1] = !menu_panelProperties.bProfile[1];
+					defaultArgs.bProfile = menu_panelProperties.bProfile[1];
+					overwritePanelProperties(); // Updates panel
 				}});
-				menu.newCheckMenu(subMenuName, 'Enabled profiler console log', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1], 0).bProfile[1];});
+				menu.newCheckMenu(subMenuName, 'Enabled profiler console log', void(0), () => {return menu_panelProperties.bProfile[1];});
 			}
 		}
 		{	// UI
@@ -4293,20 +4219,16 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName: subMenuName, entryText: 'Switch UI functionality:', func: null, flags: MF_GRAYED})
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			{	// bTooltipInfo
-				const scriptDefaultArgs = {properties: [{...menu_panelProperties}, menu_prefix_panel]};
-				menu.newEntry({menuName: subMenuName, entryText: 'Show shortcuts on tooltip', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1], 0); // Update properties from the panel
-					args.properties.bTooltipInfo[1] = !args.properties.bTooltipInfo[1];
-					overwriteProperties(args.properties); // Updates panel
+				menu.newEntry({menuName: subMenuName, entryText: 'Show shortcuts on tooltip', func: () => {
+					menu_panelProperties.bTooltipInfo[1] = !menu_panelProperties.bTooltipInfo[1];
+					overwritePanelProperties(); // Updates panel
 				}});
-				menu.newCheckMenu(subMenuName, 'Show shortcuts on tooltip', void(0), (args = {...scriptDefaultArgs}) => {return getPropertiesPairs(args.properties[0], args.properties[1], 0).bTooltipInfo[1];});
+				menu.newCheckMenu(subMenuName, 'Show shortcuts on tooltip', void(0), () => {return menu_panelProperties.bTooltipInfo[1];});
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Import presets
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: () => {
 				let file;
 				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
 				catch (e) {return;}
@@ -4320,7 +4242,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					delete newPresets.readme;
 				}
 				// List entries
-				const presetList = Object.keys(newPresets).map((key) => {return '+ ' + key + ' -> ' + args.properties[key][0] + '\n\t- ' + newPresets[key].map((_) => {return _.name + (_.hasOwnProperty('method') ? ' (' + _.method + ')': '');}).join('\n\t- ');});
+				const presetList = Object.keys(newPresets).map((key) => {return '+ ' + key + ' -> ' + menu_properties[key][0] + '\n\t- ' + newPresets[key].map((_) => {return _.name + (_.hasOwnProperty('method') ? ' (' + _.method + ')': '');}).join('\n\t- ');});
 				readme += (readme.length ? '\n\n' : '') + 'List of presets:\n' + presetList;
 				fb.ShowPopupMessage(readme, scriptName + ': Presets (' + file.split('\\').pop() + ')')
 				// Accept?
@@ -4329,21 +4251,19 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Import
 				Object.keys(newPresets).forEach((key) => {
 					// Merge with current presets
-					let currentMenu = JSON.parse(args.properties[key][1]);
+					let currentMenu = JSON.parse(menu_properties[key][1]);
 					if (presets.hasOwnProperty(key)) {presets[key] = [...presets[key], ...newPresets[key]];} 
 					else {presets[key] = newPresets[key];}
 					currentMenu = currentMenu.concat(newPresets[key]);
-					args.properties[key][1] = JSON.stringify(currentMenu);
+					menu_properties[key][1] = JSON.stringify(currentMenu);
 				});
 				// Save all
-				args.properties['presets'][1] = JSON.stringify(presets);
-				overwriteProperties(args.properties); // Updates panel
+				menu_properties['presets'][1] = JSON.stringify(presets);
+				overwriteMenuProperties(); // Updates panel
 			}});
 		}
 		{	// Export all presets
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: () => {
 				const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
 					const path = folders.data + 'playlistTools_presets.json'
@@ -4358,9 +4278,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Reset all config
-			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
-			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: (args = {...scriptDefaultArgs, ...defaultArgs}) => {
-				args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+			menu.newEntry({menuName: configMenu, entryText: 'Reset all configuration... ', func: () => {
 				const path = folders.data + 'playlistTools_presets.json';
 				const answer = WshShell.Popup('Are you sure you want to restore all configuration to default?\nWill delete any related property, user saved menus, etc..', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 				if (answer === popup.yes) {
@@ -4376,17 +4294,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						presets = {};
 					}
 					// For the current instance
-					for (let key in args.properties) {
-						args.properties[key][1] = menu_properties[key][1];
+					for (let key in menu_properties) {
+						menu_properties[key][1] = menu_propertiesBack[key][1];
 					}
-					overwriteProperties(args.properties); // Updates panel
+					overwriteMenuProperties(); // Updates panel
 					// For the panel (only along buttons)
 					if (typeof buttons !== 'undefined' && Object.keys(menu_properties).length) {
-						let panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
-						for (let key in args.panelProperties) {
-							panelProperties[key][1] = menu_panelProperties[key][1];
+						for (let key in menu_panelProperties) {
+							menu_panelProperties[key][1] = menu_panelPropertiesBack[key][1];
 						}
-						overwriteProperties(panelProperties); // Updates panel
+						menu_panelProperties.firstPopup[1] = true; // Don't show the popup again...
+						overwritePanelProperties(); // Updates panel
 					}
 					loadProperties(); // Refresh
 					// Restore presets
@@ -4394,13 +4312,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						presets = copy;
 						Object.keys(presets).forEach((key) => {
 							// Add menus
-							let currentMenu = JSON.parse(args.properties[key][1]);
+							let currentMenu = JSON.parse(menu_properties[key][1]);
 							currentMenu = currentMenu.concat(presets[key]);
-							args.properties[key][1] = JSON.stringify(currentMenu);
+							menu_properties[key][1] = JSON.stringify(currentMenu);
 						});
 						// Save all
-						args.properties['presets'][1] = JSON.stringify(presets);
-						overwriteProperties(args.properties); // Updates panel
+						menu_properties['presets'][1] = JSON.stringify(presets);
+						overwriteMenuProperties(); // Updates panel
 					}
 				}
 			}});
@@ -4445,14 +4363,13 @@ const menuAlt = new _menu();
 	menuAlt.newEntry({entryText: 'sep'});
 	// All entries
 	menuAlt.newEntry({entryText: 'Restore all', func: () => {
-		const panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
 		menuList.forEach( (menuEntry) => {
 			const menuName = menuEntry.menuName
 			menusEnabled[menuName] = true;
 		});
 		Object.keys(menusEnabled).forEach((key) => {menusEnabled[key] = true;});
-		panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
-		overwriteProperties(panelProperties); // Updates panel
+		menu_panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
+		overwritePanelProperties(); // Updates panel
 		window.Reload();
 	}});
 	menuAlt.newEntry({entryText: 'sep'});
@@ -4478,10 +4395,9 @@ const menuAlt = new _menu();
 		}
 		if (!menusEnabled.hasOwnProperty(menuName)) {menusEnabled[menuName] = true;}
 		menuAlt.newEntry({entryText: entryName, func: () => {
-			const panelProperties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0);
 			menusEnabled[menuName] = !menusEnabled[menuName];
-			panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
-			overwriteProperties(panelProperties); // Updates panel
+			menu_panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
+			overwritePanelProperties(); // Updates panel
 			window.Reload();
 		}, flags});
 		menuAlt.newCheckMenu(menuAlt.getMainMenuName(), entryName, void(0), () => {return menusEnabled[menuName];});
@@ -4497,6 +4413,10 @@ loadProperties();
 /*
 	Helpers
 */
+function overwriteMenuProperties() {overwriteProp(menu_properties, menu_prefix);}
+function overwritePanelProperties() {overwriteProp(menu_panelProperties, menu_prefix_panel);}
+function overwriteProp(properties, prefix) {setProperties(properties, prefix, 0, false, true);}
+
 function loadProperties() {
 	if (typeof buttons === 'undefined' && Object.keys(menu_properties).length) { // Merge all properties when not loaded along buttons
 		// With const var creating new properties is needed, instead of reassigning using A = {...A,...B}
@@ -4553,6 +4473,16 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	} else {
 		if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
 	}
+	// Backup defaults
+	doOnce('Backup', () => {menu_propertiesBack = clone(menu_properties); menu_panelPropertiesBack = clone(menu_panelProperties); console.log('Playlist Tools: creating default settings...');})();
+	// Store for internal use
+	console.log('Playlist Tools: updating settings...');
+	for (let key in propObject) {
+		menu_properties[key][1] = propObject[key][1];
+	}
+	for (let key in panelPropObject) {
+		menu_panelProperties[key][1] = panelPropObject[key][1];
+	}
 	// Other funcs by menus
 	menuFunc.forEach((obj) => {
 		if (obj.hasOwnProperty('func') && _isFunction(obj.func)) {
@@ -4599,6 +4529,7 @@ function selectedFlagsReorder(idx = plman.ActivePlaylist) {return (plman.GetPlay
 function selectedFlagsRem(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count && !removeLock(idx) ? MF_STRING : MF_GRAYED);}
 function selectedFlagsAddRem(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count  && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED);}
 
+// plman.ActivePlaylist must be !== -1 to avoid crashes!
 function reorderLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedActions(idx).indexOf('ReorderItems') !== -1;}
 function addLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedActions(idx).indexOf('AddItems') !== -1;}
 function removeLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedActions(idx).indexOf('RemoveItems') !== -1;}
@@ -4608,9 +4539,9 @@ function removeLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedA
 */
 // Show tooltip with current track info
 function menuTooltip() {
-	const selMul = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+	const selMul = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null;
 	let infoMul = '';
-	if (selMul.Count > 1) {
+	if (selMul && selMul.Count > 1) {
 		infoMul = ' (multiple tracks selected: ' + selMul.Count + ')';
 	}
 	const sel = fb.GetFocusItem();
@@ -4629,25 +4560,21 @@ function menuTooltip() {
 	// Modifiers
 	const bShift = utils.IsKeyPressed(VK_SHIFT);
 	const bControl = utils.IsKeyPressed(VK_CONTROL);
-	if (bShift & !bControl) {
-		info += '\n-----------------------------------------------------'
-		info += '\n(Shift + L. Click to switch enabled menus)';
-	} else if (!bShift & bControl) {
-		info += '\n-----------------------------------------------------'
-		info += '\n(Ctrl + L. Click to copy menu names to clipboard)';
-	} else if (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]) {
-		info += '\n-----------------------------------------------------'
-		info += '\n(L. Click for tools menu)\n(Shift + L. Click to switch enabled menus)\n(Ctrl + L. Click to copy menu names to clipboard)';
-	}
+	const bShiftNoControl = bShift && !bControl;
+	const bNoShiftControl = !bShift && bControl;
+	const bInfo = menu_panelProperties.bTooltipInfo[1];
+	if (bShiftNoControl || bNoShiftControl || bInfo) {info += '\n-----------------------------------------------------'}
+	if (bInfo) {info += '\n(L. Click for tools menu)\n(Shift + L. Click to switch enabled menus)\n(Ctrl + L. Click to copy menu names to clipboard)';}
+	if (bShiftNoControl || bInfo) {info += '\n(Shift + L. Click to switch enabled menus)';}
+	if (bNoShiftControl || bInfo) {info += '\n(Ctrl + L. Click to copy menu names to clipboard)';}
 	return info;
 }
 
 /* 
 	Shortcuts
 */
-menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: (args = {properties: [{...menu_properties}, () => {return menu_prefix;}]}) => {
-	args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-	if (args.properties.bShortcuts[1]) {
+menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
+	if (menu_properties.bShortcuts[1]) {
 		const entryList = menu.getEntries();
 		Object.keys(shortcuts).forEach((key) => {
 			const shortcut = shortcuts[key];
@@ -4682,6 +4609,45 @@ menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: (args = {propertie
 		});
 		menu.entryArr = entryList;
 		menu.entryArrTemp = entryList;
+	}
+}});
+
+menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => {
+	if (bInit && menu_panelProperties.bDebug[1]) {
+		const mainMenu = menu.getMainMenuName();
+		const tree = {};
+		let menuList = [];
+		const toSkip = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'By... (tags)', 'sep']);
+		const toSkipMenuMatch = new Set(['Configuration']);
+		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((_) => {return _.toLowerCase();}));
+		menu.getEntries().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
+			const entryText = _isFunction(_.entryText) ? _.entryText() : _.entryText;
+			const menuName = _.menuName;
+			const flag = _.flags;
+			// Skip
+			if (!toInclude.has(menuName.toLowerCase())) {return;}
+			if (entryText === 'sep') {return;}
+			if (flag === MF_GRAYED) {return;}
+			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
+			if (entryText.endsWith('...')) {return;}
+			// Save
+			if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
+			tree[menuName].push((menuName !==  mainMenu ? menuName + '\\' + entryText : entryText));
+			if (!new Set(menuList).has(menuName)) {menuList.push(menuName);};
+			if (menuName === mainMenu && entryText === 'sep') {menuList.push(entryText);};
+		});
+		Object.keys(tree).forEach((menuKey) => {
+			const idx = menuList.indexOf(menuKey);
+			if (idx !== -1) {menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)];}
+		});	
+		const newMacro = {name: 'Test Tools (generated)', entry: [...menuList], bAsync: false};
+		let menuName = 'Macros';
+		menu.newEntry({menuName, entryText: 'sep'});
+		menu.newEntry({menuName, entryText: newMacro.name + (newMacro.bAsync ? '\t(async)' : ''), func: () => {
+			newMacro.entry.forEach( (entry, idx, arr) => {
+				menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: newMacro.bAsync}); // Don't clear menu on last call
+			});
+		}});
 	}
 }});
 
