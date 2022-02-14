@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//11/02/22
 
 /* 
 	Playlist Tools Menu
@@ -54,11 +54,11 @@ setProperties(newButtonsProperties, prefix, 0); // This sets all the panel prope
 var newButtons = {
 	menuButton: new SimpleButton(buttonCoordinates, 'Playlist Tools', function (mask) {
 		if (mask === MK_SHIFT) { // Enable/disable menus
-			menuAlt.btn_up(this.x, this.y + this.h);
+			menuAlt.btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names
-			menu.btn_up(this.x, this.y + this.h, void(0), void(0), false, _setClipboardData);
+			menu.btn_up(this.currX, this.currY + this.currH, void(0), void(0), false, _setClipboardData);
 		} else { // Standard use
-			menu.btn_up(this.x, this.y + this.h);
+			menu.btn_up(this.currX, this.currY + this.currH);
 		}
 		keyCallbackDate = Date.now(); // Update key checking
 	}, null, g_font, menuTooltip, null, null, chars.wrench),

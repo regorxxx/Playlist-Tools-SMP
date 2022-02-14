@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//11/02/22
 
 /* 
 	Playlist History
@@ -64,7 +64,7 @@ var newButtons = {
 						});
 					}
 				});
-				buttonMenu.btn_up(this.x, this.y + this.h);
+				buttonMenu.btn_up(this.currX, this.currY + this.currH);
 			} else {
 				const currentMenu = this.buttonsProperties['menu'][1];
 				if (currentMenu.length) {
@@ -93,9 +93,9 @@ var newButtons = {
 						}
 					});
 					if (mask === MK_CONTROL) { // Simulate menus to get names
-						buttonMenu.btn_up(this.x, this.y + this.h, void(0), void(0), false, _setClipboardData);
+						buttonMenu.btn_up(this.currX, this.currY + this.currH, void(0), void(0), false, _setClipboardData);
 					} else {
-						buttonMenu.btn_up(this.x, this.y + this.h);
+						buttonMenu.btn_up(this.currX, this.currY + this.currH);
 					}
 				}
 			}

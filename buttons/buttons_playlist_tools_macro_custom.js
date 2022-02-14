@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//11/02/22
 
 /* 
 	Playlist History
@@ -66,7 +66,7 @@ var newButtons = {
 					});
 					if (!propMacros.length) {configMenu.newEntry({entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 				}});
-				configMenu.btn_up(this.x, this.y + this.h);
+				configMenu.btn_up(this.currX, this.currY + this.currH);
 			} else {
 				if (this.buttonsProperties['customName'][1] === 'Customize!') {
 					const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button');

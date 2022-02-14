@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//11/02/22
 
 /* 
 	Playlist History
@@ -42,7 +42,7 @@ var newButtons = {
 				});
 				if (!propMacros.length) {configMenu.newEntry({entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 			}});
-			configMenu.btn_up(this.x, this.y + this.h);
+			configMenu.btn_up(this.currX, this.currY + this.currH);
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
 	}, null, g_font, () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu macros' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, null, chars.hourglass),
 };
