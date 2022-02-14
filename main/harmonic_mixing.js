@@ -1,7 +1,7 @@
 'use strict';
-//13/10/21
+//11/02/22
 
-/*	
+/*
 	Harmonic Mixing
 	-----------------------------------
 	DJ-like playlist creation with key changes following harmonic mixing rules... Uses 9 movements described at 'camelotWheel' on camelot_wheel_xxx.js
@@ -117,6 +117,6 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebu
 		console.log('Pattern applied:');
 		console.log(patternDebug); // Always has one item less thankey arrays
 	}
-	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag (or ussing not recognized notation).') : null;
+	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag (or using not recognized notation).') : null;
 	return {selectedHandlesArray, error};
 }

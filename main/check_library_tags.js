@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/11/21
+//11/02/22
 
 /*
 	Check Library Tags
@@ -189,7 +189,7 @@ function checkTags({
 					setTimeout(() => {
 						const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
 						tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
-						const progress = Math.round(i / iStepsi / iSteps * 100);
+						const progress = Math.round(i / iSteps * 100);
 						if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Retrieving tags ' + Math.round(progress) + '%.');}
 						resolve();
 					}, delay * i);
