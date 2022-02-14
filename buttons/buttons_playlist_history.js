@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//11/02/22
 
 /* 
 	Playlist History
@@ -23,17 +23,18 @@ buttonsBar.list.push({});
 var newButtons = {
 	menuButton: new SimpleButton(buttonCoordinates, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
-			createHistoryMenu().btn_up(this.x, this.y + this.h);
+			createHistoryMenu().btn_up(this.currX, this.currY + this.currH);
 		} else {
 			goPrevPls();
 		}
-	}, null, g_font, () => {return 'Switch to previous playlist:\n' + getPrevPlsName();}, null, null, chars.history),
+	}, null, g_font, () => {
+		return 'Switch to previous playlist:\n' + getPrevPlsName() + (typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1] ? '\n-----------------------------------------------------\n(Shift + L. Click to see entire history)' : '');
+	}, null, null, chars.history),
 };
+
 // Check if the button list already has the same button ID
 for (var buttonName in newButtons) {
 	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
 		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
 		delete newButtons[buttonName];
 	}
