@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	Search n tracks (randomly) on library matching at least 2 styles and 6 moods from the current selected track.
@@ -34,8 +34,8 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 35;}
 
-var newButtons = {
-    SearchSimilar: new SimpleButton(buttonCoordinates, 'Same Styles/Moods', function () {
+addButton({
+	SearchSimilar: new themedButton(buttonCoordinates, 'Same Styles/Moods', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [playlistLength , forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel propierties at once
@@ -43,15 +43,4 @@ var newButtons = {
 		t1 = Date.now();
 		console.log('Call to do_search_similar took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Random playlist matching at least 2 styles and 6 moods of the current selected track', prefix, newButtonsProperties, chars.link),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	Search same by v 1.0 28/01/20
@@ -100,8 +100,8 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 // we change the default coordinates here to accommodate text
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 25;}
 
-var newButtons = {
-    SearchSameBy: new SimpleButton(buttonCoordinates, 'Search Same By...', function () {
+addButton({
+	SearchSameBy: new themedButton(buttonCoordinates, 'Search Same By...', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let args = getProperties(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
@@ -112,15 +112,4 @@ var newButtons = {
 		t1 = Date.now();
 		console.log('Call to do_search_same_by took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Random playlist matching ' + getPropertiesValues(newButtonsProperties, prefix)[3] +  ' of the current selected track', prefix, newButtonsProperties, chars.link),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

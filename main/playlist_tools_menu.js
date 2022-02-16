@@ -1,5 +1,5 @@
 'use strict';
-//14/02/22
+//15/02/22
 
 /* 
 	Playlist Tools Menu
@@ -90,7 +90,7 @@ const defaultArgs = {
 };
 var readmes = {'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
 loadProperties();
-const bProfile = getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['bProfile'][1];
+const bProfile = getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['bProfile'][1];
 // Menu
 const specialMenu = 'Special Playlists...';
 const configMenu = 'Configuration';
@@ -98,7 +98,7 @@ const scriptName = 'Playlist Tools Menu';
 const menu = new _menu();
 
 // For enable/disable menus
-const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttons === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
+const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
 const menuDisabled = [];
 var disabledCount = 0;
 
@@ -4299,7 +4299,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 					overwriteMenuProperties(); // Updates panel
 					// For the panel (only along buttons)
-					if (typeof buttons !== 'undefined' && Object.keys(menu_properties).length) {
+					if (typeof buttonsBar !== 'undefined' && Object.keys(menu_properties).length) {
 						for (let key in menu_panelProperties) {
 							menu_panelProperties[key][1] = menu_panelPropertiesBack[key][1];
 						}
@@ -4418,7 +4418,7 @@ function overwritePanelProperties() {overwriteProp(menu_panelProperties, menu_pr
 function overwriteProp(properties, prefix) {setProperties(properties, prefix, 0, false, true);}
 
 function loadProperties() {
-	if (typeof buttons === 'undefined' && Object.keys(menu_properties).length) { // Merge all properties when not loaded along buttons
+	if (typeof buttonsBar === 'undefined' && Object.keys(menu_properties).length) { // Merge all properties when not loaded along buttons
 		// With const var creating new properties is needed, instead of reassigning using A = {...A,...B}
 		if (Object.keys(menu_panelProperties).length) {
 			Object.entries(menu_panelProperties).forEach(([key, value]) => {menu_properties[key] = value;});
@@ -4439,7 +4439,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	try {fb.GetQueryItems(new FbMetadbHandleList(), propObject['forcedQuery'][1]);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + propObject['forcedQuery'], scriptName);}
 	// Info Popup
-	let panelPropObject = (typeof buttons !== 'undefined') ? getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0) : propObject;
+	let panelPropObject = (typeof buttonsBar !== 'undefined') ? getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0) : propObject;
 	if (!panelPropObject['firstPopup'][1]) {
 		panelPropObject['firstPopup'][1] = true;
 		overwriteProperties(panelPropObject); // Updates panel

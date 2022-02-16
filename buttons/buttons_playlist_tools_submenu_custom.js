@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/02/22
+//15/02/22
 
 /* 
 	Playlist History
@@ -30,8 +30,8 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And 
 buttonsBar.list.push(newButtonsProperties);
 buttonCoordinates.w = _gr.CalcTextWidth(newButtonsProperties.customName[1], g_font) + 50;
 
-var newButtons = {
-	menuButton: new SimpleButton(buttonCoordinates, newButtonsProperties.customName[1], function (mask) {
+addButton({
+	menuButton: new themedButton(buttonCoordinates, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];
@@ -106,18 +106,7 @@ var newButtons = {
 				(getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)' : '')
 			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
 	}, null, newButtonsProperties, chars.wrench),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});
 
 // Helpers
 function isPlaylistToolsLoaded() {return (typeof specialMenu !== 'undefined' && typeof configMenu !== 'undefined' && typeof scriptName !== 'undefined' && typeof menu !== 'undefined');}

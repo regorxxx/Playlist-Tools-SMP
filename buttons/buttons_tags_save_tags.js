@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	-> EDIT
@@ -23,8 +23,8 @@ buttonsBar.list.push({});
 // if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 0;}
 // if (buttonsBar.config.buttonOrientation === 'y') {buttonCoordinates.h += 0;}
 
-var newButtons = {
-	OneButton: new SimpleButton(buttonCoordinates, 'Save tags', function () {
+addButton({
+	OneButton: new themedButton(buttonCoordinates, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
 		if (_isFile(readmePath)) {
 			const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
@@ -36,7 +36,7 @@ var newButtons = {
 		if (!file.length) {return;}
 		saveTags({file});
 	}, null, g_font,'Save all tags from selected tracks to json', void(0), void(0), chars.save),
-	TwoButton: new SimpleButton(buttonCoordinates, 'Compare', function () {
+	TwoButton: new themedButton(buttonCoordinates, 'Compare', function () {
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}
@@ -53,15 +53,4 @@ var newButtons = {
 		if (!selItemsFolder.length) {return;}
 		compareTags({toTags, toTagsFolder, selItemsFolder});
 	}, null, g_font,'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.', void(0), void(0), chars.exchange),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

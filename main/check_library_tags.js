@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/02/22
+//15/02/22
 
 /*
 	Check Library Tags
@@ -83,7 +83,7 @@ const dictSettings = {
 };
 var dictionary;
 
-if (typeof buttons === 'undefined' && typeof bNotProperties === 'undefined') { // Merge all properties when not loaded along buttons
+if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') { // Merge all properties when not loaded along buttons
 	// With const var creating new properties is needed, instead of reassigning using A = {...A,...B}
 	setProperties(checkTags_properties, checkTags_prefix);
 	var bUseDic = getPropertyByKey(checkTags_properties, bUseDic, checkTags_prefix);

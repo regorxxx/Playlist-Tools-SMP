@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/02/22
+//15/02/22
 
 /* 
 	Playlist Tools Menu
@@ -22,18 +22,16 @@ try { //May be loaded along other buttons
 }
 
 {
+	const dependencies = [
+		'helpers\\helpers_xxx_properties.js',
+		'helpers\\helpers_xxx_clipboard.js',
+		'main\\playlist_tools_menu.js'];
 	let bIncludeRel = true;
 	try {include('..\\helpers\\helpers_xxx_dummy.js');} catch(e) {bIncludeRel = false;}
-	if (bIncludeRel) {
-		include('..\\main\\playlist_tools_menu.js');
-		include('..\\helpers\\helpers_xxx_properties.js');
-		include('..\\helpers\\helpers_xxx_clipboard.js');
-	} else {
-		include('main\\playlist_tools_menu.js');
-		include('helpers\\helpers_xxx_properties.js');
-		include('helpers\\helpers_xxx_clipboard.js');
-	}
+	if (bIncludeRel) {dependencies.forEach((file) => {include('..\\' + file);});}
+	else {dependencies.forEach((file) => {include(file);});}
 }
+
 var prefix = menu_prefix;
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 menu_prefix = prefix; // update var for internal use of playlist_tools_menu
@@ -51,8 +49,8 @@ setProperties(newButtonsProperties, prefix, 0); // This sets all the panel prope
 	doOnce('Update SBD cache', debounce(updateCache, 3000))({properties});
 }
 
-var newButtons = {
-	menuButton: new SimpleButton(buttonCoordinates, 'Playlist Tools', function (mask) {
+addButton({
+	menuButton: new themedButton(buttonCoordinates, 'Playlist Tools', function (mask) {
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names
@@ -62,15 +60,4 @@ var newButtons = {
 		}
 		keyCallbackDate = Date.now(); // Update key checking
 	}, null, g_font, menuTooltip, null, null, chars.wrench),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

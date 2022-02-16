@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	Search n tracks (randomly) on library with the same style(s) than the current selected track.
@@ -36,8 +36,8 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 // we change the default coordinates here to accommodate text
 if (buttonsBar.config.buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w -= 5;}
 
-var newButtons = {
-	SameStyles: new SimpleButton(buttonCoordinates, 'Same Styles', function () {
+addButton({
+	SameStyles: new themedButton(buttonCoordinates, 'Same Styles', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [playlistLength , forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
@@ -45,15 +45,4 @@ var newButtons = {
 		t1 = Date.now();
 		console.log('Call to do_search_same_style took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties, chars.link),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

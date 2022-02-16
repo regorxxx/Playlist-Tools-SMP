@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	Top Tracks v 1.0 28/01/20
@@ -35,8 +35,8 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 // we change the default coordinates here to accommodate text
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 30;}
 
-var newButtons  = {
-    TopTracks: new SimpleButton(buttonCoordinates, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks ' + (new Date().getFullYear() - 1), function () {
+addButton({
+	topTracksDate: new themedButton(buttonCoordinates, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks ' + (new Date().getFullYear() - 1), function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		const [playlistLength, forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
@@ -44,15 +44,4 @@ var newButtons  = {
 		t1 = Date.now();
 		console.log('Call to do_top_tracks took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates) from ' + (new Date().getFullYear() - 1) + '.\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties, chars.calendar),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

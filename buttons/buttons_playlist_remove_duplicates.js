@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -47,8 +47,8 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 // we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
 if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 25;}
 
-var newButtons = {
-	RemoveDuplicates: new SimpleButton(buttonCoordinates, 'Rmv. duplicates', function () {
+addButton({
+	RemoveDuplicates: new themedButton(buttonCoordinates, 'Rmv. duplicates', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix, void(0), 4); //This gets all the panel properties at once but 4th
@@ -58,7 +58,7 @@ var newButtons = {
 		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
 	
-	RemoveDuplicatesV3: new SimpleButton(buttonCoordinates, 'Filter playlist', function () {
+	RemoveDuplicatesV3: new themedButton(buttonCoordinates, 'Filter playlist', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
@@ -68,15 +68,4 @@ var newButtons = {
 		t1 = Date.now();
 		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font,'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter), // Changes a bit the tooltip to show duplicates number separated
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/02/22
+//15/02/22
 
 /* 
 	Playlist History
@@ -28,8 +28,8 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve
 buttonsBar.list.push(newButtonsProperties);
 
-var newButtons = {
-	menuButton: new SimpleButton(buttonCoordinates, newButtonsProperties.customName[1], function (mask) {
+addButton({
+	menuButton: new themedButton(buttonCoordinates, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			if (mask === MK_SHIFT) {
 				const configMenu = new _menu();
@@ -83,18 +83,7 @@ var newButtons = {
 			}
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
 	}, null, g_font, (parent) => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu assigned macros:\n' + (parent.buttonsProperties.macro[1] || '-None-') + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, newButtonsProperties, chars.hourglass),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});
 
 // Helpers
 function isPlaylistToolsLoaded() {return (typeof specialMenu !== 'undefined' && typeof configMenu !== 'undefined' && typeof scriptName !== 'undefined' && typeof menu !== 'undefined');}

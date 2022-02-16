@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/22
+//15/02/22
 
 /* 
 	Automatic tagging...
@@ -31,23 +31,12 @@ var newButtonsProperties = {	//You can simply add new properties here
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
-var newButtons = {
-	Automation: new SimpleButton(buttonCoordinates, 'Auto. Tags', function () {
+addButton({
+	automation: new themedButton(buttonCoordinates, 'Auto. Tags', function () {
 		let t0 = Date.now();
 		let t1 = 0;
         tagsAutomation();
 		t1 = Date.now();
 		console.log('Call to Automate Tags took ' + (t1 - t0) + ' milliseconds.');
 	}, null, g_font, 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags),
-};
-// Check if the button list already has the same button ID
-for (var buttonName in newButtons) {
-	if (buttons.hasOwnProperty(buttonName)) {
-		// fb.ShowPopupMessage('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		// console.log('Duplicated button ID (' + buttonName + ') on ' + window.Name);
-		Object.defineProperty(newButtons, buttonName + Object.keys(buttons).length, Object.getOwnPropertyDescriptor(newButtons, buttonName));
-		delete newButtons[buttonName];
-	}
-}
-// Adds to current buttons
-buttons = {...buttons, ...newButtons};
+});
