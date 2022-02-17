@@ -19,8 +19,7 @@ const bBiometric = utils.CheckComponent('foo_biometric', true);
 const bMassTag = utils.CheckComponent('foo_masstag', true);
 const bDynamicRange = utils.CheckComponent('foo_dynamic_range', true);
 const bAudioMd5 = utils.CheckComponent('foo_audiomd5', true);
-// const bChromaPrint = utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js');
-const bChromaPrint = false;
+const bChromaPrint = utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js');
 if (bChromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
 
 // Variables
