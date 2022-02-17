@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Search same by v 1.0 28/01/20
@@ -69,14 +69,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 var prefix = 'ssby_';
  
  
-try { //May be loaded along other buttons
-	window.DefinePanel('Search Same By Button', {author:'xxx'});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Search Same By Button loaded.');
-}
+try {window.DefinePanel('Search Same By Button', {author:'xxx'});} catch (e) {console.log('Search Same By Button loaded.');} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -97,11 +90,8 @@ newButtonsProperties['playlistName'].push({func: isString}, newButtonsProperties
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
-// we change the default coordinates here to accommodate text
-if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 25;}
-
 addButton({
-	SearchSameBy: new themedButton(buttonCoordinates, 'Search Same By...', function () {
+	SearchSameBy: new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Search Same By...', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let args = getProperties(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
@@ -111,5 +101,5 @@ addButton({
         do_search_same_by(args);
 		t1 = Date.now();
 		console.log('Call to do_search_same_by took ' + (t1 - t0) + ' milliseconds.');
-	}, null, g_font,'Random playlist matching ' + getPropertiesValues(newButtonsProperties, prefix)[3] +  ' of the current selected track', prefix, newButtonsProperties, chars.link),
+	}, null, void(0), 'Random playlist matching ' + getPropertiesValues(newButtonsProperties, prefix)[3] +  ' of the current selected track', prefix, newButtonsProperties, chars.link),
 });

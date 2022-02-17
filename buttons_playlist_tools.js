@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Playlist Tools Menu
@@ -12,14 +12,7 @@
  */
 
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
-try { //May be loaded along other buttons
-	window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0', features: {drag_n_drop: false}});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Playlist Tools Menu Button loaded.');
-}
+try {window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0', features: {drag_n_drop: false}});} catch (e) {console.log('Playlist Tools Menu Button loaded.');} //May be loaded along other buttons
 
 {
 	const dependencies = [
@@ -50,7 +43,7 @@ setProperties(newButtonsProperties, prefix, 0); // This sets all the panel prope
 }
 
 addButton({
-	menuButton: new themedButton(buttonCoordinates, 'Playlist Tools', function (mask) {
+	menuButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names
@@ -59,5 +52,5 @@ addButton({
 			menu.btn_up(this.currX, this.currY + this.currH);
 		}
 		keyCallbackDate = Date.now(); // Update key checking
-	}, null, g_font, menuTooltip, null, null, chars.wrench),
+	}, null, void(0), menuTooltip, null, null, chars.wrench),
 });

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Search n tracks (randomly) on library with the same style(s) than the current selected track.
@@ -11,14 +11,7 @@ include('..\\main\\search_same_style.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'sss_';
 
-try { //May be loaded along other buttons
-	window.DefinePanel('Search Same Button', {author:'xxx'});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Same Styles Button loaded.');
-}
+try {window.DefinePanel('Search Same Button', {author:'xxx'});} catch (e) {console.log('Same Styles Button loaded.');} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -33,16 +26,13 @@ newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(qu
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
-// we change the default coordinates here to accommodate text
-if (buttonsBar.config.buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w -= 5;}
-
 addButton({
-	SameStyles: new themedButton(buttonCoordinates, 'Same Styles', function () {
+	SameStyles: new themedButton({x: 0, y: 0, w: 93, h: 22}, 'Same Styles', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [playlistLength , forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
 		do_search_same_style(Number(playlistLength), forcedQuery);
 		t1 = Date.now();
 		console.log('Call to do_search_same_style took ' + (t1 - t0) + ' milliseconds.');
-	}, null, g_font,'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties, chars.link),
+	}, null, void(0),'Random playlist matching the style(s) of the current selected track', prefix, newButtonsProperties, chars.link),
 });

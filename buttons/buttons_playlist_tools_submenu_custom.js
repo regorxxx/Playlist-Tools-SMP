@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Playlist History
@@ -9,14 +9,7 @@
 
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
-try { //May be loaded along other buttons
-	window.DefinePanel('Playlist Tools Macros', {author:'xxx'});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Playlist Tools SubMenu (CUSTOM) Button loaded.');
-}
+try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {console.log('Playlist Tools SubMenu (CUSTOM) Button loaded.');} //May be loaded along other buttons
 
 var prefix = 'ptc_';
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
@@ -28,10 +21,9 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve
 buttonsBar.list.push(newButtonsProperties);
-buttonCoordinates.w = _gr.CalcTextWidth(newButtonsProperties.customName[1], g_font) + 50;
 
 addButton({
-	menuButton: new themedButton(buttonCoordinates, newButtonsProperties.customName[1], function (mask) {
+	menuButton: new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12)) + 50, h: 22}, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];
@@ -100,7 +92,7 @@ addButton({
 				}
 			}
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
-	}, null, g_font, (parent) => {
+	}, null, void(0), (parent) => {
 		return (isPlaylistToolsLoaded() ? (
 			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu' + 
 				(getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)' : '')

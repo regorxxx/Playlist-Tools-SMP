@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Playlist History
@@ -8,19 +8,12 @@
  */
 
 include('..\\helpers\\buttons_xxx.js'); 
-try { //May be loaded along other buttons
-	window.DefinePanel('Playlist Tools Macros', {author:'xxx'});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Playlist Tools Pools Button loaded.');
-}
+try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {console.log('Playlist Tools Pools Button loaded.');} //May be loaded along other buttons
 
 buttonsBar.list.push({});
 
 addButton({
-	menuButton: new themedButton(buttonCoordinates, 'Pools', function (mask) {
+	menuButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Pools', function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
@@ -43,7 +36,7 @@ addButton({
 			}});
 			configMenu.btn_up(this.currX, this.currY + this.currH);
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
-	}, null, g_font, () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu pool' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, null, chars.music),
+	}, null, void(0), () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu pool' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, null, chars.music),
 });
 
 // Helpers

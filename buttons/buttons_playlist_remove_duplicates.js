@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -20,14 +20,7 @@ include('..\\main\\remove_duplicates.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'rd_';
 
-try { //May be loaded along other buttons
-	window.DefinePanel('Remove Duplicates Button', {author:'xxx'});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 98, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Remove Duplicates Button loaded.');
-}
+try {window.DefinePanel('Remove Duplicates Button', {author:'xxx'});} catch (e) {console.log('Remove Duplicates Button loaded.');} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -44,11 +37,8 @@ newButtonsProperties['nAllowed'].push({greaterEq: 0, func: isInt}, newButtonsPro
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
-// we change the default coordinates here to accommodate text for x orientation. Apply this on vertical as global!
-if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 25;}
-
 addButton({
-	RemoveDuplicates: new themedButton(buttonCoordinates, 'Rmv. duplicates', function () {
+	RemoveDuplicates: new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Rmv. duplicates', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix, void(0), 4); //This gets all the panel properties at once but 4th
@@ -56,9 +46,9 @@ addButton({
         do_remove_duplicates(null, null, sortInput);
 		t1 = Date.now();
 		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
-	}, null, g_font,'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
+	}, null, void(0), 'Removes duplicates according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4), prefix, newButtonsProperties, chars.duplicates), //Skips 4th descriptor
 	
-	RemoveDuplicatesV3: new themedButton(buttonCoordinates, 'Filter playlist', function () {
+	RemoveDuplicatesV3: new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Filter playlist', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let badSortInput = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
@@ -67,5 +57,5 @@ addButton({
         do_remove_duplicates(null, null, sortInput, nAllowed);
 		t1 = Date.now();
 		console.log('Call to do_remove_duplicates took ' + (t1 - t0) + ' milliseconds.');
-	}, null, g_font,'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter), // Changes a bit the tooltip to show duplicates number separated
+	}, null, void(0), 'Filter playlist according to equal ' + enumeratePropertiesValues(newButtonsProperties, prefix, void(0), void(0), 4) + ' and allowing ' + getPropertiesValues(newButtonsProperties,prefix)[3] + ' duplicates', prefix, newButtonsProperties, chars.filter), // Changes a bit the tooltip to show duplicates number separated
 });

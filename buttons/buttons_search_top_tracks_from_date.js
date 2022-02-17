@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//17/02/22
 
 /* 
 	Top Tracks v 1.0 28/01/20
@@ -12,14 +12,7 @@ include('..\\main\\top_tracks_from_date.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'tt_';
 
-try { //May be loaded along other buttons
-	window.DefinePanel('Top Tracks Button', {author:'xxx'});
-	var g_font = _gdiFont('Segoe UI', 12);
-	var buttonCoordinates = {x: 0, y: 0, w: 120, h: 22};
-} catch (e) {
-	buttonCoordinates = {x: 0, y: 0, w: buttonsBar.config.buttonOrientation === 'x' ? 98 : buttonCoordinates.w , h: buttonsBar.config.buttonOrientation === 'y' ? 22 : buttonCoordinates.h}; // Reset 
-	console.log('Top Tracks from Date Button loaded.');
-}
+try {window.DefinePanel('Top Tracks Button', {author:'xxx'});} catch (e) {console.log('Top Tracks from Date Button loaded.');} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -32,16 +25,13 @@ newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(qu
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
-// we change the default coordinates here to accommodate text
-if (buttonsBar.config.buttonOrientation === 'x') {buttonCoordinates.w += 30;}
-
 addButton({
-	topTracksDate: new themedButton(buttonCoordinates, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks ' + (new Date().getFullYear() - 1), function () {
+	topTracksDate: new themedButton({x: 0, y: 0, w: 128, h: 22}, 'Top ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks ' + (new Date().getFullYear() - 1), function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		const [playlistLength, forcedQuery] = getPropertiesValues(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
 		do_top_tracks_from_date({playlistLength: Number(playlistLength), forcedQuery, year: new Date().getFullYear() - 1});
 		t1 = Date.now();
 		console.log('Call to do_top_tracks took ' + (t1 - t0) + ' milliseconds.');
-	}, null, g_font,'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates) from ' + (new Date().getFullYear() - 1) + '.\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties, chars.calendar),
+	}, null, void(0),'Playlist with ' + getProperties(newButtonsProperties, prefix)['playlistLength'] + ' Tracks most played (without duplicates) from ' + (new Date().getFullYear() - 1) + '.\nFiltered with: ' + getProperties(newButtonsProperties, prefix)['forcedQuery'], prefix, newButtonsProperties, chars.calendar),
 });
