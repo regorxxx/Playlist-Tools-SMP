@@ -4563,8 +4563,8 @@ function menuTooltip() {
 	const bShiftNoControl = bShift && !bControl;
 	const bNoShiftControl = !bShift && bControl;
 	const bInfo = menu_panelProperties.bTooltipInfo[1];
-	if (bShiftNoControl || bNoShiftControl || bInfo) {info += '\n-----------------------------------------------------'}
-	if (bInfo) {info += '\n(L. Click for tools menu)\n(Shift + L. Click to switch enabled menus)\n(Ctrl + L. Click to copy menu names to clipboard)';}
+	if (bShiftNoControl || bNoShiftControl || bInfo) {info += '\n-----------------------------------------------------';}
+	if (bInfo) {info += '\n(L. Click for tools menu)';}
 	if (bShiftNoControl || bInfo) {info += '\n(Shift + L. Click to switch enabled menus)';}
 	if (bNoShiftControl || bInfo) {info += '\n(Ctrl + L. Click to copy menu names to clipboard)';}
 	return info;
