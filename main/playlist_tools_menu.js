@@ -2804,7 +2804,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: null, flags: MF_GRAYED});
 						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tool.bEnabled});
 					});
-					// menu.newEntry({menuName, entryText: 'sep'});
+					menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		}
