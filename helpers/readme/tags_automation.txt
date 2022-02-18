@@ -1,3 +1,20 @@
-﻿Automatic tagging using foo_rgscan (Replay Gain), foo_biometric (fingerprint), foo_masstag (copy native MD5 to tag),
-foo_dynamic_range (DR) and/or foo_audiomd5 (calculate AUDIO MD5).
-This was meant as a private tool, but may be easily edited to suit your own needs.
+﻿Automatic tagging for selected tracks using multiple plugins:
+- foo_biometric (FooID Fingerprinting).
+- Chromaprint (ChromaPrint Fingerprinting).
+- foo_masstag (copy native MD5 to tag).
+- foo_audiomd5 (calculate audio MD5 from file).
+- foo_rgscan (Replay Gain).
+- foo_dynamic_range (DR).
+- ffmpeg (EBUR 128 Scanner for LRA tag).
+
+Dependencies:
+Fooid plugin and binary file can be found at  '.\_resources' folder.
+Chromaprint dependencies should be already included within this download.
+ffmpeg feature requires to download 'ffmpeg.exe' from the web
+and and place it into '.\helpers-external\ffmpeg\ffmpeg.exe'.
+For any other component related feature (foo_***), the plugin needs
+to be installed first by the user. Some may be available by default.
+
+After installing or deinstalling a dependency, a panel reload will be required.
+
+This was meant as a private tool, no further support provided.

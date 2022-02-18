@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/12/21
+//18/02/21
 
 /* 
 	Automatic tagging...
@@ -19,8 +19,10 @@ const bBiometric = utils.CheckComponent('foo_biometric', true);
 const bMassTag = utils.CheckComponent('foo_masstag', true);
 const bDynamicRange = utils.CheckComponent('foo_dynamic_range', true);
 const bAudioMd5 = utils.CheckComponent('foo_audiomd5', true);
-const bChromaPrint = utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js');
+const bChromaPrint = utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe');
+const bLRA = utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe');
 if (bChromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
+if (bLRA) {include('ffmpeg.js');}
 
 // Variables
 const tAut = {};
@@ -28,16 +30,25 @@ tAut.selItems = null;
 tAut.countItems = null;
 tAut.iStep = null;
 tAut.currentTime = null;
+tAut.tools = [
+	{title: 'FooID Fingerprinting', bEnabled: bBiometric},
+	{title: 'ChromaPrint Fingerprinting', bEnabled: bChromaPrint},
+	{title: 'MD5', bEnabled: bMassTag},
+	{title: 'AUDIOMD5', bEnabled: bAudioMd5},
+	{title: 'ReplayGain', bEnabled: bRgScan},
+	{title: 'DR', bEnabled: bDynamicRange},
+	{title: 'EBUR 128 Scanner', bEnabled: bLRA}
+];
 const debouncedStep = debounce(stepTag, 300); // Only continues next step when last tag update was done >100ms ago
 
 // Check if tag update was done on a selected file and wait until all tracks are updated
-function onMetadbChanged(handle_list, fromhook) {
+function onMetadbChangedTagsAuto(handleList, fromhook) {
 	if (tAut.iStep) {
 		if (typeof tAut.selItems !== 'undefined' && tAut.selItems !== null && tAut.countItems !== null) {
-			handle_list.Sort();
-			handle_list.MakeIntersection(tAut.selItems);
-			if (handle_list.Count !== 0 && tAut.countItems !== 0) {
-				tAut.countItems -= handle_list.Count;
+			handleList.Sort();
+			handleList.MakeIntersection(tAut.selItems);
+			if (handleList.Count !== 0 && tAut.countItems !== 0) {
+				tAut.countItems -= handleList.Count;
 				if (tAut.countItems === 0) {
 					nextStepTag();
 				}
@@ -47,16 +58,14 @@ function onMetadbChanged(handle_list, fromhook) {
 }
 if (typeof on_metadb_changed !== 'undefined') {
 	const oldFunc = on_metadb_changed;
-	on_metadb_changed = function(handle_list, fromhook) {
-		oldFunc(handle_list, fromhook);
-		onMetadbChanged(handle_list, fromhook);
+	on_metadb_changed = function(handleList, fromhook) {
+		oldFunc(handleList, fromhook);
+		onMetadbChangedTagsAuto(handleList, fromhook);
 	}
-} else {var on_metadb_changed = onMetadbChanged;}
+} else {var on_metadb_changed = onMetadbChangedTagsAuto;}
 
 function getTagsAutomationDescription() {
-	const boolArr = [bBiometric, bChromaPrint, bMassTag, bAudioMd5, bRgScan, bDynamicRange];
-	const descArr = ['FooID Fingerprinting', 'ChromaPrint Fingerprinting', 'MD5', 'AUDIOMD5', 'ReplayGain', 'DR'];
-	return boolArr.reduce((text, bVal, index) => {return (bVal ? (text.length ? text + ', ' + descArr[index]: descArr[index]) : text);}, ''); // Initial value is '';
+	return tAut.tools.reduce((text, tool, index) => {return (tool.bEnabled ? (text.length ? text + ', ' + tool.title : tool.title) : text);}, ''); // Initial value is '';
 }
 
 function tagsAutomation() {
@@ -94,7 +103,8 @@ function tagsAutomation() {
 				'REPLAYGAIN_TRACK_PEAK' : '',
 				'ALBUM DYNAMIC RANGE' : '',
 				'DYNAMIC RANGE' : '',
-				'ACOUSTID_FINGERPRINT_RAW' : ''
+				'ACOUSTID_FINGERPRINT_RAW' : '',
+				'LRA' : ''
 			});
 		}
 		tAut.selItems.UpdateFileInfoFromJSON(JSON.stringify(arr));
@@ -142,7 +152,11 @@ function stepTag(i) {
 			if (bChromaPrint) {bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: tAut.selItems});}
 			else {bSucess = false;}
 			break;
-		case 5: // These require user input before saving, so they are read only operations and can be done at the same time
+		case 5: //
+			if (bLRA) {bSucess = ffmpeg.calculateLoudness({fromHandleList: tAut.selItems});}
+			else {bSucess = false;}
+			break;
+		case 6: // These require user input before saving, so they are read only operations and can be done at the same time
 			if (bAudioMd5 || bRgScan) {
 				tAut.currentTime = 0; // ms
 				let cacheSel_items = tAut.selItems.Clone();
