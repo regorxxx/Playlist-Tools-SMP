@@ -2787,17 +2787,24 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const name = 'Write tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tags_automation.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
 					const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
 					const allFlags = () => {return (!bFired() ? focusFlags() : MF_GRAYED);}
-					menu.newEntry({menuName: subMenuName, entryText: () => {return getTagsAutomationDescription() + ':'}, func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tagsAutomation, flags: allFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: nextStepTag, flags: firedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: stopStepTag, flags: firedFlags});
-					menu.newEntry({menuName, entryText: 'sep'});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					const subMenuTools = menu.newMenu('Available tools...', subMenuName);
+					tAut.tools.forEach((tool) => {
+						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: null, flags: MF_GRAYED});
+						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tool.bEnabled});
+					});
+					// menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		}

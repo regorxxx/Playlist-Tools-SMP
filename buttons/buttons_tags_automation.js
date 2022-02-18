@@ -26,11 +26,32 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
 
 addButton({
-	automation: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function () {
-		let t0 = Date.now();
-		let t1 = 0;
-        tagsAutomation();
-		t1 = Date.now();
-		console.log('Call to Automate Tags took ' + (t1 - t0) + ' milliseconds.');
-	}, null, void(0), 'Automatic tags on selected tracks: ' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags),
+	automation: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function (mask) {
+		const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
+		if (mask === MK_SHIFT && !bFired() && fb.GetFocusItem(true)) {
+			let t0 = Date.now();
+			let t1 = 0;
+			tagsAutomation();
+			t1 = Date.now();
+			console.log('Call to Automate Tags took ' + (t1 - t0) + ' milliseconds.');
+		} else {
+			const menu = new _menu({iMaxEntryLen: 50}); // To avoid collisions with other buttons and check menu
+			const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
+			const focusFlags = () => {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}
+			const allFlags = () => {return (!bFired() ? focusFlags() : MF_GRAYED);}
+			menu.newEntry({entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
+			menu.newEntry({entryText: 'sep'});
+			menu.newEntry({entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tagsAutomation, flags: allFlags});
+			menu.newEntry({entryText: 'sep'});
+			menu.newEntry({entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: nextStepTag, flags: firedFlags});
+			menu.newEntry({entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: stopStepTag, flags: firedFlags});
+			menu.newEntry({entryText: 'sep'});
+			const subMenuTools = menu.newMenu('Available tools...');
+			tAut.tools.forEach((tool) => {
+				menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: null, flags: MF_GRAYED});
+				menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tool.bEnabled});
+			});
+			menu.btn_up(this.currX, this.currY + this.currH);
+		}
+	}, null, void(0), 'Automatic tags on selected tracks:\n' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags),
 });
