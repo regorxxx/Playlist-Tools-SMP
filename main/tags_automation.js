@@ -22,7 +22,7 @@ const bAudioMd5 = utils.CheckComponent('foo_audiomd5', true);
 const bChromaPrint = utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe');
 const bLRA = utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe');
 if (bChromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
-if (bLRA) {include('ffmpeg.js');}
+if (bLRA) {include('ffmpeg-utils.js');}
 
 // Variables
 const tAut = {};
