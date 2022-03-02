@@ -1,5 +1,5 @@
 'use strict';
-//11/02/22
+//25/02/22
 
 /*
 	Harmonic Mixing
@@ -21,6 +21,7 @@ function do_harmonic_mixing({
 								playlistName = 'Harmonic mix from ' + plman.GetPlaylistName(plman.ActivePlaylist),
 								keyTag = 'key',
 								bSendToPls = true,
+								bDoublePass = false,
 								bDebug = false,
 							} = {}) {
 	// Safety checks
@@ -34,7 +35,7 @@ function do_harmonic_mixing({
 		console.log('Original pattern:');
 		console.log(pattern);
 	}
-	const {selectedHandlesArray, error} = findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebug});
+	const {selectedHandlesArray, error} = findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDoublePass, bDebug});
 	if (!error) {
 		const handleList = new FbMetadbHandleList(selectedHandlesArray);
 		if (bSendToPls) {return sendToPlaylist(handleList, playlistName);}
@@ -47,7 +48,7 @@ function do_harmonic_mixing({
 	}
 }
 
-function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebug = false}) {
+function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDoublePass = false, bDebug = false}) {
 	// Tags and constants
 	const keyHandle = getTagsValuesV3(selItems, [keyTag], true);
 	const poolLength = selItems.Count;
@@ -109,13 +110,46 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDebu
 	// Add tail
 	selectedHandlesArray.push(selItems[nextIndex]); 
 	if (bDebug) {keyDebug.push(camelotKeyNew); keySharpDebug.push(camelotWheel.getKeyNotationSharp(camelotKeyNew));}
+	// Double pass
+	if (bDoublePass) {
+		const toAdd = {};
+		const keyMap = new Map();
+		// Find positions where the remainder tracks could be placed as long as they have the same key than other track
+		const selectedHandles = new FbMetadbHandleList(selectedHandlesArray);
+		for (let i = 0;  i < poolLength; i++) {
+			const currTrack = selItems[i];
+			if (selectedHandles.Find(currTrack) === -1) {
+				const matchIdx = selectedHandlesArray.findIndex((selTrack, j) => {
+					let idx = -1;
+					if (keyMap.has(j)) {idx = keyMap.get(j);}
+					else {idx = selItems.Find(selTrack); keyMap.set(j, idx);}
+					const selKey = keyHandle[idx];
+					return selKey[0] === keyHandle[i][0];
+				});
+				if (matchIdx !== -1) {
+					if (toAdd.hasOwnProperty(matchIdx)) {toAdd[matchIdx].push(currTrack);}
+					else {toAdd[matchIdx] = [currTrack];}
+				}
+			}
+		}
+		// Add items in reverse order to not recalculate new idx
+		const indexes = Object.keys(toAdd).sort().reverse();
+		if (indexes.length) {
+			let count = 0;
+			for (let idx of indexes) {
+				selectedHandlesArray.splice(idx, 0, ...toAdd[idx]);
+				count += toAdd[idx].length;
+			}
+			if (bDebug) {console.log('Added ' + count + ' items on second pass');}
+		}
+	}
 	// Debug console
 	if (bDebug) {
 		console.log('Keys from selection:');
 		console.log(keyDebug);
 		console.log(keySharpDebug);
 		console.log('Pattern applied:');
-		console.log(patternDebug); // Always has one item less thankey arrays
+		console.log(patternDebug); // Always has one item less than key arrays
 	}
 	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag (or using not recognized notation).') : null;
 	return {selectedHandlesArray, error};
