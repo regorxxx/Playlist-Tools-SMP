@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.3](#300-beta3---2021-03-02)
 - [3.0.0-beta.2](#300-beta2---2021-01-17)
 - [3.0.0-beta.1](#300-beta1---2021-12-23)
 - [2.0.2](#202---2021-06-20)
@@ -19,6 +20,48 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.3] - 2022-01-17
+### Added
+- Dynamic queries: new option at configuration to allow evaluation of dynamic queries on multiple selected tracks, instead of only the focused item. Enabled now by default, disable it to follow the previous behavior. For ex (on 3 tracks): 'TITLE IS #TITLE#' --> '(TITLE IS O Dromos To Gramma) OR (TITLE IS Gyal Bad) OR (TITLE IS Say Me)'
+- Buttons bar: menu entry to change buttons scale (for high resolution screens or non standard DPI settings).
+- Buttons bar: menu entry to enable/disable properties ID on button s' tooltip.
+- Buttons bar: menu entry to change toolbar orientation: Horizontal / Vertical.
+- Buttons bar: menu entry to change how max button size is set according to the orientation.
+- Buttons bar: buttons can now be freely moved clicking and holding the right mouse button while moving them. This is equivalent to using the menu entry to change buttons position.
+- Buttons bar: menu entry to place buttons on new rows / columns if they fill the entire width or height of the panel. Does not require a reload of the panel.
+- Other Tools\Write tags: added LRA calculation (Loudness Range) via ffmpeg. ffmpeg executable must be [downloaded](https://ffmpeg.org/download.html) and put into 'helpers-external\ffmpeg'.
+- Harmonic mixing: new option to perform a double pass on harmonic mixing which increases the number of tracks selected for the final mix. Enabled by default.
+### Changed
+- Playlist history: button now has shortcuts added to tooltip. Can be hidden setting the appropriate config at Playlist Tools button. Note it will always be shown when Playlist Tools button is not being used (since config can not be changed).
+- Search by distance: shortcuts info on customizable button is now configurable, i.e. can be hidden.
+- Search by distance: Updated to match [2.1.0](https://github.com/regorxxx/Search-by-Distance-SMP/releases/tag/v2.1.0)
+- Other Tools\Write tags: list of available tools is now shown in a submenu.
+- Other Tools\Write tags: independent button now fires the same submenu found at Playlist Tools. Shift + L.Click tags files directly. Rationale: the stop and next step actions were not available if the button only performed tagging.
+- Other Tools\Write tags: rewritten readme with dependencies installation instructions and a more useful description of the features.
+- Buttons bar: buttons scale is now set by default according to system's DPI instead of using a fixed size. If the resulting button size is found to be greater than the panel size, a warning popup is shown.
+- Playlist manipulation: merge, intersect and difference now output to console the number of added/removed tracks.
+- Helpers: updated helpers.
+- General cleanup of code and json file formatting.
+- Removed all code and compatibility checks for SMP <1.4.0.
+### Removed
+### Fixed
+- Playlist filtering: last input query was not being saved properly when using a dynamic query, it saved the actual values ('TITLE IS 01 - xxx') instead of the query placeholder ('TITLE IS #TITLE#').
+- Selection manipulation\Jump\Next: crash when selecting last item of a playlist.
+- Selection manipulation\Expand: crash when canceling input popup.
+- Selection manipulation\Jump: crash when canceling input popup.
+- Top rated Tracks from...: added a missing decade range and fixed another one which was inverted.
+- Other Tools\Check Tags: crash due to a typo.
+- Search similar by...: entries where not using proper values for some variables (like pool filtering which was supposed to be disabled).
+- Search similar by...: fixed crash on pool filtering when tags where not set. Warns with a popup when config is wrong.
+- Forced query: config menu to enable/disable it on specific tools did not save properly after restarting.
+- Buttons bar: fixed some instances where the buttons json file was missing and the default one was used.
+- Buttons bar: fixed some instances where the buttons properties were not properly moved along the button when changing position.
+- Buttons bar: fixed properties bugs on 'buttons_search_same_style_moods' and 'buttons_search_same_style'.
+- Helpers: file deletion failed when file was read-only.
+- Helpers: file recycling has been overhauled to bypass Unix errors and shift pressing limitation (file was being deleted permanently). Now it tries 3 different methods, the last one requires an external executable and permissions may be asked by the SO.
+- Other Tools\Write tags: readme was missing on the readme menu.
+- Fixed some panel crashes when there was no available playlist on Foobar, so the active playlist was null.
 
 ## [3.0.0-beta.2] - 2022-01-17
 ### Added
