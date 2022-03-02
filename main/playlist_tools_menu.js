@@ -1,5 +1,5 @@
 'use strict';
-//15/02/22
+//25/02/22
 
 /* 
 	Playlist Tools Menu
@@ -1173,6 +1173,22 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					}
 					menu.newEntry({menuName: configMenu, entryText: 'sep'});
+					{
+						const subMenuName = 'Harmonic mixing';
+						if (!menu.hasMenu(subMenuName, configMenu)) {
+							menu.newMenu(subMenuName, configMenu);
+							{	// bHarmonicMixDoublePass
+								menu.newEntry({menuName: subMenuName, entryText: 'For any tool which uses harmonic mixing:', func: null, flags: MF_GRAYED});
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+								menu.newEntry({menuName: subMenuName, entryText: 'Enable double pass to match more tracks', func: () => {
+									menu_properties['bHarmonicMixDoublePass'][1] = !menu_properties['bHarmonicMixDoublePass'][1];
+									overwriteMenuProperties(); // Updates panel
+								}});
+								menu.newCheckMenu(subMenuName, 'Enable double pass to match more tracks', void(0), () => {return menu_properties['bHarmonicMixDoublePass'][1];});
+							}
+							menu.newEntry({menuName: configMenu, entryText: 'sep'});
+						}
+					}
 				} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		} else {
@@ -1445,6 +1461,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						{name: 'Harmonic mix from playlist'	, args: {selItems: () => {return plman.GetPlaylistItems(plman.ActivePlaylist);}}, flags: playlistCountFlags},
 						{name: 'Harmonic mix from selection'	, args: {selItems: () => {return plman.GetPlaylistSelectedItems(plman.ActivePlaylist);}}, flags: multipleSelectedFlags},
 					];
+					if (!menu_properties.hasOwnProperty('bHarmonicMixDoublePass')) {menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true];}
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Using rule of Fifths (new playlist):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -1456,6 +1473,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
 								args.selItems = args.selItems();
 								args.playlistLength = args.selItems.Count; // Max allowed
+								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
 								if (bProfile) {var profiler = new FbProfiler('do_harmonic_mixing');}
 								do_harmonic_mixing(args);
 								if (bProfile) {profiler.Print();}
@@ -1463,6 +1481,22 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
+					if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+						const subMenuName = 'Harmonic mixing';
+						if (!menu.hasMenu(subMenuName, configMenu)) {
+							menu.newMenu(subMenuName, configMenu);
+							{	// bHarmonicMixDoublePass
+								menu.newEntry({menuName: subMenuName, entryText: 'For any tool which uses harmonic mixing:', func: null, flags: MF_GRAYED});
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+								menu.newEntry({menuName: subMenuName, entryText: 'Enable double pass to match more tracks', func: () => {
+									menu_properties['bHarmonicMixDoublePass'][1] = !menu_properties['bHarmonicMixDoublePass'][1];
+									overwriteMenuProperties(); // Updates panel
+								}});
+								menu.newCheckMenu(subMenuName, 'Enable double pass to match more tracks', void(0), () => {return menu_properties['bHarmonicMixDoublePass'][1];});
+							}
+							menu.newEntry({menuName: configMenu, entryText: 'sep'});
+						}
+					} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}
 		}
@@ -1515,7 +1549,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'sep'});
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
-		{	// Send Playlist to Playlist / Close playlist / Go to Playlist
+		{	// Merge / Intersect / Difference
 			const nameMerge = 'Merge with playlist...';
 			const nameInter = 'Intersect with playlist...';
 			const nameDiff = 'Difference with playlist...';
@@ -1586,7 +1620,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											handleListA.Sort();
 											const toAdd = new FbMetadbHandleList();
 											handleListB.forEach((handle) => {if (handleListA.BSearch(handle) === -1) {toAdd.Add(handle);}});
-											if (toAdd.Count) {plman.InsertPlaylistItems(ap, plman.PlaylistItemCount(ap), toAdd);}
+											if (toAdd.Count) {
+												plman.InsertPlaylistItems(ap, plman.PlaylistItemCount(ap), toAdd);
+												console.log('Added ' + toAdd.Count + ' items.');
+											} else {console.log('No items were added.');}
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 									if (bInter && !bAddRemLock) {
@@ -1602,7 +1639,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											const toAdd = new FbMetadbHandleList();
 											handleListAOri.forEach((handle, i) => {if (intersect.BSearch(handle) !== -1) {toAdd.Add(handle);}});
 											plman.ClearPlaylist(ap);
-											if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+											const toAddCount = toAdd.Count;
+											const remCount = handleListAOri.Count - toAddCount;
+											if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+											if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 									if (bDiff && !bAddRemLock) {
@@ -1618,7 +1658,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 											const toAdd = new FbMetadbHandleList();
 											handleListAOri.forEach((handle, i) => {if (difference.BSearch(handle) !== -1) {toAdd.Add(handle);}});
 											plman.ClearPlaylist(ap);
-											if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+											const toAddCount = toAdd.Count;
+											const remCount = handleListAOri.Count - toAddCount;
+											if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+											if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									}
 								}
@@ -1634,7 +1677,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										handleListA.Sort();
 										const toAdd = new FbMetadbHandleList();
 										handleListB.forEach((handle) => {if (handleListA.BSearch(handle) === -1) {toAdd.Add(handle);}});
-										if (toAdd.Count) {plman.InsertPlaylistItems(ap, plman.PlaylistItemCount(ap), toAdd);}
+										if (toAdd.Count) {
+											plman.InsertPlaylistItems(ap, plman.PlaylistItemCount(ap), toAdd);
+											console.log('Added ' + toAdd.Count + ' items.');
+										} else {console.log('No items were added.');}
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 								if (bInter && !bAddRemLock) {
@@ -1650,7 +1696,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										const toAdd = new FbMetadbHandleList();
 										handleListAOri.forEach((handle, i) => {if (intersect.BSearch(handle) !== -1) {toAdd.Add(handle);}});
 										plman.ClearPlaylist(ap);
-										if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+										const toAddCount = toAdd.Count;
+										const remCount = handleListAOri.Count - toAddCount;
+										if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+										if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 								if (bDiff && !bAddRemLock) {
@@ -1666,7 +1715,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 										const toAdd = new FbMetadbHandleList();
 										handleListAOri.forEach((handle, i) => {if (difference.BSearch(handle) !== -1) {toAdd.Add(handle);}});
 										plman.ClearPlaylist(ap);
-										if (toAdd.Count) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+										const toAddCount = toAdd.Count;
+										const remCount = handleListAOri.Count - toAddCount;
+										if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
+										if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 								}
 							}
