@@ -21,7 +21,7 @@
 ### Removed
 ### Fixed
 
-## [3.0.0-beta.3] - 2022-01-17
+## [3.0.0-beta.3] - 2022-03-02
 ### Added
 - Dynamic queries: new option at configuration to allow evaluation of dynamic queries on multiple selected tracks, instead of only the focused item. Enabled now by default, disable it to follow the previous behavior. For ex (on 3 tracks): 'TITLE IS #TITLE#' --> '(TITLE IS O Dromos To Gramma) OR (TITLE IS Gyal Bad) OR (TITLE IS Say Me)'
 - Buttons bar: menu entry to change buttons scale (for high resolution screens or non standard DPI settings).
@@ -379,7 +379,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.2...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.3...HEAD
+[3.0.0-beta.3]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.2...v3.0.0-beta.3
 [3.0.0-beta.2]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.1...v3.0.0-beta.2
 [3.0.0-beta.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v3.0.0-beta.1
 [2.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.1...v2.0.2
