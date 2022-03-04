@@ -20,6 +20,7 @@
 ### Changed
 ### Removed
 ### Fixed
+- Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 
 ## [3.0.0-beta.3] - 2022-03-02
 ### Added
