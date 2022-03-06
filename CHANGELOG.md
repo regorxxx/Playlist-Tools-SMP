@@ -18,17 +18,20 @@
 
 ## [Unreleased][]
 ### Added
+- HTML: SuperGenre legend is now dragable.
+- HTML: Selecting a node and pressing shift while hovering another node shows the distance (+ influences) between them.
+- HTML: Selecting a node and pressing shift while hovering another node highlights the shortest path between them.
+- HTML: Added favicon.
 ### Changed
 ### Removed
 ### Fixed
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 
-## [3.0.0-beta.3] - 2022-03-06
+## [3.0.0-beta.4] - 2022-03-06
 ### Added
 ### Changed
 ### Removed
 ### Fixed
-- Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 - Crash when using harmonic mixing due to a typo on the code.
 
 ## [3.0.0-beta.3] - 2022-03-02
