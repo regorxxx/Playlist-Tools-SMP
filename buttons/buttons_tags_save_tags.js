@@ -16,10 +16,8 @@ buttonsBar.list.push({});
 addButton({
 	OneButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
-		if (_isFile(readmePath)) {
-			const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
-			if (readme.length) {fb.ShowPopupMessage(readme, 'Save tags and comparison');}
-		}
+		const readme = _open(readmePath, convertCharsetToCodepage('UTF-8'));
+		if (readme.length) {fb.ShowPopupMessage(readme, 'Save tags and comparison');}
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to save tags file:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}

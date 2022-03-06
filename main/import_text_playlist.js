@@ -32,9 +32,10 @@ function importTextPlaylist({
 	}
 	let text = '';
 	if (_isFile(path)) {
-		text = utils.ReadTextFile(path);
+		text = _open(path);
+		if (!text.length) {return -1;}
 		const codePage = checkCodePage(text.split(/\r\n|\n\r|\n|\r/), '.' + path.split('.').pop(), true);
-		if (codePage !== -1) {text = utils.ReadTextFile(path, codePage);}
+		if (codePage !== -1) {text = _open(path, codePage); if (!text.length) {return -1;}}
 		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
 	} else if (path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1) {
 		let request = new ActiveXObject('Microsoft.XMLHTTP');

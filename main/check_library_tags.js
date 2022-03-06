@@ -89,7 +89,7 @@ if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') 
 	var bUseDic = getPropertyByKey(checkTags_properties, bUseDic, checkTags_prefix);
 	if (bUseDic) {
 		if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
-			dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
+			dictionary = new Typo(dictSettings.dictName, _open(dictSettings.affPath()), _open(dictSettings.dicPath()));
 		} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name);}
 	}
 } else {  // With buttons, set these properties only once per panel
@@ -121,7 +121,7 @@ function checkTags({
 			dictSettings['dictName'] = properties['dictName'][1];
 			dictSettings['dictPath'] = properties['dictPath'][1];
 			if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
-				dictionary = new Typo(dictSettings.dictName, utils.ReadTextFile(dictSettings.affPath()), utils.ReadTextFile(dictSettings.dicPath()));
+				dictionary = new Typo(dictSettings.dictName, _open(dictSettings.affPath()), _open(dictSettings.dicPath()));
 		// Warn if not found
 			} else {fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name);return;}
 		} else if (!_isFile(dictSettings.dicPath()) || !_isFile(dictSettings.affPath())) {

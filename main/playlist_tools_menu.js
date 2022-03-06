@@ -3994,10 +3994,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: () => {
 					if (!menu_properties.bPlaylistNameCommands[1]) {
 						if (_isFile(readmes[menuName + '\\' + name])) {
-							const readme = utils.ReadTextFile(readmes[menuName + '\\' + name], convertCharsetToCodepage('UTF-8'));
+							const readme = _open(readmes[menuName + '\\' + name], convertCharsetToCodepage('UTF-8'));
 							if (readme.length) {
 								const answer = WshShell.Popup(readme, 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
-							if (answer !== popup.yes) {return;}
+								if (answer !== popup.yes) {return;}
 							}
 						}
 					}
@@ -4391,11 +4391,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			if (Object.keys(readmes).length) {
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
 					if (_isFile(value)) { 
-						const readme = utils.ReadTextFile(value, convertCharsetToCodepage('UTF-8')); // Executed on script load
+						const readme = _open(value, convertCharsetToCodepage('UTF-8')); // Executed on script load
 						if (readme.length) {
 							menu.newEntry({menuName: subMenuName, entryText: key, func: () => { // Executed on menu click
 								if (_isFile(value)) {
-									const readme = utils.ReadTextFile(value, convertCharsetToCodepage('UTF-8'));
+									const readme = _open(value, convertCharsetToCodepage('UTF-8'));
 									if (readme.length) {fb.ShowPopupMessage(readme, key);}
 								} else {console.log('Readme not found: ' + value);}
 							}});
@@ -4505,10 +4505,8 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		const readmeKeys = ['Playlist Tools Menu', 'Macros']; // Must read files on first execution
 		readmeKeys.forEach( (key) => {
 			const readmePath = readmes[key];
-			if (_isFile(readmePath)) {
-				const readme = utils.ReadTextFile(readmePath, convertCharsetToCodepage('UTF-8'));
-				if (readme.length) {fb.ShowPopupMessage(readme, key);}
-			}
+			const readme = _open(readmePath, convertCharsetToCodepage('UTF-8'));
+			if (readme.length) {fb.ShowPopupMessage(readme, key);}
 		});
 	}
 	// And update
