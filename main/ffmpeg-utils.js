@@ -1,5 +1,5 @@
 'use strict';
-//18/02/21
+//04/03/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -20,7 +20,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 	if (!_isFile(ffmpegPath)) {fb.ShowPopupMessage('ffmpeg executable not found:\n' + ffmpegPath, 'EBUR 128 Scanner');}
 	const profile = bProfile ? new FbProfiler('EBUR 128 Scanner') : null;
 	const handleListArr = fromHandleList.Convert();
-	const totalTracks = handleListArr.length, numTracks = 500, maxCount = Math.ceil(totalTracks / numTracks);
+	const totalTracks = handleListArr.length, numTracks = 100, maxCount = Math.ceil(totalTracks / numTracks);
 	let totalItems = 0;
 	let bDone = true;
 	let failedItems = [];
