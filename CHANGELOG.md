@@ -25,6 +25,7 @@
 ### Changed
 ### Removed
 ### Fixed
+- Crash when using double pass on harmonic mixing.
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 
 ## [3.0.0-beta.4] - 2022-03-06
