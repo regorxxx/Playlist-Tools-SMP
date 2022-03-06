@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.4](#300-beta4---2021-03-06)
 - [3.0.0-beta.3](#300-beta3---2021-03-02)
 - [3.0.0-beta.2](#300-beta2---2021-01-17)
 - [3.0.0-beta.1](#300-beta1---2021-12-23)
@@ -20,6 +21,14 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.3] - 2022-03-06
+### Added
+### Changed
+### Removed
+### Fixed
+- Helpers: avoid file reading crashing in any case (even if it's locked by another process).
+- Crash when using harmonic mixing due to a typo on the code.
 
 ## [3.0.0-beta.3] - 2022-03-02
 ### Added
@@ -379,7 +388,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.3...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.4...HEAD
+[3.0.0-beta.4]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.3...v3.0.0-beta.4
 [3.0.0-beta.3]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.2...v3.0.0-beta.3
 [3.0.0-beta.2]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.1...v3.0.0-beta.2
 [3.0.0-beta.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v2.0.2...v3.0.0-beta.1
