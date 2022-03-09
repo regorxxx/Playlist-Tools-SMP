@@ -791,7 +791,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 								if (bEvalSel) {do_dynamic_query({query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)})}
 								else{do_dynamic_query({query, sort: queryObj.sort});}
-							}, flags: focusFlags});
+							}, flags: selectedFlags});
 						}
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
@@ -812,7 +812,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							selArg.query = input; 
 							menu_properties['dynamicQueriesCustomArg'][1] = input; // And update property with new value
 							overwriteMenuProperties(); // Updates panel
-						}, flags: focusFlags});
+						}, flags: selectedFlags});
 						// Menu to configure property
 						menu.newEntry({menuName, entryText: 'sep'});
 					}
@@ -2843,7 +2843,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					const subMenuName = menu.newMenu(name, menuName);
 					const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
 					const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
-					const allFlags = () => {return (!bFired() ? focusFlags() : MF_GRAYED);}
+					const allFlags = () => {return (!bFired() ? selectedFlags() : MF_GRAYED);}
 					menu.newEntry({menuName: subMenuName, entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tagsAutomation, flags: allFlags});

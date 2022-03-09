@@ -30,6 +30,9 @@
 ### Fixed
 - Search similar by...: Crash when using double pass on harmonic mixing.
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
+- Dynamic Queries: menu is now disabled when there is no selection (instead of only requiring a track in focus).
+- Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
+
 
 ## [3.0.0-beta.4] - 2022-03-06
 ### Added
