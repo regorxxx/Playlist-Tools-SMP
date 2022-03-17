@@ -12,45 +12,171 @@
  */
 
 include('..\\helpers\\helpers_xxx.js');
- 
-// Script
-const bRgScan = utils.CheckComponent('foo_rgscan', true);
-const bBiometric = utils.CheckComponent('foo_biometric', true);
-const bMassTag = utils.CheckComponent('foo_masstag', true);
-const bDynamicRange = utils.CheckComponent('foo_dynamic_range', true);
-const bAudioMd5 = utils.CheckComponent('foo_audiomd5', true);
-const bChromaPrint = utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe');
-const bLRA = utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe');
-if (bChromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
-if (bLRA) {include('ffmpeg-utils.js');}
 
-// Variables
-const tAut = {};
-tAut.selItems = null;
-tAut.countItems = null;
-tAut.iStep = null;
-tAut.currentTime = null;
-tAut.tools = [
-	{title: 'FooID Fingerprinting', bEnabled: bBiometric},
-	{title: 'ChromaPrint Fingerprinting', bEnabled: bChromaPrint},
-	{title: 'MD5', bEnabled: bMassTag},
-	{title: 'AUDIOMD5', bEnabled: bAudioMd5},
-	{title: 'ReplayGain', bEnabled: bRgScan},
-	{title: 'DR', bEnabled: bDynamicRange},
-	{title: 'EBUR 128 Scanner', bEnabled: bLRA}
-];
-const debouncedStep = debounce(stepTag, 300); // Only continues next step when last tag update was done >100ms ago
+function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true}*/, bOutputTools = false) {
+	this.selItems = null;
+	this.countItems = null;
+	this.iStep = null;
+	this.currentTime = null;
+	this.tools = [
+		{key: 'biometric', tag: ['FINGERPRINT_FOOID'], title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true)},
+		{key: 'chromaPrint', tag: ['ACOUSTID_FINGERPRINT_RAW'], title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe')},
+		{key: 'massTag', tag: ['MD5'], title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true)},
+		{key: 'audioMd5', tag: ['AUDIOMD5'], title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true)},
+		{key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'], title: 'ReplayGain', bAvailable: utils.CheckComponent('foo_rgscan', true)},
+		{key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'], title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true)},
+		{key: 'LRA', tag: ['LRA'], title: 'EBUR 128 Scanner', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe')}
+	];
+	this.toolsByKey = Object.fromEntries(this.tools.map((tool) => {return [tool.key, tool.bAvailable];}));
+	if (toolsByKey) {
+		Object.keys(toolsByKey).forEach((key) => {
+			if (this.toolsByKey.hasOwnProperty(key)) {this.toolsByKey[key] = toolsByKey[key];}
+			else {console.log('tagAutomation: tool key not recognized ' + key);}
+		})
+	}
+	if (bOutputTools) {return this.toolsByKey;}
+	
+	this.description = () => {
+		return this.tools.reduce((text, tool, index) => {return (this.toolsByKey[tool.key] ? (text.length ? text + ', ' + tool.title : tool.title) : text);}, ''); // Initial value is '';
+	};
+	
+	this.run = () => {
+		this.countItems = 0;
+		this.currentTime = 0;
+		this.selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+		if (typeof this.selItems !== 'undefined' && this.selItems !== null) {
+			this.selItems.Sort();
+			this.countItems = this.selItems.Count;
+			if (this.countItems === 0) {
+				console.log('No tracks selected.');
+				return;
+			}
+		} else {return;}
+		
+		// Safety check for accidental button pressing
+		let answer = WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + this.description(), 0, window.Name, popup.question + popup.yes_no);
+		if (answer === popup.no) {
+			this.iStep = null;
+			this.selItems = null;
+			this.countItems = null;
+			this.currentTime = null;
+		} else {
+			// Remove old tags
+			let arr = [];
+			for (let i = 0; i < this.countItems; ++i) {
+				const cleanTags = Object.fromEntries(this.tools.map((tool) => {return this.toolsByKey[tool.key] ? tool.tag : null;}).flat(Infinity).filter(Boolean).map((tag) => {return [tag, ''];}));
+				arr.push(cleanTags);
+			}
+			this.selItems.UpdateFileInfoFromJSON(JSON.stringify(arr));
+			
+			// Process files on steps
+			this.iStep = 0;
+			this.stepTag(this.iStep);
+		}
+		return;
+	};
+
+	this.stopStepTag = () => {
+		this.iStep = null;
+		this.selItems = null;
+		this.countItems = null;
+		this.currentTime = null;
+	}
+
+	this.nextStepTag = () => {
+		this.countItems = this.selItems.Count;
+		this.debouncedStep(this.iStep);
+	}
+
+	this.stepTag = (i) => {
+		let bSucess = false;
+		this.iStep++;
+		switch (i) {
+			case 0: // Less than 100 ms / track?
+				if (this.toolsByKey.rgScan) {bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', this.selItems, 8);} // Replay gain info is not always removed
+				else {bSucess = false;}
+				break;
+			case 1:  // Takes 260 ms / track
+				if (this.toolsByKey.biometric) {bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', this.selItems, 8);}
+				else {bSucess = false;}
+				break;
+			case 2: // Less than 170 ms / track?
+				if (this.toolsByKey.massTag) {bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItems, 8);}
+				else {bSucess = false;}
+				break;
+			case 3: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
+				if (this.toolsByKey.dynamicRange) {bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);}
+				else {bSucess = false;}
+				break;
+			case 4: //
+				if (this.toolsByKey.chromaPrint) {bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: this.selItems});}
+				else {bSucess = false;}
+				break;
+			case 5: //
+				if (this.toolsByKey.LRA) {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
+				else {bSucess = false;}
+				break;
+			case 6: // These require user input before saving, so they are read only operations and can be done at the same time
+				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan) {
+					this.currentTime = 0; // ms
+					let cacheSel_items = this.selItems.Clone();
+					if (this.toolsByKey.audioMd5) {
+						setTimeout(function(){
+							bSucess = fb.RunContextCommandWithMetadb('Utilities/Create Audio MD5 checksum', cacheSel_items, 8);
+						}, this.currentTime); // Takes 170 ms / track
+						this.currentTime += 200 * this.countItems; // But we give them some time to run before firing the next one
+					}
+					if (this.toolsByKey.rgScan) {
+						setTimeout(function(){
+							bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSel_items, 8);
+						}, this.currentTime); // Takes ~500 ms / track
+						this.currentTime += 510 * this.countItems; // But we give them some time to run before firing the next one
+					}
+				} else {bSucess = false;}
+				break;
+			default:
+				this.stopStepTag();
+				return;
+		}
+		if (!bSucess) {this.stepTag(this.iStep);} // If the step was omitted, then run next step
+		return;
+	};
+	
+	this.debouncedStep = debounce(this.stepTag, 300); // Only continues next step when last tag update was done >100ms ago
+	
+	this.changeTools = (toolsByKey) => {
+		this.toolsByKey = toolsByKey;
+		this.loadDependencies();
+	};
+	
+	this.loadDependencies = () => {
+		if (this.toolsByKey.chromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
+		if (this.toolsByKey.LRA) {include('ffmpeg-utils.js');}
+	};
+	
+	this.init = () => {
+		tagAutomationCallbacks.push(this);
+		this.loadDependencies();
+
+	};
+	
+	this.init();
+}
+
+const tagAutomationCallbacks = [];
 
 // Check if tag update was done on a selected file and wait until all tracks are updated
 function onMetadbChangedTagsAuto(handleList, fromhook) {
-	if (tAut.iStep) {
-		if (typeof tAut.selItems !== 'undefined' && tAut.selItems !== null && tAut.countItems !== null) {
-			handleList.Sort();
-			handleList.MakeIntersection(tAut.selItems);
-			if (handleList.Count !== 0 && tAut.countItems !== 0) {
-				tAut.countItems -= handleList.Count;
-				if (tAut.countItems === 0) {
-					nextStepTag();
+	for (let tAut of tagAutomationCallbacks) {
+		if (tAut.iStep) {
+			if (typeof tAut.selItems !== 'undefined' && tAut.selItems !== null && tAut.countItems !== null) {
+				handleList.Sort();
+				handleList.MakeIntersection(tAut.selItems);
+				if (handleList.Count !== 0 && tAut.countItems !== 0) {
+					tAut.countItems -= handleList.Count;
+					if (tAut.countItems === 0) {
+						tAut.nextStepTag();
+					}
 				}
 			}
 		}
@@ -63,121 +189,3 @@ if (typeof on_metadb_changed !== 'undefined') {
 		onMetadbChangedTagsAuto(handleList, fromhook);
 	}
 } else {var on_metadb_changed = onMetadbChangedTagsAuto;}
-
-function getTagsAutomationDescription() {
-	return tAut.tools.reduce((text, tool, index) => {return (tool.bEnabled ? (text.length ? text + ', ' + tool.title : tool.title) : text);}, ''); // Initial value is '';
-}
-
-function tagsAutomation() {
-	tAut.countItems = 0;
-	tAut.currentTime = 0;
-	tAut.selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-	if (typeof tAut.selItems !== 'undefined' && tAut.selItems !== null) {
-		tAut.selItems.Sort();
-		tAut.countItems = tAut.selItems.Count;
-		if (tAut.countItems === 0) {
-			console.log('No tracks selected.');
-			return;
-		}
-	} else {return;}
-	
-	// Safety check for accidental button pressing
-	let answer = WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + getTagsAutomationDescription(), 0, window.Name, popup.question + popup.yes_no);
-	if (answer === popup.no) {
-		tAut.iStep = null;
-		tAut.selItems = null;
-		tAut.countItems = null;
-		tAut.currentTime = null;
-	} else {
-		// Remove old tags
-		let arr = [];
-		for (let i = 0; i < tAut.countItems; ++i) {
-			arr.push({
-				'MD5' : '',
-				'AUDIOMD5' : '',
-				'ANALYSIS' : '',
-				'FINGERPRINT_FOOID' : '',
-				'REPLAYGAIN_ALBUM_GAIN' : '',
-				'REPLAYGAIN_ALBUM_PEAK' : '',
-				'REPLAYGAIN_TRACK_GAIN' : '',
-				'REPLAYGAIN_TRACK_PEAK' : '',
-				'ALBUM DYNAMIC RANGE' : '',
-				'DYNAMIC RANGE' : '',
-				'ACOUSTID_FINGERPRINT_RAW' : '',
-				'LRA' : ''
-			});
-		}
-		tAut.selItems.UpdateFileInfoFromJSON(JSON.stringify(arr));
-		
-		// Process files on steps
-		tAut.iStep = 0;
-		stepTag(tAut.iStep);
-	}
-	return;
-}
-
-function stopStepTag() {
-	tAut.iStep = null;
-	tAut.selItems = null;
-	tAut.countItems = null;
-	tAut.currentTime = null;
-}
-
-function nextStepTag() {
-	tAut.countItems = tAut.selItems.Count;
-	debouncedStep(tAut.iStep);
-}
-
-function stepTag(i) {
-	let bSucess = false;
-	tAut.iStep++;
-	switch (i) {
-		case 0: // Less than 100 ms / track?
-			if (bRgScan) {bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', tAut.selItems, 8);} // Replay gain info is not always removed
-			else {bSucess = false;}
-			break;
-		case 1:  // Takes 260 ms / track
-			if (bBiometric) {bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', tAut.selItems, 8);}
-			else {bSucess = false;}
-			break;
-		case 2: // Less than 170 ms / track?
-			if (bMassTag) {bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', tAut.selItems, 8);}
-			else {bSucess = false;}
-			break;
-		case 3: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-			if (bDynamicRange) {bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', tAut.selItems, 8);}
-			else {bSucess = false;}
-			break;
-		case 4: //
-			if (bChromaPrint) {bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: tAut.selItems});}
-			else {bSucess = false;}
-			break;
-		case 5: //
-			if (bLRA) {bSucess = ffmpeg.calculateLoudness({fromHandleList: tAut.selItems});}
-			else {bSucess = false;}
-			break;
-		case 6: // These require user input before saving, so they are read only operations and can be done at the same time
-			if (bAudioMd5 || bRgScan) {
-				tAut.currentTime = 0; // ms
-				let cacheSel_items = tAut.selItems.Clone();
-				if (bAudioMd5) {
-					setTimeout(function(){
-						bSucess = fb.RunContextCommandWithMetadb('Utilities/Create Audio MD5 checksum', cacheSel_items, 8);
-					}, tAut.currentTime); // Takes 170 ms / track
-					tAut.currentTime += 200 * tAut.countItems; // But we give them some time to run before firing the next one
-				}
-				if (bRgScan) {
-					setTimeout(function(){
-						bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSel_items, 8);
-					}, tAut.currentTime); // Takes ~500 ms / track
-					tAut.currentTime += 510 * tAut.countItems; // But we give them some time to run before firing the next one
-				}
-			} else {bSucess = false;}
-			break;
-		default:
-			stopStepTag();
-			return;
-	}
-	if (!bSucess) {stepTag(tAut.iStep);} // If the step was omitted, then run next step
-	return;
-}

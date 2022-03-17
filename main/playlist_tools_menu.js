@@ -2840,22 +2840,34 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tags_automation.txt';
+					const tAut = new tagAutomation();
+					menu_properties['toolsByKey'] = ['\'Other tools\\Write tags\' tools enabled', JSON.stringify(tAut.toolsByKey)];
 					const subMenuName = menu.newMenu(name, menuName);
 					const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
 					const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
 					const allFlags = () => {return (!bFired() ? selectedFlags() : MF_GRAYED);}
 					menu.newEntry({menuName: subMenuName, entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tagsAutomation, flags: allFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tAut.run, flags: allFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: nextStepTag, flags: firedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: stopStepTag, flags: firedFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: tAut.nextStepTag, flags: firedFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: tAut.stopStepTag, flags: firedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					const subMenuTools = menu.newMenu('Available tools...', subMenuName);
 					tAut.tools.forEach((tool) => {
-						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: null, flags: MF_GRAYED});
-						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tool.bEnabled});
+						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
+						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
+							tAut.toolsByKey[tool.key] = !tAut.toolsByKey[tool.key];
+							menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
+							overwriteMenuProperties(); // Updates panel
+							tAut.loadDependencies();
+						}, flags});
+						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tAut.toolsByKey[tool.key];});
 					});
+					// Refresh settings on startup
+					menu.newCondEntry({entryText: 'Write tags... (cond)', condFunc: (bInit = true) => {
+						if (bInit) {tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1]));}
+					}});
 					menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 			}

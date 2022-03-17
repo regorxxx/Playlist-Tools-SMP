@@ -14,44 +14,69 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\tags_automation.js');
 include('..\\helpers\\helpers_xxx_properties.js');
-var prefix = '';
+var prefix = 'ta';
 
 try {window.DefinePanel('Automate Tags', {author:'xxx'});} catch (e) {console.log('Automate Tags Button loaded.');} //May be loaded along other buttons
 
-prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = {	//You can simply add new properties here
+	toolsByKey: ['Tools enabled', JSON.stringify(new tagAutomation(void(0), true))]
 };
-setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
-buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+buttonsBar.list.push(newButtonsProperties);
 
-addButton({
-	automation: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function (mask) {
-		const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
-		if (mask === MK_SHIFT && !bFired() && fb.GetFocusItem(true)) {
-			let t0 = Date.now();
-			let t1 = 0;
-			tagsAutomation();
-			t1 = Date.now();
-			console.log('Call to Automate Tags took ' + (t1 - t0) + ' milliseconds.');
-		} else {
-			const menu = new _menu({iMaxEntryLen: 50}); // To avoid collisions with other buttons and check menu
-			const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
-			const focusFlags = () => {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}
-			const allFlags = () => {return (!bFired() ? focusFlags() : MF_GRAYED);}
-			menu.newEntry({entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
-			menu.newEntry({entryText: 'sep'});
-			menu.newEntry({entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tagsAutomation, flags: allFlags});
-			menu.newEntry({entryText: 'sep'});
-			menu.newEntry({entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: nextStepTag, flags: firedFlags});
-			menu.newEntry({entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: stopStepTag, flags: firedFlags});
-			menu.newEntry({entryText: 'sep'});
-			const subMenuTools = menu.newMenu('Available tools...');
-			tAut.tools.forEach((tool) => {
-				menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: null, flags: MF_GRAYED});
-				menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tool.bEnabled});
-			});
-			menu.btn_up(this.currX, this.currY + this.currH);
-		}
-	}, null, void(0), 'Automatic tags on selected tracks:\n' + getTagsAutomationDescription(), prefix, newButtonsProperties, chars.tags),
-});
+{
+	var newButton = {
+		automation: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function (mask) {
+			const bFired = () => {return this.tAut.selItems && this.tAut.countItems && this.tAut.iStep;}
+			const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
+			if (mask === MK_SHIFT) {
+				if (!bFired() && handleList.Count) {this.tAut.run();} 
+				else {this.tAut.nextStepTag();}
+			} else {
+				const menu = new _menu({iMaxEntryLen: 50}); // To avoid collisions with other buttons and check menu
+				const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
+				const selFlags = handleList.Count ? MF_STRING : MF_GRAYED;
+				const allFlags = () => {return (!bFired() ? selFlags : MF_GRAYED);}
+				menu.newEntry({entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
+				menu.newEntry({entryText: 'sep'});
+				menu.newEntry({entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: this.tAut.run, flags: allFlags});
+				menu.newEntry({entryText: 'sep'});
+				menu.newEntry({entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: this.tAut.nextStepTag, flags: firedFlags});
+				menu.newEntry({entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: this.tAut.stopStepTag, flags: firedFlags});
+				menu.newEntry({entryText: 'sep'});
+				const subMenuTools = menu.newMenu('Available tools...');
+				this.tAut.tools.forEach((tool) => {
+					const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
+					menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
+						this.tAut.toolsByKey[tool.key] = !this.tAut.toolsByKey[tool.key];
+						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
+						overwriteProperties(this.buttonsProperties); // Force overwriting
+						this.tAut.loadDependencies();
+					}, flags});
+					menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return this.tAut.toolsByKey[tool.key];});
+				});
+				menu.btn_up(this.currX, this.currY + this.currH);
+			}
+		}, null, void(0), (parent) => {
+			const bFired = () => {return parent.tAut.selItems && parent.tAut.countItems && parent.tAut.iStep;}
+			// Retrieve list of tools and wrap lines with smaller width
+			let info = 'Automatic tags on selected tracks:\n' + parent.tAut.description();
+			const font = buttonsBar.tooltipButton.font;
+			info = _gr.EstimateLineWrap(info, _gdiFont(font.name, font.size), 400).filter(isString).join('\n');
+			// Modifiers
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			if (bShift || bInfo) {
+				info += '\n-----------------------------------------------------';
+				info += bFired() ? '\n(Shift + L. Click to force next step)' : '\n(Shift + L. Click to directly run on selection)';
+			}
+			return info;
+		}, prefix, newButtonsProperties, chars.tags),
+	};
+	newButton.automation.tAut = new tagAutomation(JSON.parse(newButtonsProperties['toolsByKey'][1]));
+
+	addButton(newButton);
+}
