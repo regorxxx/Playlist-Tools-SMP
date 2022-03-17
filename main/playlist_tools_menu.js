@@ -2865,6 +2865,15 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}, flags});
 						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tAut.toolsByKey[tool.key];});
 					});
+					menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
+					['Enable all', 'Disable all'].forEach((entryText, i) => {
+						menu.newEntry({menuName: subMenuTools, entryText: entryText, func: () => {
+							this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : true;});
+							this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+							this.tAut.loadDependencies();
+						}});
+					});
 					// Refresh settings on startup
 					menu.newCondEntry({entryText: 'Write tags... (cond)', condFunc: (bInit = true) => {
 						if (bInit) {tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1]));}

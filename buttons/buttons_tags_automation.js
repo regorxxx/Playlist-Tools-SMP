@@ -58,6 +58,15 @@ buttonsBar.list.push(newButtonsProperties);
 					}, flags});
 					menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return this.tAut.toolsByKey[tool.key];});
 				});
+				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
+				['Enable all', 'Disable all'].forEach((entryText, i) => {
+					menu.newEntry({menuName: subMenuTools, entryText: entryText, func: () => {
+						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : true;});
+						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
+						overwriteProperties(this.buttonsProperties); // Force overwriting
+						this.tAut.loadDependencies();
+					}});
+				});
 				menu.btn_up(this.currX, this.currY + this.currH);
 			}
 		}, null, void(0), (parent) => {

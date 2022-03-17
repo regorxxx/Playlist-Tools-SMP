@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/02/21
+//17/03/22
 
 /* 
 	Automatic tagging...
@@ -52,7 +52,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				return;
 			}
 		} else {return;}
-		
 		// Safety check for accidental button pressing
 		let answer = WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + this.description(), 0, window.Name, popup.question + popup.yes_no);
 		if (answer === popup.no) {
@@ -68,10 +67,9 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				arr.push(cleanTags);
 			}
 			this.selItems.UpdateFileInfoFromJSON(JSON.stringify(arr));
-			
 			// Process files on steps
 			this.iStep = 0;
-			this.stepTag(this.iStep);
+			this.debouncedStep(this.iStep);
 		}
 		return;
 	};
