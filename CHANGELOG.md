@@ -28,6 +28,7 @@
 - HTML: Selecting a node and pressing shift while hovering another node highlights the shortest path between them.
 - HTML: Added favicon.
 ### Changed
+- Top rated tracks from...: minor menu changes. Added also previous year to current one.
 - Other tools\Write Tags: available tools can now be selectively enabled/disabled. 'tags_automation' button uses now its own config and multiple copies can be put on the bar (with different tools enabled).
 - Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
 - Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.

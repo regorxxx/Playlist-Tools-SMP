@@ -356,8 +356,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName, entryText: 'Based on ratings (' + defaultArgs.ratingLimits.join(' to ') + '):', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			const currentYear = new Date().getFullYear();
-			const selYearArr = [ [currentYear], [2000, currentYear], [1990, 2000], [1980, 1990], [1970, 1980], [1960, 1970], [1950, 1960], [1940, 1950]];
+			const selYearArr = [ [currentYear], [currentYear - 1], 'sep', [2000, currentYear], [1990, 2000], [1980, 1990], [1970, 1980], [1960, 1970], [1950, 1960], [1940, 1950]];
 			selYearArr.forEach( (selYear) => {
+				if (selYear === 'sep') {menu.newEntry({menuName, entryText: 'sep'}); return;}
 				let selArgs = { ...defaultArgs};
 				let dateQuery = '';
 				if (selYear.length === 2) {
