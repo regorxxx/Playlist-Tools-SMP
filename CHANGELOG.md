@@ -18,6 +18,9 @@
 
 ## [Unreleased][]
 ### Added
+- Buttons: split 'playlist_remove_duplicates' buttons on two; new one is named 'playlist_filter'. Now it should be easier to add multiple copies of those buttons without having to use both at the same time.
+- Buttons: 'playlist_remove_duplicates', 'playlist_filter', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' now have a configuration menu which can be called using Shift + L. Click to set button variables (previously only available at the properties panel).
+- Search similar by...: added All Music and Last.fm support by linking all their genre/styles to the graph with substitutions.
 - HTML: Added statistics calculation. To run it, use the associated button, results will be shown on a popup and cached for the current session. Statistics button is now animated while processing
 - HTML: Added reset view button.
 - HTML: SuperGenre legend is now dragable.
@@ -25,14 +28,19 @@
 - HTML: Selecting a node and pressing shift while hovering another node highlights the shortest path between them.
 - HTML: Added favicon.
 ### Changed
+- Other tools\Write Tags: available tools can now be selectively enabled/disabled. 'tags_automation' button uses now its own config and multiple copies can be put on the bar (with different tools enabled).
+- Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
+- Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.
 - HTML: Changed CSS layout to adjust sizes according to window.
 ### Removed
 ### Fixed
+- Dynamic Queries: menu is now disabled when there is no selection.
+- Write tags: menu is now disabled when there is no selection.
 - Search similar by...: Crash when using double pass on harmonic mixing.
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 - Dynamic Queries: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
-
+- Properties were not being properly renumbered on some cases when moving buttons.
 
 ## [3.0.0-beta.4] - 2022-03-06
 ### Added
