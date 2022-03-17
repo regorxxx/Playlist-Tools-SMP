@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//16/03/22
 
 /* 
 	Search same by
@@ -70,6 +70,7 @@
 
 var bLoadTags = true; // This tells the helper to load tags descriptors extra files
 include('..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\helpers\\helpers_xxx_playlists.js');
 include('..\\helpers\\helpers_xxx_math.js');
 include('remove_duplicates.js');
 
@@ -83,7 +84,8 @@ function do_search_same_by({
 								logic = 'AND',
 								remapTags = {},
 								bOnlyRemap = false,
-								bSendToPls = true
+								bSendToPls = true,
+								bProfile = false
 								} = {}) {
 		
 		// - Tags logic - from helpers
@@ -128,6 +130,7 @@ function do_search_same_by({
 			console.log('do_search_same_by(): logic (' + logic + ') is wrong');
 			return false;
 		}
+		if (bProfile) {var test = new FbProfiler('do_search_same_by');}
 		
 		let sel = fb.GetFocusItem();
         if (!sel) {
@@ -234,45 +237,21 @@ function do_search_same_by({
 
 		// Load query
 		console.log('Playlist created: ' + query[ql]);
-		let queryhandle_list;
-		try {queryhandle_list = fb.GetQueryItems(fb.GetLibraryItems(), query[ql]);} // Sanity check
+		let outputHandleList;
+		try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query[ql]);} // Sanity check
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query[ql]); return false;}
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			queryhandle_list = do_remove_duplicates(queryhandle_list, sortBy, checkDuplicatesBy);
+			outputHandleList = do_remove_duplicates(outputHandleList, sortBy, checkDuplicatesBy, void(0), bProfile);
 		}
-		
-		let oldCount = queryhandle_list.Count;
-		console.log('Items retrieved by query: ' + oldCount + ' tracks');
-		
+		const oldCount = outputHandleList.Count;	
 		// Limit n tracks
-		queryhandle_list.RemoveRange(playlistLength, queryhandle_list.Count);
-		
+		outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
 		if (bSendToPls) {
-			// Clear playlist if needed. Preferred to removing it, since then we could undo later...
-			// Look if target playlist already exists
-			i = 0;
-			let plc = plman.PlaylistCount;
-			while (i < plc) {
-				if (plman.GetPlaylistName(i) === playlistName) {
-					plman.ActivePlaylist = i;
-					break;
-				} else {
-					i++;
-				}
-			}
-			if (i === plc) { //if no playlist was found before
-				plman.CreatePlaylist(plc, playlistName);
-				plman.ActivePlaylist = plc;
-			}
-			if (plman.PlaylistItemCount(plman.ActivePlaylist)) {
-				plman.UndoBackup(plman.ActivePlaylist);
-				plman.ClearPlaylist(plman.ActivePlaylist);
-			}
-			// Create playlist
-			console.log('Final selection: ' +  queryhandle_list.Count  + ' tracks');
-			plman.InsertPlaylistItems(plman.ActivePlaylist, 0, queryhandle_list);
+			console.log('Items retrieved by query: ' + oldCount + ' tracks');
+			sendToPlaylist(outputHandleList, playlistName);
 		}
-		return queryhandle_list;
+		if (bProfile) {test.Print('Task #1: Search same tracks by tags', false);}
+		return outputHandleList;
 }
