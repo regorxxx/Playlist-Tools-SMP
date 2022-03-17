@@ -14,6 +14,7 @@
 	"buttons_playlist_tools_pool.js": "pools.txt",
 	"buttons_playlist_tools_submenu_custom.js": "playlist_tools_submenu_custom.txt",
 	"buttons_playlist_remove_duplicates.js": "remove_duplicates.txt",
+	"buttons_playlist_filter.js": "remove_duplicates.txt",
 	"buttons_search_bydistance.js": "search_bydistance.txt",
 	"buttons_search_bydistance_customizable.js": "search_bydistance.txt",
 	"buttons_search_bydistance_DYNGENRE.js": "search_bydistance_dyngenre.txt",
