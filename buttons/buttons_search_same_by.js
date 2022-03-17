@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//17/03/22
 
 /* 
 	Search same by v 1.0 28/01/20
@@ -66,17 +66,15 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\search_same_by.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
-var prefix = 'ssby_';
+var prefix = 'ssby';
  
  
 try {window.DefinePanel('Search Same By Button', {author:'xxx'});} catch (e) {console.log('Search Same By Button loaded.');} //May be loaded along other buttons
-prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	playlistLength: 	['Max Playlist Mix length', 50],
-	forcedQuery: 		['Forced query to filter database (added to any other internal query)', 
-				'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'
-				],
+	playlistLength:		['Max Playlist Mix length', 50],
+	forcedQuery:		['Forced query to filter database', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
 	checkDuplicatesBy:	['Tags to look for duplicates', 'title,artist,date'],
 	sameBy: 			['Tags to look for similarity', JSON.stringify({genre:1 , style: 2, mood: 5})],
 	playlistName:		['Playlist name','Search...'],
@@ -87,19 +85,25 @@ newButtonsProperties['checkDuplicatesBy'].push({func: isString}, newButtonsPrope
 newButtonsProperties['sameBy'].push({func: isString}, newButtonsProperties['sameBy'][1]);
 newButtonsProperties['playlistName'].push({func: isString}, newButtonsProperties['playlistName'][1]);
 
-setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
-buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	SearchSameBy: new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Search Same By...', function () {
-		let t0 = Date.now();
-		let t1 = 0;
-		let args = getProperties(this.buttonsProperties, this.prefix); //This gets all the panel properties at once
-		args.checkDuplicatesBy = args.checkDuplicatesBy.split(',');
-		args.playlistLength = Number(args.playlistLength);
-		args.sameBy = JSON.parse(args.sameBy)
-        do_search_same_by(args);
-		t1 = Date.now();
-		console.log('Call to do_search_same_by took ' + (t1 - t0) + ' milliseconds.');
-	}, null, void(0), 'Random playlist matching ' + getPropertiesValues(newButtonsProperties, prefix)[3] +  ' of the current selected track', prefix, newButtonsProperties, chars.link),
+	searchSameBy: new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Search Same By...', function (mask) {
+		if (mask === MK_SHIFT) {
+			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+		} else {
+			do_search_same_by({checkDuplicatesBy: this.buttonsProperties.checkDuplicatesBy[1].split(','), playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
+		}
+	}, null, void(0), (parent) => {
+		const bShift = utils.IsKeyPressed(VK_SHIFT);
+		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+		let info = 'Random playlist matching ' + parent.buttonsProperties.sameBy[1] +  '\nof the currently selected track';
+		if (bShift || bInfo) {
+			info += '\n-----------------------------------------------------';
+			info += '\n(Shift + L. Click to open config menu)';
+		}
+		return info;
+	}, prefix, newButtonsProperties, chars.link),
 });
