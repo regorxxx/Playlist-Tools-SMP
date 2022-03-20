@@ -41,6 +41,7 @@
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 - Dynamic Queries: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
+- Logging: Progress code in multiple tools have been fixed to display more accurately the percentage progress in the log.
 - Properties were not being properly renumbered on some cases when moving buttons.
 
 ## [3.0.0-beta.4] - 2022-03-06

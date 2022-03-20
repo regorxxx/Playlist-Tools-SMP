@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//20/03/22
 
 /* 
 	Automatic tagging...
@@ -150,6 +150,10 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	this.loadDependencies = () => {
 		if (this.toolsByKey.chromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
 		if (this.toolsByKey.LRA) {include('ffmpeg-utils.js');}
+	};
+	
+	this.isRunning = () => {
+		return 	this.selItems && this.countItems && this.iStep !== null;
 	};
 	
 	this.init = () => {

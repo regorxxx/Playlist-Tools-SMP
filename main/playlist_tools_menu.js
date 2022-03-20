@@ -1,5 +1,5 @@
 'use strict';
-//25/02/22
+//20/03/22
 
 /* 
 	Playlist Tools Menu
@@ -1307,6 +1307,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							{name: 'Not SACD or DVD', query: 'NOT %_path% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
+							{name: 'Same title than sel', query: 'TITLE IS #TITLE# AND DATE IS #DATE#'},
 							{name: 'Same song than sel', query: 'ARTIST IS #ARTIST# AND TITLE IS #TITLE# AND DATE IS #DATE#'},
 							{name: 'Same genre than sel', query: 'GENRE IS #GENRE#'},
 							{name: 'Same key than sel', query: 'KEY IS #KEY#'},
@@ -2844,15 +2845,19 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					const tAut = new tagAutomation();
 					menu_properties['toolsByKey'] = ['\'Other tools\\Write tags\' tools enabled', JSON.stringify(tAut.toolsByKey)];
 					const subMenuName = menu.newMenu(name, menuName);
-					const bFired = () => {return tAut.selItems && tAut.countItems && tAut.iStep;}
-					const firedFlags = () => {return bFired() ? MF_STRING : MF_GRAYED;}
-					const allFlags = () => {return (!bFired() ? selectedFlags() : MF_GRAYED);}
+					const firedFlags = () => {return tAut.isRunning() ? MF_STRING : MF_GRAYED;}
+					const allFlags = () => {return (!tAut.isRunning() ? selectedFlags() : MF_GRAYED);}
 					menu.newEntry({menuName: subMenuName, entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (bFired() ? ' (running)' : '');}, func: tAut.run, flags: allFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (tAut.isRunning() ? ' (running)' : '');}, func: () => {
+						tAut.run();
+						if (typeof buttonsBar !== 'undefined' && buttonsBar.buttons.hasOwnProperty('playlistTools')) { // Hardcoded animation...
+							buttonsBar.buttons.playlistTools.switchAnimation(true, () => {return !tAut.isRunning();});
+						}
+					}, flags: allFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (bFired() ? '' : ' (not running)');}, func: tAut.nextStepTag, flags: firedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (bFired() ? '' : ' (not running)');}, func: tAut.stopStepTag, flags: firedFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)');}, func: tAut.nextStepTag, flags: firedFlags});
+					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (tAut.isRunning() ? '' : ' (not running)');}, func: tAut.stopStepTag, flags: firedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					const subMenuTools = menu.newMenu('Available tools...', subMenuName);
 					tAut.tools.forEach((tool) => {
@@ -2868,10 +2873,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
 						menu.newEntry({menuName: subMenuTools, entryText: entryText, func: () => {
-							this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : true;});
-							this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
-							overwriteProperties(this.buttonsProperties); // Force overwriting
-							this.tAut.loadDependencies();
+							tAut.tools.forEach((tool) => {tAut.toolsByKey[tool.key] = i ? false : true;});
+							menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
+							overwriteMenuProperties(); // Updates panel
+							tAut.loadDependencies();
 						}});
 					});
 					// Refresh settings on startup
