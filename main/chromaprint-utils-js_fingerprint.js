@@ -1,5 +1,5 @@
 'use strict';
-//23/11/21
+//20/03/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -239,8 +239,8 @@ chromaPrintUtils.calculateFingerprints = function calculateFingerprints({
 						items.push(handle);
 						fp.push(data.fingerprint);
 					} else {failedItems.push(path);}
-					const progress = Math.round((i + 1) / iSteps * 100);
-					if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Fingerprinting ' + Math.round(progress) + '%.');}
+					const progress = Math.round((i + 1) / iSteps * 10) * 10;
+					if (progress > prevProgress) {prevProgress = progress; console.log('Fingerprinting ' + progress + '%.');}
 				} else {failedItems.push(path);}
 			});
 			_deleteFile(fpcalcJSON);
@@ -335,8 +335,8 @@ chromaPrintUtils.reverseIndexing = function reverseIndexing({
 				if (!reverseMap.has(truncate)) {reverseMap.set(truncate, new Set([idx + currOffset]));} // When a number appears multiple times, it's only counted once
 				else {reverseMap.set(truncate, reverseMap.get(truncate).add(idx + currOffset));}
 			});
-			const progress = Math.round((idx + 1) / iSteps * 100);
-			if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Creating fingerprint database ' + Math.round(progress) + '%.');}
+			const progress = Math.round((idx + 1) / iSteps * 10) * 10;
+			if (progress > prevProgress) {prevProgress = progress; console.log('Creating fingerprint database ' + progress + '%.');}
 		}
 	});
 	if (bProfile) {profile.Print('Create reverse indexed database for ' + iSteps + ' files - completed in ');}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/22
+//20/03/22
 
 /*
 	Check Library Tags
@@ -189,8 +189,8 @@ function checkTags({
 					setTimeout(() => {
 						const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
 						tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
-						const progress = Math.round(i / iSteps * 100);
-						if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Retrieving tags ' + Math.round(progress) + '%.');}
+						const progress = Math.round(i / iSteps * 10) * 10;
+						if (progress > prevProgress) {prevProgress = progress; console.log('Retrieving tags ' + progress + '%.');}
 						resolve();
 					}, delay * i);
 				}));
@@ -241,7 +241,7 @@ function checkTags({
 								setTimeout(() => {
 									checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
 									const progress = Math.round(i * indexA / (total * totalA) * 10) * 10;
-									if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('Checking tags ' + Math.round(progress) + '%.');}
+									if (progress > prevProgress) {prevProgress = progress; console.log('Checking tags ' + progress + '%.');}
 									resolve();
 								}, delay * i);
 							}));

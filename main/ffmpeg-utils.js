@@ -1,5 +1,5 @@
 'use strict';
-//04/03/22
+//20/03/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -41,8 +41,8 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 						items.push(handle);
 						LRA.push(data.input_lra);
 					} else {failedItems.push(path);}
-					const progress = Math.round((i + 1) / iSteps * 100);
-					if (progress % 10 === 0 && progress > prevProgress) {prevProgress = progress; console.log('EBUR 128 scanning ' + Math.round(progress) + '%.');}
+					const progress = Math.round((i + 1) / iSteps * 10) * 10;
+					if (progress > prevProgress) {prevProgress = progress; console.log('EBUR 128 scanning ' + progress + '%.');}
 				} else {failedItems.push(path);}
 			});
 			_deleteFile(ffmpegJSON);
