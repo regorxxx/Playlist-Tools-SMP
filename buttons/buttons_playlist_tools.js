@@ -43,7 +43,7 @@ setProperties(newButtonsProperties, prefix, 0); // This sets all the panel prope
 }
 
 addButton({
-	menuButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
+	playlistTools: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names

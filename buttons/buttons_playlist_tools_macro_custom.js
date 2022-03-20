@@ -22,7 +22,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And 
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	menuButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, newButtonsProperties.customName[1], function (mask) {
+	macroCustom: new themedButton({x: 0, y: 0, w: 98, h: 22}, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			if (mask === MK_SHIFT) {
 				const configMenu = new _menu();

@@ -14,7 +14,7 @@ include('..\\helpers\\playlist_history.js');
 buttonsBar.list.push({});
 
 addButton({
-	menuButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Prev. Playlist', function (mask) {
+	playlistHistory: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
 			createHistoryMenu().btn_up(this.currX, this.currY + this.currH);
 		} else {
