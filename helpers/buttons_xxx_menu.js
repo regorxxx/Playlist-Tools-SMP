@@ -1,5 +1,5 @@
 'use strict';
-//16/03/22
+//22/03/22
 
 include('menu_xxx.js');
 include('helpers_xxx_properties.js')
@@ -7,7 +7,7 @@ include('helpers_xxx_properties.js')
 function settingsMenu(parent, bShowValues = false) {
 	const menu = new _menu();
 	const properties = parent.buttonsProperties;
-	const parentName = _isFunction(parent.text) ? parent.text(parent) : parent.text;
+	const parentName = isFunction(parent.text) ? parent.text(parent) : parent.text;
 	// Menu
 	menu.newEntry({entryText: 'Configurate button:', func: null, flags: MF_GRAYED});
 	menu.newEntry({entryText: 'sep'});

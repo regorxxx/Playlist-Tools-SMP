@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//22/03/22
 
 /* 
 	Playlist History
@@ -80,7 +80,7 @@ addButton({
 						} else {
 							const menuName = entryObj.menuName === currentMenu ? mainMenu.menuName : entryObj.menuName;
 							buttonMenu.newEntry({entryText: entryObj.entryText, menuName, func: () => {
-								menu.btn_up(void(0), void(0), void(0), entryObj.menuName + '\\' + (_isFunction(entryObj.entryText) ? entryObj.entryText() : entryObj.entryText)); // Don't clear menu on last call
+								menu.btn_up(void(0), void(0), void(0), entryObj.menuName + '\\' + (isFunction(entryObj.entryText) ? entryObj.entryText() : entryObj.entryText)); // Don't clear menu on last call
 							}, flags: entryObj.flags});
 						}
 					});
