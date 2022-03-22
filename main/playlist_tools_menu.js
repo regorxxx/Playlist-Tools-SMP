@@ -1,5 +1,5 @@
 'use strict';
-//20/03/22
+//22/03/22
 
 /* 
 	Playlist Tools Menu
@@ -48,7 +48,7 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
 	keyTag:						['Key tag remap', 'key'], // It may be overwritten by Search by distance property too, are equivalent!
 	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])],
-	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Pools': true, 'Search by distance': true, 'Remove duplicates': true, 'Import track list': true})],
+	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Write tags': true, 'Pools': false, 'Search by distance': false, 'Remove duplicates': false, 'Import track list': false})],
 	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})]
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
@@ -86,7 +86,8 @@ const defaultArgs = {
 					bDebug: menu_panelProperties['bDebug'][1],
 					bProfile: menu_panelProperties['bProfile'][1],
 					keyTag: menu_properties['keyTag'][1],
-					styleGenreTag: JSON.parse(menu_properties['styleGenreTag'][1])
+					styleGenreTag: JSON.parse(menu_properties['styleGenreTag'][1]),
+					parent: null
 };
 var readmes = {'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
 loadProperties();
@@ -2626,7 +2627,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const selItems = plman.GetPlaylistSelectedItems(ap);
 							const plsItems = plman.GetPlaylistItems(ap);
 							const selIdx = new Set();
-							(_isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
+							(isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
 								const tags = fb.TitleFormat(tf).EvalWithMetadbs(plsItems);
 								const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
 								selTags.forEach((selTag) => {
@@ -2687,7 +2688,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const count = plman.PlaylistItemCount(ap);
 								let selIdx = -1;
 								let bDone = false;
-								(_isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
+								(isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
 									if (bDone) {return;}
 									if (tf.indexOf('$') === -1 && tf.indexOf('%') === -1) {tf = '%' + tf + '%';} // Add % to tag names if missing
 									const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
@@ -2754,10 +2755,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: () => {
-						checkTags({properties: menu_properties, bUseDic: false, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
+						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+						const endPromise = checkTags({properties: menu_properties, bUseDic: false, bAsync});
+						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: () => {
-						checkTags({properties: menu_properties, bUseDic: true, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
+						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+						const endPromise = checkTags({properties: menu_properties, bUseDic: true, bAsync});
+						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
 						const subMenuSecondName = menu.newMenu('Check only...', subMenuName);
@@ -2766,9 +2771,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
 							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: () => {
-								const properties = clone(menu_properties)
+								const properties = clone(menu_properties);
 								properties['tagNamesToCheck'][1] = obj.tag;
-								checkTags({properties, bUseDic: obj.bUseDic, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
+								const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+								const endPromise = checkTags({properties, bUseDic: obj.bUseDic, bAsync});
+								if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 							}, flags: multipleSelectedFlags});
 						});
 					}
@@ -2776,11 +2783,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: () => {
-						checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
+						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+						const endPromise = checkTags({properties: menu_properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: false, bAsync});
+						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: () => {
-						checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
-						
+						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+						const endPromise = checkTags({properties: menu_properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true, bAsync});
+						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
 					{	// Submenu
 						const subMenuSecondName = menu.newMenu('Report all from...', subMenuName);
@@ -2789,8 +2799,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
 							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: () => {
+								const properties = clone(menu_properties);
 								properties['tagNamesToCheck'][1] = obj.tag;
-								checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic, bAsync: JSON.parse(menu_properties.async[1])['Check tags']});
+								const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+								const endPromise = checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic, bAsync});
+								if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 							}, flags: multipleSelectedFlags});
 						});
 					}
@@ -2851,9 +2864,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (tAut.isRunning() ? ' (running)' : '');}, func: () => {
 						tAut.run();
-						if (typeof buttonsBar !== 'undefined' && buttonsBar.buttons.hasOwnProperty('playlistTools')) { // Hardcoded animation...
-							buttonsBar.buttons.playlistTools.switchAnimation(true, () => {return !tAut.isRunning();});
-						}
+						if (defaultArgs.parent) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, () => {return !tAut.isRunning();});} // Apply animation on registered parent button...
 					}, flags: allFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)');}, func: tAut.nextStepTag, flags: firedFlags});
@@ -3728,13 +3739,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const mainMenu = menu.getMainMenuName();
 						// Skip menus (!entryText)
 						// Separators are not globally filtered to be able to redraw -at least partially- the tree
-						// const listExport = menu.getEntries().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName') && !_isFunction(_.entryText);}).map((_) => {return {name: (_.menuName !==  mainMenu ? _.menuName + '\\' + _.entryText : _.entryText)};});
+						// const listExport = menu.getEntries().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName') && !isFunction(_.entryText);}).map((_) => {return {name: (_.menuName !==  mainMenu ? _.menuName + '\\' + _.entryText : _.entryText)};});
 						const tree = {};
 						let menuList = [];
 						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Global Shortcuts','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Playlist manipulation', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to..', 'Don\'t try to find tracks if selecting more than...', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From year...', 'From last...']);
 						const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists'];
 						menu.getEntriesAll(null, {pos: -1, args: false} /*Skip cond entries which must run only on init*/).filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
-							const entryText = _isFunction(_.entryText) ? _.entryText() : _.entryText;
+							const entryText = isFunction(_.entryText) ? _.entryText() : _.entryText;
 							const menuName = _.menuName;
 							// Skip
 							if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
@@ -4262,7 +4273,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newCondEntry({entryText: 'async', condFunc: () => {
 					const async = JSON.parse(menu_properties.async[1]);
 					const options = Object.keys(async);
-					const notAvailable = ['Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
+					const notAvailable = ['Write tags', 'Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
 					options.forEach((key) => {
 						const bNotAvailable = notAvailable.indexOf(key) !== -1;
 						menu.newEntry({menuName: subMenuName, entryText: key + (bNotAvailable ? '\t not available' : ''), func: () => {
@@ -4274,7 +4285,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu_properties.async[1] = JSON.stringify(async);
 							overwriteMenuProperties(); // Updates panel
 						}, flags: bNotAvailable ? MF_GRAYED : MF_STRING});
-						menu.newCheckMenu(subMenuName, key, void(0), () => {return !bNotAvailable && async[key];});
+						menu.newCheckMenu(subMenuName, key, void(0), () => {return async[key];});
 					});
 				}});
 			}
@@ -4569,7 +4580,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	}
 	// Other funcs by menus
 	menuFunc.forEach((obj) => {
-		if (obj.hasOwnProperty('func') && _isFunction(obj.func)) {
+		if (obj.hasOwnProperty('func') && isFunction(obj.func)) {
 			obj.func(propObject);
 		}
 	});
@@ -4665,16 +4676,16 @@ menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
 			if (!shortcut.hasOwnProperty('keys')) {return;}
 			const idx = entryList.findIndex((entry) => {
 				if (entry.entryText) {
-					if (_isFunction(entry.entryText)) {
+					if (isFunction(entry.entryText)) {
 						if (entry.entryText().indexOf(shortcut.keys) !== -1) {return false;}
-						if (_isFunction(entry.menuName)) {
+						if (isFunction(entry.menuName)) {
 							return (entry.menuName() + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
 						} else {
 							return (entry.menuName + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
 						}
 					} else {
 						if (entry.entryText.indexOf(shortcut.keys) !== -1) {return false;}
-						if (_isFunction(entry.menuName)) {
+						if (isFunction(entry.menuName)) {
 							return (entry.menuName() + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
 						} else {
 							return (entry.menuName + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
@@ -4683,7 +4694,7 @@ menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
 				}
 			});
 			if (idx !== -1) {
-				if (_isFunction(entryList[idx].entryText)) {
+				if (isFunction(entryList[idx].entryText)) {
 					const copyFunc = entryList[idx].entryText;
 					entryList[idx].entryText = () => {return copyFunc() + '\t' + shortcut.keys;}
 				} else {
@@ -4705,7 +4716,7 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => {
 		const toSkipMenuMatch = new Set(['Configuration']);
 		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((_) => {return _.toLowerCase();}));
 		menu.getEntries().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
-			const entryText = _isFunction(_.entryText) ? _.entryText() : _.entryText;
+			const entryText = isFunction(_.entryText) ? _.entryText() : _.entryText;
 			const menuName = _.menuName;
 			const flag = _.flags;
 			// Skip

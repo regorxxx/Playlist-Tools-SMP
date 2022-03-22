@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/03/22
+//22/03/22
 
 /*
 	Check Library Tags
@@ -174,9 +174,10 @@ function checkTags({
 			checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
 			if (bProfile) {profiler.Print();}
 		}, 500);
+		return true;
 	} else {
 	// Get all tags and their frequency
-		new Promise(resolve => {
+		return new Promise(resolve => {
 			const promises = [];
 			const items = selItems.Convert();
 			const count = items.length;
@@ -240,7 +241,7 @@ function checkTags({
 							promises.push(new Promise(resolve => {
 								setTimeout(() => {
 									checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
-									const progress = Math.round(i * indexA / (total * totalA) * 10) * 10;
+									const progress = Math.round(((totalA ? i : 1) * (total ? indexA : 1)) / ((total || 1) * (totalA || 1)) * 10) * 10;
 									if (progress > prevProgress) {prevProgress = progress; console.log('Checking tags ' + progress + '%.');}
 									resolve();
 								}, delay * i);
@@ -257,6 +258,7 @@ function checkTags({
 				checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
 				if (bProfile) {profiler.Print();}
 			}, 500);
+			return true;
 		});
 	}
 }

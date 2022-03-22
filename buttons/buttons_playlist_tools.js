@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//21/02/22
 
 /* 
 	Playlist Tools Menu
@@ -44,6 +44,7 @@ setProperties(newButtonsProperties, prefix, 0); // This sets all the panel prope
 
 addButton({
 	playlistTools: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
+		if (!defaultArgs.parent) {defaultArgs.parent = this;} // Register this button as parent
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names

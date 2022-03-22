@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//22/03/22
 
 /* 
 	Automatic tagging...
@@ -43,7 +43,7 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({entryText: 'sep'});
 				menu.newEntry({entryText: () => {return 'Add tags on batch to selected tracks' + (this.tAut.isRunning() ? ' (running)' : '');}, func: () => {
 					this.tAut.run();
-					this.switchAnimation(true, () => {return !this.tAut.isRunning();});
+					this.switchAnimation('Automate Tags' ,true, () => {return !this.tAut.isRunning();});
 				}, flags: allFlags});
 				menu.newEntry({entryText: 'sep'});
 				menu.newEntry({entryText: () => {return 'Manually force next step' + (this.tAut.isRunning() ? '' : ' (not running)');}, func: this.tAut.nextStepTag, flags: firedFlags});
