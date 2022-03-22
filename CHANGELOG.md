@@ -30,6 +30,8 @@
 ### Changed
 - Top rated tracks from...: minor menu changes. Added also previous year to current one.
 - Other tools\Write Tags: available tools can now be selectively enabled/disabled. 'tags_automation' button uses now its own config and multiple copies can be put on the bar (with different tools enabled).
+- Other tools\Write Tags: button is now animated while using the tool on background. Also applies to the independent tool button ('buttons_tags_automation.js').
+- Other tools\Check Tags: button is now animated while using the tool on background (on Async mode).
 - Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
 - Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.
 - HTML: Changed CSS layout to adjust sizes according to window.
@@ -41,6 +43,7 @@
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 - Dynamic Queries: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
+- Other tools\Check Tags: fixed multiple crashes on menu calling.
 - Logging: Progress code in multiple tools have been fixed to display more accurately the percentage progress in the log.
 - Properties were not being properly renumbered on some cases when moving buttons.
 
