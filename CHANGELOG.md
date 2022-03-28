@@ -43,6 +43,7 @@
 - Write tags: menu is now disabled when there is no selection.
 - Search similar by...: Crash when using double pass on harmonic mixing.
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
+- Helpers: fixed query checking not working due to upper/lower case mixing in some cases, should now be pretty robust with RegEx.
 - Dynamic Queries: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other tools\Check Tags: fixed multiple crashes on menu calling.
