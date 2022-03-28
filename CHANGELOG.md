@@ -46,6 +46,8 @@
 - Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other tools\Check Tags: fixed multiple crashes on menu calling.
 - Logging: Progress code in multiple tools have been fixed to display more accurately the percentage progress in the log.
+- Logging: non needed warning about 'name' variable not being recognized on recipes.
+- Recipes: 'name' was not being excluded when trying to save a recipe from current properties.
 - Properties were not being properly renumbered on some cases when moving buttons.
 
 ## [3.0.0-beta.4] - 2022-03-06
