@@ -35,6 +35,7 @@
 - Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
 - Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.
 - HTML: Changed CSS layout to adjust sizes according to window.
+- Presets: Minor improvements on UI presets.
 ### Removed
 ### Fixed
 - Dynamic Queries: menu is now disabled when there is no selection.
