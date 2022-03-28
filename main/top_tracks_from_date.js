@@ -45,8 +45,8 @@ function do_top_tracks_from_date({
 	// Load query
 	const query = bUseLast ? '%last_played% DURING LAST ' + last.toUpperCase() : '%last_played% AFTER ' + year + '-01-01 AND NOT %first_played% AFTER ' + (year + 1) + '-01-01';
 	let outputHandleList;
-	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? '(' + query + ') AND (' + forcedQuery + ')' : query));} // Sanity check
-	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? '(' + query + ') AND (' + forcedQuery + ')' : query), 'do_top_tracks_from_date'); return;}
+	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query));} // Sanity check
+	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'do_top_tracks_from_date'); return;}
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null) {
 		outputHandleList = do_remove_duplicates(outputHandleList, sortBy, checkDuplicatesBy);

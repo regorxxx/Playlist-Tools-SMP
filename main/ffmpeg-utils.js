@@ -4,6 +4,7 @@
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_file.js');
+include('..\\helpers\\helpers_xxx_prototypes.js');
 
 const ffmpeg = {};
 
