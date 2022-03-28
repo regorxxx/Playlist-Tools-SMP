@@ -1,5 +1,5 @@
 'use strict';
-//04/02/22
+//25/03/22
 
 /*
 	Playlist Revive
@@ -26,8 +26,7 @@ function playlistRevive({
 					playlist = plman.ActivePlaylist,
 					selItems = plman.GetPlaylistSelectedItems(playlist),
 					simThreshold = 1, // 1 only allows exact matches, lower allows some tag differences, but at least the main tag must be the same!
-					simThresholdPathA =  0.9 * 1.11111111 * simThreshold,
-					simThresholdPathB =  0.5 * 1.111 * simThreshold,
+					bFindAlternative = false,
 					bSimulate = false,
 					bReportAllMatches = false,
 					} = {}) {
@@ -50,8 +49,8 @@ function playlistRevive({
 	// Filter library with items with same tags
 	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
 	// The other tags are considered crc checks -> Exact Match: any crc tag is matched. Otherwise, continue checking the other tags (See above).
-	const tagsToCheck = ['title', 'audiomd5', 'md5', '%directoryname%', '%filename%'];
-	const tags = getTagsValuesV4(items, tagsToCheck.map((_) => {return _.replace(/%/g, '');}), void(0), void(0), null);
+	const tagsToCheck = ['title', 'audiomd5', 'md5', '%directoryname%', '%filename%', (bFindAlternative || simThreshold < 1) ? '"$directory(%path%,2)"' : null].filter(Boolean);
+	const tags = getTagsValuesV4(items, tagsToCheck.map((_) => {return _.replace(/^%|%$/g, '');}), void(0), void(0), null);
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
 	tagsToCheck.forEach( (tagName, index) => {
@@ -98,6 +97,15 @@ function playlistRevive({
 					if (score >= simThreshold) {
 						alternativesSet.add(indexLibr);
 						alternativesObj.push({idx: indexLibr, simil: score, bExact: false});
+					} else if (bFindAlternative) {
+						const trackNum = file.match(/[0-9]+[ ]*-[ ]*/);
+						const trackNumLibr = fileLibr.match(/[0-9]+[ ]*-[ ]*/);
+						const fileName = file.replace(trackNum, '');
+						const fileNameLibr = fileLibr.replace(trackNumLibr, '');
+						if (fileName === fileNameLibr) {
+							alternativesSet.add(indexLibr);
+							alternativesObj.push({idx: indexLibr, simil: score, bExact: false});
+						}
 					}
 				}
 			});

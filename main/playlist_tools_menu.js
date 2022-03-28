@@ -2932,11 +2932,18 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1]})
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Find alternative items on selection (' + entryTextFunc() * 100 + '% simil.)'}, func:() => {
+							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true})
+						}, flags: focusFlags});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText:'Simulate on selection (see console)', func: () => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1, bSimulate: true})
 						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Simulate on selection (' + entryTextFunc() * 100 + '% simil.) (see console)'}, func: () => {
+						menu.newEntry({menuName: subMenuName, entryText: () => {return 'Simulate on selection (' + entryTextFunc() * 100 + '% simil.) (see console)'}, func: () => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bSimulate: true})
+						}, flags: focusFlags});
+						menu.newEntry({menuName: subMenuName, entryText: 'Simulate on selection (find alternative) (see console)', func:() => {
+							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true, bSimulate: true})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: () => {

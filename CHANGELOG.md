@@ -29,6 +29,7 @@
 - HTML: Added favicon.
 ### Changed
 - Top rated tracks from...: minor menu changes. Added also previous year to current one.
+- Other tools\Playlist Revive: improved items identification further using path similarity. Also added additional checks for dead items without tags and a new menu entry to find alternative tracks (with same filename) from different paths; usually used for dead items on plain-text playlists.
 - Other tools\Write Tags: available tools can now be selectively enabled/disabled. 'tags_automation' button uses now its own config and multiple copies can be put on the bar (with different tools enabled).
 - Other tools\Write Tags: button is now animated while using the tool on background. Also applies to the independent tool button ('buttons_tags_automation.js').
 - Other tools\Check Tags: button is now animated while using the tool on background (on Async mode).
