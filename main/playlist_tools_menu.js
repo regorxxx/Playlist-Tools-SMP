@@ -1308,7 +1308,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							{name: 'Not SACD or DVD', query: 'NOT %_path% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
-							{name: 'Same title than sel', query: 'TITLE IS #TITLE# AND DATE IS #DATE#'},
+							{name: 'Same title than sel', query: 'TITLE IS #TITLE#'},
 							{name: 'Same song than sel', query: 'ARTIST IS #ARTIST# AND TITLE IS #TITLE# AND DATE IS #DATE#'},
 							{name: 'Same genre than sel', query: 'GENRE IS #GENRE#'},
 							{name: 'Same key than sel', query: 'KEY IS #KEY#'},
