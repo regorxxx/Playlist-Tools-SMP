@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/10/21
+//03/04/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -196,13 +196,18 @@ function getQueryMatches(tags, queryFilters) {
 					if (!tfoKeyVal.length) {console.log('Error creating query: ' + tfo);}
 					const tfoQuery = tfoKey + ' IS ' + tfoKeyVal;
 					let extraQuery = [];
+					extraQuery.push('"$stricmp($ascii(%' + key + '%),$ascii(' + handleTags[key] + '))" IS 1');
 					if ((key === 'artist' || key === 'album artist') && !handleTags[key].startsWith('the')) {
 						extraQuery.push(key + ' IS the ' + handleTags[key]); // Done to match multivalued tags with 'the' on any item
+						extraQuery.push('"$stricmp($ascii(%' + key + '%),$ascii(the ' + handleTags[key] + '))" IS 1');
 					} else if (key === 'title') {
 						if (handleTags[key].indexOf(',') !== -1) {
-							extraQuery.push(key + ' IS ' + handleTags[key].replace(/,/g,''));
+							const val = handleTags[key].replace(/,/g,'');
+							extraQuery.push(key + ' IS ' + val);
+							extraQuery.push('"$stricmp($ascii(%' + key + '%),$ascii(' + val + '))" IS 1');
 						}
 						extraQuery.push('"$replace(%' + key + '%,\',\',)" IS ' + handleTags[key]);
+						extraQuery.push('"$stricmp($ascii($replace(%' + key + '%,\',\',)),$ascii(' + handleTags[key] + '))" IS 1');
 					}
 					if (extraQuery.length) {extraQuery = query_join(extraQuery, 'OR');}
 					return query + ' OR ' + tfoQuery + (extraQuery.length ? ' OR ' + extraQuery : '');
