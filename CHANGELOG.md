@@ -33,6 +33,9 @@
 - Other tools\Write Tags: available tools can now be selectively enabled/disabled. 'tags_automation' button uses now its own config and multiple copies can be put on the bar (with different tools enabled).
 - Other tools\Write Tags: button is now animated while using the tool on background. Also applies to the independent tool button ('buttons_tags_automation.js').
 - Other tools\Check Tags: button is now animated while using the tool on background (on Async mode).
+- Import track list: improved title and artist detection consider also ASCII equivalences For ex. 'Lo que sobra de mí' will match values with and without accents.
+- Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist). Also considers ASCII equivalences.
+- Dynamic Queries: presets which involved usage of %title% tag have been reworked to also consider ASCII equivalences.
 - Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
 - Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.
 - HTML: Changed CSS layout to adjust sizes according to window.

@@ -1,5 +1,5 @@
 'use strict';
-//22/03/22
+//03/04/22
 
 /* 
 	Playlist Tools Menu
@@ -752,11 +752,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			const menuName = menu.newMenu(name);
 			{	// Dynamic menu
 				let queryFilter = [
-					{name: 'Same title (any artist)'	, query: 'TITLE IS #TITLE#'},
-					{name: 'Same songs (by artist)'		, query: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST#'},
-					{name: 'Duplicates on library'		, query: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST# AND DATE IS #$year(%date%)#'},
+					{name: 'Same title (any artist)'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1'},
+					{name: 'Same songs (by artist)'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST#'},
+					{name: 'Duplicates on library'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND DATE IS #$year(%date%)#'},
 					{name: 'Same date (any track)'		, query: 'DATE IS #$year(%date%)#'},
-					{name: 'Live versions of same song'	, query: 'TITLE IS #TITLE# AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
+					{name: 'Live versions of same song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
 				];
 				const queryFilterDefaults = [...queryFilter];
 				let selArg = {query: queryFilter[0].query};
@@ -1308,8 +1308,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							{name: 'Not SACD or DVD', query: 'NOT %_path% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
-							{name: 'Same title than sel', query: 'TITLE IS #TITLE#'},
-							{name: 'Same song than sel', query: 'ARTIST IS #ARTIST# AND TITLE IS #TITLE# AND DATE IS #DATE#'},
+							{name: 'Same title than sel', query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1'},
+							{name: 'Same song than sel', query: 'ARTIST IS #ARTIST# AND "$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND DATE IS #DATE#'},
 							{name: 'Same genre than sel', query: 'GENRE IS #GENRE#'},
 							{name: 'Same key than sel', query: 'KEY IS #KEY#'},
 							{name: 'sep'},
