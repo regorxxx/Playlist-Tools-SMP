@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//04/04/22
 
 /* 
 	Search same style
@@ -16,6 +16,7 @@ include('..\\helpers\\helpers_xxx_math.js');
 include('remove_duplicates.js');
  
 function do_search_same_style({
+								sel = fb.GetFocusItem(),
 								playlistLength = 50, 
 								styleTag = 'style',
 								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (' + styleTag.toUpperCase() + ' IS Live AND NOT ' + styleTag.toUpperCase() + ' IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
@@ -23,13 +24,13 @@ function do_search_same_style({
 								checkDuplicatesBy = ['title', 'artist', 'date'],
 								bSendToPls = true,
 								playlistName = 'Search...',
-								bProfile = false
+								bProfile = false,
+								bAscii = true // Sanitize all tag values with ACII equivalent chars
 							}= {}) {
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_search_same_style: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
 	if (bProfile) {var test = new FbProfiler('do_search_same_style');}
-	let sel = fb.GetFocusItem();
 	if (!sel) {
 		console.log('No track selected for mix.');
 		return;
@@ -49,6 +50,7 @@ function do_search_same_style({
 		style[i] = sel_info.MetaValue(styleIdx,i);
 		i++;
 	}
+	if (bAscii) {style = style.map((val) => {return _asciify(val);});}
 	let query = '';
 	query += query_combinations(style, styleTag, 'AND');
 	if (forcedQuery) {

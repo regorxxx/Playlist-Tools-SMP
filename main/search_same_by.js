@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/03/22
+//04/04/22
 
 /* 
 	Search same by
@@ -69,12 +69,14 @@
  */
 
 var bLoadTags = true; // This tells the helper to load tags descriptors extra files
+include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\helpers\\helpers_xxx_playlists.js');
 include('..\\helpers\\helpers_xxx_math.js');
 include('remove_duplicates.js');
 
 function do_search_same_by({
+								sel = fb.GetFocusItem(),
 								playlistLength = 50, 
 								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
 								sortBy = '', 
@@ -83,6 +85,7 @@ function do_search_same_by({
 								playlistName = 'Search...',
 								logic = 'AND',
 								remapTags = {},
+								bAscii = true, // Sanitize all tag values with ACII equivalent chars
 								bOnlyRemap = false,
 								bSendToPls = true,
 								bProfile = false
@@ -99,43 +102,41 @@ function do_search_same_by({
 			Object keys must match the tag names at cyclicTags... 
 		*/
 		//  - end Tags logic -- 
-		if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_search_same_by: playlistLength (' + playlistLength + ') must be greater than zero'); return false;}
+		if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_search_same_by: playlistLength (' + playlistLength + ') must be greater than zero'); return null;}
 		let tags = Object.keys(sameBy);
 		let k_tagsCombs = Object.values(sameBy);
 		if (!isArrayStrings(tags)) {
 			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some keys are not String objects');
-			return false;
+			return null;
 		}
 		if (!isArrayNumbers(k_tagsCombs)) {
 			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some values are not Number objects');
-			return false;
+			return null;
 		}
 		if (!isArrayStrings(checkDuplicatesBy)) {
 			console.log('do_search_same_by: sameBy [' + checkDuplicatesBy + '] some keys are not String objects');
-			return false;
+			return null;
 		}
 		if (tags.length !== k_tagsCombs.length) {
 			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some keys (tags) are missing values');
-			return false;
+			return null;
 		}
 		for (let i = 0; i < k_tagsCombs.length; i++) {
 			if (isFloat(k_tagsCombs[i]) && Math.abs(k_tagsCombs[i]) > 1) {
 				console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some values are float numbers but not in (0,1) range');
-				return false;
+				return null;
 			}
 		}
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
-		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return false;}
+		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return null;}
 		if (logicDic.indexOf(logic) === -1) {
 			console.log('do_search_same_by(): logic (' + logic + ') is wrong');
-			return false;
+			return null;
 		}
 		if (bProfile) {var test = new FbProfiler('do_search_same_by');}
-		
-		let sel = fb.GetFocusItem();
         if (!sel) {
 			console.log('No track selected for mix.');
-            return false;
+            return null;
 		}
 		
 		let query = [];
@@ -145,7 +146,9 @@ function do_search_same_by({
 		let i = 0;
 		while (i < nTags) { // Check all tags
 			const tagName = tags[i].toLowerCase(); // To match sets!
-			const tagNameTF = (tagName.indexOf('$') === -1) ? '%' + tagName + '%' : tagName; // It's a function? Then at eval as is, and at queries use '"' + tagNameTF + '"'
+			const bIsFunc = tagName.indexOf('$') !== -1;
+			const tagNameTF = bIsFunc ? tagName : _t(tagName); // It's a function? Then at eval as is, and at queries use '"' + tagNameTF + '"'
+			const queryTagNameTF = bIsFunc ? _q(tagNameTF) : tagName;
 			const tagIdx = sel_info.MetaFind(tags[i]);
 			const tagNumber = (tagIdx !== -1) ? sel_info.MetaValueCount(tagIdx) : 0;
 			if (tagNumber === 0 && !dynamicTags.has(tagName)) {
@@ -153,14 +156,14 @@ function do_search_same_by({
 			} else { // For selected tag
 				if (numericTags.has(tagName)) { // may be a numeric tag
 					const tagValue = dynamicTags.has(tagName) ? Number(fb.TitleFormat(tagNameTF).EvalWithMetadb(sel)) : Number(sel_info.MetaValue(tagIdx, 0));
-					const valueRange = k_tagsCombs[i] > 0 ? Math.abs(k_tagsCombs[i]) : 0; //instead of k comb number, is a range!
+					const valueRange = k_tagsCombs[i] > 0 ? Math.abs(k_tagsCombs[i]) : 0; // Instead of k comb number, is a range!
 					const valueUpper = tagValue + valueRange;
 					const valueLower = valueRange > tagValue ? 0 : tagValue - valueRange; // Safety check
 					ql = query.length;
 					query[ql] = '';
-					if (valueUpper !== valueLower) {query[ql] += (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' GREATER ' + valueLower + ' AND ' + (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' LESS ' + valueUpper;} 
-					else {query[ql] += (dynamicTags.has(tagName) ? '"' + tagNameTF + '"' : tagName) + ' EQUAL ' + tagValue;}
-				} else if (cyclicTags.has(tagName)) { // a ciclic numeric tag
+					if (valueUpper !== valueLower) {query[ql] += queryTagNameTF + ' GREATER ' + valueLower + ' AND ' + queryTagNameTF + ' LESS ' + valueUpper;} 
+					else {query[ql] += queryTagNameTF + ' EQUAL ' + tagValue;}
+				} else if (cyclicTags.has(tagName)) { // A cyclic numeric tag
 					const tagValue = Number(sel_info.MetaValue(tagIdx, 0));
 					const valueRange = k_tagsCombs[i] > 0 ? Math.abs(k_tagsCombs[i]) : 0; //instead of k comb number, is a range!
 					const [valueLower, valueUpper, lowerLimit, upperLimit] = cyclicTagsDescriptor[tagName](tagValue, valueRange, true);
@@ -183,7 +186,7 @@ function do_search_same_by({
 					ql = query.length;
 					let j = 0;
 					while (j < tagNumber) {
-						tagValues[j] = sel_info.MetaValue(tagIdx,j);
+						tagValues[j] = sel_info.MetaValue(tagIdx, j);
 						j++;
 					}
 					let k;
@@ -210,7 +213,8 @@ function do_search_same_by({
 							}
 						}
 					} else {k = tagNumber;} // Or 0 -> match all # of tags
-					let tagQuery= k_combinations(tagValues, k);
+					if (bAscii) {tagValues = tagValues.map((val) => {return _asciify(val);});}
+					let tagQuery = k_combinations(tagValues, k);
 					query[ql] = '';
 					if (Object.keys(remapTags).length > 0 && remapTags.hasOwnProperty(tagName)) {
 						let subQuery = [];
@@ -229,7 +233,7 @@ function do_search_same_by({
 		
         // Query
 		ql = query.length;
-		if (!ql) {return false;}
+		if (!ql) {return null;}
 		query[ql] = query_join(query, logic); //join previous query's
 		if (forcedQuery) {
 			query[ql] = '(' + query[ql] + ') AND (' + forcedQuery + ')';
@@ -239,7 +243,7 @@ function do_search_same_by({
 		console.log('Playlist created: ' + query[ql]);
 		let outputHandleList;
 		try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query[ql]);} // Sanity check
-		catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query[ql]); return false;}
+		catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query[ql]); return null;}
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null) {

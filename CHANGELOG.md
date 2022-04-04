@@ -34,8 +34,10 @@
 - Other tools\Write Tags: button is now animated while using the tool on background. Also applies to the independent tool button ('buttons_tags_automation.js').
 - Other tools\Check Tags: button is now animated while using the tool on background (on Async mode).
 - Import track list: improved title and artist detection consider also ASCII equivalences For ex. 'Lo que sobra de mí' will match values with and without accents.
-- Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist). Also considers ASCII equivalences.
-- Dynamic Queries: presets which involved usage of %title% tag have been reworked to also consider ASCII equivalences.
+- Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist).
+- Dynamic Queries: [old and new] presets which involved usage of %title% tag have been reworked to also consider ASCII equivalences.
+- Search same by tags: comparison of tags values which involve strings now also consider ASCII equivalences.
+- Buttons: 'buttons_search_same_by', 'search_same_style', 'search_same_style_moods' have also implemented ASCII equivalences (see previous entry).equivalences.
 - Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
 - Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.
 - HTML: Changed CSS layout to adjust sizes according to window.

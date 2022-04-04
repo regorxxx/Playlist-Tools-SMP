@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//04/04/22
 
 /* 
 	Search same style and moods
@@ -15,6 +15,7 @@ include('..\\helpers\\helpers_xxx_math.js');
 include('remove_duplicates.js');
  
 function do_search_same_style_moods({
+										sel = fb.GetFocusItem(),
 										playlistLength = 50,
 										styleTag = 'style',
 										moodTag = 'mood',
@@ -23,13 +24,13 @@ function do_search_same_style_moods({
 										checkDuplicatesBy = ['title', 'artist', 'date'],
 										bSendToPls = true,
 										playlistName = 'Search...',
-										bProfile = false
+										bProfile = false,
+										bAscii = true // Sanitize all tag values with ACII equivalent chars
 									} = {}) {
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_search_same_style_moods: playlistLength (' + playlistLength + ') must be greater than zero'); return;}							
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
 	if (bProfile) {var test = new FbProfiler('do_search_same_style_moods');}
-	let sel = fb.GetFocusItem();
 	if (!sel) {
 		console.log('No track selected for mix.');
 		return;
@@ -51,6 +52,7 @@ function do_search_same_style_moods({
 		style[i] = sel_info.MetaValue(styleIdx,i);
 		i++;
 	}
+	if (bAscii) {style = style.map((val) => {return _asciify(val);});}
 	let k = styleNumber >= 2 ? 2 : 1; //on combinations of 2
 	style = k_combinations(style, k); 
 	query[ql] = '';
@@ -71,6 +73,7 @@ function do_search_same_style_moods({
 		mood[i] = sel_info.MetaValue(moodIdx,i);
 		i++;
 	}
+	if (bAscii) {mood = mood.map((val) => {return _asciify(val);});}
 	k = moodNumber >= 6 ? 6 : moodNumber; //on combinations of 6
 	mood = k_combinations(mood, k);
 	query[ql] = '';
