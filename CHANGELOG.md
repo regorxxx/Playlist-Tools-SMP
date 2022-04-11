@@ -27,6 +27,9 @@
 - HTML: Selecting a node and pressing shift while hovering another node shows the distance (+ influences) between them.
 - HTML: Selecting a node and pressing shift while hovering another node highlights the shortest path between them.
 - HTML: Added favicon.
+- Search similar by...: added multiple letter case checks at debug.
+- Search similar by...: added accent checks (instead of single quotes) at debug.
+- Search similar by...: added ASCII compatibility checks at debug.
 ### Changed
 - Top rated tracks from...: minor menu changes. Added also previous year to current one.
 - Other tools\Playlist Revive: improved items identification further using path similarity. Also added additional checks for dead items without tags and a new menu entry to find alternative tracks (with same filename) from different paths; usually used for dead items on plain-text playlists.
@@ -37,6 +40,7 @@
 - Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist).
 - Dynamic Queries: [old and new] presets which involved usage of %title% tag have been reworked to also consider ASCII equivalences.
 - Search same by tags: comparison of tags values which involve strings now also consider ASCII equivalences.
+- Search similar by.: Greatly optimized console logging when sending selected tacks to console. It now outputs the entire list at once (instead of one entry per track). This reduces processing time by +2 secs for +50 tracks (the standard playlist size)... so total processing time has been reduced in most cases by half just with the logging optimization.
 - Buttons: 'buttons_search_same_by', 'search_same_style', 'search_same_style_moods' have also implemented ASCII equivalences (see previous entry).equivalences.
 - Buttons: Playlist Tools buttons now are shown in their own sub-folder at the button bar 'Add buttons' menu.
 - Buttons: reworked 'playlist_remove_duplicates', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' button code. Old properties may be lost on update.
@@ -48,6 +52,10 @@
 - Dynamic Queries: menu is now disabled when there is no selection.
 - Write tags: menu is now disabled when there is no selection.
 - Search similar by...: Crash when using double pass on harmonic mixing.
+- Search similar by...:: fixed multiple letter case errors.
+- Search similar by...:: fixed accent usage instead of single quote.
+- Helpers: rewritten sorting analysis to account for quotes not being needed at sorting for functions.
+- Helpers: rewritten query analysis to fix some problems with extra spaces, quotes, etc.
 - Helpers: avoid file reading crashing in any case (even if it's locked by another process).
 - Helpers: fixed query checking not working due to upper/lower case mixing in some cases, should now be pretty robust with RegEx.
 - Helpers: fixed UI slowdowns when required font is not found (due to excessive console logging). Now a warning popup is shown and logging is only done once per session.
