@@ -1,5 +1,5 @@
 'use strict';
-//20/03/22
+//19/04/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -217,7 +217,7 @@ chromaPrintUtils.calculateFingerprints = function calculateFingerprints({
 	if (!_isFile(fpcalcPath)) {fb.ShowPopupMessage('fpcalc executable not found:\n' + fpcalcPath, 'Fingerprint Tag');}
 	const profile = bProfile ? new FbProfiler('Chromaprint fingerprint') : null;
 	const handleListArr = fromHandleList.Convert();
-	const totalTracks = handleListArr.length, numTracks = 500, maxCount = Math.ceil(totalTracks / numTracks);
+	const totalTracks = handleListArr.length, numTracks = 100, maxCount = Math.ceil(totalTracks / numTracks);
 	let totalItems = 0;
 	let bDone = true;
 	let failedItems = [];
