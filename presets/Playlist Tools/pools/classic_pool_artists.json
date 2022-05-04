@@ -1,0 +1,25 @@
+{
+	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF (artist), along group size (2).",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Classic Pools (2 tracks per artist)",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 50
+			},
+			"group": {
+				"_GROUP_0": "ARTIST"
+			},
+			"limit": {
+				"_GROUP_0": 2
+			},
+			"query": {
+				"_GROUP_0": ""
+			},
+			"toPls": "Classic Pools (artist)",
+			"sort": ""
+		}
+	}]
+}

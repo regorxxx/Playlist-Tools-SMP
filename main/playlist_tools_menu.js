@@ -1,5 +1,5 @@
 'use strict';
-//03/04/22
+//04/05/22
 
 /* 
 	Playlist Tools Menu
@@ -3104,6 +3104,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					toPls: 'Top tracks mix', 
 					sort: '%playlist_index%',
 					}},
+				{name: 'sep'},
 				{name: 'Current genre/style and top tracks', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
 					query: {_LIBRARY_0: 'GENRE IS #GENRE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_1: 'STYLE IS #STYLE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_2: '%rating% EQUAL 5'}, 
@@ -3116,6 +3117,47 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %rating% EQUAL 5)', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and instrumentals', 
+					sort: '',
+					}},
+				{name: 'Classic Pools (50 artists current genre)', pool: {
+					fromPls: {_GROUP_0: 50},
+					group: {_GROUP_0: 'ARTIST'},
+					limit: {_GROUP_0: 3},
+					query: {_GROUP_0: 'GENRE IS #GENRE#'}, 
+					toPls: 'Classic Pools (50 artists current genre)', 
+					sort: '',
+					}},
+				{name: 'sep'},
+				{name: 'Classic Pools (50 artists)', pool: {
+					fromPls: {_GROUP_0: 50},
+					group: {_GROUP_0: 'ARTIST'},
+					limit: {_GROUP_0: 3},
+					query: {_GROUP_0: ''}, 
+					toPls: 'Classic Pools (50 artists)', 
+					sort: '',
+					}},
+				{name: 'Classic Pools (all dates)', pool: {
+					fromPls: {_GROUP_0: Infinity}, 
+					group: {_GROUP_0: 'DATE'},
+					limit: {_GROUP_0: 2},
+					query: {_GROUP_0: ''}, 
+					toPls: 'Classic Pools (all dates)', 
+					sort: '%DATE%',
+					}},
+				{name: 'Classic Pools (3 tracks per artist letter)', pool: {
+					fromPls: {_GROUP_0: Infinity}, 
+					group: {_GROUP_0: '$left($ascii(%ARTIST%),1)'},
+					limit: {_GROUP_0: 3},
+					query: {_GROUP_0: ''}, 
+					toPls: 'Classic Pools (3 tracks per letter)', 
+					sort: '',
+					}},
+				{name: 'Classic Pools (3 tracks per genre)', pool: {
+					fromPls: {_GROUP_0: Infinity}, 
+					group: {_GROUP_0: 'GENRE'},
+					limit: {_GROUP_0: 3},
+					query: {_GROUP_0: ''}, 
+					toPls: 'Classic Pools (3 tracks per genre)', 
 					sort: '',
 					}},
 			];
@@ -3151,6 +3193,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				},
 			};
 			const do_pool = (pool, properties) => {
+				if (bProfile) {var profiler = new FbProfiler('do_pool');}
 				let handleListTo = new FbMetadbHandleList();
 				let bAbort = false;
 				Object.keys(pool.fromPls).forEach((plsName, n) => {
@@ -3161,6 +3204,37 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						case plsName.startsWith('_LIBRARY_'): { // Library Source
 							handleListFrom = fb.GetLibraryItems();
 							console.log('Playlist tools Pools: source -> Library');
+							break;
+						}
+						case plsName.startsWith('_GROUP_'): { // Library Source grouping by TF
+							console.log('Playlist tools Pools: source -> TF Group');
+							// Pre-Filter with query
+							handleListFrom = fb.GetLibraryItems();
+							const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
+							if (query.length && query.toUpperCase() !== 'ALL') {
+								const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
+								if (checkQuery(processedQuery, true)) {
+									console.log('Playlist tools Pools: filter -> ' + processedQuery);
+									handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
+								} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
+							}
+							// Retrieve all possible groups
+							const group = typeof pool.group !== 'undefined' ? pool.group[plsName] : '';
+							const tagSet = [...new Set(getTagsValuesV4(handleListFrom, [group]).flat(Infinity))].filter(Boolean).shuffle();
+							// Retrieve n random groups
+							const num = Math.min(pool.fromPls[plsName] || Infinity, tagSet.length) - 1;
+							const limit = typeof pool.limit !== 'undefined' ? pool.limit[plsName] : Infinity;
+							const handleListsGroups = [];
+							for (let i = 0; i <= num; i++) {
+								const groupTF = group.indexOf('$') !== -1 ? _q(group) : group;
+								const query = groupTF + ' IS ' + _q(sanitizeTagTfo(tagSet[i]));
+								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
+								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
+							}
+							// Join all tracks
+							handleListFrom = new FbMetadbHandleList();
+							handleListsGroups.forEach((handleList) => {handleListFrom.AddRange(handleList);});
+							console.log('Playlist tools Pools: group -> ' + limit + ' tracks per ' + (group.length ? group : 'entire library'));
 							break;
 						}
 						case plsName.startsWith('_SEARCHBYGRAPH_'): { // Search by GRAPH
@@ -3315,26 +3389,31 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					}
 					if (!handleListFrom || !handleListFrom.Count) {return;}
-					// Filter
-					const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
-					if (query.length && query.toUpperCase() !== 'ALL') {
-						const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
-						if (checkQuery(processedQuery, true)) {
-							console.log('Playlist tools Pools: filter -> ' + processedQuery);
-							handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
-						} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
+					// Only apply to non-classic pool
+					if (!plsName.startsWith('_GROUP_')) {
+						// Filter
+						const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
+						if (query.length && query.toUpperCase() !== 'ALL') {
+							const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
+							if (checkQuery(processedQuery, true)) {
+								console.log('Playlist tools Pools: filter -> ' + processedQuery);
+								handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
+							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
+						}
+						// Remove duplicates
+						handleListFrom = do_remove_duplicates(handleListFrom);
 					}
-					// Remove duplicates
-					handleListFrom = do_remove_duplicates(handleListFrom);
 					// Remove tracks on destination list
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});
 					// Pick
 					const num = pool.fromPls[plsName] || Infinity;
-					const count = handleListFrom.Count;
-					if (count !== 1) {
-						handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
-					}
-					console.log('Playlist tools Pools: pool size -> ' + handleListFrom.Count + ' (' + count +') tracks');
+					if (!plsName.startsWith('_GROUP_')) {
+						const count = handleListFrom.Count;
+						if (count !== 1) {
+							handleListFrom = pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
+						}
+						console.log('Playlist tools Pools: pool size -> ' + handleListFrom.Count + ' (' + count +') tracks');
+					} else {console.log('Playlist tools Pools: pool size -> ' + handleListFrom.Count + ' tracks from ' + num + ' groups');}
 					// Insert
 					if (pool.hasOwnProperty('insertMethod')) {
 						insertMethods[pool.insertMethod](handleListFrom, handleListTo, n)
@@ -3350,6 +3429,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					plman.SortByFormat(idxTo, pool.sort);
 				}
 				plman.ActivePlaylist = idxTo;
+				if (bProfile) {profiler.Print();}
 			}
 			const inputPool = () => {
 				// Sources
@@ -3414,7 +3494,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				return {fromPls, query, toPls, sort, pickMethod};
 			}
 			// Menus
-			menu.newEntry({menuName, entryText: 'Use playlist(s) as pool(s) for final playlist:', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName, entryText: 'Use Playlists / Queries as pools:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			// Static menus
 			staticPools.forEach( (poolObj) => {

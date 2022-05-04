@@ -1,0 +1,25 @@
+{
+	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF ($ascii(%ARTIST%) - %DATE%), along group size (2).",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Classic Pools (artists + date)",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 50
+			},
+			"group": {
+				"_GROUP_0": "$ascii(%ARTIST%) - %DATE%"
+			},
+			"limit": {
+				"_GROUP_0": 2
+			},
+			"query": {
+				"_GROUP_0": ""
+			},
+			"toPls": "Classic Pools (artists + date)",
+			"sort": ""
+		}
+	}]
+}

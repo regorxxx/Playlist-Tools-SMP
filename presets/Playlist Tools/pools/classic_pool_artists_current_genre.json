@@ -1,0 +1,25 @@
+{
+	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF (artist), along group size (2) which should also match the genre of the currently selected track.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Classic Pools (50 artists current genre)",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 50
+			},
+			"group": {
+				"_GROUP_0": "ARTIST"
+			},
+			"limit": {
+				"_GROUP_0": 2
+			},
+			"query": {
+				"_GROUP_0": "GENRE IS #GENRE#"
+			},
+			"toPls": "Classic Pools (50 artists current genre)",
+			"sort": ""
+		}
+	}]
+}

@@ -19,6 +19,7 @@
 
 ## [Unreleased][]
 ### Added
+- Pools: added new classic pools presets using a new source method based on TF grouping (like foo_random_pools). Restore defaults to load them. It can also be used along (dynamic) query filtering (which was one of the main reasons to create this as an alternative to the plugin), for ex: a pool with 2 tracks by 50 different artists which also match the genre of the currently selected track. See also 'presets\Playlist Tools\pools\classic_pool_*.json' for more examples.
 ### Changed
 - Other tools\Write Tags: EBU tagging is now done per groups of 25 tracks (previously 100) and chromaprint tagging for 100 tracks (previously 500). Rationale: in case something goes wrong, it would be easier to re-tag missing files and less time would have been lost.
 ### Removed
@@ -49,7 +50,7 @@
 - Other tools\Write Tags: button is now animated while using the tool on background. Also applies to the independent tool button ('buttons_tags_automation.js').
 - Other tools\Check Tags: button is now animated while using the tool on background (on Async mode).
 - Import track list: improved title and artist detection consider also ASCII equivalences For ex. 'Lo que sobra de mí' will match values with and without accents.
-- Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist).
+- Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist). Restore defaults to load it.
 - Dynamic Queries: [old and new] presets which involved usage of %title% tag have been reworked to also consider ASCII equivalences.
 - Search same by tags: comparison of tags values which involve strings now also consider ASCII equivalences.
 - Search similar by.: Greatly optimized console logging when sending selected tacks to console. It now outputs the entire list at once (instead of one entry per track). This reduces processing time by +2 secs for +50 tracks (the standard playlist size)... so total processing time has been reduced in most cases by half just with the logging optimization.
