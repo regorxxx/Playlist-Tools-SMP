@@ -2,7 +2,8 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0-beta.5](#300-beta5---2021-01-13)
+- [3.0.0-beta.6](#300-beta6---2021-05-04)
+- [3.0.0-beta.5](#300-beta5---2021-04-13)
 - [3.0.0-beta.4](#300-beta4---2021-03-06)
 - [3.0.0-beta.3](#300-beta3---2021-03-02)
 - [3.0.0-beta.2](#300-beta2---2021-01-17)
@@ -19,6 +20,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.6] - 2022-05-04
+### Added
 - Pools: added new classic pools presets using a new source method based on TF grouping (like foo_random_pools). Restore defaults to load them. It can also be used along (dynamic) query filtering (which was one of the main reasons to create this as an alternative to the plugin), for ex: a pool with 2 tracks by 50 different artists which also match the genre of the currently selected track. See also 'presets\Playlist Tools\pools\classic_pool_*.json' for more examples.
 ### Changed
 - Other tools\Write Tags: EBU tagging is now done per groups of 25 tracks (previously 100) and chromaprint tagging for 100 tracks (previously 500). Rationale: in case something goes wrong, it would be easier to re-tag missing files and less time would have been lost.
@@ -29,7 +36,7 @@
 - Import track list: fixed queries with tag values containing ], now are correctly escaped.
 - Search similar by...: crash in some cases when pool of selected tracks was empty.
 
-## [3.0.0-beta.4] - 2022-03-06
+## [3.0.0-beta.5] - 2022-04-13
 ### Added
 - Buttons: split 'playlist_remove_duplicates' buttons on two; new one is named 'playlist_filter'. Now it should be easier to add multiple copies of those buttons without having to use both at the same time.
 - Buttons: 'playlist_remove_duplicates', 'playlist_filter', 'search_same_by', 'search_same_style', 'search_same_style_moods', 'search_top_tracks' and 'search_top_tracks_from_date' now have a configuration menu which can be called using Shift + L. Click to set button variables (previously only available at the properties panel).
@@ -445,8 +452,9 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.5...HEAD
-[3.0.0-beta.4]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.4...v3.0.0-beta.5
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.6...HEAD
+[3.0.0-beta.6]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.5...v3.0.0-beta.6
+[3.0.0-beta.5]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.4...v3.0.0-beta.5
 [3.0.0-beta.4]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.3...v3.0.0-beta.4
 [3.0.0-beta.3]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.2...v3.0.0-beta.3
 [3.0.0-beta.2]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.1...v3.0.0-beta.2
