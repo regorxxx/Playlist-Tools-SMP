@@ -1,5 +1,5 @@
 'use strict';
-//13/10/21
+//04/05/22
 
 /*	
 	Sort by Dyngenre
@@ -62,7 +62,7 @@ function do_sort_by_dyngenre({
 	// Better to identify each track and assign a value to it.
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)
 	dyngenre.forEach ( (val, index) => {
-		tfo += '$if($stricmp(' + idTfo + ',\'' + ids[index] + '\'),' + (sortOrder * dyngenre[index]) + ',';
+		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g,'\',\'') + '),' + (sortOrder * dyngenre[index]) + ',';
 	});
 	dyngenre.forEach ( () => {tfo += ')';}); // Add closures!
 	if (bDebug) {console.log(tfo);}
