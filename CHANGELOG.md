@@ -28,7 +28,7 @@
 ### Added
 - Pools: added new classic pools presets using a new source method based on TF grouping (like foo_random_pools). Restore defaults to load them. It can also be used along (dynamic) query filtering (which was one of the main reasons to create this as an alternative to the plugin), for ex: a pool with 2 tracks by 50 different artists which also match the genre of the currently selected track. See also 'presets\Playlist Tools\pools\classic_pool_*.json' for more examples.
 ### Changed
-- Other tools\Write Tags: EBU tagging is now done per groups of 25 tracks (previously 100) and chromaprint tagging for 100 tracks (previously 500). Rationale: in case something goes wrong, it would be easier to re-tag missing files and less time would have been lost.
+- Other tools\Write Tags: EBU tagging is now done per groups of 25 tracks (previously 100) and ChromaPrint tagging for 100 tracks (previously 500). Rationale: in case something goes wrong, it would be easier to re-tag missing files and less time would have been lost.
 ### Removed
 ### Fixed
 - Advanced sort...\Incremental genre/styles (DynGenre): tracks containing special chars (%, $, [, ], or ') on the path or title were not being correctly parsed.
