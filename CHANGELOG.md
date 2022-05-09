@@ -21,8 +21,11 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Tags Automation: ISO and cue files are now skipped for tagging when using tools which require an external executable since subsongs can not be piped. i.e. ChromaPrint Fingerprinting, MD5, AUDIOMD5 and EBUR 128 Scanner.
+- Helpers: Updated helpers.
 ### Removed
 ### Fixed
+- Profiler: configuration was not being applied until script was reloaded.
 
 ## [3.0.0-beta.6] - 2022-05-04
 ### Added
