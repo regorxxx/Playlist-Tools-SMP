@@ -91,7 +91,6 @@ const defaultArgs = {
 };
 var readmes = {'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
 loadProperties();
-const bProfile = getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['bProfile'][1];
 // Menu
 const specialMenu = 'Special Playlists...';
 const configMenu = 'Configuration';
@@ -1077,16 +1076,16 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}});
 							// Graph debug
 							menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
-								if (bProfile) {var profiler = new FbProfiler('graphDebug');}
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('graphDebug');}
 								graphDebug(all_music_graph, true); // Show popup on pass
-								if (bProfile) {profiler.Print();}
+								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							// Graph test
 							menu.newEntry({menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
-								if (bProfile) {var profiler = new FbProfiler('testGraph');}
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('testGraph');}
 								testGraph(all_music_graph);
 								testGraphV2(all_music_graph);
-								if (bProfile) {profiler.Print();}
+								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							// Graph cache reset Async
 							menu.newEntry({menuName: submenu, entryText: 'Reset link cache', func: () => {
@@ -1477,9 +1476,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								args.selItems = args.selItems();
 								args.playlistLength = args.selItems.Count; // Max allowed
 								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
-								if (bProfile) {var profiler = new FbProfiler('do_harmonic_mixing');}
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('do_harmonic_mixing');}
 								do_harmonic_mixing(args);
-								if (bProfile) {profiler.Print();}
+								if (defaultArgs.bProfile) {profiler.Print();}
 							}, flags: selArg.flags ? selArg.flags : undefined});
 						}
 					});
@@ -1585,7 +1584,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName, entryText: 'sep'});
 				// Build submenus
 				menu.newCondEntry({entryText: 'Merge/Intersect/Difference to Playlists...', condFunc: () => {
-					if (bProfile) {var profiler = new FbProfiler('Merge/Intersect/Difference to Playlists...');}
+					if (defaultArgs.bProfile) {var profiler = new FbProfiler('Merge/Intersect/Difference to Playlists...');}
 					const ap = plman.ActivePlaylist;
 					const bPlaylist = ap !== -1;
 					const playlistsNum = plman.PlaylistCount;
@@ -1731,7 +1730,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (bInter) {menu.newEntry({menuName: subMenuNameInter, entryText: !bAddRemLock ? 'No items.' : 'Playlist is locked for adding\\removing items.', func: null, flags: MF_GRAYED});}
 						if (bDiff) {menu.newEntry({menuName: subMenuNameDiff, entryText: !bAddRemLock ? 'No items.' : 'Playlist is locked for adding\\removing items.', func: null, flags: MF_GRAYED});}
 					}
-					if (bProfile) {profiler.Print();}
+					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {
 				menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
@@ -1771,7 +1770,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}
 				// Build submenus
 				menu.newCondEntry({entryText: 'Send/Go/Close to Playlists...', condFunc: () => {
-					if (bProfile) {var profiler = new FbProfiler('Send/Go/Close to Playlists...');}
+					if (defaultArgs.bProfile) {var profiler = new FbProfiler('Send/Go/Close to Playlists...');}
 					const playlistsNum = plman.PlaylistCount;
 					const ap = plman.ActivePlaylist;
 					if (playlistsNum && ap !== -1) {
@@ -1847,7 +1846,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (bGo) {menu.newEntry({menuName: subMenuNameGo, entryText: 'No items.', func: null, flags: MF_GRAYED});}
 						if (bClose) {menu.newEntry({menuName: subMenuNameClose, entryText: 'No items.', func: null, flags: MF_GRAYED});}
 					}
-					if (bProfile) {profiler.Print();}
+					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {
 				menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
@@ -2109,7 +2108,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (!menusEnabled.hasOwnProperty(nameNowFind) || menusEnabled[nameNowFind] === true) {
 							const subMenuName = menu.newMenu(nameNowFind, menuName);
 							menu.newCondEntry({entryText: 'Find now playing track in... (cond)', condFunc: () => {
-								if (bProfile) {var profiler = new FbProfiler('Find now playing in');}
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('Find now playing in');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with now playing track:', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 								const nowPlay = fb.GetNowPlaying();
@@ -2146,7 +2145,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								} else {
 									menu.newEntry({menuName: subMenuName, entryText: 'Not found.', func: null, flags: MF_GRAYED});
 								}
-								if (bProfile) {profiler.Print();}
+								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 						} else {menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 					}
@@ -2154,7 +2153,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
 							const subMenuName = menu.newMenu(nameFind, menuName);
 							menu.newCondEntry({entryText: 'Find track(s) in... (cond)', condFunc: () => {
-								if (bProfile) {var profiler = new FbProfiler('Find in Playlists');}
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('Find in Playlists');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Set focus on playlist with same track(s):', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 								const ap = plman.ActivePlaylist;
@@ -2191,7 +2190,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								} else {
 									menu.newEntry({menuName: subMenuName, entryText: 'Not found.', func: null, flags: MF_GRAYED});
 								}
-								if (bProfile) {profiler.Print();}
+								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 						} else {menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 					}
@@ -2199,7 +2198,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
 							const subMenuName = menu.newMenu(nameRemove, menuName);
 							menu.newCondEntry({entryText: 'Remove track(s) from... (cond)', condFunc: () => {
-								if (bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('Remove from Playlists');}
 								menu.newEntry({menuName: subMenuName, entryText: 'Remove track(s) from selected playlist:', func: null, flags: MF_GRAYED});
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 								const ap = plman.ActivePlaylist;
@@ -2238,7 +2237,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								} else {
 									menu.newEntry({menuName: subMenuName, entryText: 'Not found.', func: null, flags: MF_GRAYED});
 								}
-								if (bProfile) {profiler.Print();}
+								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 						} else {menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 					}
@@ -2369,7 +2368,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuNameSend, entryText: 'sep'});
 				// Build submenus
 				menu.newCondEntry({entryText: 'Send selection to...', condFunc: () => {
-					if (bProfile) {var profiler = new FbProfiler('Send selection to...');}
+					if (defaultArgs.bProfile) {var profiler = new FbProfiler('Send selection to...');}
 					const playlistsNum = plman.PlaylistCount;
 					const playlistsNumNotLocked = playlistCountNoLocked();
 					const ap = plman.ActivePlaylist;
@@ -2412,7 +2411,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					} else {
 						menu.newEntry({menuName: subMenuNameSend, entryText: 'No items.', func: null, flags: MF_GRAYED});
 					}
-					if (bProfile) {profiler.Print();}
+					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
@@ -3193,7 +3192,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				},
 			};
 			const do_pool = (pool, properties) => {
-				if (bProfile) {var profiler = new FbProfiler('do_pool');}
+				if (defaultArgs.bProfile) {var profiler = new FbProfiler('do_pool');}
 				let handleListTo = new FbMetadbHandleList();
 				let bAbort = false;
 				Object.keys(pool.fromPls).forEach((plsName, n) => {
@@ -3429,7 +3428,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					plman.SortByFormat(idxTo, pool.sort);
 				}
 				plman.ActivePlaylist = idxTo;
-				if (bProfile) {profiler.Print();}
+				if (defaultArgs.bProfile) {profiler.Print();}
 			}
 			const inputPool = () => {
 				// Sources
