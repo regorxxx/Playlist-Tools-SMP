@@ -50,7 +50,7 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 	
 	for (let i = 0; i < buttonsPath.length; i++) {
 		if (_isFile(buttonsPath[i])) {
-ss			include(buttonsPath[i], {always_evaluate: true});
+			include(buttonsPath[i], {always_evaluate: true});
 		} else {
 			console.log(buttonsPath[i] +' not loaded');
 		}
