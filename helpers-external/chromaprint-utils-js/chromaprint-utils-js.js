@@ -41,7 +41,7 @@ const chromaPrintUtils = {
 	getMaxCorr: function getMaxCorr(corr, source, target, span, step) {
 		const maxCorrIdx = this.maxIndex(corr);
 		// First index is offset = 0, then it goes from -Span to + Span
-		const maxCorrOffset = (maxCorrIdx === 0 ? 0 : - span + maxCorrIdx * (maxCorrIdx >= span + step ? step + 1 : step - 1));
+		// const maxCorrOffset = (maxCorrIdx === 0 ? 0 : - span + maxCorrIdx * (maxCorrIdx >= span + step ? step + 1 : step - 1));
 		// const maxCorrOffset = -span + maxCorrIdx * step;
 		// console.log("maxCorrIdx = ", maxCorrIdx, "maxCorrOffset = ", maxCorrOffset);
 		// Report matches
