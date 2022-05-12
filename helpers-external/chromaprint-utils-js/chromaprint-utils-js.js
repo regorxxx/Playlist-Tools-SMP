@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 //23/11/21
 
 // TODO: optimize offset correlation checking if previously calculated correlations follow a trend

@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 //23/11/21
 
 // Requires struct to be loaded
