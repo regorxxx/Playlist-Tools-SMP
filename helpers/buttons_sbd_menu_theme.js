@@ -16,13 +16,15 @@ function createThemeMenu(parent) {
 	const utf8 = convertCharsetToCodepage('UTF-8');
 	// Recipe forced theme?
 	let forcedTheme = null;
+	let forcedThemePath = '';
 	if (properties.recipe[1].length) {
 		const recipe = _isFile(properties.recipe[1]) ? _jsonParseFileCheck(properties.recipe[1], 'Recipe json', 'Search by distance', utf8) : _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + properties.recipe[1], 'Recipe json', 'Search by distance', utf8);
 		if (recipe && recipe.hasOwnProperty('theme')) {
-			let bDone = false;
-			if (_isFile(recipe.theme)) {forcedTheme = _jsonParseFileCheck(recipe.theme, 'Theme json', 'Search by distance', utf8);}
-			else if (_isFile(folders.xxx + 'presets\\Search by\\themes\\' + recipe.theme)) {forcedTheme = _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\themes\\' + recipe.theme, 'Theme json', 'Search by distance', utf8);}
-			else {console.log('Theme file not found:' + recipe.theme);}
+			if (_isFile(recipe.theme)) {forcedTheme = _jsonParseFileCheck(recipe.theme, 'Theme json', 'Search by distance', utf8); forcedThemePath = recipe.theme;}
+			else if (_isFile(folders.xxx + 'presets\\Search by\\themes\\' + recipe.theme)) {
+				forcedThemePath = folders.xxx + 'presets\\Search by\\themes\\' + recipe.theme;
+				forcedTheme = _jsonParseFileCheck(forcedThemePath, 'Theme json', 'Search by distance', utf8);
+			} else {console.log('Forced theme json file (by recipe) not found: ' + recipe.theme); fb.ShowPopupMessage('Forced theme json file (by recipe) not found:\n' + recipe.theme, 'Search by distance');}
 		}
 	}
 	// Header
@@ -108,19 +110,21 @@ function createThemeMenu(parent) {
 	options.forEach((file) => {
 		const theme = _jsonParseFileCheck(file, 'Theme json', 'Search by distance', utf8);
 		if (!theme) {return;}
-		const name = forcedTheme ? forcedTheme.name + ' (forced by recipe)' : theme.name; // Recipe may overwrite theme
+		const bIsForcedTheme = forcedTheme && forcedThemePath === file;
+		const name = theme.name + (bIsForcedTheme ? ' (forced by recipe)' : ''); // Recipe may overwrite theme
 		let i = 1;
-		const entryText = menus.indexOf(theme.name) === -1 ? theme.name : theme.name + ' (' + ++i + ')';
+		const duplIdx = menus.indexOf(theme.name);
+		const entryText = name + (duplIdx === -1 ? '' : ' (' + ++i + ')');
 		menus.push(entryText);
 		themeMenu.newEntry({entryText, func: () => {
 			properties.theme[1] = file;
 			data.theme = theme.name;
 			properties.data[1] = JSON.stringify(data);
 			overwriteProperties(properties);
-		}});
+		}, flags: !forcedTheme ? MF_STRING : MF_GRAYED});
 	});
 	themeMenu.newCheckMenu(themeMenu.getMainMenuName(), 'None', menus[menus.length - 1], () => {
-		const idx = options.indexOf(properties.theme[1]);
+		const idx = options.indexOf(forcedTheme ? forcedThemePath : properties.theme[1]);
 		return idx !== -1 ? idx + 1 : 0;
 	});
 	return themeMenu;
