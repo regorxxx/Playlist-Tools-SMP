@@ -15,11 +15,13 @@ function createThemeMenu(parent) {
 	const data = JSON.parse(properties.data[1]);
 	const utf8 = convertCharsetToCodepage('UTF-8');
 	// Recipe forced theme?
+	let bHasForcedTheme = false;
 	let forcedTheme = null;
 	let forcedThemePath = '';
 	if (properties.recipe[1].length) {
 		const recipe = _isFile(properties.recipe[1]) ? _jsonParseFileCheck(properties.recipe[1], 'Recipe json', 'Search by distance', utf8) : _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + properties.recipe[1], 'Recipe json', 'Search by distance', utf8);
-		if (recipe && recipe.hasOwnProperty('theme')) {
+		bHasForcedTheme = recipe && recipe.hasOwnProperty('theme');
+		if (bHasForcedTheme) {
 			if (_isFile(recipe.theme)) {forcedTheme = _jsonParseFileCheck(recipe.theme, 'Theme json', 'Search by distance', utf8); forcedThemePath = recipe.theme;}
 			else if (_isFile(folders.xxx + 'presets\\Search by\\themes\\' + recipe.theme)) {
 				forcedThemePath = folders.xxx + 'presets\\Search by\\themes\\' + recipe.theme;
@@ -84,7 +86,7 @@ function createThemeMenu(parent) {
 		data.theme = 'None';
 		properties.data[1] = JSON.stringify(data);
 		overwriteProperties(properties);
-	}});
+	}, flags: !bHasForcedTheme ? MF_STRING : MF_GRAYED});
 	themeMenu.newEntry({entryText: 'sep'});
 	// All entries
 	const tagsToCheck = ['genre', 'style', 'mood', 'key', 'date', 'bpm', 'composer', 'customStr', 'customNum'];
@@ -121,7 +123,7 @@ function createThemeMenu(parent) {
 			data.theme = theme.name;
 			properties.data[1] = JSON.stringify(data);
 			overwriteProperties(properties);
-		}, flags: !forcedTheme ? MF_STRING : MF_GRAYED});
+		}, flags: !bHasForcedTheme ? MF_STRING : MF_GRAYED});
 	});
 	themeMenu.newCheckMenu(themeMenu.getMainMenuName(), 'None', menus[menus.length - 1], () => {
 		const idx = options.indexOf(forcedTheme ? forcedThemePath : properties.theme[1]);
