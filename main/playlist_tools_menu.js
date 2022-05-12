@@ -3818,24 +3818,22 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					const plsListener = 'pt:listener';
 					// Helpers
 					function exportMenus(path) {
-						const listExport = clone(mainMenuSMP).filter(Boolean).map((_) => {return {name: _.name, funcName: _.funcName, icon: _.hasOwnProperty('icon') ? _.icon : ''};});
+						const listExport = clone(mainMenuSMP).filter(Boolean).map((entry) => {return {name: entry.name, funcName: entry.funcName, icon: entry.hasOwnProperty('icon') ? entry.icon : ''};});
 						return _save(path + 'smpmenus.json', JSON.stringify(listExport, null, '\t'));
 					}
 					var exportEntries = function exportEntries(path) {
 						const mainMenu = menu.getMainMenuName();
-						// Skip menus (!entryText)
 						// Separators are not globally filtered to be able to redraw -at least partially- the tree
-						// const listExport = menu.getEntries().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName') && !isFunction(_.entryText);}).map((_) => {return {name: (_.menuName !==  mainMenu ? _.menuName + '\\' + _.entryText : _.entryText)};});
 						const tree = {};
 						let menuList = [];
 						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Global Shortcuts','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Playlist manipulation', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to..', 'Don\'t try to find tracks if selecting more than...', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From year...', 'From last...']);
 						const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists'];
-						menu.getEntriesAll(null, {pos: -1, args: false} /*Skip cond entries which must run only on init*/).filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
-							const entryText = isFunction(_.entryText) ? _.entryText() : _.entryText;
-							const menuName = _.menuName;
+						menu.getEntriesAll(null, {pos: -1, args: false} /*Skip cond entries which must run only on init*/).filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
+							const entryText = isFunction(entry.entryText) ? entry.entryText() : entry.entryText;
+							const menuName = entry.menuName;
 							// Skip
 							if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
-							if (toSkipStarts.some((_) => {return entryText.startsWith(_);}) || toSkipStarts.some((_) => {return menuName.startsWith(_);})) {return;}
+							if (toSkipStarts.some((title) => {return entryText.startsWith(title);}) || toSkipStarts.some((title) => {return menuName.startsWith(title);})) {return;}
 							// Save
 							if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
 							tree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText)});
@@ -3873,7 +3871,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 						const localFile = folders.data + 'toexecute.json';
 						const pls = getPlaylistIndexArray(plsListener);
-						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) !== 0 ? plman.GetPlaylistItems(pls[0]).Convert().map((_) => {return {name: _.Path.split('_').pop()};}) : null;
+						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) !== 0 ? plman.GetPlaylistItems(pls[0]).Convert().map((handle) => {return {name: handle.Path.split('_').pop()};}) : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
 						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'To execute json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? plsData : null)));
 						if (data) {
@@ -4425,7 +4423,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					delete newPresets.readme;
 				}
 				// List entries
-				const presetList = Object.keys(newPresets).map((key) => {return '+ ' + key + ' -> ' + menu_properties[key][0] + '\n\t- ' + newPresets[key].map((_) => {return _.name + (_.hasOwnProperty('method') ? ' (' + _.method + ')': '');}).join('\n\t- ');});
+				const presetList = Object.keys(newPresets).map((key) => {return '+ ' + key + ' -> ' + menu_properties[key][0] + '\n\t- ' + newPresets[key].map((preset) => {return preset.name + (preset.hasOwnProperty('method') ? ' (' + preset.method + ')': '');}).join('\n\t- ');});
 				readme += (readme.length ? '\n\n' : '') + 'List of presets:\n' + presetList;
 				fb.ShowPopupMessage(readme, scriptName + ': Presets (' + file.split('\\').pop() + ')')
 				// Accept?
@@ -4539,7 +4537,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 const menuAlt = new _menu();
 {
 	const allowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration']);
-	const menuList = menu.getMenus().slice(1).filter((_) => {return allowed.has(_.subMenuFrom);});
+	const menuList = menu.getMenus().slice(1).filter((entry) => {return allowed.has(entry.subMenuFrom);});
 	menuDisabled.forEach( (obj) => {menuList.splice(obj.index, 0, obj);});
 	// Header
 	menuAlt.newEntry({entryText: 'Switch menus functionality:', func: null, flags: MF_GRAYED});
@@ -4800,11 +4798,11 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => {
 		let menuList = [];
 		const toSkip = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'By... (tags)', 'sep']);
 		const toSkipMenuMatch = new Set(['Configuration']);
-		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((_) => {return _.toLowerCase();}));
-		menu.getEntries().filter((_) => {return _.hasOwnProperty('entryText') && _.hasOwnProperty('menuName');}).forEach((_) => {
-			const entryText = isFunction(_.entryText) ? _.entryText() : _.entryText;
-			const menuName = _.menuName;
-			const flag = _.flags;
+		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((entry) => {return entry.toLowerCase();}));
+		menu.getEntries().filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
+			const entryText = isFunction(entry.entryText) ? entry.entryText() : entry.entryText;
+			const menuName = entry.menuName;
+			const flag = entry.flags;
 			// Skip
 			if (!toInclude.has(menuName.toLowerCase())) {return;}
 			if (entryText === 'sep') {return;}

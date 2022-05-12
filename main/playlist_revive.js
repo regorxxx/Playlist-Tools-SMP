@@ -50,7 +50,7 @@ function playlistRevive({
 	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
 	// The other tags are considered crc checks -> Exact Match: any crc tag is matched. Otherwise, continue checking the other tags (See above).
 	const tagsToCheck = ['title', 'audiomd5', 'md5', '%directoryname%', '%filename%', (bFindAlternative || simThreshold < 1) ? '"$directory(%path%,2)"' : null].filter(Boolean);
-	const tags = getTagsValuesV4(items, tagsToCheck.map((_) => {return _.replace(/^%|%$/g, '');}), void(0), void(0), null);
+	const tags = getTagsValuesV4(items, tagsToCheck.map((tag) => {return tag.replace(/^%|%$/g, '');}), void(0), void(0), null);
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
 	tagsToCheck.forEach( (tagName, index) => {

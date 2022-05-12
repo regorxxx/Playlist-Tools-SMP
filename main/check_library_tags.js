@@ -140,7 +140,7 @@ function checkTags({
 		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
 		return;
 	}
-	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((_) => {return [...new Set(_.split(',').filter(Boolean))];}); // filter holes and remove duplicates
+	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((tag) => {return [...new Set(tag.split(',').filter(Boolean))];}); // filter holes and remove duplicates
 	const tagsToCompareMap = new Map();
 	if (tagsToCompare.length) {
 		tagsToCompare.forEach((arr) => {
@@ -152,8 +152,8 @@ function checkTags({
 	}
 	if (!bAsync || !iSteps || iSteps === 1 || iDelay === 0) {
 		// Get all tags and their frequency
-		const tags = checkTagsRetrieve(selItems, tagsToCheck, [...Array(tagsToCheck.length)].map((_) => {return [];}));
-		const count = [...Array(tags.length)].map((_) => {return new Map();}); // i x j x k
+		const tags = checkTagsRetrieve(selItems, tagsToCheck, [...Array(tagsToCheck.length)].map(() => {return [];}));
+		const count = [...Array(tags.length)].map(() => {return new Map();}); // i x j x k
 		tags.forEach( (tagArray, i) => { // i
 			checkTagsCount(tagArray, count, i);
 		});
@@ -183,7 +183,7 @@ function checkTags({
 			const count = items.length;
 			const range = Math.round(count / iSteps);
 			const delay = iDelay / 4;
-			let tags = [...Array(tagsToCheck.length)].map((_) => {return [];});
+			let tags = [...Array(tagsToCheck.length)].map(() => {return [];});
 			let prevProgress = -1;
 			for (let i = 1; i <= iSteps; i++) {
 				promises.push(new Promise(resolve => {
@@ -203,7 +203,7 @@ function checkTags({
 		.then(tags => {
 			return new Promise(resolve => {
 				const promises = [];
-				const count = [...Array(tags.length)].map((_) => {return new Map();}); // i x j x k
+				const count = [...Array(tags.length)].map(() => {return new Map();}); // i x j x k
 				const total = tags.length - 1;
 				const delay = iDelay / 50;
 				tags.forEach( (tagArray, i) => { // i
