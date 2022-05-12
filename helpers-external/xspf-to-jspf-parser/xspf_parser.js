@@ -54,7 +54,7 @@ const XSPF = {
 		playlist.extension = {};
 		if (extnodes) {
 			const length = extnodes.length;
-			for (var i=0; i < length; i++) {
+			for (let i = 0; i < length; i++) {
 				const node = extnodes[i];
 				const app = node ? node.getAttribute('application') : null;
 				if (app) {

@@ -13,7 +13,7 @@ try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {co
 buttonsBar.list.push({});
 
 addButton({
-	pool: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Pools', function (mask) {
+	pool: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Pools', function () {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
