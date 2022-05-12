@@ -2,9 +2,9 @@
 //17/02/22
 
 /* 
-	Playlist History
-	----------------
-	Switch to previous playlists.
+	Playlist Tools Macros
+	-------------------
+	MaCros submenu from Playlist Tools
  */
 
 include('..\\helpers\\buttons_xxx.js'); 

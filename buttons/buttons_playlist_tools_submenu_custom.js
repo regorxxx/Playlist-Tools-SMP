@@ -2,9 +2,9 @@
 //22/03/22
 
 /* 
-	Playlist History
-	----------------
-	Switch to previous playlists.
+	Playlist Tools Submenu Custom
+	-------------------
+	Calls a configurable submenu from Playlist Tools
  */
 
 include('..\\helpers\\buttons_xxx.js');
@@ -41,7 +41,7 @@ addButton({
 						}});
 					} else {
 						const menuName = buttonMenu.newMenu(menuObj.menuName);
-						subMenuList.forEach((subMenuObj, i, arr) => {
+						subMenuList.forEach((subMenuObj, i) => {
 							if (subMenuObj === 'sep') {
 								buttonMenu.newEntry({menuName, entryText: 'separator'});
 							} else {

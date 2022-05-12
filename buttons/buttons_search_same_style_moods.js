@@ -34,7 +34,7 @@ addButton({
 		} else {
 			do_search_same_style_moods({playlistLength: this.buttonsProperties.playlistLength[1], forcedQuery: this.buttonsProperties.forcedQuery[1], styleTag: this.buttonsProperties.styleTag[1], moodTag: this.buttonsProperties.moodTag[1]});
 		}
-	}, null, void(0), (parent) => {
+	}, null, void(0), () => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
 		let info = 'Random playlist matching at least 2 styles and 6 moods\nof the currently selected track';

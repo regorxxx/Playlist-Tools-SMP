@@ -2,9 +2,9 @@
 //17/02/22
 
 /* 
-	Playlist History
-	----------------
-	Switch to previous playlists.
+	Playlist Tools Macro custom
+	-------------------
+	Shortcut to configurable macro from Playlist Tools
  */
 
 include('..\\helpers\\buttons_xxx.js');
@@ -44,10 +44,8 @@ addButton({
 							configMenu.newEntry({entryText: 'sep'});
 						} else {
 							configMenu.newEntry({entryText: macro.name, func: () => {
-								macro.entry.forEach( (entry, idx, arr) => {
-									this.buttonsProperties['macro'][1] = 'Macros\\' + macro.name;
-									overwriteProperties(this.buttonsProperties); // Force overwriting
-								});
+								this.buttonsProperties['macro'][1] = 'Macros\\' + macro.name;
+								overwriteProperties(this.buttonsProperties); // Force overwriting
 							}});
 						}
 					});
