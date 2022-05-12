@@ -113,12 +113,8 @@ The menus are highly customizable. They are created on demand according to the s
 ![playlist_tools_menu_05](https://user-images.githubusercontent.com/83307074/116759000-cebac280-aa00-11eb-8a81-9a450e13205a.gif)
 
 ## Installation
-Copy all files from the zip into YOUR_FOOBAR_PROFILE_PATH\scripts\SMP\xxx-scripts  
-Any other path WILL NOT work without editing the scripts. (see images\_Installation_*jpg)  
-For ex: mine is c:\Users\xxx\AppData\Roaming\foobar2000\scripts\SMP\xxx-scripts\...  
-For portable installations >= 1.6: .\foobar2000\profile\scripts\SMP\xxx-scripts\...  
-For portable installations <= 1.5: .\foobar2000\scripts\SMP\xxx-scripts\...  
-Then load 'buttons_toolbar.js' (toolbar) or 'buttons_playlist_tools.js' (1 button) into a SMP panel within foobar. The toolbar can be configured within foobar to add any button desired for quick access to multiple tools. Also read file '_TIPS and INSTALLATION.txt for additional comments about foobar portable installations, not properly following the installation instructions will result in scripts not working as intended. Please don't report errors before checking this.
+See [_TIPS and INSTALLATION (txt)](https://github.com/regorxxx/Playlist-Tools-SMP/blob/main/_TIPS%20and%20INSTALLATION.txt) and the [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Installation).
+Not properly following the installation instructions will result in scripts not working as intended. Please don't report errors before checking this.
 
 [changelog]: CHANGELOG.md
 [version_badge]: https://img.shields.io/github/release/regorxxx/Playlist-Tools-SMP.svg
