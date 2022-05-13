@@ -3241,7 +3241,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const nameDynGenre = 'Search similar by DynGenre...';
 							const nameWeight = 'Search similar by Weight...';
 							const bScriptLoaded = !menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
-							if (typeof do_searchby_distance !== undefined && bScriptLoaded) {
+							if (typeof do_searchby_distance !== 'undefined' && bScriptLoaded) {
 								// Get arguments
 								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
 								// Check
@@ -3275,7 +3275,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							break;
 						}
 						case plsName.startsWith('_SEARCHBYWEIGHT_'): { // Search by WEIGHT
-							if (typeof do_searchby_distance !== undefined) {
+							if (typeof do_searchby_distance !== 'undefined') {
 								// Get arguments
 								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
 								// Check
@@ -3309,7 +3309,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							break;
 						}
 						case plsName.startsWith('_SEARCHBYDYNGENRE_'): { // Search by DYNGENRE
-							if (typeof do_searchby_distance !== undefined) {
+							if (typeof do_searchby_distance !== 'undefined') {
 								// Get arguments
 								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
 								// Check
