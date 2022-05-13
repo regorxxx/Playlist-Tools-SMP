@@ -31,7 +31,7 @@ function getPrevPls() {
 
 function getPrevPlsName() {
 	const prevPls = getPrevPls();
-	return prevPls !== -1 ? plman.GetPlaylistName(prevPls) : '-None-'
+	return prevPls !== -1 ? plman.GetPlaylistName(prevPls) : '-None-';
 }
 
 // Menus
@@ -68,12 +68,12 @@ function onPlaylistSwitch() {
 		plsHistory.unshift({name: plman.GetPlaylistName(plman.ActivePlaylist), idx: plman.ActivePlaylist});
 	} else {initplsHistory();}
 }
-if (on_playlist_switch) {
+if (typeof on_playlist_switch !== 'undefined') {
 	const oldFunc = on_playlist_switch;
 	on_playlist_switch = function() {
 		oldFunc();
 		onPlaylistSwitch();
-	}
+	};
 } else {var on_playlist_switch = onPlaylistSwitch;}
 
 function onPlaylistsChanged() {
@@ -90,24 +90,24 @@ function onPlaylistsChanged() {
 		}
 	} else {initplsHistory();}
 }
-if (on_playlists_changed) {
+if (typeof on_playlists_changed !== 'undefined') {
 	const oldFunc = on_playlists_changed;
 	on_playlists_changed = function() {
 		oldFunc();
 		onPlaylistsChanged();
-	}
+	};
 } else {var on_playlists_changed = onPlaylistsChanged;}
 
 
 function onSelectionChanged() {
-	if (!plsHistory.length) {initplsHistory()}
+	if (!plsHistory.length) {initplsHistory();}
 }
-if (on_selection_changed) {
+if (typeof on_selection_changed !== 'undefined') {
 	const oldFunc = on_selection_changed;
 	on_selection_changed = function() {
 		oldFunc();
 		onSelectionChanged();
-	}
+	};
 } else {var on_selection_changed = onSelectionChanged;}
 
 const initplsHistory = delayFn(() => {plsHistory.push({name: plman.GetPlaylistName(plman.ActivePlaylist), idx: plman.ActivePlaylist});}, 300);

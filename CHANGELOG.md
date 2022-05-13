@@ -20,6 +20,7 @@
 
 ## [Unreleased][]
 ### Added
+- UI: added presets to easily switch all the colors on the UI at the same time to pre-defined sets. Also added specific presets for Color Blindness (deuteranopia) and Grey Scale to improve accessibility, having special care with background / text contrast and playlist identification.
 ### Changed
 - Tags Automation: ISO and cue files are now skipped for tagging when using tools which require an external executable since subsongs can not be piped. i.e. ChromaPrint Fingerprinting, MD5, AUDIOMD5 and EBUR 128 Scanner.
 - Search by distance: more warnings on customizable button when forced theme is not found, with popups instead of only logging to console.
