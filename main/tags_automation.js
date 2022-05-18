@@ -121,7 +121,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	};
 
 	this.nextStepTag = () => {
-		this.countItems = this.selItems.Count;
 		this.debouncedStep(this.iStep);
 	};
 
@@ -218,6 +217,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) {return;}
 			}
 			this.nextStepTag();
+			return;
 		}
 		this.nextStepTag();
 	};
