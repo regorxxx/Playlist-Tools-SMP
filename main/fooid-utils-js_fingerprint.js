@@ -23,9 +23,11 @@ fooidUtils.compareFingerprints = function compareFingerprints({
 	const simil = new Map();
 	fromTags.forEach((fromTag, i) => {
 		if (fromTag && fromTag.length) {
+			const fpFromTag = this.base64DecToArr(fromTag).buffer;  // Reuse the base64 value on all passes!
 			toTags.forEach((toTag, idx) => {
 				if (toTag && toTag.length) {
-					const similarity = round(this.correlate(toTag, fromTag) * 100, 1);
+					const fpToTag = this.base64DecToArr(toTag).buffer;
+					const similarity = round(this.correlate(fpToTag, fpFromTag) * 100, 1);
 					if (similarity > threshold) {
 						if (simil.has(i)) {simil.set(i, simil.get(i).concat([{idx, similarity}]));}
 						else {simil.set(i, [{idx, similarity}]);}
