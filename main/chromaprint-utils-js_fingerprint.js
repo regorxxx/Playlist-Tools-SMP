@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/04/22
+//17/05/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -41,7 +41,6 @@ chromaPrintUtils.compareFingerprints = function compareFingerprints({
 				let toTagLen = toTag ? toTag.length : null;
 				if (toTagLen) {
 					const similarity = round(this.correlate(toTagLen > tagLen ? toTag.slice(0, tagLen) : toTag, fromTagLen > tagLen ? fromTag.slice(0, tagLen) : fromTag) * 100, 1);
-					// const similarity = round(this.correlate(toTag, fromTag) * 100, 1);
 					if (similarity > threshold) {
 						if (simil.has(i)) {simil.set(i, simil.get(i).concat([{idx, similarity}]));}
 						else {simil.set(i, [{idx, similarity}]);}
@@ -233,7 +232,6 @@ chromaPrintUtils.calculateFingerprints = function calculateFingerprints({
 				if (_isFile(path)) {
 					if (bDebug) {console.log(fpcalcPath + ' -raw -json "' + path + '">"' + fpcalcJSON + '"');}
 					_runHidden(fpcalcPath.replace('.exe','.bat'), path, fpcalcJSON, fpcalcPath);
-					// _runHidden(fpcalcPath, '-raw -json', path, fpcalcJSON, '>' + fpcalcJSON);
 					const data = _jsonParseFileCheck(fpcalcJSON);
 					if (data && data.hasOwnProperty('fingerprint')) {
 						items.push(handle);
@@ -262,7 +260,7 @@ chromaPrintUtils.calculateFingerprints = function calculateFingerprints({
 		calcFp(count);
 	}
 	const failedItemsLen = failedItems.length;
-	console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Fingerprint Tag');
+	console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nFailed items may be re-scanned in case the files were blocked. For more info, see this:\n https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks' + '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Fingerprint Tag');
 	if (bProfile) {profile.Print('Save fingerprints to files - completed in ');}
 	return bDone;
 }

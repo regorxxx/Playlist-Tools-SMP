@@ -22,6 +22,8 @@
 ### Added
 ### Changed
 - Tags Automation: ISO and cue files are now skipped for tagging when using tools which require an external executable since subsongs can not be piped. i.e. ChromaPrint Fingerprinting, MD5, AUDIOMD5 and EBUR 128 Scanner.
+- Tags Automation: expanded popup info when ISO files are checked or there are errors, pointing to the wiki.
+- Tags Automation: checks to automate steps have been reworked to be more robust, instead of using callbacks and library changes. It should not require manually forcing a step anymore.
 - Search by distance: more warnings on customizable button when forced theme is not found, with popups instead of only logging to console.
 - Helpers: Updated helpers.
 ### Removed

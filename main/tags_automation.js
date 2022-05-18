@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/22
+//18/05/22
 
 /* 
 	Automatic tagging...
@@ -22,11 +22,14 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	this.countItems = null;
 	this.iStep = null;
 	this.currentTime = null;
+	this.listener = null;
+	this.timers = {debounce: 300, listener: 1000};
+	this.notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'LRA', 'massTag']);
 	this.tools = [
 		{key: 'biometric', tag: ['FINGERPRINT_FOOID'], title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true)},
 		{key: 'chromaPrint', tag: ['ACOUSTID_FINGERPRINT_RAW'], title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe')},
-		{key: 'massTag', tag: ['MD5'], title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true)},
-		{key: 'audioMd5', tag: ['AUDIOMD5'], title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true)},
+		{key: 'massTag', tag: ['AUDIOMD5'], title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true)},
+		{key: 'audioMd5', tag: ['MD5'], title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true)},
 		{key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'], title: 'ReplayGain', bAvailable: utils.CheckComponent('foo_rgscan', true)},
 		{key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'], title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true)},
 		{key: 'LRA', tag: ['LRA'], title: 'EBUR 128 Scanner', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe')}
@@ -71,13 +74,12 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 			// Check if there are ISO/CUE files (which can not be piped to ffmpeg)
 			this.bSubSong = this.selItems.Convert().some((handle) => {return handle.SubSong !== 0;});
 			if (this.bSubSong) {
-				const notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'LRA', 'massTag']);
-				fb.ShowPopupMessage('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (an will be omitted in such steps):\n' + this.tools.map((tool) => {return this.toolsByKey[tool.key] && notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean).join(', '));
+				console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (an will be omitted in such steps):\n' + this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean).join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%ACOUSTID_FINGERPRINT_RAW%) and EBUR 128 (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 				// Remove old tags
 				{	// Update subSong tracks with safe tools
 					this.selItemsSubSong = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return handle.SubSong === 0;}));
 					let arr = [];
-					const cleanTags = Object.fromEntries(this.tools.map((tool) => {return this.toolsByKey[tool.key] && !notAllowedTools.has(tool.key) ? tool.tag : null;}).flat(Infinity).filter(Boolean).map((tag) => {return [tag, ''];}));
+					const cleanTags = Object.fromEntries(this.tools.map((tool) => {return this.toolsByKey[tool.key] && !this.notAllowedTools.has(tool.key) ? tool.tag : null;}).flat(Infinity).filter(Boolean).map((tag) => {return [tag, ''];}));
 					this.subSongNum = this.selItemsSubSong.Count;
 					for (let i = 0; i < this.subSongNum; ++i) {arr.push(cleanTags);}
 					this.selItemsSubSong.UpdateFileInfoFromJSON(JSON.stringify(arr));
@@ -100,6 +102,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 			// Process files on steps
 			this.iStep = 0;
 			this.debouncedStep(this.iStep);
+			this.createListener(); // Add a listener associated to the handle list instead of relying on callbacks which fail sometimes...
 		}
 		return;
 	};
@@ -113,12 +116,14 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		this.subSongNum = null;
 		this.countItems = null;
 		this.currentTime = null;
-	}
+		clearInterval(this.listener);
+		this.listener = null;
+	};
 
 	this.nextStepTag = () => {
 		this.countItems = this.selItems.Count;
 		this.debouncedStep(this.iStep);
-	}
+	};
 
 	this.stepTag = (i) => {
 		let bSucess = false;
@@ -138,7 +143,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 						if (this.selItemsNoSubSong.Count) {
 							bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItemsNoSubSong, 8);
 						}
-						this.countItems -= this.subSongNum;
 					} else {bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItems, 8);}
 				} else {bSucess = false;}
 				break;
@@ -152,7 +156,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 						if (this.selItemsNoSubSong.Count) {
 							bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: this.selItemsNoSubSong});
 						}
-						this.countItems -= this.subSongNum;
+
 					} else {bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: this.selItems});}
 				} else {bSucess = false;}
 				break;
@@ -162,7 +166,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 						if (this.selItemsNoSubSong.Count) {
 							bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItemsNoSubSong});
 						}
-						this.countItems -= this.subSongNum;
 					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
 					
 				} else {bSucess = false;}
@@ -199,7 +202,31 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		return;
 	};
 	
-	this.debouncedStep = debounce(this.stepTag, 300); // Only continues next step when last tag update was done >100ms ago
+	this.debouncedStep = debounce(this.stepTag, this.timers.debounce); // Only continues next step when last tag update was done >100ms ago
+	
+	this.checkHandleList = () => {
+		const i = this.iStep - 1;
+		const orderKeys = ['rgScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'LRA']
+		if (i >= 0) {
+			const key = orderKeys[i];
+			const handleList = this.bSubSong && this.notAllowedTools.has(key) ? this.selItemsNoSubSong : this.selItems;
+			if (this.toolsByKey[key] && handleList.Count) {
+				const idx = this.tools.findIndex((tool) => {return tool.key === key;});
+				const tag = this.tools[idx].tag;
+				const itemTags = getTagsValuesV3(handleList, tag, true).flat(Infinity).filter(Boolean);
+				if (i === 0 && itemTags.length) {return;} // Only at first step it checks for no tags!
+				else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) {return;}
+			}
+			this.nextStepTag();
+		}
+		this.nextStepTag();
+	};
+	
+	this.createListener = () => {
+		if (this.listener !== null) {clearInterval(this.listener);}
+		this.listener = repeatFn(this.checkHandleList, this.timers.listener)();
+		return this.listener;
+	};
 	
 	this.changeTools = (toolsByKey) => {
 		this.toolsByKey = toolsByKey;
@@ -212,41 +239,12 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	};
 	
 	this.isRunning = () => {
-		return 	this.selItems && this.countItems && this.iStep !== null;
+		return 	this.selItems !== null && this.countItems !== null && this.iStep !== null;
 	};
 	
 	this.init = () => {
-		tagAutomationCallbacks.push(this);
 		this.loadDependencies();
-
 	};
 	
 	this.init();
 }
-
-const tagAutomationCallbacks = [];
-
-// Check if tag update was done on a selected file and wait until all tracks are updated
-function onMetadbChangedTagsAuto(handleList, fromhook) {
-	for (let tAut of tagAutomationCallbacks) {
-		if (tAut.iStep) {
-			if (typeof tAut.selItems !== 'undefined' && tAut.selItems !== null && tAut.countItems !== null) {
-				handleList.Sort();
-				handleList.MakeIntersection(tAut.selItems);
-				if (handleList.Count !== 0 && tAut.countItems !== 0) {
-					tAut.countItems -= handleList.Count;
-					if (tAut.countItems === 0) {
-						tAut.nextStepTag();
-					}
-				}
-			}
-		}
-	}
-}
-if (typeof on_metadb_changed !== 'undefined') {
-	const oldFunc = on_metadb_changed;
-	on_metadb_changed = function(handleList, fromhook) {
-		oldFunc(handleList, fromhook);
-		onMetadbChangedTagsAuto(handleList, fromhook);
-	}
-} else {var on_metadb_changed = onMetadbChangedTagsAuto;}
