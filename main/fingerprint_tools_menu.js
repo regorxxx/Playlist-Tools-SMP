@@ -43,7 +43,8 @@ function createFpMenuLeft() {
 			const bDone = chromaPrintUtils.compareFingerprints({fromHandleList, toHandleList: fromHandleList, tagName: chromaTag, threshold: 0, bSendToPls: false, bPopup: true});
 			this.selItems = null;
 			return bDone;
-		}, flags: flagsMaxSel});
+		// }, flags: flagsMaxSel});
+		}, flags: MF_GRAYED});
 	}
 	menu.newEntry({entryText: 'sep'});
 	{	// Execute comparison Chromaprint
@@ -51,14 +52,16 @@ function createFpMenuLeft() {
 			const bDone = chromaPrintUtils.compareFingerprints({fromHandleList, toHandleList, tagName: chromaTag, threshold: ppt.thresholdC[1], playlistName});
 			this.selItems = null;
 			return bDone;
-		}, flags: flagsMaxSel});
+		// }, flags: flagsMaxSel});
+		}, flags: MF_GRAYED});
 	}
 	{	// Execute comparison Chromaprint + database
 		menu.newEntry({entryText: 'Search by similar Chromaprint (fast)' + (!bFlagsDb ? '\t(no database)' : (!bFlagsSel ? '\t(no selection)' : !bFlagsMaxSel ? '\t(selection > ' + maxSel + ')' : '')), func: () => {
 			const bDone = chromaPrintUtils.compareFingerprintsFilter({fromHandleList, toHandleList, tagName: chromaTag, /*threshold: ppt.thresholdC[1],*/ playlistName});
 			this.selItems = null;
 			return bDone;
-		}, flags: flagsDb | flagsMaxSel});
+		// }, flags: flagsDb | flagsMaxSel});
+		}, flags: MF_GRAYED});
 	}
 	{	// Execute comparison FooId
 		menu.newEntry({entryText: 'Search by similar FooID' + (!bFlagsSel ? '\t(no selection)' : !bFlagsMaxSel ? '\t(selection > ' + maxSel + ')' : ''), func: () => {
@@ -116,7 +119,7 @@ function createFpMenuLeft() {
 			libraryMap = null;
 			ppt.databaseHash[1] = newhash;
 			overwriteProperties(ppt);
-		}});
+		}, flags: MF_GRAYED});
 	}
 	menu.newEntry({entryText: 'sep'});
 	{	// Chromaprint database

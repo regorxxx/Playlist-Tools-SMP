@@ -20,6 +20,7 @@
 
 ## [Unreleased][]
 ### Added
+- Fingerprinting: added buttons for tagging with ChromaPrint and FooID. Added button for searching similar tracks in library by fingerprint with FooID. All other ChromaPrint tools are greyed out due to limitations on current (Foobar2000 and SMP engine)[https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036].
 ### Changed
 - Tags Automation: ISO and cue files are now skipped for tagging when using tools which require an external executable since subsongs can not be piped. i.e. ChromaPrint Fingerprinting, MD5, AUDIOMD5 and EBUR 128 Scanner.
 - Tags Automation: expanded popup info when ISO files are checked or there are errors, pointing to the wiki.
