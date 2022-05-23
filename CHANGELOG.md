@@ -2,7 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0-beta.7](#300-beta7---2021-05-19)
+- [3.0.0-beta.7](#300-beta7---2021-05-23)
 - [3.0.0-beta.6](#300-beta6---2021-05-04)
 - [3.0.0-beta.5](#300-beta5---2021-04-13)
 - [3.0.0-beta.4](#300-beta4---2021-03-06)
@@ -25,7 +25,7 @@
 ### Removed
 ### Fixed
 
-## [3.0.0-beta.7] - 2022-05-19
+## [3.0.0-beta.7] - 2022-05-23
 ### Added
 - Fingerprinting: added buttons for tagging with ChromaPrint and FooID. Added button for searching similar tracks in library by fingerprint with FooID. All other ChromaPrint tools are greyed out due to limitations on current [Foobar2000 and SMP engine](https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036).
 ### Changed
