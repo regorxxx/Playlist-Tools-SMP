@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.8](#300-beta8---2021-06-05)
 - [3.0.0-beta.7](#300-beta7---2021-05-23)
 - [3.0.0-beta.6](#300-beta6---2021-05-04)
 - [3.0.0-beta.5](#300-beta5---2021-04-13)
@@ -22,6 +23,14 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.8] - 2022-06-05
+### Added
+### Changed
+- UI: enforced SMP version checking via popups.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 
@@ -467,7 +476,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...HEAD
+[3.0.0-beta.8]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...v3.0.0-beta.8
 [3.0.0-beta.7]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.6...v3.0.0-beta.7
 [3.0.0-beta.6]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.5...v3.0.0-beta.6
 [3.0.0-beta.5]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.4...v3.0.0-beta.5

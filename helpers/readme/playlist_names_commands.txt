@@ -4,13 +4,13 @@ This utility is intended as a workaround to the main limitations of SMP (main me
 (custom UI buttons or scripts can not be called with online controllers without coding an specific app to do so), integrating Playlist Tools
 with online controllers. 
 
-Online controllers like foo_httpcontrol (https://bitbucket.org/oblikoamorale/foo_httpcontrol/wiki/Home) can only use 'use' some scripts' 
-functions associating them to a main SMP menu entry. The problem is phone Apps don't have a way to add those http url custom commands 
+Online controllers like foo_httpcontrol (https://bitbucket.org/oblikoamorale/foo_httpcontrol/wiki/Home) can only 'use' some scripts' 
+functions associating them to a main SMP menu entry. The problem is android Apps don't have a way to add those http url custom commands 
 in an easy way... since the app is already compiled (you could use a browser though). Playlist Names Commands allows to bypass that limitation
 checking current playlist names regularly for "special" names. When a playlist name starts with 'PT:', the callback fires and anything after 
 those 3 chars is treated as a special command which will be compared to a list of known commands or tried to execute as a menu name. Some examples:
 	
-	- Wanna create automatic playlists via pools using your phone or an internet browser? Create an empty playlist named 'PT:Pools\Top tracks mix'
+	- Wanna create automatic playlists via pools using android or an internet browser? Create an empty playlist named 'PT:Pools\Top tracks mix'
 	
 	The just created playlist will be deleted and a new playlist will be created and set as active playlist. A refresh may be needed in the online
 	controller to change focus to the currently active playlist (otherwise switch to it manually).

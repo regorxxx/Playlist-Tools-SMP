@@ -32,6 +32,8 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\menu_xxx.js');
 
+checkCompatible('1.6.1');
+
 if (!_isFolder(folders.data)) {_createFolder(folders.data);}
 
 // Properties
