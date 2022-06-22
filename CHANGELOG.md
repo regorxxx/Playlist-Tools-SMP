@@ -28,11 +28,15 @@
 
 ## [3.0.0-beta.8] - 2022-06-05
 ### Added
+- Dynamic menus: new dynamic menus available with [SMP 1.6.1](https://github.com/TheQwertiest/foo_spider_monkey_panel/releases/tag/v1.6.1) which allow to execute panel actions via main menus and even associate them to a keyboard shortcut or toolbar buttons. There is no limit (the old method was limited to 10 entries), so it can be used independently to other panels. It also allows to control the manager via CMD. Most menu entries has been replicated this way. Every panel has its own set of associated actions, so every panel must have different panel names to work (usually not a problem for a toolbar panel).
+- Online controllers integration: full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx). Most menu entries can be used with the online controller, allowing to: load pools, apply queries, playlist revive, ... [foo_runcmd](https://foosion.foobar2000.org/components/?id=runcmd) and [foo_run_main](https://marc2k3.github.io/run-main/) are needed. It makes use of the new dynamic menus from [SMP 1.6.1](https://github.com/TheQwertiest/foo_spider_monkey_panel/releases/tag/v1.6.1) (only has been tested with foobar 1.6.11). Every panel has its own set of associated actions, so every panel must have different panel names to work (usually not a problem for a toolbar panel).
 ### Changed
 - UI: enforced SMP version checking via popups.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Online controllers integration: cosmetic error. Some separators where not displayed properly on the list of menus.
+- Online controllers integration: some useless entries being shown (configuration entries, those which required popups, etc.).
 
 ## [3.0.0-beta.7] - 2022-05-23
 ### Added
