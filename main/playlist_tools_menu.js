@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/05/22
+//28/06/22
 
 /* 
 	Playlist Tools Menu
@@ -46,7 +46,7 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	forcedQueryMenusEnabled:	['Menus with forced query enabled', '{}'],
 	ratingLimits:				['Set ratings extremes (ex. from 1 to 10 -> 1,10)', '1,5'],
 	presets:					['Saved presets', '{}'],
-	bShortcuts:					['Enable global shortcuts', false],
+	bShortcuts:					['Show keyboard shorcuts on entries?', true],
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
 	keyTag:						['Key tag remap', 'key'], // It may be overwritten by Search by distance property too, are equivalent!
 	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])],
@@ -60,7 +60,8 @@ const menu_panelProperties = {
 	bTooltipInfo: 	['Show shortcuts on tooltip', true],
 	bProfile: 		['Profiler logging', false],
 	playlistPath: 	['Playlist manager tracked folders', '[]'],
-	bDebug:			['Enable global debug to console', false]
+	bDebug:			['Enable global debug to console', false],
+	bDynamicMenus:	['Show dynamic menus?', true]
 };
 let menu_propertiesBack = menu_properties;
 let menu_panelPropertiesBack = menu_panelProperties;
@@ -113,20 +114,20 @@ var presets = {};
 // Other funcs by menus to be applied at property load
 const deferFunc = [];
 
+// Retrieve list of entries for further use after initialization
+const allEntries = [];
+deferFunc.push({name: 'retrieveAllEntries', func: () => {
+	allEntries.splice(0, 0, ...menu.getEntriesAll(null, {pos: -1, args: false /*Skip cond entries which must run only on init*/}));
+}});
+
 // Key shortcuts
 // Menu names strip anything after \t
 // Adding new entries here automatically adds them to the associated menu
 const shortcutsPath = folders.data + 'playlistTools_shortcuts.json';
 var shortcuts = {
-	'Look here for key codes': 'https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes',
-	'Tip': 'Any menu entry may be added: submenu_name + \\ + entry_name',
-	searchSame: {keys: 'Ctrl + Shift + S',	mod: [VK_CONTROL,VK_SHIFT], val: 83, menu: 'Search same by tags...\\By... (pairs of tags)'},
-	prevPls: 	{keys: 'Ctrl + R',			mod: [VK_CONTROL], val: 82, menu: 'Playlist History\\Previous playlist'},
-	remDupl: 	{keys: 'Ctrl + D',			mod: [VK_CONTROL], val: 68, menu: 'Duplicates and tag filtering\\Remove duplicates by '},
-	quFilter:	{keys: 'Ctrl + G',			mod: [VK_CONTROL], val: 71, menu: 'Query filtering\\Filter playlist by Global forced query'},
-	harmMix:	{keys: 'Ctrl + H',			mod: [VK_CONTROL], val: 72, menu: 'Harmonic mix\\Harmonic mix from playlist'},
-	deadItm:	{keys: 'Ctrl + Shift + R',	mod: [VK_CONTROL,VK_SHIFT], val: 82, menu: 'Playlist Revive\\Find dead items in all playlists'},
-	// close:		{keys: 'Esc',				mod: [VK_SHIFT], val: VK_ESCAPE, menu: '', func: () => {fb.Exit()}},
+	'Tip': 		'Name may be arbitrary. \'Keys\' is the text to add. \'Menu\' must be set as: submenu_name + \\ + entry_name',
+	example:	{keys: 'Ctrl + Shift + S',	menu: 'Submenu name\\Entry name'},
+	example2:	{keys: 'Ctrl + Shift + S',	menu: 'Submenu name\\Entry name'}
 }
 
 // Other script integration
@@ -263,26 +264,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 	}
 } else {var on_dsp_preset_changed = onDspPresetChanged;}
 
-
-/* 
-	Global variables evaluated on call
-*/
-// {
-	// menu.newCondEntry({entryText: 'Update global variables... (cond)', condFunc: (bInitMenu = true) => {
-		// if (bInitMenu) { // There are some funcs which may call this entry before creating the entire menu, properties retrieval must be skipped in those cases
-			// console.log('Playlist Tools: updating settings...');
-			// let properties = getPropertiesPairs(menu_properties, menu_prefix, 0); // Update properties from the panel
-			// for (let key in properties) {
-				// menu_properties[key][1] = properties[key][1];
-			// }
-			// properties = getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0); // Update properties from the panel
-			// for (let key in properties) {
-				// menu_panelProperties[key][1] = properties[key][1];
-			// }
-		// }
-	// }});
-// }
-
 /* 
 	Menus
 */
@@ -304,7 +285,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				selYearArr.forEach( (selYear) => {
 					let selArgs = {year: selYear};
 					menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {do_top_tracks_from_date(args);}});
-					});
+				});
 			}
 			menu.newEntry({menuName, entryText: 'sep'});
 			if (_isFile(scriptPathElse)){
@@ -1531,8 +1512,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					{name: '75 tracks from end', func: (idx) => {removeNotSelectedTracks(idx, -75);}},
 					{name: '100 tracks from end', func: (idx) => {removeNotSelectedTracks(idx, -100);}},
 					{name: 'sep'},
-					{name: () => {return 'Global Pls. Length: ' + menu_properties.playlistLength[1]}, func: (idx) => {removeNotSelectedTracks(idx, menu_properties.playlistLength[1]);}},
-					{name: () => {return 'Global pls. Length (end): ' + menu_properties.playlistLength[1]}, func: (idx) => {removeNotSelectedTracks(idx, menu_properties.playlistLength[1]);}},
+					{name: () => {return 'Global pls. length: ' + menu_properties.playlistLength[1]}, func: (idx) => {removeNotSelectedTracks(idx, menu_properties.playlistLength[1]);}},
+					{name: () => {return 'Global pls. length (end): ' + menu_properties.playlistLength[1]}, func: (idx) => {removeNotSelectedTracks(idx, menu_properties.playlistLength[1]);}},
 				];
 				menu.newEntry({menuName: subMenuName, entryText: 'Set playlist length to desired #:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -3813,8 +3794,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_custom.txt';
 					const subMenuName = menu.newMenu(name, menuName);
-					var mainMenuSMP = Object.values(on_main_menu_entries);
-					const mainMenuSMPDefaults = Object.values(on_main_menu_entries);
+					var mainMenuSMP = Object.values(onMainMenuEntries);
+					const mainMenuSMPDefaults = Object.values(onMainMenuEntries);
 					menu_properties['mainMenuSMP'] = [menuName + '\\' + name + ' entries', JSON.stringify(mainMenuSMP)]; // On main_menu_custom.js
 					menu_properties['mainMenuSMP'].push({func: isJSON}, menu_properties['mainMenuSMP'][1]);
 					const plsListener = 'pt:listener';
@@ -3828,10 +3809,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						// Separators are not globally filtered to be able to redraw -at least partially- the tree
 						const tree = {};
 						let menuList = [];
-						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Global Shortcuts','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Playlist manipulation', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to..', 'Don\'t try to find tracks if selecting more than...', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From year...', 'From last...']);
+						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From year...', 'From last...','UI', 'Logging', 'Asynchronous processing', 'Tag remapping','SMP Dynamic menu','Import track list','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'By... (tags)','Available tools','Enable double pass to match more tracks','By... (expression)','Find or create playlist...','To specified position','Select next tracks...','Available tools...','Harmonic mixing']);
 						const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists'];
-						menu.getEntriesAll(null, {pos: -1, args: false} /*Skip cond entries which must run only on init*/).filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
-							const entryText = isFunction(entry.entryText) ? entry.entryText() : entry.entryText;
+						allEntries.filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
+							const entryText = (isFunction(entry.entryText) ? entry.entryText() : entry.entryText).replace(/\t.*/g,'');
 							const menuName = entry.menuName;
 							// Skip
 							if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
@@ -3839,8 +3820,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							// Save
 							if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
 							tree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText)});
-							if (!new Set(menuList).has(menuName)) {menuList.push(menuName);};
-							if (menuName === mainMenu && entryText === 'sep') {menuList.push({name: entryText});};
+							if (menuName !== mainMenu && entryText !== (menuName + '\\sep') && entry.flags === MF_GRAYED) {
+								menuList.push({name: menuName + '\\sep'});
+							}
+							if (!new Set(menuList).has(menuName)) {menuList.push(menuName);}
+							if (menuName === mainMenu && entryText === 'sep') {menuList.push({name: entryText});}
 						});
 						Object.keys(tree).forEach((menuKey) => {
 							const idx = menuList.indexOf(menuKey);
@@ -3932,7 +3916,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						mainMenuSMP = JSON.parse(properties['mainMenuSMP'][1]);
 						mainMenuSMP.forEach((entry, index) => {
 							if (entry) {
-								on_main_menu_entries[index + 1] = entry;
+								onMainMenuEntries[index + 1] = entry;
 								if (entry.hasOwnProperty('path') && entry.path.length) {
 									try {include(entry.path);}
 									catch (e) {console.log(e);}
@@ -3973,11 +3957,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const subMenuNameTwo = menu.newMenu('Set menus...', subMenuName);
 							const subMenuNameThree = [];
 							const options = [
-								{name: 'None', func: (idx) => {mainMenuSMP[idx - 1] = null; delete on_main_menu_entries[idx];}},
+								{name: 'None', func: (idx) => {mainMenuSMP[idx - 1] = null; delete onMainMenuEntries[idx];}},
 								{name: 'sep'},
 								{name: 'Custom menu', func: (idx) => {
 									let funcName = '';
-									try {funcName = utils.InputBox(window.ID, 'Enter menu entry:\n(subMenu\\Entry)\nMenu names may be easily retrieved by simulating menu execution with Ctrl + L. Click, which copies entry names to clipboard.', 'Playlist Tools: ' + toolName, '', true);}
+									try {funcName = utils.InputBox(window.ID, 'Enter menu entry:\n(subMenu\\Entry)\n\nMenu names may be easily retrieved by simulating menu execution with Ctrl + L. Click, which copies entry names to clipboard.', 'Playlist Tools: ' + toolName, '', true);}
 									catch (e) {return;}
 									if (!funcName.length) {return;}
 									let name = '';
@@ -3999,7 +3983,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									if (funcName.startsWith('Pools')) {icon = 'ui-icon ui-icon-circle-zoomout';}
 									if (funcName.startsWith('Macros')) {icon = 'ui-icon ui-icon-clock';}
 									// Save
-									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name, funcName , menuName: 'menu', icon};
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name, funcName , menuName: 'menu', icon};
 								;}},
 								{name: 'Custom function', func: (idx) => {
 									let funcName = '';
@@ -4014,30 +3998,30 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									try {name = utils.InputBox(window.ID, 'Enter description (name)', 'Playlist Tools: ' + toolName, funcName, true);}
 									catch (e) {return;}
 									if (!name.length) {return;}
-									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name, funcName , path};
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name, funcName , path};
 								;}},
 								{name: 'sep'},
 								{name: 'Add skip Tag at current playback', func: (idx) => {
 									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\nThis is a workaround for using %playback_time% for tagging, since %playback_time% does not work within masstagger scripts.', scriptName + ': ' + name);
-									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
 								{name: 'Execute menu entry by name', func: (idx) => {
 									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
-									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to be able to call an arbitrary number of tools by their menu names.\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
-									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
+									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to be able to call an arbitrary number of tools by their menu names.\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
 								}},
 								{name: 'Set output device', func: (idx) => {
 									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
-									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to set ouput device by name.\nThe device name is read from a local json file which should be edited on demand by the server to set the desired device when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
-									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Set output device', funcName: 'setDevice' , path: '', icon: 'ui-icon ui-icon-volume-on'};
+									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to set ouput device by name.\nThe device name is read from a local json file which should be edited on demand by the server to set the desired device when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Set output device', funcName: 'setDevice' , path: '', icon: 'ui-icon ui-icon-volume-on'};
 								}},
 								{name: 'Set DSP preset', func: (idx) => {
 									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
-									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-SMP, to set DSP entry by name.\nThe DSP name is read from a local json file which should be edited on demand by the server to set the desired DSP when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
-									on_main_menu_entries[idx] = mainMenuSMP[idx - 1] = {name: 'Set DSP preset', funcName: 'setDSP' , path: '', icon: 'ui-icon ui-icon-script'};
+									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to set DSP entry by name.\nThe DSP name is read from a local json file which should be edited on demand by the server to set the desired DSP when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Set DSP preset', funcName: 'setDSP' , path: '', icon: 'ui-icon ui-icon-script'};
 								}}
 							];
 							range(1, 9, 1).forEach((idx) => {
@@ -4075,7 +4059,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								const entryText = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
 								menu.newEntry({menuName: subMenuSecondName, entryText: entryText  + '\t (' + (index + 1) + ')', func: () => {
 									mainMenuSMP.splice(index, 1);
-									delete on_main_menu_entries[index + 1];
+									delete onMainMenuEntries[index + 1];
 									menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 									// Presets
 									if (presets.hasOwnProperty('mainMenuSMP')) {
@@ -4105,6 +4089,33 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					}});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			}
+		}
+		{	// Dynamic menus
+			const name = 'SMP Dynamic menu';
+			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
+				const subMenuName = menu.newMenu(name, menuName);
+				//  Menus
+				const flags = isCompatible('1.6.1') ? MF_STRING : MF_GRAYED;
+				menu.newEntry({menuName: subMenuName, entryText: 'File\\Spider Monkey Panel\\Script commands:', flags: MF_GRAYED});
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+				menu.newEntry({menuName: subMenuName, entryText: 'Enabled SMP dynamic menus', func: () => {
+					menu_panelProperties.bDynamicMenus[1] = !menu_panelProperties.bDynamicMenus[1];
+					overwritePanelProperties(); // Updates panel
+					// Disable UI shortcuts if they can not be used
+					if (!menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]) {
+						fb.ShowPopupMessage('Keyboard shortcuts are now disabled and not shown on the menu entries.', window.Name);
+						menu_properties.bShortcuts[1] = false;
+						overwriteMenuProperties(); // Updates panel
+					}
+					// And create / delete menus
+					if (menu_panelProperties.bDynamicMenus[1]) {
+						fb.ShowPopupMessage('Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)', window.Name);
+						createMainMenuDynamic(); 
+					} else {deleteMainMenuDynamic();}
+				}, flags});
+				menu.newCheckMenu(subMenuName, 'Enabled SMP dynamic menus', void(0),  () => {return menu_panelProperties.bDynamicMenus[1];});
 			}
 		}
 		{	// Playlist Names Commands
@@ -4325,31 +4336,6 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
-		{	// Shortcuts
-			const subMenuName = menu.newMenu('Global Shortcuts', configMenu);
-			menu.newEntry({menuName: subMenuName, entryText: 'Switch shortcuts functionality:', func: null, flags: MF_GRAYED})
-			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-			{	// Enable
-				readmes[configMenu + '\\Global Shortcuts'] = folders.xxx + 'helpers\\readme\\global_shortcuts.txt';
-				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Global shortcuts', func: () => {
-					if (!menu_properties.bShortcuts[1]) {
-						const answer = WshShell.Popup('Global Shortcuts is an experimental feature bypassing SMP limits.\nReally \'global\', i.e. they work no matter what you are doing in foobar.\nThey stop working when foobar window is minimized... But still work if you \'alt-tab\' between windows, even if foobar is not on screen.\nAs safeguard, key checking is temp. disabled whenever you \'alt-tab\'.\nIt will be re-enabled whenever the playlist tools button is clicked or manually, by pressing \'Ctrl + Shift + E\' at any moment (as a switch).\n\nShortcuts can be configured at:\n' + shortcutsPath + '\n\nAre you sure you want to enable it?', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
-						if (answer !== popup.yes) {return;}
-					}
-					menu_properties.bShortcuts[1] = !menu_properties.bShortcuts[1];
-					overwriteMenuProperties(); // Updates panel
-					// Shortcuts
-					if (menu_properties.bShortcuts[1]) {
-						if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
-					} else {
-						if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
-					}
-				}});
-				menu.newCheckMenu(subMenuName, 'Enabled Global shortcuts', void(0), (args = {}) => {return menu_properties.bShortcuts[1];});
-			}
-			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
-			menu.newEntry({menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => {_explorer(shortcutsPath);}});
-		}
 		{	// Async processing
 			const subMenuName = menu.newMenu('Asynchronous processing', configMenu);
 			menu.newEntry({menuName: subMenuName, entryText: 'Switch async functionality:', func: null, flags: MF_GRAYED})
@@ -4402,11 +4388,25 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName: subMenuName, entryText: 'Switch UI functionality:', func: null, flags: MF_GRAYED})
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 			{	// bTooltipInfo
-				menu.newEntry({menuName: subMenuName, entryText: 'Show shortcuts on tooltip', func: () => {
+				menu.newEntry({menuName: subMenuName, entryText: 'Show mouse shortcuts on tooltip', func: () => {
 					menu_panelProperties.bTooltipInfo[1] = !menu_panelProperties.bTooltipInfo[1];
 					overwritePanelProperties(); // Updates panel
 				}});
-				menu.newCheckMenu(subMenuName, 'Show shortcuts on tooltip', void(0), () => {return menu_panelProperties.bTooltipInfo[1];});
+				menu.newCheckMenu(subMenuName, 'Show mouse shortcuts on tooltip', void(0), () => {return menu_panelProperties.bTooltipInfo[1];});
+			}
+			menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+			{	// Shortcuts
+				readmes[configMenu + '\\Keyboard Shortcuts'] = folders.xxx + 'helpers\\readme\\keyboard_shortcuts.txt';
+				menu.newEntry({menuName: subMenuName, entryText: 'Show keyboard shortcuts on entries', func: () => {
+					if (!menu_properties.bShortcuts[1]) {
+						const popupText = _open(readmes[configMenu + '\\Keyboard Shortcuts']);
+						popupText && fb.ShowPopupMessage(popupText, scriptName);
+					}
+					menu_properties.bShortcuts[1] = !menu_properties.bShortcuts[1];
+					overwriteMenuProperties(); // Updates panel
+				}, flags: () => {return menu_panelProperties.bDynamicMenus[1] ? MF_STRING : MF_GRAYED;}});
+				menu.newCheckMenu(subMenuName, 'Show keyboard shortcuts on entries', void(0), () => {return menu_panelProperties.bDynamicMenus[1]&& menu_properties.bShortcuts[1];});
+				menu.newEntry({menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => {_explorer(shortcutsPath);}});
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
@@ -4648,12 +4648,6 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});
 	// Presets
 	presets = JSON.parse(propObject['presets'][1]);
-	// Shortcuts
-	if (propObject['bShortcuts'][1]) {
-		if (keyCallbacklID === -1) {keyCallbacklID = keyCallbackFn();}
-	} else {
-		if (keyCallbacklID !== -1) {clearInterval(keyCallbacklID);}
-	}
 	// Backup defaults
 	doOnce('Backup', () => {menu_propertiesBack = clone(menu_properties); menu_panelPropertiesBack = clone(menu_panelProperties); console.log('Playlist Tools: creating default settings...');})();
 	// Store for internal use
@@ -4752,6 +4746,119 @@ function menuTooltip() {
 }
 
 /* 
+	Debug
+*/
+
+menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Runs the first time the menu is clicked
+	if (bInit && menu_panelProperties.bDebug[1]) {
+		const mainMenu = menu.getMainMenuName();
+		const tree = {};
+		let menuList = [];
+		const toSkip = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'By... (tags)', 'sep']);
+		const toSkipMenuMatch = new Set(['Configuration']);
+		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((entry) => {return entry.toLowerCase();}));
+		menu.getEntries().filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
+			const entryText = isFunction(entry.entryText) ? entry.entryText() : entry.entryText;
+			const menuName = entry.menuName;
+			const flag = entry.flags;
+			// Skip
+			if (!toInclude.has(menuName.toLowerCase())) {return;}
+			if (entryText === 'sep') {return;}
+			if (flag === MF_GRAYED) {return;}
+			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
+			if (entryText.endsWith('...')) {return;}
+			// Save
+			if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
+			tree[menuName].push((menuName !==  mainMenu ? menuName + '\\' + entryText : entryText));
+			if (!new Set(menuList).has(menuName)) {menuList.push(menuName);};
+			if (menuName === mainMenu && entryText === 'sep') {menuList.push(entryText);};
+		});
+		Object.keys(tree).forEach((menuKey) => {
+			const idx = menuList.indexOf(menuKey);
+			if (idx !== -1) {menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)];}
+		});	
+		const newMacro = {name: 'Test Tools (generated)', entry: [...menuList], bAsync: false};
+		let menuName = 'Macros';
+		menu.newEntry({menuName, entryText: 'sep'});
+		menu.newEntry({menuName, entryText: newMacro.name + (newMacro.bAsync ? '\t(async)' : ''), func: () => {
+			newMacro.entry.forEach( (entry, idx, arr) => {
+				menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: newMacro.bAsync}); // Don't clear menu on last call
+			});
+		}});
+	}
+}});
+
+/* 
+	Dynamic menus
+*/
+function createMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\playlisttoolsentriescmd.json'} = {}) {
+	deleteMainMenuDynamic();
+	if (!menu_panelProperties.bDynamicMenus[1]) {return false;}
+	const bToFile = file && file.length;
+	try {
+		console.log('Playlist Tools: registering dynamic menus...');
+		const data = bToFile ? _jsonParseFile(file, convertCharsetToCodepage('UTF-8')) || {} : {};
+		// List menus
+		const mainMenu = menu.getMainMenuName();
+		const tree = {};
+		const dynamicTree = {};
+		let menuList = [];
+		let dynamicMenuList = [];
+		const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing', 'Tag remapping','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...']);
+		const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length'];
+		const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...','By... (tags)','By... (expression)','Find or create playlist...','To specified position','Select next tracks...']);
+		const toSkipDynamic = new Set([]);
+		allEntries.filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
+			const entryText = (isFunction(entry.entryText) ? entry.entryText() : entry.entryText).replace(/\t.*/g,'');
+			const menuName = entry.menuName;
+			// Skip
+			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
+			if (toSkipStarts.some((title) => {return entryText.startsWith(title);}) || toSkipStarts.some((title) => {return menuName.startsWith(title);})) {return;}
+			// Save
+			if (!toSkipExport.has(entryText) && !toSkipExport.has(menuName)) {
+				if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
+				tree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText)});
+				if (menuName !== mainMenu && entryText !== (menuName + '\\sep') && entry.flags === MF_GRAYED) {
+					menuList.push({name: menuName + '\\sep'});
+				}
+				if (!new Set(menuList).has(menuName)) {menuList.push(menuName);}
+				if (menuName === mainMenu && entryText === 'sep') {menuList.push({name: entryText});}
+			}
+			if (!toSkipDynamic.has(entryText) && !toSkipDynamic.has(menuName)) {
+				if (!dynamicTree.hasOwnProperty(menuName)) {dynamicTree[menuName] = [];}
+				if (entry.flags !== MF_GRAYED && entryText !== 'sep') {
+					dynamicTree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText)});
+					if (!new Set(dynamicMenuList).has(menuName)) {dynamicMenuList.push(menuName);}
+				}
+			}
+		});
+		Object.keys(tree).forEach((menuKey) => {
+			const idx = menuList.indexOf(menuKey);
+			if (idx !== -1) {menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)];}
+		});
+		Object.keys(dynamicTree).forEach((menuKey) => {
+			const idx = dynamicMenuList.indexOf(menuKey);
+			if (idx !== -1) {dynamicMenuList = [...dynamicMenuList.slice(0, idx), ...dynamicTree[menuKey], ...dynamicMenuList.slice(idx + 1)];}
+		});
+		// Filter consecutive separators
+		menuList = menuList.filter((item, idx, arr) => {return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx -1].name !== 'sep') && !arr[idx -1].name.endsWith('\\sep'));});
+		// Create dynamic menus
+		dynamicMenuList.forEach((menu, i) => {
+			fb.RegisterMainMenuCommand(i, menu.name, menu.name);
+			onMainMenuDynamicEntries.push(menu);
+		});
+		// Add to list
+		data[window.Name] = menuList;
+		// Don try to export for ajquery-xxx integration when it isn't installed
+		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !_isFolder(file.split('\\').slice(0, -1).join('\\'))) {return true;}
+		return (bToFile ? _save(file, JSON.stringify(data, null, '\t')) : true);
+	} catch (e) {console.log('createMainMenuDynamic: unknown error'); console.log(e.message);}
+	return false;
+}
+// Run once at startup
+deferFunc.push({name: 'createMainMenuDynamic', func: createMainMenuDynamic});
+
+/* 
 	Shortcuts
 */
 menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
@@ -4792,76 +4899,3 @@ menu.newCondEntry({entryText: 'Shortcuts addition', condFunc: () => {
 		menu.entryArrTemp = entryList;
 	}
 }});
-
-menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => {
-	if (bInit && menu_panelProperties.bDebug[1]) {
-		const mainMenu = menu.getMainMenuName();
-		const tree = {};
-		let menuList = [];
-		const toSkip = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'By... (tags)', 'sep']);
-		const toSkipMenuMatch = new Set(['Configuration']);
-		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((entry) => {return entry.toLowerCase();}));
-		menu.getEntries().filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
-			const entryText = isFunction(entry.entryText) ? entry.entryText() : entry.entryText;
-			const menuName = entry.menuName;
-			const flag = entry.flags;
-			// Skip
-			if (!toInclude.has(menuName.toLowerCase())) {return;}
-			if (entryText === 'sep') {return;}
-			if (flag === MF_GRAYED) {return;}
-			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
-			if (entryText.endsWith('...')) {return;}
-			// Save
-			if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
-			tree[menuName].push((menuName !==  mainMenu ? menuName + '\\' + entryText : entryText));
-			if (!new Set(menuList).has(menuName)) {menuList.push(menuName);};
-			if (menuName === mainMenu && entryText === 'sep') {menuList.push(entryText);};
-		});
-		Object.keys(tree).forEach((menuKey) => {
-			const idx = menuList.indexOf(menuKey);
-			if (idx !== -1) {menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)];}
-		});	
-		const newMacro = {name: 'Test Tools (generated)', entry: [...menuList], bAsync: false};
-		let menuName = 'Macros';
-		menu.newEntry({menuName, entryText: 'sep'});
-		menu.newEntry({menuName, entryText: newMacro.name + (newMacro.bAsync ? '\t(async)' : ''), func: () => {
-			newMacro.entry.forEach( (entry, idx, arr) => {
-				menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: newMacro.bAsync}); // Don't clear menu on last call
-			});
-		}});
-	}
-}});
-
-// function on_key_up(vkey) {
-	// console.log(vkey)
-// }
-
-function keyCallback() {
-	if (!window.IsVisible) {return;}
-	// Enable/Disable switch on Ctrl + Alt + E
-	if (!isFinite(keyCallbackDate) && utils.IsKeyPressed(VK_ALT) && utils.IsKeyPressed(VK_CONTROL) && utils.IsKeyPressed(69)) {keyCallbackDate = Date.now(); return;}
-	if (isFinite(keyCallbackDate) && utils.IsKeyPressed(VK_ALT) && utils.IsKeyPressed(VK_CONTROL) && utils.IsKeyPressed(69)) {keyCallbackDate = Infinity; return;}
-	// Disable on alt-tab
-	if (isFinite(keyCallbackDate) && utils.IsKeyPressed(VK_ALT) && utils.IsKeyPressed(VK_TAB)) {keyCallbackDate = Infinity; return;}
-	 // Limit rate to 500 ms
-	const rate = Date.now() - keyCallbackDate;
-	if (rate <= 500 || rate < 0) {return;}
-	// Key checking
-	const keys = Object.keys(shortcuts);
-	const keysLength = keys.length;
-	for (let i = 0; i < keysLength; i++) {
-		const shortcut = shortcuts[keys[i]];
-		if (utils.IsKeyPressed(shortcut.val)) {
-			if (shortcut.mod.length && shortcut.mod.some((mod) => {return !utils.IsKeyPressed(mod);})) {continue;}
-			keyCallbackDate = Date.now();
-			delayFn(() => {
-				menu.btn_up(void(0), void(0), void(0), shortcut.menu);
-				keyCallbackDate = Date.now();
-			},50)();
-			break;
-		}
-	}
-}
-const keyCallbackFn = repeatFn(keyCallback, 100);
-var keyCallbacklID = -1;
-var keyCallbackDate = Date.now();

@@ -52,6 +52,5 @@ addButton({
 		} else { // Standard use
 			menu.btn_up(this.currX, this.currY + this.currH);
 		}
-		keyCallbackDate = Date.now(); // Update key checking
 	}, null, void(0), menuTooltip, null, null, chars.wrench),
 });

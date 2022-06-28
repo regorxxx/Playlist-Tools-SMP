@@ -1,5 +1,0 @@
-﻿Global Shortcuts is an experimental feature bypassing SMP limits. Really 'global', i.e. they work no matter what you are doing in foobar.
-They stop working when foobar window is minimized... But still work if you 'alt-tab' between windows, even if foobar is not on screen.
-
-As safeguard, key checking is temporarily disabled whenever you 'alt-tab'.
-It will be re-enabled whenever the playlist tools button is clicked or manually, by pressing 'Ctrl + Shift + E' at any moment (as a switch).
