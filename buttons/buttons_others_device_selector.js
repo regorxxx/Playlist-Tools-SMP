@@ -20,7 +20,7 @@ try {
 buttonsBar.list.push({});
 
 addButton({
-	deviceSelector: new themedButton({x: 0, y: 0, w: 78, h: 22}, 'Device', function () {
+	deviceSelector: new themedButton({x: 0, y: 0, w: 78, h: 22}, 'Devices', function () {
 		const menu = new _menu();
 		menu.newEntry({entryText: 'Select output:', func: null, flags: MF_GRAYED});
 		menu.newEntry({entryText: 'sep'});
