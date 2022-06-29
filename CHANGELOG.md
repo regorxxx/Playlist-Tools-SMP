@@ -23,6 +23,7 @@
 ## [Unreleased][]
 ### Added
 - Device selector: new button to select output device.
+- Show duplicates: new button to show duplicates by tags (the inverse of Remove duplicates). See https://hydrogenaud.io/index.php?topic=110958
 ### Changed
 - Shortcuts: have been reworked to make use of Dynamic menus (instead of a global hack like previously). In other words, to assign a menu entry, just use the default method at 'Preferences\Keyboard shortcuts', following the same steps than any other native menu entry. Obviously, to assign a Playlist Tool entry to a keyboard shortcut, the menu entry must exist first at 'File\Spider Monkey Panel\Script Commands\\[Panel Name]\\...', i.e. Dynamic menus must be enabled. Previous functionality has been removed. Readme has been changed to reflect the changes.
 - UI: themed buttons are replaced with manually drawn buttons when the first method fails (on Wine for ex.). Console will output: "window.CreateThemeManager('Button') failed, using experimental buttons" in such case.
