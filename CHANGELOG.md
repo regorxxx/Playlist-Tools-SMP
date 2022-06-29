@@ -33,6 +33,7 @@
 ### Fixed
 - UI: crash due to themed buttons not being available on wine.
 - Helpers: added additional checks for 32 bits systems to use 32 bits binaries for external tools. Should solve multiple issues on Wine when using 32 prefix.
+- Readmes: some minor fixes to names displayed and missing entries.
 
 ## [3.0.0-beta.8] - 2022-06-05
 ### Added

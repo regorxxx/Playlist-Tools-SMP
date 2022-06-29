@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//29/06/22
 
 /* 
 	Top Tracks
@@ -34,7 +34,7 @@ function do_top_tracks({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	//Find and remove duplicates
 	if (checkDuplicatesBy !== null) {
-		outputHandleList = do_remove_duplicates(outputHandleList, sortBy, checkDuplicatesBy);
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy});
 	}
 	// Output n tracks
 	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);

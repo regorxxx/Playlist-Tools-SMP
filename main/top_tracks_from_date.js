@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//29/06/22
 
 /* 
 	Top X Tracks From Date
@@ -49,7 +49,7 @@ function do_top_tracks_from_date({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'do_top_tracks_from_date'); return;}
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null) {
-		outputHandleList = do_remove_duplicates(outputHandleList, sortBy, checkDuplicatesBy);
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy});
 	}
 	// Filter Play counts by date
 	const datesArray = fb.TitleFormat('[%played_times%]').EvalWithMetadbs(outputHandleList);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/04/22
+//29/06/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -64,7 +64,7 @@ function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFil
 		fb.ShowPopupMessage(report, 'Tracks not found at source');
 	}
 	if (handlePlaylist) {
-		if (duplicatesMask && duplicatesMask.length) {handlePlaylist = do_remove_duplicates(handlePlaylist, null, duplicatesMask.filter((n) => n), 0);}
+		if (duplicatesMask && duplicatesMask.length) {handlePlaylist = removeDuplicatesV2({handleList: handlePlaylist, checkKeys: duplicatesMask.filter((n) => n)});}
 		const idx = plman.PlaylistCount;
 		plman.InsertPlaylistItems(plman.CreatePlaylist(idx, 'Import'), 0, handlePlaylist);
 		if (!handlePlaylist.Count) {console.log('importTextPlaylist(): could not find any track with the given text');}

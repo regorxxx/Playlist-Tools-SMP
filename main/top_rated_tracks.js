@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//29/06/22
 
 /* 
 	Top Rated Tracks
@@ -46,7 +46,7 @@ function do_top_rated_tracks({
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 		//Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			handleList_i = do_remove_duplicates(handleList_i, sortBy, checkDuplicatesBy);
+			handleList_i = removeDuplicatesV2({handleList: handleList_i, sortOutput: sortBy, checkKeys: checkDuplicatesBy});
 		}
 		outputHandleList.AddRange(handleList_i);
 		currRating--;

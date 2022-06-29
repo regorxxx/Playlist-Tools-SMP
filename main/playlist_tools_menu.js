@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/06/22
+//29/06/22
 
 /* 
 	Playlist Tools Menu
@@ -1225,9 +1225,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						sortInputDuplic = menu_properties.sortInputDuplic[1].split(',');
 						sortInputFilter = menu_properties.sortInputFilter[1].split(',');
 						nAllowed = menu_properties.nAllowed[1];
-						// Menus
-						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {do_remove_duplicates(null, null, sortInputDuplic);}, flags: playlistCountFlagsAddRem});
-						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {do_remove_duplicates(null, null, sortInputFilter, nAllowed);}, flags: playlistCountFlagsAddRem});
+						// Menus		
+						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {removeDuplicatesV2({checkKeys: sortInputDuplic});}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {removeDuplicates({checkKeys: sortInputFilter, nAllowed});}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
 							let tags;
@@ -1239,7 +1239,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true));}
 							catch (e) {return;}
 							if (!Number.isSafeInteger(n)) {return;}
-							do_remove_duplicates(null, null, tags, n);
+							removeDuplicates({checkKeys: tags, nAllowed: n});
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)...', func: () => {
@@ -3383,7 +3383,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
 						}
 						// Remove duplicates
-						handleListFrom = do_remove_duplicates(handleListFrom);
+						handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: ['title', 'artist', 'date']});
 					}
 					// Remove tracks on destination list
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});

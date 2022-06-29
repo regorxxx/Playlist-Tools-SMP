@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/04/22
+//29/06/22
 
 /* 
 	Search same by
@@ -247,7 +247,7 @@ function do_search_same_by({
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			outputHandleList = do_remove_duplicates(outputHandleList, sortBy, checkDuplicatesBy, void(0), bProfile);
+			outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile});
 		}
 		const oldCount = outputHandleList.Count;	
 		// Limit n tracks
