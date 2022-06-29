@@ -5,11 +5,11 @@
 ![GitHub](https://img.shields.io/github/license/regorxxx/Playlist-Tools-SMP)  
 A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel) Scripts for [foobar2000](https://www.foobar2000.org), built within a menu, which serves as a hub for 'usage examples' and shortcuts to the most requested foobar missing functionalities: remove duplicates by tags, revive dead items, check errors on tags, spotify-like playlist creation, advanced queries, etc.
 
-![Animation7](https://user-images.githubusercontent.com/83307074/116756221-471e8500-a9fb-11eb-96c9-2c269bf91fef.gif)
+![pt_topplayed](https://user-images.githubusercontent.com/83307074/176501054-f5ed2b61-2916-42ea-8c8f-fc8be0517f6f.gif)
 
 ## Features
 
-![Animation9](https://user-images.githubusercontent.com/83307074/116756215-44239480-a9fb-11eb-8489-b56a178c70f4.gif)
+![pt_searchbygraph](https://user-images.githubusercontent.com/83307074/176501077-4b046c50-1db8-4149-bb93-dfa2949a5d88.gif)
 
 It's impossible to offer a complete list of the things that can be done with these tools, in a few words: anything related to playlist creation, sorting, library maintenance, automation, etc. but a readme for every utility can be found using the corresponding menu (on configuration). 
 
@@ -26,6 +26,8 @@ The collection of scripts provided here are not only a direct replacement of [Ra
 * **Online controller integration (ajquery-xxx):** online controller fully compatible with most of the offered tools, which can be called as any other main menu entry. Also available with CMD scripting.
 * **Wine - Unix - non IE SOs compatible:** all the UI, tools, popups, configuration and external helpers have been carefully designed to work in all systems without requiring IE installation, HTML popups or editing the panel properties. Scripts are expected to work 100% the same in any SO.
 * **Configurable UI and accessibility design:** most of the UI is configurable (size, colors, position, draggable buttons). All the UI is managed within menus, so it may be used with a narrator (for blindness).
+
+![pt_ssametages](https://user-images.githubusercontent.com/83307074/176501130-905a07e5-dc28-4bfa-8570-e6723c245901.gif)
 
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
 * **Most played tracks from...:** from a year or period. (requires [Enhanced Playback Statistics](https://www.foobar2000.org/components/view/foo_enhanced_playcount))  
@@ -105,17 +107,17 @@ The sky is the limit once you use the current scripts to create your own buttons
 
 The menus are highly customizable. They are created on demand according to the selected tracks or current playlist, and many entries can be added, removed or edited to suit your needs. Also if some scripts are missing, the menu is rebuilt skipping those entries (letting you to install selectively what you need).
 
-![Animation8](https://user-images.githubusercontent.com/83307074/116756213-4259d100-a9fb-11eb-9452-657389977f69.gif)
+![pt_availablemenus](https://user-images.githubusercontent.com/83307074/176501175-2eb1af4d-92a2-4f54-96e4-36c60c4c0cb8.gif)
 
-![Animation10](https://user-images.githubusercontent.com/83307074/116756219-4685ee80-a9fb-11eb-80be-413f0e691dd4.gif)
+![pt_dynamicqueries](https://user-images.githubusercontent.com/83307074/176501151-c1c50a35-81c7-40bc-bc48-95efd9636245.gif)
 
 ### Also integrates
  1. [Search-by-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP): creates intelligent "spotify-like" playlist using high-level data from tracks and computing their similarity using genres/styles.
  2. [Music-Graph](https://github.com/regorxxx/Music-Graph): An open source graph representation of most genres and styles found on popular, classical and folk music.
  3. [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation): Javascript implementation of the Camelot Wheel, ready to use "harmonic mixing" rules and translations for standard key notations.
  4. [Menu-Framework-SMP](https://github.com/regorxxx/Menu-Framework-SMP): Helper which allows to easily create customizable and dynamic menus.
-
-![playlist_tools_menu_05](https://user-images.githubusercontent.com/83307074/116759000-cebac280-aa00-11eb-8a81-9a450e13205a.gif)
+ 
+![pt_Toprated](https://user-images.githubusercontent.com/83307074/176501329-aa16d757-9b91-4e92-a4ff-23334589185e.gif)
 
 ## Installation
 See [_TIPS and INSTALLATION (txt)](https://github.com/regorxxx/Playlist-Tools-SMP/blob/main/_TIPS%20and%20INSTALLATION.txt) and the [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Installation).
