@@ -27,6 +27,8 @@ The collection of scripts provided here are not only a direct replacement of [Ra
 * **Wine - Unix - non IE SOs compatible:** all the UI, tools, popups, configuration and external helpers have been carefully designed to work in all systems without requiring IE installation, HTML popups or editing the panel properties. Scripts are expected to work 100% the same in any SO.
 * **Configurable UI and accessibility design:** most of the UI is configurable (size, colors, position, draggable buttons). All the UI is managed within menus, so it may be used with a narrator (for blindness).
 
+![pt_customizable](https://user-images.githubusercontent.com/83307074/176502289-d99f7222-3a51-4803-ad42-d2804b5f186a.gif)
+
 ![pt_ssametages](https://user-images.githubusercontent.com/83307074/176501130-905a07e5-dc28-4bfa-8570-e6723c245901.gif)
 
 The sky is the limit once you use the current scripts to create your own buttons and tools. Currently contains pre-defined use-cases for these scripts:
