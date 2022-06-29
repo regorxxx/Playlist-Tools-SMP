@@ -1,0 +1,21 @@
+﻿Show tracks with same tags (also real duplicated files) from playlists.
+It can be considered the inverse function to remove duplicates tool
+
+Can be used to show tracks with same MD5, fingerprint, etc. For ex:
+https://hydrogenaud.io/index.php?topic=110958
+
+Usage on playlist tools:
+	- Tags may be set via menus.
+	- See comments below (buttons) for usage. It applies the same.
+
+Usage on buttons:
+	- Tags or TF expressions may be set at the properties panel. There are
+	3 possible fields, but multiple tags may also be set in the same field.
+	('%ARTIST% - %TITLE% - %DATE%' is equivalent to setting them separately
+	on the 3 properties)
+	- When adding a tag on a field, '%' may be omitted. When adding multiple 
+	tags or TF expressions, you must add all TF symbols (% and $).
+	- Since the tags are configurable, the concept of 'duplicate' is related to 
+	those tags... that's why this tool may also be used to filter playlists instead
+	of showing real duplicates too.
+	
