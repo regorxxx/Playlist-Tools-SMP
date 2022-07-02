@@ -22,12 +22,21 @@
 
 ## [Unreleased][]
 ### Added
+- Forced query: added new submenu with pre-defined filters (queries) to easily configure the forced query.
 - Device selector: new button to select output device.
 - Show duplicates: new button to show duplicates by tags (the inverse of Remove duplicates). See https://hydrogenaud.io/index.php?topic=110958
+- Tags Automation: added KEY tagging, using [Essentia](https://essentia.upf.edu/). Same algorithms than Picard / AcousticBrainz.
+- Readmes: new readmes for 'Tagging requisites', 'Tags sources' and 'Other tag notes'. They should cover most frequently asked questions about tagging compatible with the tools or tag remapping.
 ### Changed
 - Shortcuts: have been reworked to make use of Dynamic menus (instead of a global hack like previously). In other words, to assign a menu entry, just use the default method at 'Preferences\Keyboard shortcuts', following the same steps than any other native menu entry. Obviously, to assign a Playlist Tool entry to a keyboard shortcut, the menu entry must exist first at 'File\Spider Monkey Panel\Script Commands\\[Panel Name]\\...', i.e. Dynamic menus must be enabled. Previous functionality has been removed. Readme has been changed to reflect the changes.
 - UI: themed buttons are replaced with manually drawn buttons when the first method fails (on Wine for ex.). Console will output: "window.CreateThemeManager('Button') failed, using experimental buttons" in such case.
 - Dynamic menus: more entries has been exposed as main menus. Some config related menus -not meant to be there- have been removed. Also the list of entries is now different to the exported list for online controllers. i.e. previously any entry which required an input popup was skipped to ensure compatibility with online controllers; now they are also exposed as main menus but disabled for online controllers, covering all possible use-cases.
+- Search by Distance: added new entry. on customizable button, to open the file to set pre-defined filters (queries). In case the file is deleted, clicking on the menu entry will recreate it.
+- Search by Distance:  influences filter doesn't overwrite score filter or graph distance filter now. Although it was designed to do so (to output any influence without considering score), it did not work in a logical way since those filters can be manually tuned to achieve the same result while also allowing other options.
+- Search by distance: Updated descriptors.
+- Readmes: reworked readmes submenu, now spanned horizontally. Also added separators by category.
+- Readmes: rewritten readmes to avoid line wrapping wen showing them within popup for a cleaner presentation.
+- Helpers: moved all temp files to temp folder (instead of 'js_data'). For ex. for Tags Automation. Any file there may be safely removed in case there is a crash (contrary to the 'js_data' folder).
 - Helpers: updated helpers.
 - Minor speed optimization on multiple tools/buttons using duplicates removal code.
 ### Removed
