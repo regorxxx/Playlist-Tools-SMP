@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/02/22
+//01/07/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -125,7 +125,7 @@ function createFpMenuLeft() {
 	{	// Chromaprint database
 		menu.newEntry({entryText: 'Readme...', func: (bOmmit = false) => {
 			const readmePath = folders.xxx + 'helpers\\readme\\fingerprint_tools.txt';
-			const readme = _open(readmePath, convertCharsetToCodepage('UTF-8'));
+			const readme = _open(readmePath, utf8);
 			if (readme.length) {fb.ShowPopupMessage(readme, 'Fingerprint Tools');}
 		}});
 	}

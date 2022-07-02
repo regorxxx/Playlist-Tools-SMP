@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//01/07/22
 
 /* 
 	-> EDIT
@@ -16,7 +16,7 @@ buttonsBar.list.push({});
 addButton({
 	OneButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
-		const readme = _open(readmePath, convertCharsetToCodepage('UTF-8'));
+		const readme = _open(readmePath, utf8);
 		if (readme.length) {fb.ShowPopupMessage(readme, 'Save tags and comparison');}
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to save tags file:', 'Tags file', folders.data + 'tags.json', true);}
@@ -29,7 +29,7 @@ addButton({
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}
 		if (!file.length) {return;}
-		const toTags =  _jsonParseFileCheck(file, 'Tags file', 'Save tags', convertCharsetToCodepage('UTF-8'));
+		const toTags =  _jsonParseFileCheck(file, 'Tags file', 'Save tags', utf8);
 		if (!toTags || !toTags.length) {return;}
 		let toTagsFolder;
 		try {toTagsFolder = utils.InputBox(window.ID, 'Root path of the original file tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true);}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/05/22
+//01/07/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -123,11 +123,11 @@ chromaPrintUtils.compareFingerprintsFilter = function compareFingerprints({
 	// Get Tags
 	const fromTags = getTagsValuesV4(fromHandleList, [tagName], true, void(0), null).map((array) => {return array.map((item) => {return item.split(',');}).flat(1).map((item) => {return item ? Number(item) : void(0)}).filter(Boolean);});
 	// Get reverse map of tags
-	let data = _jsonParseFile(reverseDbPath, convertCharsetToCodepage('UTF-8'));
+	let data = _jsonParseFile(reverseDbPath, utf8);
 	if (!data) {console.popup('Database not found: ' + reverseDbPath + '\nWithout database, fingerprinting search will fallback to slower method.', 'Fingerprint Tag');}
 	// const reverseMap = data ? (bFastMap ? new fastMap(data) : new Map(data)) : this.reverseIndexing({toTags});
 	const reverseMap = data ? new Map(data) : this.reverseIndexing({toTags});
-	data = _jsonParseFile(folders, convertCharsetToCodepage('UTF-8'));
+	data = _jsonParseFile(folders, utf8);
 	if (!data) {console.popup('Database not found: ' + reverseDbPath + '\nWithout database, fingerprinting search will fallback to slower method.', 'Fingerprint Tag');}
 	const currReverseMapIdx = chromaPrintUtils.libraryMap({toHandleList, bReverse: true});
 	const oldReverseMapIdx = data ? data : chromaPrintUtils.libraryMap({toHandleList, bReverse: false});
@@ -225,7 +225,7 @@ chromaPrintUtils.calculateFingerprints = function calculateFingerprints({
 			console.log('Processing items: ' + currMax + '/' + totalTracks);
 			const items = [];
 			const fp = [];
-			const fpcalcJSON =  folders.data + 'fpcalc' + (new Date().toDateString() + Date.now()).split(' ').join('_') + '.json';
+			const fpcalcJSON =  folders.temp + 'fpcalc' + (new Date().toDateString() + Date.now()).split(' ').join('_') + '.json';
 			let prevProgress = -1, iSteps = (count + 1) === maxCount ? currMax : numTracks;
 			handleListArr.slice(count * numTracks, currMax).forEach((handle, i) => {
 				const path = handle.Path;

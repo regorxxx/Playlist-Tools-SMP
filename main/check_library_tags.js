@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/03/22
+//01/07/22
 
 /*
 	Check Library Tags
@@ -538,7 +538,7 @@ function addTagsToExclusionPopup({
 					properties = getPropertiesPairs(checkTags_properties, checkTags_prefix),
 					} = {}){
 	// Skipped values at pre-filter
-	const propertyTagsObj = _isFile(properties['tagValuesExcludedPath'][1]) ? _jsonParseFileCheck(properties['tagValuesExcludedPath'][1], 'Exclusion list json', window.Name, convertCharsetToCodepage('UTF-8')) || {} : {}; // filter holes and remove duplicates
+	const propertyTagsObj = _isFile(properties['tagValuesExcludedPath'][1]) ? _jsonParseFileCheck(properties['tagValuesExcludedPath'][1], 'Exclusion list json', window.Name, utf8) || {} : {}; // filter holes and remove duplicates
 	const propertyTags = objectToPairs(propertyTagsObj);
 	let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, propertyTags);
 	if (inputTags.length) {
@@ -578,7 +578,7 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 }
 
 function loadTagsExcluded(path) { // filter holes and remove duplicates
-	let obj = _isFile(path) ? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, convertCharsetToCodepage('UTF-8')) || {} : {};
+	let obj = _isFile(path) ? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, utf8) || {} : {};
 	for (const key in obj) {obj[key] = new Set(obj[key].filter(Boolean));}
 	return obj;
 }

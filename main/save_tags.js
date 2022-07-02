@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/02/22
+//01/07/22
 
 /*
 	Save tags
@@ -63,7 +63,7 @@ function saveTags({
 function compareTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 					selItemsFolder = 'H:\\',
-					toTags = _jsonParseFileCheck(folders.data + 'tags.json', 'Tags json', 'Compare tags', convertCharsetToCodepage('UTF-8')),
+					toTags = _jsonParseFileCheck(folders.data + 'tags.json', 'Tags json', 'Compare tags', utf8),
 					toTagsFolder = 'H:\\',
 					} = {}) {
 	if (!toTags || !selItems || !selItemsFolder || !toTagsFolder) {return;}

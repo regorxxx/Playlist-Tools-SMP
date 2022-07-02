@@ -30,7 +30,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 			console.log('Processing items: ' + currMax + '/' + totalTracks);
 			const items = [];
 			const LRA = [];
-			const ffmpegJSON =  folders.data + 'ffmpegJSON' + (new Date().toDateString() + Date.now()).split(' ').join('_') + '.json';
+			const ffmpegJSON =  folders.temp + 'ffmpegJSON' + (new Date().toDateString() + Date.now()).split(' ').join('_') + '.json';
 			let prevProgress = -1, iSteps = (count + 1) === maxCount ? currMax : numTracks;
 			handleListArr.slice(count * numTracks, currMax).forEach((handle, i) => {
 				const path = handle.Path;
