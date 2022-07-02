@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/22
+//01/07/22
 
 /* 
 	Playlist Tools Menu
@@ -63,8 +63,8 @@ const menu_panelProperties = {
 	bDebug:			['Enable global debug to console', false],
 	bDynamicMenus:	['Show dynamic menus?', true]
 };
-let menu_propertiesBack = menu_properties;
-let menu_panelPropertiesBack = menu_panelProperties;
+let menu_propertiesBack = JSON.parse(JSON.stringify(menu_properties));
+let menu_panelPropertiesBack = JSON.parse(JSON.stringify(menu_panelProperties));
 
 // Checks
 menu_properties['playlistLength'].push({greater: 0, func: isInt}, menu_properties['playlistLength'][1]);
@@ -92,7 +92,14 @@ const defaultArgs = {
 					styleGenreTag: JSON.parse(menu_properties['styleGenreTag'][1]),
 					parent: null
 };
-var readmes = {'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt'}; // {scriptName: path}
+const newReadmeSep = (() => {let i = 0; return (bFull = false) => {return (bFull ? {['sep' + ++i]: 'sep'} : ['sep' + ++i]);}})()
+var readmes = { // {scriptName: path} or {arbitraryKey: 'sep'}
+	'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt',
+	'Tagging requisites': folders.xxx + 'helpers\\readme\\tags_structure.txt',
+	'Tags sources': folders.xxx + 'helpers\\readme\\tags_sources.txt',
+	'Other tags notes': folders.xxx + 'helpers\\readme\\tags_notes.txt',
+	...newReadmeSep(true),
+};
 loadProperties();
 // Menu
 const specialMenu = 'Special Playlists...';
@@ -389,6 +396,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		const name = 'Search same by tags...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
+			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\search_same_by.txt';
 			forcedQueryMenusEnabled[name] = true;
 			const menuName = menu.newMenu(name);
@@ -575,6 +583,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		const name = 'Standard Queries...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
+			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\dynamic_query.txt';
 			forcedQueryMenusEnabled[name] = true;
 			const menuName = menu.newMenu(name);
@@ -883,6 +892,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		const nameWeight = 'Search similar by Weight...';
 		if (!menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true) {
 			include(scriptPath);
+			readmes[newReadmeSep()] = 'sep';
 			readmes['Search similar by... (All)'] = folders.xxx + 'helpers\\readme\\search_bydistance.txt';
 			readmes['Search similar by... (recipes\\themes)'] = folders.xxx + 'helpers\\readme\\search_bydistance_recipes_themes.txt';
 			readmes['Search similar by Graph'] = folders.xxx + 'helpers\\readme\\search_bydistance_graph.txt';
@@ -1081,22 +1091,28 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{
-							const submenuTwo = menu.newMenu('Tags...', submenu);
+							const submenuTwo = menu.newMenu('Tag remapping...' + nextId('invisible', true, false), submenu);
 							{	// Menu to configure tags
 								const options = ['genre', 'style', 'mood', 'bpm', 'key', 'composer', 'date', 'customStr', 'customNum'];
 								menu.newEntry({menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED})
 								menu.newEntry({menuName: submenuTwo, entryText: 'sep'})
 								menu.newCondEntry({entryText: 'Tags... (cond)', condFunc: () => {
+									// Create menu on 2 places: tool config submenu and global tag submenu
+									const configMmenu = 'Tag remapping...';
+									menu.newEntry({menuName: configMmenu, entryText: 'sep'});
+									const configSubmenu = menu.newMenu(submenu + '...' + nextId('invisible', true, false), configMmenu);
 									options.forEach((tagName) => {
 										const key = tagName + 'Tag';
-										menu.newEntry({menuName: submenuTwo, entryText: capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
-											const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, menu_properties[key][1]);
-											if (!input.length) {return;}
-											if (menu_properties[tagName + 'Tag'][1] === input) {return;}
-											if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
-											menu_properties[key][1] = input;
-											overwriteMenuProperties(); // Updates panel
-										}});
+										[configSubmenu, submenuTwo].forEach((sm) => {
+											menu.newEntry({menuName: sm, entryText: capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
+												const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, menu_properties[key][1]);
+												if (!input.length) {return;}
+												if (menu_properties[tagName + 'Tag'][1] === input) {return;}
+												if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
+												menu_properties[key][1] = input;
+												overwriteMenuProperties(); // Updates panel
+											}});
+										});
 									});
 								}});
 							}
@@ -1197,6 +1213,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 {
 	const name = 'Playlist manipulation';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Remove Duplicates
 			const scriptPath = folders.xxx + 'main\\remove_duplicates.js';
@@ -1844,6 +1861,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 {
 	const name = 'Selection manipulation';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Legacy Sort
 			const name = 'Sort...';
@@ -2702,6 +2720,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 {
 	const name = 'Other tools';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Check tags
 			const scriptPath = folders.xxx + 'main\\check_library_tags.js';
@@ -3061,6 +3080,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			include(plsManHelper);
 			isPlsMan = true;
 		}
+		readmes[newReadmeSep()] = 'sep';
 		readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_pools.txt';
 		forcedQueryMenusEnabled[name] = true;
 		let menuName = menu.newMenu(name);
@@ -3226,7 +3246,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							const bScriptLoaded = !menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
 							if (typeof do_searchby_distance !== 'undefined' && bScriptLoaded) {
 								// Get arguments
-								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
 								// Check
 								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
@@ -3260,7 +3280,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						case plsName.startsWith('_SEARCHBYWEIGHT_'): { // Search by WEIGHT
 							if (typeof do_searchby_distance !== 'undefined') {
 								// Get arguments
-								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
 								// Check
 								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
@@ -3294,7 +3314,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						case plsName.startsWith('_SEARCHBYDYNGENRE_'): { // Search by DYNGENRE
 							if (typeof do_searchby_distance !== 'undefined') {
 								// Get arguments
-								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, convertCharsetToCodepage('UTF-8')) : pool.recipe[plsName];
+								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
 								// Check
 								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
@@ -3640,6 +3660,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		const scriptPath = folders.xxx + 'helpers\\playlist_tools_menu_macros.js';
 		if (_isFile(scriptPath)){
 			include(scriptPath);
+			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_macros.txt';
 			// Create new properties
 			const macrosDefaults = [
@@ -3784,6 +3805,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 {
 	const name = 'Script integration';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Main menu editor
 			const scriptPath = folders.xxx + 'main\\main_menu_custom.js';
@@ -3859,7 +3881,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) !== 0 ? plman.GetPlaylistItems(pls[0]).Convert().map((handle) => {return {name: handle.Path.split('_').pop()};}) : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'To execute json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? plsData : null)));
+						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, utf8) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'To execute json', scriptName, utf8) : (plsData ? plsData : null)));
 						if (data) {
 							data.forEach((entry) => {
 								const entryName = entry.hasOwnProperty('name') ? entry.name : '';
@@ -3877,7 +3899,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) === 1 ? plman.GetPlaylistItems(pls[0])[0].Path.split('_').pop() : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'DSP json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'DSP json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? {name: plsData} : null)));
+						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'DSP json', scriptName, utf8) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'DSP json', scriptName, utf8) : (plsData ? {name: plsData} : null)));
 						if (data) {
 							const entryName = data.hasOwnProperty('name') ? data.name : '';
 							if (entryName.length) {
@@ -3894,7 +3916,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) === 1 ? plman.GetPlaylistItems(pls[0])[0].Path.split('_').pop() : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'Device json', scriptName, convertCharsetToCodepage('UTF-8')) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'Device json', scriptName, convertCharsetToCodepage('UTF-8')) : (plsData ? {name: plsData, device_id: plsData} : null))); 
+						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'Device json', scriptName, utf8) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'Device json', scriptName, utf8) : (plsData ? {name: plsData, device_id: plsData} : null))); 
 						if (data) {
 							const entryName = data.hasOwnProperty('name') ? data.name : '';
 							const entryId = data.hasOwnProperty('name') ? data.device_id : '';
@@ -4129,7 +4151,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: () => {
 					if (!menu_properties.bPlaylistNameCommands[1]) {
 						if (_isFile(readmes[menuName + '\\' + name])) {
-							const readme = _open(readmes[menuName + '\\' + name], convertCharsetToCodepage('UTF-8'));
+							const readme = _open(readmes[menuName + '\\' + name], utf8);
 							if (readme.length) {
 								const answer = WshShell.Popup(readme, 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 								if (answer !== popup.yes) {return;}
@@ -4247,6 +4269,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 // Configuration...
 {
 	if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+		readmes[newReadmeSep()] = 'sep';
 		readmes[configMenu + '\\Presets'] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_presets.txt';
 		// Create it if it was not already created. Contains entries from multiple scripts
 		if (!menu.hasMenu(configMenu)) {
@@ -4300,6 +4323,55 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu_properties['forcedQuery'][1] = input;
 							overwriteMenuProperties(); // Updates panel
 						}});
+						{ // Menu to configure properties: additional filters
+							const subMenuNameThree = menu.newMenu('Additional pre-defined filters...', subMenuNameTwo);
+							let options = [];
+							const file = folders.xxx + 'presets\\Playlist Tools\\filters\\playlist_tools_filters.json';
+							const bFile = _isFile(file);
+							if (bFile) {
+								options = _jsonParseFileCheck(file, 'Query filters json', 'Playlist Tools', utf8) || [];
+							} else {
+								options = [
+									{title: 'Female vocals',			query: 'STYLE IS Female Vocal OR STYLE IS Female OR GENRE IS Female Vocal OR GENRE IS Female OR GENDER IS Female'}, 
+									{title: 'Instrumentals',			query: 'STYLE IS Instrumental OR GENRE IS Instrumental OR SPEECHINESS EQUAL 0'},
+									{title: 'Acoustic tracks',			query: 'STYLE IS Acoustic OR GENRE IS Acoustic OR ACOUSTICNESS GREATER 75'},
+									{title: 'Rating > 2',				query: '%RATING% GREATER 2'},
+									{title: 'Rating > 3',				query: '%RATING% GREATER 3'},
+									{title: 'Length < 6 min',			query: '%length_seconds% LESS 360'},
+									{title: 'Only Stereo',				query: '%channels% LESS 3 AND NOT COMMENT HAS Quad'},
+									{title: 'sep'},		
+									{title: 'No Female vocals',			query: 'NOT (STYLE IS Female Vocal OR STYLE IS Female OR GENRE IS Female Vocal OR GENRE IS Female OR GENDER IS Female)'}, 
+									{title: 'No Instrumentals', 		query: 'NOT (STYLE IS Instrumental OR GENRE IS Instrumental OR SPEECHINESS EQUAL 0)'},
+									{title: 'No Acoustic tracks',		query: 'NOT (STYLE IS Acoustic OR GENRE IS Acoustic OR ACOUSTICNESS GREATER 75)' },
+									{title: 'Not rated',				query: '%RATING% MISSING'},
+									{title: 'Not Live (unless Hi-Fi)',	query: 'NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi)'}
+								];
+							}
+							menu.newEntry({menuName: subMenuNameThree, entryText: 'Appended to Global Forced Query:', flags: MF_GRAYED});
+							menu.newEntry({menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED});
+							options.forEach((obj) => {
+								if (obj.title === 'sep') {menu.newEntry({menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED}); return;}
+								const entryText = obj.title;
+								let input = menu_properties['forcedQuery'][1].length ? ' AND ' + _p(obj.query) : obj.query;
+								menu.newEntry({menuName: subMenuNameThree, entryText, func: () => {
+									if (menu_properties['forcedQuery'][1].indexOf(input) !== -1) {
+										input = menu_properties['forcedQuery'][1].replace(input, ''); // Query
+										input = input.slice(1, -1); // Remove parentheses
+									} else {
+										input = menu_properties['forcedQuery'][1].length ? _p(menu_properties['forcedQuery'][1]) + input : input;
+									}
+									try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
+									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, 'Search by distance'); return;}
+									menu_properties['forcedQuery'][1] = input;
+								}});
+								menu.newCheckMenu(subMenuNameThree, entryText, void(0), () => {return menu_properties['forcedQuery'][1].indexOf(input) !== -1;});
+							});
+							menu.newEntry({menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED});
+							menu.newEntry({menuName: subMenuNameThree, entryText: 'Edit entries...' + (bFile ? '' : '\t(new file)'), func: () => {
+								if (!bFile) {_save(file, JSON.stringify(options, null, '\t'));}
+								_explorer(file);
+							}});
+						}
 					}});
 				}
 			}
@@ -4316,7 +4388,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}});
 		}
 		{	// Menu to configure properties: tags
-			const subMenuName = menu.newMenu('Tag remapping', configMenu);
+			const subMenuName = menu.newMenu('Tag remapping...', configMenu);
 			{
 				const options = ['key', 'styleGenre'];
 				menu.newEntry({menuName: subMenuName, entryText: 'Set the tags used by tools:', func: null, flags: MF_GRAYED})
@@ -4416,7 +4488,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
 				catch (e) {return;}
 				if (!file.length) {return;}
-				const newPresets = _jsonParseFileCheck(file, 'Presets', scriptName, convertCharsetToCodepage('UTF-8'));
+				const newPresets = _jsonParseFileCheck(file, 'Presets', scriptName, utf8);
 				if (!newPresets) {return;}
 				// Load description
 				let readme = '';
@@ -4513,20 +4585,38 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			let iCount = 0;
 			if (Object.keys(readmes).length) {
+				const rgex = /sep\b|separator\b/gi;
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
-					if (_isFile(value)) { 
-						const readme = _open(value, convertCharsetToCodepage('UTF-8')); // Executed on script load
+					if (rgex.test(value)) {menu.newEntry({menuName: subMenuName, entryText: 'sep'}); return;}
+					else if (_isFile(value)) { 
+						const readme = _open(value, utf8); // Executed on script load
+						const flags = iCount < 8 ? MF_STRING : iCount == 8 ? MF_MENUBREAK : (iCount - 8) % 10 ? MF_STRING : MF_MENUBREAK; // Span horizontally
 						if (readme.length) {
 							menu.newEntry({menuName: subMenuName, entryText: key, func: () => { // Executed on menu click
 								if (_isFile(value)) {
-									const readme = _open(value, convertCharsetToCodepage('UTF-8'));
+									const readme = _open(value, utf8);
 									if (readme.length) {fb.ShowPopupMessage(readme, key);}
 								} else {console.log('Readme not found: ' + value);}
-							}});
+							}, flags});
 							iCount++;
 						}
 					} else {console.log('Readme not found: ' + value);}
 				});
+				// Entry to open all readmes
+				menu.newCondEntry({entryText: 'Readme test', condFunc: (bInit = true) => { // Runs the first time the menu is clicked
+					if (bInit && menu_panelProperties.bDebug[1]) {
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuName, entryText: 'Open all readmes', func: () => { // Executed on menu click
+							Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
+								if (rgex.test(value)) {return;}
+								else if (_isFile(value)) {
+									const readme = _open(value, utf8);
+									if (readme.length) {fb.ShowPopupMessage(readme, key);}
+								} else {console.log('Readme not found: ' + value);}
+							});
+						}});
+					}
+				}});
 			} 
 			if (!iCount) {menu.newEntry({menuName: subMenuName, entryText: '- no files - ', func: null, flags: MF_GRAYED});}
 		}
@@ -4626,10 +4716,10 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	if (!panelPropObject['firstPopup'][1]) {
 		panelPropObject['firstPopup'][1] = true;
 		overwriteProperties(panelPropObject); // Updates panel
-		const readmeKeys = ['Playlist Tools Menu', 'Macros']; // Must read files on first execution
+		const readmeKeys = ['Playlist Tools Menu', 'Macros', 'Tagging requisites']; // Must read files on first execution
 		readmeKeys.forEach( (key) => {
 			const readmePath = readmes[key];
-			const readme = _open(readmePath, convertCharsetToCodepage('UTF-8'));
+			const readme = _open(readmePath, utf8);
 			if (readme.length) {fb.ShowPopupMessage(readme, key);}
 		});
 	}
@@ -4668,7 +4758,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 
 function updateShortcutsNames(keys = {}) {
 	if (_isFile(shortcutsPath)) {
-		const data = _jsonParseFileCheck(shortcutsPath, 'Shortcuts json', scriptName, convertCharsetToCodepage('UTF-8'));
+		const data = _jsonParseFileCheck(shortcutsPath, 'Shortcuts json', scriptName, utf8);
 		if (data) {
 			if (Object.keys(keys).length) {
 				const sortInputDuplic = keys.hasOwnProperty('sortInputDuplic') ? keys.sortInputDuplic.replace(/,/g, ', ') : null;
@@ -4797,14 +4887,14 @@ function createMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\a
 	const bToFile = file && file.length;
 	try {
 		console.log('Playlist Tools: registering dynamic menus...');
-		const data = bToFile ? _jsonParseFile(file, convertCharsetToCodepage('UTF-8')) || {} : {};
+		const data = bToFile ? _jsonParseFile(file, utf8) || {} : {};
 		// List menus
 		const mainMenu = menu.getMainMenuName();
 		const tree = {};
 		const dynamicTree = {};
 		let menuList = [];
 		let dynamicMenuList = [];
-		const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing', 'Tag remapping','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...']);
+		const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing', 'Tag remapping...','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...']);
 		const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length'];
 		const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...','By... (tags)','By... (expression)','Find or create playlist...','To specified position','Select next tracks...']);
 		const toSkipDynamic = new Set([]);
