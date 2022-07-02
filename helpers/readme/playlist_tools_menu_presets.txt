@@ -5,11 +5,13 @@ they can be managed the same than external presets.
 When importing a presets file, the menu entries will be added to any other
 already present. They will not be replaced.
 
-When exporting, all user set entries (that includes any presets imported before)
-are saved as a json file. Therefore, to only export a few menu entries, 
-export all and then selectively delete those desired on the json file
-with any text editor. In other words, selective exporting is not supported.
+When exporting, all user set entries (that includes any presets imported
+before) are saved as a json file. Therefore, to only export a few menu 
+entries, export all and then selectively delete those desired on the json
+file with any text editor. In other words, selective exporting is not
+supported.
 
-Menu entries can be deleted or reset at any time by using the appropriate option on 
-each tool sub-menu or resetting all on configuration. Therefore menu deletion can be 
-done in three ways, individually (per entry), locally (per tool) or globally (all tools).
+Menu entries can be deleted or reset at any time by using the appropriate
+option on each tool sub-menu or resetting all on configuration. Therefore
+menu deletion can be done in three ways, individually (per entry), locally
+(per tool) or globally (all tools).

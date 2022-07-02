@@ -2,10 +2,11 @@
 on library. The results are output to a new playlist ('Import').
 The input path may be a file path or an url pointing to a txt file.
 
-Specially useful to easily create playlists (with matches from your library)
-from online playlists, charts, etc. (like '100 greatest rock songs', ...).
-Skipping the need to manually add one by one the tracks to your own version
-of the playlist. Not found tracks are reported with a popup.
+Specially useful to easily create playlists (with matches from your
+library) from online playlists, charts, etc. (like '100 greatest rock
+songs', ...). Skipping the need to manually add one by one the tracks
+to your own version of the playlist. Not found tracks are reported 
+with a popup.
 
 A txt file example can be found at: '.\examples\track_list_to_import.txt'
 Patterns may be arbitrary, and can be set at the input box. For ex:

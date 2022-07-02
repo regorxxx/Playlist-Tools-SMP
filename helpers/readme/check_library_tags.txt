@@ -1,44 +1,69 @@
-﻿Checks all tag values from selected tracks for spelling errors or misplacing values in wrong tags.
-First checks all tags for easily recognizable errors (empty tags, blank spaces, multivalued tags not split).
-Then selects tags with lower freq. of apparition ('freqThreshold') (*), and filters them to a max
-of 30 values ('maxSizePerTag') per tag. Finally all these values are compared to the entire tag value list,
-for any tag, and their similarity is computed. Anything being at least 85% ('stringSimilThreshold') similar 
-is considered as an alternative value. If 'maxSizePerTag' is set to zero, then only recognizable errors are shown.
-Since it is not only checking that tagA's value (rock) is misspelled (Rock) but that it may be at TagB instead,
-the script checks for both spelling and misplacing errors.
+﻿Checks all tag values from selected tracks for spelling errors or 
+misplacing values in wrong tags. First checks all tags for easily
+recognizable errors (empty tags, blank spaces, multivalued tags not
+split).
 
-There is an additional step to check against am user-provided dictionary. 'en_US' dictionary is provided for
-demonstration purposes, but since every user may use their own words it should be configured. 
-Also note random deviations from common words are covered by freq. filtering, more or less.
-Excluding tags to be check against dictionary greatly speeds up the process. For example for composers, etc.
+Then selects tags with lower freq. of apparition ('freqThreshold') (*), 
+and filters them to a max of 30 values ('maxSizePerTag') per tag.
+Finally all these values are compared to the entire tag value list,
+for any tag, and their similarity is computed. Anything being at least 
+85% ('stringSimilThreshold') similar is considered as an alternative
+value. If 'maxSizePerTag' is set to zero, then only recognizable errors
+are shown.
 
-(*) The rationale is simple. Minor lexical errors on the values are expected to happen only from time to time.
-That implies there could be a "right value", with much higher freq. of apparition, which may be known or not.
-Which values are lexical errors and which ones are "right values" is done only by freq. comparison:
+Since it is not only checking that tagA's value (rock) is misspelled 
+(Rock) but that it may be at TagB instead, the script checks for both
+spelling and misplacing errors.
+
+There is an additional step to check against am user-provided
+dictionary. 'en_US' dictionary is provided for demonstration purposes,
+but since every user may use their own words it should be configured.
+ 
+Also note random deviations from common words are covered by freq. 
+filtering, more or less. Excluding tags to be check against dictionary
+ greatly speeds up the process. For example for composers, etc.
+
+(*) The rationale is simple. Minor lexical errors on the values are 
+expected to happen only from time to time. That implies there could
+be a "right value", with much higher freq. of apparition, which may
+be known or not. Which values are lexical errors and which ones are
+"right values" is done only by freq. comparison:
 
 Notes:
-	- False positives are expected. I.e. a rare tag only present on a few tracks on the library, may be considered 
-	as "possible error" but without a known "right value" as alternative.
+	- False positives are expected. I.e. a rare tag only present on a 
+	few tracks on the library, may be considered as "possible error"
+	but without a known "right value" as alternative.
 	
-	- False positives are easily recognizable. Alternative values are usually reported, if a positive has no 
-	alternative value, then it should be pretty easy to see if it's a real error or not. Rare tags may be added
-	to the exclusion list for that purpose.
+	- False positives are easily recognizable. Alternative values are 
+	usually reported, if a positive has no alternative value, then it
+	should be pretty easy to see if it's a real error or not. Rare 
+	tags may be added to the exclusion list for that purpose.
 	
-	- False negatives are possible. If you write systematically a wrong tag value in your tracks then,
-	by freq. comparison, that value would be considered to be right. It may be "Rockj" in your entire library. 
-	A track with "Rock", would be reported as the wrong value. A check against a dictionary would be required
+	- False negatives are possible. If you write systematically a 
+	wrong tag value in your tracks then, by freq. comparison, that
+	value would be considered to be right. It may be "Rockj" in your
+	entire library. A track with "Rock", would be reported as the 
+	wrong value. A check against a dictionary would be required
 	to catch those errors, so that's left to the user responsibility.
 	
-	- False negatives are hard to recognize. Since they are not a random (low freq.) error , but a systematic one,
-	the only way to recognize them is to use your logic. Using the previous example, one should notice
-	that the right value is the reported one. Setting 'freqThreshold' to 1 and 'maxSizePerTag' to Infinity
-	would compare the tags for the entire library, creating a really long report that could be used to find
-	these errors (if there are at least 2 tags with similar enough values).
+	- False negatives are hard to recognize. Since they are not a 
+	random (low freq.) error , but a systematic one, the only way to
+	recognize them is to use your logic. Using the previous example,
+	one should notice that the right value is the reported one. 
+	Setting 'freqThreshold' to 1 and 'maxSizePerTag' to Infinity
+	would compare the tags for the entire library, creating a really 
+	long report that could be used to find these errors (if there are
+	at least 2 tags with similar enough values).
 	
-	- Execution time is: O((#tags to check * mean #tag values * #tracks)**2)
-	Since the number of tags to check and the tag values mean is constant for a given library, only the number 
-	of tracks can be adjusted to reduce the total number of tags to compare. Therefore, it takes more time to check
-	all tracks setting freqThreshold = 1 and maxSizePerTag = Infinity, than checking against dictionary with 
-	standard parameters (where #tags is 30 * #tags to check).
-	It can also be greatly reduced adding tag values to the exclusion list, after a few reports, it should be pretty
-	easy to add up to 90% of tags/tag values to the list, greatly speeding up future reports (less tags to check).
+	- Execution time is:
+	O((#tags to check * MEAN(#tag values) * #tracks)**2)
+	Since the number of tags to check and the tag values mean is 
+	constant for a given library, only the number of tracks can be
+	adjusted to reduce the total number of tags to compare. 
+	Therefore, it takes more time to check all tracks setting 
+	freqThreshold = 1 and maxSizePerTag = Infinity, than checking
+	against dictionary with standard parameters (where
+	#tags is 30 * #tags to check). It can also be greatly reduced
+	adding tag values to the exclusion list, after a few reports, it
+	should be pretty easy to add up to 90% of tags/tag values to the
+	list, greatly speeding up future reports (less tags to check).

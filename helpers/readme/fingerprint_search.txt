@@ -1,5 +1,9 @@
 ﻿Shortcut button for Fingerprint Tools' entry.
 
 Search the entire Foobar2000 library for tracks with similar
-fingerprint to the currently selected tracks. 
-FooID or Chromaprint versions available.
+fingerprint to the currently selected tracks. FooID or Chromaprint
+versions available.
+
+MOST CHROMAPRINT TOOLS ARE GREYED OUT DUE TO LIMITATIONS ON CURRENT
+FOOBAR2000 AND SMP ENGINE.
+https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036

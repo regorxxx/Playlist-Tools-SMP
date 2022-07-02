@@ -1,12 +1,43 @@
-﻿These tools are a collection of 'usage examples' and shortcuts to many other scripts and small utilities, which may well be being used on other buttons along this one. It can be considered as a hub for all utilities, but many of them may need its own buttons and tweaks for specific use-cases (i.e. Search similar scripts offer so many possibilities that it's impossible to cover all of them in one menu).
+﻿These tools are a collection of 'usage examples' and shortcuts to many 
+other scripts and small utilities, which may well be being used on other 
+buttons along this one. It can be considered as a hub for all utilities, 
+but many of them may need its own buttons and tweaks for specific 
+use-cases (i.e. Search similar scripts offer so many possibilities that 
+it's impossible to cover all of them in one menu).
 
-The menu is created dynamically according to the components and scripts installed; therefore if something is missing, the associated entry is not drawed (you can use that feature to remove things you would never use). Some menu entries may also be manually deleted or created according to user set variables, allowing even further customization. Just follow the instrunctions on the popups.
+The menu is created dynamically according to the components and scripts 
+installed; therefore if something is missing, the associated entry is not 
+drawed (you can use that feature to remove things you would never use). 
+Some menu entries may also be manually deleted or created according to 
+user set variables, allowing even further customization. Just follow the 
+instrunctions on the popups.
 
-Menu entries may be grayed (disabled) if some conditions are not met (i.e. sorting would be disabled when selecting only 1 track), these are related to some obvious requisites:
--Scripts requiring multiple selected items (>3): those applied to a list of tracks.
--Scripts requiring at least 1 item on the active playlist: those applied on the entire playlist.
--Scripts requiring a selected/focused item: those applied on focused item.
+Menu entries may be grayed (disabled) if some conditions are not met (i.e. 
+sorting would be disabled when selecting only 1 track), these are related 
+to some obvious requisites:
+	-Scripts requiring multiple selected items (>3): those applied to
+	a list of tracks.
+	-Scripts requiring at least 1 item on the active playlist: those
+	applied on the entire playlist.
+	-Scripts requiring a selected/focused item: those applied on
+	focused item.
 
-Most menus have a small description at the top (further descriptions may be found on the readme and the headers of those scripts), and their configuration may be in its own submenu or in the global 'Configuration' submenu. Properties are meant to be changed using menus (ensuring the input is consistent with what the scripts expect), but they can be manually edited too on the properties panel (and will be checked for consistency upon reload).
+Most menus have a small description at the top (further descriptions may 
+be found on the readme and the headers of those scripts), and their 
+configuration may be in its own submenu or in the global 'Configuration' 
+submenu. Properties are meant to be changed using menus (ensuring the 
+input is consistent with what the scripts expect), but they can be 
+manually edited too on the properties panel (and will be checked for 
+consistency upon reload).
 
-Finally, some sub-menus, specially those related to finding/removing tracks on playlists, may lag at drawing (since the calc. time grows exponentially to the number of tracks and playlists). To solve that issue some of these entries may not be created when the number of tracks selected is too high (user configurable), thus allowing an smooth experience. If you want to set a number greater than the current configurable max limit, then edit it manually on the properties panel. Beware that putting crazy limits, like 10.000 tracks, would render the entire menu unusable on large selections (and its useless, since no one needs to find so many tracks -at the same time- on other playlists).', 'Playlist tools menu
+Finally, some sub-menus, specially those related to finding/removing 
+tracks on playlists, may lag at drawing (since the calc. time grows 
+exponentially to the number of tracks and playlists). To solve that 
+issue some of these entries may not be created when the number of tracks 
+selected is too high (user configurable), thus allowing an smooth 
+experience. If you want to set a number greater than the current 
+configurable max limit, then edit it manually on the properties panel. 
+Beware that putting crazy limits, like 10.000 tracks, would render the 
+entire menu unusable on large selections (and its useless, since no one 
+needs to find so many tracks -at the same time- on other playlists).', 
+'Playlist tools menu

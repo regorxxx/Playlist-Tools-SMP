@@ -1,4 +1,5 @@
 ﻿Shortcut button for Playlist Tools' entry.
 
 Shows the current entire list of macros, and let you run any of them.
-It's just a duplicate of the macros submenu on its own button for easy access.
+It's just a duplicate of the macros submenu on its own button for easy
+access.

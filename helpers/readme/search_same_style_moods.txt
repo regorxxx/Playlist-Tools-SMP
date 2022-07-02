@@ -1,4 +1,5 @@
-﻿Search n tracks (randomly) on library matching at least 2 styles and 6 moods from the current selected track.
+﻿Search n tracks (randomly) on library matching at least 2 styles and 6
+moods from the current selected track.
 
 Usage:
 	- The number of output tracks may be set at properties panel. 

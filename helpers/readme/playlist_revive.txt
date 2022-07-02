@@ -1,6 +1,7 @@
 ﻿Alternative to foo_playlist_revive.
-Playlist Revive makes dead items in a playlist alive again by replacing them with the matching ones in media library.
-A handy utility for those who often move or rename their media files/folders.
+Playlist Revive makes dead items in a playlist alive again by replacing
+them with the matching ones in media library. A handy utility for those
+who often move or rename their media files/folders.
 
 Querying:
 	- TITLE
@@ -16,18 +17,27 @@ Matching (rules by order):
 
 Usage:
 	- Select the tracks in the relevant playlist.
-	- Apply script (using a button, menu entry, main menu SMP, etc. associated to it).
-	- The tools allow to only replace with exact matches or by some similarity threshold. 
-	- 'Simulate' options just simulates the processing, does nothing but reporting you -planned- changes.
-	- The console always reports the tracks changed and info, contrary to what foo_playlist_revive plugin did.
+	- Apply script (using a button, menu entry, main menu SMP, etc. 
+	associated to it).
+	- The tools allow to only replace with exact matches or by some 
+	similarity threshold. 
+	- 'Simulate' options just simulates the processing, does nothing
+	but reporting you -planned- changes.
+	- The console always reports the tracks changed and info, contrary
+	to what foo_playlist_revive plugin did.
 
-(*) Audio MD5 is a feature of some formats which store audio checksums as part of their file info. 
-That's different, although similar, to a tag named AUDIOMD5 (or MD5) by foo_md5 plugin.
-On the first step -querying-, the tag is used if available (it's not a requisite).
-On the second step -matching-, the file info is used if available (for some formats), if it's not found
-then it tries the tag counterpart. If it's not found it tries the next rule, ...
-(**) foo_md5 plugin lets you configure the tag name. I use those 2 as possible names to look for.
-Plugin can be found here: https://foobar.hyv.fi/?view=foo_audiomd5
-Note that for formats having CRC checks (like flac), you can also get an md5 tag with mass tagger scripts:
-$info(md5) -> copy -> AUDIOMD5
+(*) Audio MD5 is a feature of some formats which store audio checksums as 
+part of their file info. That's different, although similar, to a tag
+named AUDIOMD5 (or MD5) by foo_md5 plugin.
+
+On the first step -querying-, the tag is used if available (it's not a 
+requisite). On the second step -matching-, the file info is used if
+available (for some formats), if it's not found then it tries the tag
+counterpart. If it's not found it tries the next rule, ...
+
+(**) foo_md5 plugin lets you configure the tag name. I use those 2 as 
+possible names to look for. Plugin can be found here:
+https://foobar.hyv.fi/?view=foo_audiomd5
+Note that for formats having CRC checks (like flac), you can also get an 
+md5 tag with mass tagger scripts: $info(MD5) -> copy -> AUDIOMD5
 You can find such preset at '.\presets\Masstagger'

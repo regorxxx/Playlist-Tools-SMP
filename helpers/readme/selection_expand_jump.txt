@@ -3,43 +3,50 @@ https://hydrogenaud.io/index.php?topic=47332.0
 
 Tools included:
 	- Invert selection: inverts selection on current playlist.
-	- Move selection to: moves (cut) current selection to another place on
-	current playlist or now playing playlist.
-	- Expand: extends current selection according to TF expression or tag matching
-	(for ex. select all tracks by same artists than the currently selected tracks).
-	- Jump: moves cursor to next/previous track which doesn't match a TF expression
-	or tag from selected tracks.
+	- Move selection to: moves (cut) current selection to another place 
+	on current playlist or now playing playlist.
+	- Expand: extends current selection according to TF expression or
+	tag matching (for ex. select all tracks by same artists than the
+	currently selected tracks).
+	- Jump: moves cursor to next/previous track which doesn't match a
+	TF expression or tag from selected tracks.
 	
 * Move Selection:
-	- By delta value: shifts the current position of the selection by X value,
-	which may be positive (down on the playlist) or negative (up). If X would 
-	put the selection below 0 position or over the current playlist length, 
-	then the selection is shifted up to that point... i.e. no cycling. Note 
-	disjoint selections will remain disjoint while being displaced, unless
-	the first/last track is already at the top/bottom of the playlist, when 
-	the other tracks will continue to be displaced until they are joined and 
-	can not be moved anymore.
-	- To the middle: cuts current selection, finds the middle and then inserts
-	it at that place. Note disjoint selections become joint after insertion.
-	- After playing now track: cuts current selection, finds the currently playing
-	track (which may be at a different playlist) and then inserts the selection
-	at that place. Note disjoint selections become joint after insertion.
+	- By delta value: shifts the current position of the selection by X
+	value, which may be positive (down on the playlist) or negative 
+	(up). If X would put the selection below 0 position or over the 
+	current	playlist length, then the selection is shifted up to that
+	point... i.e. no cycling. Note disjoint selections will remain
+	disjoint while being displaced, unless	the first/last track is
+	already at the top/bottom of the playlist, when the other tracks 
+	will continue to be displaced until they are joined and can not be
+	moved anymore.
+	- To the middle: cuts current selection, finds the middle and then
+	inserts	it at that place. Note disjoint selections become joint
+	after insertion.
+	- After playing now track: cuts current selection, finds the
+	currently playing track (which may be at a different playlist) and
+	then inserts the selection at that place. Note disjoint selections
+	become joint after insertion.
 	
 * Expand Selection:
-	- Tags: may be a single tag (%artist%) or a list of tags (%artist%;%title%).
-	Any other track from the current playlist which matches at least one of those
-	tags (compared against the entire set of tags values from the current selection)
-	will be included in the selection. The bigger the current selection, the weaker
-	the matching conditions will be, since only a match is required. i.e. if you 
-	select 5 different artists, expand will match any track from any of those 5 artists
-	(not only tracks which have those 5 artists at the same time).
-	- TF Expression: full fledged TF expressions may be used to find matches. This may be
-	considered as the alternative to query filtering (where output is selection instead of
-	a new playlist). For ex. to select tracks with the same folder one level over the 
-	current one $directory(%path%,2) may be used. Like tags, multiple TF expressions
-	may be used too separated by ';'.
+	- Tags: may be a single tag (%artist%) or a list of tags
+	(%artist%;%title%).	Any other track from the current playlist 
+	which matches at least one of those tags (compared against the 
+	entire set of tags values from the current selection) will be 
+	included in the	selection. The bigger the current selection, the
+	weaker the matching conditions will be, since only a match is
+	required. i.e. if you select 5 different artists, expand will 
+	match any track from any of those 5 artists (not only tracks which
+	have those 5 artists at the same time).
+	- TF Expression: full fledged TF expressions may be used to find
+	matches. This may be considered as the alternative to query 
+	filtering (where output is selection instead of	a new playlist). 
+	For ex. to select tracks with the same folder one level over the 
+	current one $directory(%path%,2) may be used. Like tags, multiple 
+	TF expressions	may be used too separated by ';'.
 	
 * Jump:
-	- Uses the same logic than Expand Selection but stops as soon at it finds one track
-	not matching the condition. That will be the newly selected track (and focus is moved
-	to that position).
+	- Uses the same logic than Expand Selection but stops as soon at it
+	finds one track	not matching the condition. That will be the newly
+	selected track (and focus is moved to that position).

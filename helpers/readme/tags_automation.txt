@@ -15,6 +15,6 @@ and and place it into '.\helpers-external\ffmpeg\ffmpeg.exe'.
 For any other component related feature (foo_***), the plugin needs
 to be installed first by the user. Some may be available by default.
 
-After installing or deinstalling a dependency, a panel reload will be required.
+After (un)installing a dependency, a panel reload will be required.
 
 This was meant as a private tool, no further support provided.

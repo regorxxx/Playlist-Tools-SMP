@@ -11,3 +11,7 @@ is fingerprinted, not just the first 120 secs.
 FooID tagging: requires 'foo_biometric' to be installed 
 on Foobar2000, 	along its 'Fooid.dll'. All files required
 can be found at '_resources', along installation notes.
+
+MOST CHROMAPRINT TOOLS ARE GREYED OUT DUE TO LIMITATIONS ON CURRENT
+FOOBAR2000 AND SMP ENGINE.
+https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036

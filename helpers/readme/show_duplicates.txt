@@ -15,7 +15,7 @@ Usage on buttons:
 	on the 3 properties)
 	- When adding a tag on a field, '%' may be omitted. When adding multiple 
 	tags or TF expressions, you must add all TF symbols (% and $).
-	- Since the tags are configurable, the concept of 'duplicate' is related to 
-	those tags... that's why this tool may also be used to filter playlists instead
-	of showing real duplicates too.
+	- Since the tags are configurable, the concept of 'duplicate' is
+	related to those tags... that's why this tool may also be used to
+	filter playlists instead of showing real duplicates too.
 	

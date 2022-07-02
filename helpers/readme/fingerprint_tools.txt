@@ -19,3 +19,7 @@
 	can be found at '_resources', along installation notes.
 
 FooID or Chromaprint versions available.
+
+MOST CHROMAPRINT TOOLS ARE GREYED OUT DUE TO LIMITATIONS ON CURRENT
+FOOBAR2000 AND SMP ENGINE.
+https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036

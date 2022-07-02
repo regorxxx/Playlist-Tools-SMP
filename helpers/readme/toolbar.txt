@@ -1,10 +1,14 @@
 ﻿Toolbar panel allows to fully configure sub-modules loaded as buttons.
-Shift + L. Click to configure the toolbar:
+R. Click to configure the toolbar:
 	- Add new buttons
 	- Remove
 	- Change order
 	- Restore defaults
-	- Change background color
+	- Change colors
+	- Change text size
+	- Change orientation and buttons wrap
+	
+Hold R. Click to reorder buttons.
 	
 The button list is automatically built from this path: '.\buttons\*.js'
 
@@ -16,12 +20,7 @@ Finally, some buttons may require another one to be loaded first... it's
 also indicated in the related entry if the requirement is not met.
 
 Once added, check their tooltips to find relevant info about their usage, 
-settings, mouse + key modifiers, etc. Buttons which are meant to be configured
-using the properties panel have their prefix added to the tooltip text
-('sbd0', 'rd0', ...) to make it easier to find their associated properties.
-
-NOTE: if you add buttons up to the point you can not see the bar background
-and configure it using its menu... open '.profile\js_data\buttons_XXXXX.json'
-to edit the buttons list. XXXXX is an UUID which can be found at the properties panel
-(SHIFT + WIN + R. Click at any place of the bar or buttons). Obviously, if you only
-have one bar at the same time... there will be only 1 file to look for.
+settings, mouse + key modifiers, etc. Buttons which are meant to be
+configured using the properties panel have their prefix added to the
+tooltip text ('sbd0', 'rd0', ...) to make it easier to find their
+associated properties.

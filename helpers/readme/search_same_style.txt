@@ -1,4 +1,5 @@
-﻿Search n tracks (randomly) on library with the same style(s) than the current selected track.
+﻿Search n tracks (randomly) on library with the same style(s) than the
+	current selected track.
 
 Usage:
 	- The number of output tracks may be set at properties panel. 

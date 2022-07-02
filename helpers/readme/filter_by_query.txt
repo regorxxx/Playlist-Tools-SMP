@@ -1,10 +1,11 @@
 ﻿Filters handle list or playlist using queries.
 Similar to what foobar search or some search/filter plugins do.
 
-Empty query will try to apply global forced query if enabled, otherwise gets replaced with 'ALL'.
-'ALL' will never apply forced query, even if enabled.
+Empty query will try to apply global forced query if enabled, otherwise
+gets replaced with 'ALL'. 'ALL' will never apply forced query, even if
+enabled.
 
 Dynamic variables are allowed too, enclosed on '#':
 #ARTIST#, #$year(%date%)#, ...
-These placeholders will be replaced with focused item\'s result on execution.
-Also see 'Dynamic Queries' readme.
+These placeholders will be replaced with focused item\'s result on 
+execution. Also see 'Dynamic Queries' readme.
