@@ -13,7 +13,7 @@
 
 include('..\\helpers\\helpers_xxx.js');
 
-function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true}*/, bOutputTools = false) {
+function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/, bOutputTools = false) {
 	this.selItems = null;
 	this.selItemsSubSong = null;
 	this.selItemsNoSubSong = null;
@@ -24,7 +24,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	this.currentTime = null;
 	this.listener = null;
 	this.timers = {debounce: 300, listener: 1000};
-	this.notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'LRA', 'massTag']);
+	this.notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'LRA', 'massTag', 'essentiaKey']);
 	this.tools = [
 		{key: 'biometric', tag: ['FINGERPRINT_FOOID'], title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true)},
 		{key: 'chromaPrint', tag: ['ACOUSTID_FINGERPRINT_RAW'], title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe')},
@@ -32,7 +32,8 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		{key: 'audioMd5', tag: ['MD5'], title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true)},
 		{key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'], title: 'ReplayGain', bAvailable: utils.CheckComponent('foo_rgscan', true)},
 		{key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'], title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true)},
-		{key: 'LRA', tag: ['LRA'], title: 'EBUR 128 Scanner', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe')}
+		{key: 'LRA', tag: ['LRA'], title: 'EBUR 128 Scanner (LRA)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe')},
+		{key: 'essentiaKey', tag: ['KEY'], title: 'KEY', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe')},
 	];
 	this.toolsByKey = Object.fromEntries(this.tools.map((tool) => {return [tool.key, tool.bAvailable];}));
 	if (toolsByKey) {
@@ -74,7 +75,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 			// Check if there are ISO/CUE files (which can not be piped to ffmpeg)
 			this.bSubSong = this.selItems.Convert().some((handle) => {return handle.SubSong !== 0;});
 			if (this.bSubSong) {
-				console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (an will be omitted in such steps):\n' + this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean).join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%ACOUSTID_FINGERPRINT_RAW%) and EBUR 128 (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
+				console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (an will be omitted in such steps):\n' + this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean).join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%ACOUSTID_FINGERPRINT_RAW%) Essentia (%KEY%) and EBUR 128 (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 				// Remove old tags
 				{	// Update subSong tracks with safe tools
 					this.selItemsSubSong = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return handle.SubSong === 0;}));
@@ -149,7 +150,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				if (this.toolsByKey.dynamicRange) {bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);}
 				else {bSucess = false;}
 				break;
-			case 4: //
+			case 4:
 				if (this.toolsByKey.chromaPrint) {
 					if (this.bSubSong) {
 						if (this.selItemsNoSubSong.Count) {
@@ -159,7 +160,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					} else {bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: this.selItems});}
 				} else {bSucess = false;}
 				break;
-			case 5: //
+			case 5:
 				if (this.toolsByKey.LRA) {
 					if (this.bSubSong) {
 						if (this.selItemsNoSubSong.Count) {
@@ -168,8 +169,18 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
 					
 				} else {bSucess = false;}
+				break;			
+			case 6:
+				if (this.toolsByKey.essentiaKey) {
+					if (this.bSubSong) {
+						if (this.selItemsNoSubSong.Count) {
+							bSucess = essentia.calculateKey({fromHandleList: this.selItemsNoSubSong});
+						}
+					} else {bSucess = essentia.calculateKey({fromHandleList: this.selItems});}
+					
+				} else {bSucess = false;}
 				break;
-			case 6: // These require user input before saving, so they are read only operations and can be done at the same time
+			case 7: // These require user input before saving, so they are read only operations and can be done at the same time
 				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
@@ -236,6 +247,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	this.loadDependencies = () => {
 		if (this.toolsByKey.chromaPrint) {include('chromaprint-utils-js_fingerprint.js');}
 		if (this.toolsByKey.LRA) {include('ffmpeg-utils.js');}
+		if (this.toolsByKey.essentiaKey) {include('essentia-utils.js');}
 	};
 	
 	this.isRunning = () => {
