@@ -4658,7 +4658,7 @@ const menuAlt = new _menu();
 		let bSep = false;
 		if (menuEntry.subMenuFrom === mainMenuName) {
 			if (idx && i >= 16) {i = 0; flags = MF_MENUBARBREAK;}
-			if (!bLastSep && i && menuList[idx + 1].subMenuFrom !== mainMenuName) {bLastSep = true; menuAlt.newEntry({entryText: 'sep'});}
+			if (!bLastSep && i && menuList[idx + 1] && menuList[idx + 1].subMenuFrom !== mainMenuName) {bLastSep = true; menuAlt.newEntry({entryText: 'sep'});}
 			else {bLastSep = false;}
 			i++;
 		} else {
@@ -4882,7 +4882,7 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Ru
 	Dynamic menus
 */
 function createMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\playlisttoolsentriescmd.json'} = {}) {
-	deleteMainMenuDynamic();
+	if (typeof deleteMainMenuDynamic !== 'undefined') {deleteMainMenuDynamic();}
 	if (!menu_panelProperties.bDynamicMenus[1]) {return false;}
 	const bToFile = file && file.length;
 	try {
