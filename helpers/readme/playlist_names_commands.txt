@@ -1,43 +1,78 @@
-﻿An utility to easily execute Playlist Tools entries using online controllers (or command line) creating playlists with specific command names (*).
+﻿An utility to easily execute Playlist Tools entries using online 
+controllers (or command line) creating playlists with specific command 
+names (*).
 
-This utility is intended as a workaround to the main limitations of SMP (main menu entries are limited in number -9-) and foobar 
-(custom UI buttons or scripts can not be called with online controllers without coding an specific app to do so), integrating Playlist Tools
-with online controllers. 
+This utility is intended as a workaround to the main limitations of SMP 
+(main menu entries are limited in number -9-) and foobar (custom UI buttons 
+or scripts can not be called with online controllers without coding an 
+specific app to do so), integrating Playlist Tools with online controllers. 
 
-Online controllers like foo_httpcontrol (https://bitbucket.org/oblikoamorale/foo_httpcontrol/wiki/Home) can only 'use' some scripts' 
-functions associating them to a main SMP menu entry. The problem is android Apps don't have a way to add those http url custom commands 
-in an easy way... since the app is already compiled (you could use a browser though). Playlist Names Commands allows to bypass that limitation
-checking current playlist names regularly for "special" names. When a playlist name starts with 'PT:', the callback fires and anything after 
-those 3 chars is treated as a special command which will be compared to a list of known commands or tried to execute as a menu name. Some examples:
+Online controllers like [foo_httpcontrol]
+(https://bitbucket.org/oblikoamorale/foo_httpcontrol/wiki/Home) only 'use' 
+some scripts' functions associating them to a main SMP menu entry. The 
+problem is android Apps don't have a way to add those http url custom
+commands in an easy way... since the app is already compiled (a a browser 
+could be used though). Playlist Names Commands allows to bypass that 
+limitation checking current playlist names regularly for "special" names.
+When a playlist name starts with 'PT:', the callback fires and anything 
+after those 3 chars is treated as a special command which will be compared
+to a list of known commands or executed as a menu name. Some examples:
 	
-	- Wanna create automatic playlists via pools using android or an internet browser? Create an empty playlist named 'PT:Pools\Top tracks mix'
+	- Wanna create automatic playlists via pools using android or an 
+	internet browser? Create an empty playlist named 'PT:Pools\Top 
+	tracks mix'
 	
-	The just created playlist will be deleted and a new playlist will be created and set as active playlist. A refresh may be needed in the online
-	controller to change focus to the currently active playlist (otherwise switch to it manually).
+	The just created playlist will be deleted and a new playlist will 
+	be created and set as active playlist. A refresh may be needed in 
+	the online controller to change focus to the currently active 
+	playlist (otherwise switch to it manually).
 	
-	- What about searching similar tracks to current one? Send any song in your online controller to a new playlist and then rename that playlist
-	as 'PT:Search same by tags...\By Styles (=2) and Moods (=6)'.
+	- What about searching similar tracks to current one? Send any song 
+	in your online controller to a new playlist and then rename it as 
+	'PT:Search same by tags...\By Styles (=2) and Moods (=6)'.
 	
-	It will use that track as input for the playlist creation. Same comment apply about refreshing.
+	It will use that track as input for the playlist creation. Same 
+	comment apply about refreshing.
 
-As can be seen, arbitrary menus may be used with this approach but since these dummy playlists are deleted after command execution, commands which
-involve 'editing' the current playlist will not work as intended since it will be deleted afterwards. 
-i.e. naming a playlist 'PT:Duplicates and tag filtering\Remove duplicates by title, artist, date' would first delete the current dummy playlist and 
-then apply the command to the next active playlist. As a workaround, and also as a way to alleviate all the writing (some menu names may be really long),
-some special commands are pre-defined as shortcuts (**):
+As can be seen, arbitrary menus may be used with this approach but since 
+these dummy playlists are deleted after command execution, commands which 
+involve 'editing' the current playlist will not work as intended since it 
+will be deleted afterwards. i.e. naming a playlist 'PT:Duplicates and tag
+filtering\Remove duplicates by title, artist, date' would first delete the
+current dummy playlist and then apply the command to the next active 
+playlist. As a workaround, and also as a way to alleviate all the writing 
+(some menu names may be really long), some special commands are pre-defined
+as shortcuts (**):
 	
-	- 'PT:Duplicates': equivalent to 'Duplicates and tag filtering\Remove duplicates by...' (using tags set), applied to active playlist without deletion.
-	- 'PT:Harmonic': equivalent to 'PT:Harmonic mix\Harmonic mix from playlist'. Creates new playlist using the entire dummy playlist.
-	- 'PT:Graph': equivalent to 'PT:'Search similar by Graph...\Similar Genre mix, within a decade'. Creates new playlist using focused track of dummy playlist.
-	- 'PT:Filter': equivalent to 'PT:' Duplicates and tag filtering\Filter playlist by...'. Creates new playlist using focused track of dummy playlist.
-	- 'PT:Similar': equivalent to 'PT:Search same by tags...\By Styles (=2) and Moods (=6)'. Creates new playlist using focused track of dummy playlist.
+	- 'PT:Duplicates': equivalent to 'Duplicates and tag 
+	filtering\Remove duplicates by...' (using tags set), applied to 
+	active playlist without deletion.
+	- 'PT:Harmonic': equivalent to 'PT:Harmonic mix\Harmonic mix from 
+	playlist'. Creates new playlist using the entire dummy playlist.
+	- 'PT:Graph': equivalent to 'PT:'Search similar by Graph...\Similar 
+	Genre mix, within a decade'. Creates new playlist using focused 
+	track of dummy playlist.
+	- 'PT:Filter': equivalent to 'PT:' Duplicates and tag 
+	filtering\Filter playlist by...'. Creates new playlist using 
+	focused track of dummy playlist.
+	- 'PT:Similar': equivalent to 'PT:Search same by tags...\By Styles 
+	(=2) and Moods (=6)'. Creates new playlist using focused track of 
+	dummy playlist.
 	
-In some of these cases, since the names are regularly checked, playlists which are not deleted but have the 'utility' applied to the active playlists will
-be renamed to not be processed multiple times. i.e. after naming a playlist 'PT:Duplicates' on an online controller, duplicates will be removed and playlist
-will be renamed to 'PT:Output'. When a new playlist is created ('PT:Similar', etc.) the dummy playlist is deleted and the new one is named following the same
-conventions used within foobar2000 normal usage on Pc (some are named 'Search..', query tools use query names, etc.) . 
-Beware of loosing a playlist this way! Have in mind all playlists will be either deleted or modified + renamed with any command, so only apply these commands
-to newly created playlists.
+In some of these cases, since the names are regularly checked, playlists 
+which are not deleted but have the 'utility' applied to the active 
+playlists will be renamed to not be processed multiple times. i.e. after 
+naming a playlist 'PT:Duplicates' on an online controller, duplicates will
+be removed and playlist will be renamed to 'PT:Output'. When a new playlist 
+is created ('PT:Similar', etc.) the dummy playlist is deleted and the new 
+one is named following the same conventions used within foobar2000 normal 
+usage on PC (some are named 'Search..', query tools use query names, etc.).
 
-(*) Another approach would be using SMP main menus and associated those entries to http url commands. See 'SMP Main menu' readme.
-(**) Names are not case sensitive... 'PT:Harmonic' is equivalent to 'pt:harmonic'.
+Beware of loosing a playlist this way! Have in mind all playlists will be 
+either deleted or modified + renamed with any command, so only apply these 
+commands to newly created playlists.
+
+(*) Another approach would be using SMP main menus and associated those 
+entries to http url commands. See 'SMP Main menu' readme.
+(**) Names are not case sensitive... 'PT:Harmonic' is equivalent to 
+'pt:harmonic'.
