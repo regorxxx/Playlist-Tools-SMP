@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/22
+//25/07/22
 
 /*
 	Save tags
@@ -20,7 +20,7 @@ include('..\\helpers\\helpers_xxx_file.js');
 
 function saveTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
-					file = folders.data + 'tags.json',
+					file = folders.temp + 'tags.json',
 					} = {}) {
 	let tags = [];
 	let handleInfo = {};
@@ -63,7 +63,7 @@ function saveTags({
 function compareTags({
 					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 					selItemsFolder = 'H:\\',
-					toTags = _jsonParseFileCheck(folders.data + 'tags.json', 'Tags json', 'Compare tags', utf8),
+					toTags = _jsonParseFileCheck(folders.temp + 'tags.json', 'Tags json', 'Compare tags', utf8),
 					toTagsFolder = 'H:\\',
 					} = {}) {
 	if (!toTags || !selItems || !selItemsFolder || !toTagsFolder) {return;}
