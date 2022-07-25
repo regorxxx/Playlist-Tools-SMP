@@ -6,12 +6,16 @@
 - foo_rgscan (Replay Gain).
 - foo_dynamic_range (DR).
 - ffmpeg (EBUR 128 Scanner for LRA tag).
+- Essentia (EBUR 128 Scanner for LRA tag, Key, BPM & Danceness tags).
 
 Dependencies:
 Fooid plugin and binary file can be found at  '.\_resources' folder.
 Chromaprint dependencies should be already included within this download.
 ffmpeg feature requires to download 'ffmpeg.exe' from the web
 and and place it into '.\helpers-external\ffmpeg\ffmpeg.exe'.
+Essentia feature requires to download 'streaming_extractor_music.exe'
+and 'essentia_streaming_key.exe' from the web and and place them into 
+'.\helpers-external\essentia\...'.
 For any other component related feature (foo_***), the plugin needs
 to be installed first by the user. Some may be available by default.
 
