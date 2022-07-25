@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/22
+//25/07/22
 
 /* 
 	Playlist Tools Menu
@@ -1215,7 +1215,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
-		{	// Remove Duplicates
+		{	// Remove Duplicates / Show Duplicates
 			const scriptPath = folders.xxx + 'main\\remove_duplicates.js';
 			if (_isFile(scriptPath)){
 				const name = 'Duplicates and tag filtering';
@@ -1244,6 +1244,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						nAllowed = menu_properties.nAllowed[1];
 						// Menus		
 						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {removeDuplicatesV2({checkKeys: sortInputDuplic});}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Show duplicates by ' + sortInputDuplic.join(', '), func: () => {showDuplicates({checkKeys: sortInputDuplic});}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {removeDuplicates({checkKeys: sortInputFilter, nAllowed});}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
@@ -2876,6 +2878,16 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
 						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
 							tAut.toolsByKey[tool.key] = !tAut.toolsByKey[tool.key];
+							// Warn about incompatible tools
+							if (tAut.toolsByKey[tool.key]) {
+								if (tAut.incompatibleTools.has(tool.key)) {
+									const toDisable = tAut.incompatibleTools.get(tool.key);
+									if (tAut.toolsByKey[toDisable]) {
+										tAut.toolsByKey[toDisable] = false; 
+										console.popup(tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+									}
+								}
+							}
 							menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
 							overwriteMenuProperties(); // Updates panel
 							tAut.loadDependencies();
@@ -2885,7 +2897,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
 						menu.newEntry({menuName: subMenuTools, entryText: entryText, func: () => {
-							tAut.tools.forEach((tool) => {tAut.toolsByKey[tool.key] = i ? false : true;});
+							tAut.tools.forEach((tool) => {tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable ? true : false;});
+							tAut.incompatibleTools.uniValues().forEach((tool) => {tAut.toolsByKey[tool] = false;});
 							menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
 							overwriteMenuProperties(); // Updates panel
 							tAut.loadDependencies();
@@ -4263,7 +4276,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}});
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
 		}
-	}
+	} else {menuDisabled.push({menuName: name, subMenuFrom:  menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
 }
 
 // Configuration...
@@ -4630,7 +4643,8 @@ const menuAlt = new _menu();
 {
 	const allowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration']);
 	const menuList = menu.getMenus().slice(1).filter((entry) => {return allowed.has(entry.subMenuFrom);});
-	menuDisabled.forEach( (obj) => {menuList.splice(obj.index, 0, obj);});
+	menuDisabled.forEach((obj) => {obj.disabled = true;});
+	menuDisabled.forEach((obj) => {menuList.splice(obj.index - 3, 0, obj);}); // Sub 3 due to the 3 menu entries added manually!
 	// Header
 	menuAlt.newEntry({entryText: 'Switch menus functionality:', func: null, flags: MF_GRAYED});
 	menuAlt.newEntry({entryText: 'sep'});
@@ -4654,6 +4668,7 @@ const menuAlt = new _menu();
 	menuList.forEach( (menuEntry, idx) => {
 		const menuName = menuEntry.menuName
 		const entryName = menuEntry.subMenuFrom === mainMenuName ? menuName : '--- ' + menuName;
+		const bDisabled = menuEntry.hasOwnProperty('disabled') && menuEntry.disabled;
 		let flags = MF_STRING;
 		let bSep = false;
 		if (menuEntry.subMenuFrom === mainMenuName) {
@@ -4663,7 +4678,7 @@ const menuAlt = new _menu();
 			i++;
 		} else {
 			i++;
-			if (!bLastSep && menuList[idx + 1].subMenuFrom === mainMenuName && i < 16) {bLastSep = true; bSep = true;}
+			if (!bLastSep && menuList[idx + 1] && menuList[idx + 1].subMenuFrom === mainMenuName && i < 16) {bLastSep = true; bSep = true;}
 			else {bLastSep = false;}
 		}
 		if (!menusEnabled.hasOwnProperty(menuName)) {menusEnabled[menuName] = true;}
@@ -4735,7 +4750,9 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
 		if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(defaultArgs[key]);}
 	});
-	updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});
+	if (propObject.hasOwnProperty('sortInputDuplic') && propObject.hasOwnProperty('sortInputFilter') && propObject.hasOwnProperty('nAllowed')) {
+		updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});
+	}
 	// Presets
 	presets = JSON.parse(propObject['presets'][1]);
 	// Backup defaults
@@ -4882,7 +4899,7 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Ru
 	Dynamic menus
 */
 function createMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\playlisttoolsentriescmd.json'} = {}) {
-	if (typeof deleteMainMenuDynamic !== 'undefined') {deleteMainMenuDynamic();}
+	deleteMainMenuDynamic();
 	if (!menu_panelProperties.bDynamicMenus[1]) {return false;}
 	const bToFile = file && file.length;
 	try {
@@ -4946,7 +4963,9 @@ function createMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\a
 	return false;
 }
 // Run once at startup
-deferFunc.push({name: 'createMainMenuDynamic', func: createMainMenuDynamic});
+deferFunc.push({name: 'createMainMenuDynamic', func: () => {
+	if (menu_panelProperties.bDynamicMenus[1]) {createMainMenuDynamic();}
+}});
 
 /* 
 	Shortcuts

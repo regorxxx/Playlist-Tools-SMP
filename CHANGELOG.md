@@ -25,9 +25,14 @@
 - Forced query: added new submenu with pre-defined filters (queries) to easily configure the forced query.
 - Device selector: new button to select output device.
 - Show duplicates: new button to show duplicates by tags (the inverse of Remove duplicates). See https://hydrogenaud.io/index.php?topic=110958
-- Tags Automation: added KEY tagging, using [Essentia](https://essentia.upf.edu/). Same algorithms than Picard / AcousticBrainz.
+- Show duplicates: new menu entry at 'Duplicates and tag filtering' to show duplicates by tags. See previous note.
+- Other Tools\Write tags: added KEY tagging, using [Essentia](https://essentia.upf.edu/reference/streaming_Key.html). Same algorithms than Picard / AcousticBrainz. 2 methods available. It's recommended to use the non-fast version when also computing the other essentia tags.
+- Other Tools\Write tags: added BPM tagging, using [Essentia](https://essentia.upf.edu/reference/streaming_RhythmExtractor2013.html). Same algorithms than Picard / AcousticBrainz.
+- Other Tools\Write tags: added LRA tagging, using [Essentia](https://essentia.upf.edu/reference/streaming_LoudnessEBUR128Filter.html). Same algorithms than AcousticBrainz.
+- Other Tools\Write tags: added DANCENESS tagging, using [Essentia](https://essentia.upf.edu/reference/std_Danceability.html). Same algorithms than AcousticBrainz.
 - Readmes: new readmes for 'Tagging requisites', 'Tags sources' and 'Other tag notes'. They should cover most frequently asked questions about tagging compatible with the tools or tag remapping.
 ### Changed
+- Other Tools\Write tags: will show a popup with tips when selection of tools can be optimized (for ex. when using Essentia).
 - Shortcuts: have been reworked to make use of Dynamic menus (instead of a global hack like previously). In other words, to assign a menu entry, just use the default method at 'Preferences\Keyboard shortcuts', following the same steps than any other native menu entry. Obviously, to assign a Playlist Tool entry to a keyboard shortcut, the menu entry must exist first at 'File\Spider Monkey Panel\Script Commands\\[Panel Name]\\...', i.e. Dynamic menus must be enabled. Previous functionality has been removed. Readme has been changed to reflect the changes.
 - UI: themed buttons are replaced with manually drawn buttons when the first method fails (on Wine for ex.). Console will output: "window.CreateThemeManager('Button') failed, using experimental buttons" in such case.
 - Dynamic menus: more entries has been exposed as main menus. Some config related menus -not meant to be there- have been removed. Also the list of entries is now different to the exported list for online controllers. i.e. previously any entry which required an input popup was skipped to ensure compatibility with online controllers; now they are also exposed as main menus but disabled for online controllers, covering all possible use-cases.
@@ -36,14 +41,17 @@
 - Search by distance: Updated descriptors.
 - Readmes: reworked readmes submenu, now spanned horizontally. Also added separators by category.
 - Readmes: rewritten readmes to avoid line wrapping wen showing them within popup for a cleaner presentation.
-- Helpers: moved all temp files to temp folder (instead of 'js_data'). For ex. for Tags Automation. Any file there may be safely removed in case there is a crash (contrary to the 'js_data' folder).
+- Helpers: moved all temp files temp files are now written at 'js_data\temp' instead of 'js_data'. For ex. for Other Tools\Write tags:. Any file there may be safely removed in case there is a crash (contrary to the 'js_data' folder).
 - Helpers: updated helpers.
 - Minor speed optimization on multiple tools/buttons using duplicates removal code.
 ### Removed
 ### Fixed
+- Other Tools\Write tags: crash when mixing ISO and cue files with standard ones for some tools.
+- Other Tools\Write tags: tools with missing dependencies are no longer enabled when using "enable all".
 - UI: crash due to themed buttons not being available on wine.
 - Helpers: added additional checks for 32 bits systems to use 32 bits binaries for external tools. Should solve multiple issues on Wine when using 32 prefix.
 - Readmes: some minor fixes to names displayed and missing entries.
+- Fixed crash due to missing file when opening settings menu on multiple buttons.
 
 ## [3.0.0-beta.8] - 2022-06-05
 ### Added
@@ -61,9 +69,9 @@
 ### Added
 - Fingerprinting: added buttons for tagging with ChromaPrint and FooID. Added button for searching similar tracks in library by fingerprint with FooID. All other ChromaPrint tools are greyed out due to limitations on current [Foobar2000 and SMP engine](https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036).
 ### Changed
-- Tags Automation: ISO and cue files are now skipped for tagging when using tools which require an external executable since subsongs can not be piped. i.e. ChromaPrint Fingerprinting, MD5, AUDIOMD5 and EBUR 128 Scanner.
-- Tags Automation: expanded popup info when ISO files are checked or there are errors, pointing to the wiki.
-- Tags Automation: checks to automate steps have been reworked to be more robust, instead of using callbacks and library changes. It should not require manually forcing a step anymore.
+- Other Tools\Write tags: ISO and cue files are now skipped for tagging when using tools which require an external executable since subsongs can not be piped. i.e. ChromaPrint Fingerprinting, MD5, AUDIOMD5 and EBUR 128 Scanner.
+- Other Tools\Write tags: expanded popup info when ISO files are checked or there are errors, pointing to the wiki.
+- Other Tools\Write tags: checks to automate steps have been reworked to be more robust, instead of using callbacks and library changes. It should not require manually forcing a step anymore.
 - Search by distance: more warnings on customizable button when forced theme is not found, with popups instead of only logging to console.
 - Helpers: Updated helpers.
 ### Removed
