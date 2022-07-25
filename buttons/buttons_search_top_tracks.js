@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/03/22
+//26/07/22
 
 /* 
 	Top Tracks
@@ -10,6 +10,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\top_tracks.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'tt';
 
 try {window.DefinePanel('Top Tracks Button', {author:'xxx'});} catch (e) {console.log('Top Tracks Button loaded.');} //May be loaded along other buttons

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//26/07/22
 
 /* 
 	Search n tracks (randomly) on library with the same style(s) than the current selected track.
@@ -9,6 +9,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\search_same_style.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'sss_';
 
 try {window.DefinePanel('Search Same Button', {author:'xxx'});} catch (e) {console.log('Same Styles Button loaded.');} //May be loaded along other buttons

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//26/07/22
 
 /* 
 	Search same by v 1.0 28/01/20
@@ -66,6 +66,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\search_same_by.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
+include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ssby';
  
  
