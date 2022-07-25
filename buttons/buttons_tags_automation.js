@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/03/22
+//25/07/22
 
 /* 
 	Automatic tagging...
@@ -54,6 +54,16 @@ buttonsBar.list.push(newButtonsProperties);
 					const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
 					menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
 						this.tAut.toolsByKey[tool.key] = !this.tAut.toolsByKey[tool.key];
+						// Warn about incompatible tools
+						if (this.tAut.toolsByKey[tool.key]) {
+							if (this.tAut.incompatibleTools.has(tool.key)) {
+								const toDisable = this.tAut.incompatibleTools.get(tool.key);
+								if (this.tAut.toolsByKey[toDisable]) {
+									this.tAut.toolsByKey[toDisable] = false; 
+									console.popup(this.tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+								}
+							}
+						}
 						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 						overwriteProperties(this.buttonsProperties); // Force overwriting
 						this.tAut.loadDependencies();
@@ -63,7 +73,8 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 				['Enable all', 'Disable all'].forEach((entryText, i) => {
 					menu.newEntry({menuName: subMenuTools, entryText: entryText, func: () => {
-						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : true;});
+						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable ? true : false;});
+						this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
 						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 						overwriteProperties(this.buttonsProperties); // Force overwriting
 						this.tAut.loadDependencies();
