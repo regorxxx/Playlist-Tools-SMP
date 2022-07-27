@@ -148,7 +148,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		this.debouncedStep(this.iStep);
 	};
 
-	this.stepTag = async (i) => {
+	this.stepTag = (i) => {
 		let bSucess = false;
 		this.iStep++;
 		switch (i) {
@@ -208,9 +208,9 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					const tagName = ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA'].map((key) => {return this.toolsByKey[key] ? this.tagsByKey[key][0] : null;}).filter(Boolean);
 					if (this.bSubSong) {
 						if (this.selItemsNoSubSong.Count) {
-							bSucess = await essentia.calculateHighLevelTags({fromHandleList: this.selItemsNoSubSong, tagName});
+							bSucess = essentia.calculateHighLevelTags({fromHandleList: this.selItemsNoSubSong, tagName});
 						}
-					} else {bSucess = await essentia.calculateHighLevelTags({fromHandleList: this.selItems, tagName});}
+					} else {bSucess = essentia.calculateHighLevelTags({fromHandleList: this.selItems, tagName});}
 					
 				} else {bSucess = false;}
 				break;

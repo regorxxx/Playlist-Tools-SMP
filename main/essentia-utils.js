@@ -73,7 +73,7 @@ essentia.calculateKey = function calculateKey({
 	return bDone;
 }
 
-essentia.calculateHighLevelTags = async function calculateHighLevelTags({
+essentia.calculateHighLevelTags = function calculateHighLevelTags({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 		tagName = ['KEY','BPM','DANCENESS','LRA'],
 		essentiaPath = folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe',
@@ -91,7 +91,7 @@ essentia.calculateHighLevelTags = async function calculateHighLevelTags({
 	let totalItems = 0;
 	let bDone = true;
 	let failedItems = [];
-	const calcTag = async (count) => {
+	const calcTag = (count) => {
 			const currMax = (count + 1) === maxCount ? totalTracks : (count + 1) * numTracks;
 			console.log('Processing items: ' + currMax + '/' + totalTracks);
 			const items = [];
@@ -152,7 +152,7 @@ essentia.calculateHighLevelTags = async function calculateHighLevelTags({
 			}
 	}
 	for (let count = 0; count < maxCount; count++) {
-		await calcTag(count);
+		calcTag(count);
 	}
 	const failedItemsLen = failedItems.length;
 	console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Music extractor');
