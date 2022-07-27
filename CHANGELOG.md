@@ -53,6 +53,8 @@
 - Helpers: added additional checks for 32 bits systems to use 32 bits binaries for external tools. Should solve multiple issues on Wine when using 32 prefix.
 - Readmes: some minor fixes to names displayed and missing entries.
 - Fixed crash due to missing file when opening settings menu on multiple buttons.
+- Shift menu, to disable/enable menu entries, was not displayed properly (order) when some entries were disabled.
+- Shift menu to disable/enable menu entries was missing some tools.
 
 ## [3.0.0-beta.8] - 2022-06-05
 ### Added

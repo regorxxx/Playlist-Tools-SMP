@@ -107,6 +107,10 @@ const configMenu = 'Configuration';
 const scriptName = 'Playlist Tools Menu';
 const menu = new _menu();
 
+// Enable/disable menu
+const menuAlt = new _menu();
+const menuAltAllowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration']);
+
 // For enable/disable menus
 const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
 const menuDisabled = [];
@@ -321,7 +325,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}});
 			}
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 	} else if (utils.CheckComponent('foo_playcount') && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -330,7 +334,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			include(scriptPathElse);
 			menu.newEntry({entryText: name, func: (args = { ...defaultArgs}) => {do_top_tracks(args);}}); // Skips menu name, added to top
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1  + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length  + disabledCount++});}
 	}
 }
 
@@ -385,7 +389,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}});
 			}
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 	}
 }
 
@@ -569,10 +573,10 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu.newEntry({menuName: entryMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
 						}
 					});
-				} else {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				}
 				menu.newEntry({entryText: 'sep'});
 			}
-		}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 	}
 }
 
@@ -727,7 +731,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 				}});
 			}
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 	}
 }
 
@@ -879,7 +883,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				}});
 			}
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 	}
 }
 
@@ -972,7 +976,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						loadMenus(menuName, selArgs, entryArgs);
 						loadMenusCond(menuName, 'GRAPH');
 					}
-				} else {menuDisabled.push({menuName: nameGraph, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: nameGraph, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 			{	// Dyngenre...
 				if (!menusEnabled.hasOwnProperty(nameDynGenre) || menusEnabled[nameDynGenre] === true) {
@@ -989,7 +993,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						loadMenus(menuName, selArgs, entryArgs);
 						loadMenusCond(menuName, 'DYNGENRE');
 					}
-				} else {menuDisabled.push({menuName: nameDynGenre, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: nameDynGenre, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 			{	// Weight...
 				if (!menusEnabled.hasOwnProperty(nameWeight) || menusEnabled[nameWeight] === true) {
@@ -1005,7 +1009,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						loadMenus(menuName, selArgs, entryArgs);
 						loadMenusCond(menuName, 'WEIGHT');
 					}
-				} else {menuDisabled.push({menuName: nameWeight, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: nameWeight, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 			menu.newEntry({entryText: 'sep'});
 			{	// -> Special playlists...
@@ -1034,7 +1038,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 					loadMenus(specialMenu, selArgs);
 					loadMenusCond('SPECIAL');
-				} else {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				}
 			}
 			{	// -> Config menu
 				if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
@@ -1189,12 +1193,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							menu.newEntry({menuName: configMenu, entryText: 'sep'});
 						}
 					}
-				} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		} else {
-			menuDisabled.push({menuName: nameGraph, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});
-			menuDisabled.push({menuName: nameDynGenre, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});
-			menuDisabled.push({menuName: nameWeight, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});
+			menuDisabled.push({menuName: nameGraph, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+			menuDisabled.push({menuName: nameDynGenre, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+			menuDisabled.push({menuName: nameWeight, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 		}
 	}
 }
@@ -1206,7 +1210,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			menu.newMenu(specialMenu);
 		}
 		menu.newEntry({entryText: 'sep'});
-	} else {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else if (menuDisabled.findIndex((menu) => {return menu.menuName === specialMenu}) === -1) {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Playlist manipulation...
@@ -1289,7 +1293,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							updateShortcutsNames({sortInputFilter: menu_properties['sortInputFilter'][1], nAllowed});
 						}});
 					}});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Filter by Query
@@ -1450,7 +1454,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Create harmonic mix from playlist
@@ -1500,8 +1504,8 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}
 							menu.newEntry({menuName: configMenu, entryText: 'sep'});
 						}
-					} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+					} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Find / New Playlist
@@ -1514,7 +1518,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					if (!input.length) {return;}
 					plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
 				}});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Crop playlist length (for use with macros!!)
 			const name = 'Cut playlist length to...';
@@ -1551,7 +1555,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Merge / Intersect / Difference
 			const nameMerge = 'Merge with playlist...';
@@ -1566,11 +1570,14 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				// Bools
 				const bMerge = !menusEnabled.hasOwnProperty(nameMerge) || menusEnabled[nameMerge] === true;
 				const bInter = !menusEnabled.hasOwnProperty(nameInter) || menusEnabled[nameInter] === true;
-				const bDiff = !menusEnabled.hasOwnProperty(nameDiff) || menusEnabled[nameDiff] === true; 
+				const bDiff = !menusEnabled.hasOwnProperty(nameDiff) || menusEnabled[nameDiff] === true;
 				// Menus
 				const subMenuNameMerge = bMerge ? menu.newMenu(nameMerge, menuName) : null;
+				if (!bMerge) {menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				const subMenuNameInter = bInter ? menu.newMenu(nameInter, menuName) : null;
+				if (!bInter) {menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				const subMenuNameDiff = bDiff ? menu.newMenu(nameDiff, menuName) : null;
+				if (!bDiff) {menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				if (bMerge) {
 					menu.newEntry({menuName: subMenuNameMerge, entryText: 'Merge current playlist\'s tracks with:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuNameMerge, entryText: 'sep'});
@@ -1735,9 +1742,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {
-				menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
-				menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
-				menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
+				menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 			}
 		}
 		{	// Send Playlist to Playlist / Close playlist / Go to Playlist
@@ -1756,8 +1763,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const bClose = !menusEnabled.hasOwnProperty(nameClose) || menusEnabled[nameClose] === true; 
 				// Menus
 				const subMenuNameSend = bSend ? menu.newMenu(nameSend, menuName) : null;
+				if (!bSend) {menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				const subMenuNameGo = bGo ? menu.newMenu(nameGo, menuName) : null;
+				if (!bGo) {menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				const subMenuNameClose = bClose ? menu.newMenu(nameClose, menuName) : null;
+				if (!bClose) {menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				if (bSend) {
 					menu.newEntry({menuName: subMenuNameSend, entryText: 'Sends all tracks from current playlist to:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuNameSend, entryText: 'sep'});
@@ -1851,12 +1861,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {
-				menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
-				menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
-				menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
+				menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 			}
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Selection manipulation...
@@ -2005,7 +2015,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					}});
 				}
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Advanced Sort
 			const name = 'Advanced sort...';
@@ -2047,7 +2057,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {selArg.func(args);}, flags: multipleSelectedFlagsReorder});
 					}
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Scatter
 			const scriptPath = folders.xxx + 'main\\scatter_by_tags.js';
@@ -2084,7 +2094,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Remove and find in playlists
@@ -2150,7 +2160,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								}
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
-						} else {menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+						} else {menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 					}
 					{	// Find in Playlists
 						if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
@@ -2195,7 +2205,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								}
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
-						} else {menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+						} else {menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 					}
 					{	// Remove from Playlists
 						if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
@@ -2242,7 +2252,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								}
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
-						} else {menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+						} else {menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 					}
 					{	// Configure properties
 						if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
@@ -2346,12 +2356,12 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 								});
 							}
 							menu.newEntry({menuName: configMenu, entryText: 'sep'});
-						} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+						} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 					}
 				} else {
-					menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
-					menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
-					menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});
+					menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+					menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+					menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 				}
 			}
 		}
@@ -2416,7 +2426,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Move
 			const name = 'Move selection to...';
@@ -2466,7 +2476,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					plman.SetPlaylistFocusItem(pp, pos);
 				}, flags: () => {return (fb.IsPlaying ? selectedFlagsAddRem() : MF_GRAYED);}});
 				menu.newEntry({menuName, entryText: 'sep'});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Select (for use with macros!!)
 			const name = 'Select...';
@@ -2591,7 +2601,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}, flags: playlistCountFlags});
 					}
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Expand
 			const name = 'Expand...';
@@ -2644,7 +2654,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}, flags: selectedFlags});
 					}
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Jump
 			const name = 'Jump...';
@@ -2713,9 +2723,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}
 					});
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Other tools
@@ -2848,7 +2858,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							overwriteMenuProperties(); // Updates panel
 						}});
 					}
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Automate tags
@@ -2909,7 +2919,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						if (bInit) {tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1]));}
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Playlist revive
@@ -2970,7 +2980,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}});
 					}
 
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Import track list
@@ -3044,7 +3054,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						}});
 					}
 					menu.newEntry({menuName, entryText: 'sep'});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Playlist History
@@ -3074,11 +3084,11 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}});
 						});
 					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		menu.newEntry({entryText: 'sep'});
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Pool
@@ -3662,7 +3672,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				isPlsMan = _isFile(plsManHelper); // Safety check
 			}});
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Macros
@@ -3811,7 +3821,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			}});
 		}
 		menu.newEntry({entryText: 'sep'});
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Script integration
@@ -4123,7 +4133,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							}});
 						}
 					}});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
 		{	// Dynamic menus
@@ -4175,7 +4185,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					overwriteMenuProperties(); // Updates panel
 				}});
 				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void(0), () => {return menu_properties.bPlaylistNameCommands[1];}); 
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
 		{	// Include scripts
@@ -4274,9 +4284,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					}
 				}
 				}});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().length - 1 + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom:  menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom:  menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
 
 // Configuration...
@@ -4633,18 +4643,17 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 			} 
 			if (!iCount) {menu.newEntry({menuName: subMenuName, entryText: '- no files - ', func: null, flags: MF_GRAYED});}
 		}
-	} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().length - 1 + disabledCount++});}
+	} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
+
 
 /*
 	Enable menu
 */
-const menuAlt = new _menu();
 {
-	const allowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration']);
-	const menuList = menu.getMenus().slice(1).filter((entry) => {return allowed.has(entry.subMenuFrom);});
+	const menuList = menu.getMenus().slice(1).filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);});
 	menuDisabled.forEach((obj) => {obj.disabled = true;});
-	menuDisabled.forEach((obj) => {menuList.splice(obj.index - 3, 0, obj);}); // Sub 3 due to the 3 menu entries added manually!
+	menuDisabled.forEach((obj) => {menuList.splice(obj.index, 0, obj);});
 	// Header
 	menuAlt.newEntry({entryText: 'Switch menus functionality:', func: null, flags: MF_GRAYED});
 	menuAlt.newEntry({entryText: 'sep'});
