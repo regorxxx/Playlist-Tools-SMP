@@ -46,6 +46,7 @@
 - Minor speed optimization on multiple tools/buttons using duplicates removal code.
 ### Removed
 ### Fixed
+- Search by distance: crash when using composer tag for similarity.
 - Other Tools\Write tags: crash when mixing ISO and cue files with standard ones for some tools.
 - Other Tools\Write tags: tools with missing dependencies are no longer enabled when using "enable all".
 - UI: crash due to themed buttons not being available on wine.
