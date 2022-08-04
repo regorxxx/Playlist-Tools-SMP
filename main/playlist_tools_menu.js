@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/07/22
+//01/08/22
 
 /* 
 	Playlist Tools Menu
@@ -32,7 +32,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\menu_xxx.js');
 
-checkCompatible('1.6.1');
+checkCompatible('1.6.1', 'smp');
 
 if (!_isFolder(folders.data)) {_createFolder(folders.data);}
 
@@ -4142,7 +4142,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				//  Menus
-				const flags = isCompatible('1.6.1') ? MF_STRING : MF_GRAYED;
+				const flags = isCompatible('1.6.1', 'smp') ? MF_STRING : MF_GRAYED;
 				menu.newEntry({menuName: subMenuName, entryText: 'File\\Spider Monkey Panel\\Script commands:', flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled SMP dynamic menus', func: () => {

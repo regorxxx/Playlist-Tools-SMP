@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/06/22
+//01/08/22
 
 /* 
 	Output device selector
@@ -12,10 +12,11 @@ include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_file.js');
 include('..\\helpers\\menu_xxx.js');
 
-try {
-	window.DefinePanel('Output device selector button', {author:'XXX', version: '1.1.0'});
-	checkCompatible('1.6.1');
-} catch (e) {console.log('Output device selector Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Output device selector button', {author:'XXX', version: '1.1.0'});} 
+catch (e) {console.log('Output device selector Button loaded.');} //May be loaded along other buttons
+
+checkCompatible('1.6.1', 'smp');
+checkCompatible('1.4.0', 'fb');
 
 buttonsBar.list.push({});
 
