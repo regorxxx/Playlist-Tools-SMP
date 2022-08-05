@@ -52,7 +52,6 @@
 - Readmes: rewritten readmes to avoid line wrapping wen showing them within popup for a cleaner presentation.
 - Helpers: moved all temp files temp files are now written at 'js_data\temp' instead of 'js_data'. For ex. for Other Tools\Write tags:. Any file there may be safely removed in case there is a crash (contrary to the 'js_data' folder).
 - Helpers: updated helpers.
-- Helpers: updated helpers.
 - Minor speed optimization on multiple tools/buttons using duplicates removal code.
 ### Removed
 ### Fixed
