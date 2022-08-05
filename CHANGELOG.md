@@ -2,7 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0-beta.8](#300-beta8---2021-06-05)
+- [3.0.0-beta.8](#300-beta8---2021-08-05)
 - [3.0.0-beta.7](#300-beta7---2021-05-23)
 - [3.0.0-beta.6](#300-beta6---2021-05-04)
 - [3.0.0-beta.5](#300-beta5---2021-04-13)
@@ -22,6 +22,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.8] - 2022-08-05
+### Added
 - Forced query: added new submenu with pre-defined filters (queries) to easily configure the forced query.
 - Device selector: new button to select output device.
 - Show duplicates: new button to show duplicates by tags (the inverse of Remove duplicates). See https://hydrogenaud.io/index.php?topic=110958
@@ -30,11 +36,14 @@
 - Other Tools\Write tags: added BPM tagging, using [Essentia](https://essentia.upf.edu/reference/streaming_RhythmExtractor2013.html). Same algorithms than Picard / AcousticBrainz.
 - Other Tools\Write tags: added LRA tagging, using [Essentia](https://essentia.upf.edu/reference/streaming_LoudnessEBUR128Filter.html). Same algorithms than AcousticBrainz.
 - Other Tools\Write tags: added DANCENESS tagging, using [Essentia](https://essentia.upf.edu/reference/std_Danceability.html). Same algorithms than AcousticBrainz.
+- Dynamic menus: new dynamic menus available with [SMP 1.6.1](https://github.com/TheQwertiest/foo_spider_monkey_panel/releases/tag/v1.6.1) which allow to execute panel actions via main menus and even associate them to a keyboard shortcut or toolbar buttons. There is no limit (the old method was limited to 10 entries), so it can be used independently to other panels. It also allows to control the tools via CMD. Most menu entries has been replicated this way. Every panel has its own set of associated actions, so every panel must have different panel names to work (usually not a problem for a toolbar panel). Entries may be found at 'File\Spider Monkey Panel\Script Commands\\[Panel Name]\\...'.
+- Online controllers integration: full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx). Most menu entries can be used with the online controller, allowing to: load pools, apply queries, playlist revive, ... [foo_runcmd](https://foosion.foobar2000.org/components/?id=runcmd) and [foo_run_main](https://marc2k3.github.io/run-main/) are needed. It makes use of the new dynamic menus from [SMP 1.6.1](https://github.com/TheQwertiest/foo_spider_monkey_panel/releases/tag/v1.6.1) (only has been tested with foobar 1.6.11). Every panel has its own set of associated actions, so every panel must have different panel names to work (usually not a problem for a toolbar panel).
 - Readmes: new readmes for 'Tagging requisites', 'Tags sources' and 'Other tag notes'. They should cover most frequently asked questions about tagging compatible with the tools or tag remapping.
 ### Changed
 - Other Tools\Write tags: will show a popup with tips when selection of tools can be optimized (for ex. when using Essentia).
 - Shortcuts: have been reworked to make use of Dynamic menus (instead of a global hack like previously). In other words, to assign a menu entry, just use the default method at 'Preferences\Keyboard shortcuts', following the same steps than any other native menu entry. Obviously, to assign a Playlist Tool entry to a keyboard shortcut, the menu entry must exist first at 'File\Spider Monkey Panel\Script Commands\\[Panel Name]\\...', i.e. Dynamic menus must be enabled. Previous functionality has been removed. Readme has been changed to reflect the changes.
 - UI: themed buttons are replaced with manually drawn buttons when the first method fails (on Wine for ex.). Console will output: "window.CreateThemeManager('Button') failed, using experimental buttons" in such case.
+- UI: enforced SMP version checking via popups.
 - Dynamic menus: more entries has been exposed as main menus. Some config related menus -not meant to be there- have been removed. Also the list of entries is now different to the exported list for online controllers. i.e. previously any entry which required an input popup was skipped to ensure compatibility with online controllers; now they are also exposed as main menus but disabled for online controllers, covering all possible use-cases.
 - Search by Distance: added new entry. on customizable button, to open the file to set pre-defined filters (queries). In case the file is deleted, clicking on the menu entry will recreate it.
 - Search by Distance:  influences filter doesn't overwrite score filter or graph distance filter now. Although it was designed to do so (to output any influence without considering score), it did not work in a logical way since those filters can be manually tuned to achieve the same result while also allowing other options.
@@ -42,6 +51,7 @@
 - Readmes: reworked readmes submenu, now spanned horizontally. Also added separators by category.
 - Readmes: rewritten readmes to avoid line wrapping wen showing them within popup for a cleaner presentation.
 - Helpers: moved all temp files temp files are now written at 'js_data\temp' instead of 'js_data'. For ex. for Other Tools\Write tags:. Any file there may be safely removed in case there is a crash (contrary to the 'js_data' folder).
+- Helpers: updated helpers.
 - Helpers: updated helpers.
 - Minor speed optimization on multiple tools/buttons using duplicates removal code.
 ### Removed
@@ -52,21 +62,11 @@
 - UI: crash due to themed buttons not being available on wine.
 - Helpers: added additional checks for 32 bits systems to use 32 bits binaries for external tools. Should solve multiple issues on Wine when using 32 prefix.
 - Readmes: some minor fixes to names displayed and missing entries.
+- Online controllers integration: cosmetic error. Some separators where not displayed properly on the list of menus.
+- Online controllers integration: some useless entries being shown (configuration entries, those which required popups, etc.).
 - Fixed crash due to missing file when opening settings menu on multiple buttons.
 - Shift menu, to disable/enable menu entries, was not displayed properly (order) when some entries were disabled.
 - Shift menu to disable/enable menu entries was missing some tools.
-
-## [3.0.0-beta.8] - 2022-06-05
-### Added
-- Dynamic menus: new dynamic menus available with [SMP 1.6.1](https://github.com/TheQwertiest/foo_spider_monkey_panel/releases/tag/v1.6.1) which allow to execute panel actions via main menus and even associate them to a keyboard shortcut or toolbar buttons. There is no limit (the old method was limited to 10 entries), so it can be used independently to other panels. It also allows to control the tools via CMD. Most menu entries has been replicated this way. Every panel has its own set of associated actions, so every panel must have different panel names to work (usually not a problem for a toolbar panel). Entries may be found at 'File\Spider Monkey Panel\Script Commands\\[Panel Name]\\...'.
-- Online controllers integration: full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx). Most menu entries can be used with the online controller, allowing to: load pools, apply queries, playlist revive, ... [foo_runcmd](https://foosion.foobar2000.org/components/?id=runcmd) and [foo_run_main](https://marc2k3.github.io/run-main/) are needed. It makes use of the new dynamic menus from [SMP 1.6.1](https://github.com/TheQwertiest/foo_spider_monkey_panel/releases/tag/v1.6.1) (only has been tested with foobar 1.6.11). Every panel has its own set of associated actions, so every panel must have different panel names to work (usually not a problem for a toolbar panel).
-### Changed
-- UI: enforced SMP version checking via popups.
-- Helpers: updated helpers.
-### Removed
-### Fixed
-- Online controllers integration: cosmetic error. Some separators where not displayed properly on the list of menus.
-- Online controllers integration: some useless entries being shown (configuration entries, those which required popups, etc.).
 
 ## [3.0.0-beta.7] - 2022-05-23
 ### Added
