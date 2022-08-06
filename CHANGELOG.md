@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.9](#300-beta9---2021-08-06)
 - [3.0.0-beta.8](#300-beta8---2021-08-05)
 - [3.0.0-beta.7](#300-beta7---2021-05-23)
 - [3.0.0-beta.6](#300-beta6---2021-05-04)
@@ -23,8 +24,19 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Other Tools\Write tags: added menu entry to invert tools selected.
+- Other Tools\Write tags: pressing shift while clicking on a tool will disable the other tools and enable only the selected one.
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.9] - 2022-08-06
+### Added
+### Changed
+- Search by Distance: minor improvements to console logging when reporting track list.
+### Removed
+### Fixed
+- Search by Distance: fix to theme checking. Themes were being reported as non valid when they were fine.
+- Search by Distance: forced query was not being properly saved when using pre-defined filters.
 
 ## [3.0.0-beta.8] - 2022-08-05
 ### Added
@@ -46,7 +58,7 @@
 - UI: enforced SMP version checking via popups.
 - Dynamic menus: more entries has been exposed as main menus. Some config related menus -not meant to be there- have been removed. Also the list of entries is now different to the exported list for online controllers. i.e. previously any entry which required an input popup was skipped to ensure compatibility with online controllers; now they are also exposed as main menus but disabled for online controllers, covering all possible use-cases.
 - Search by Distance: added new entry. on customizable button, to open the file to set pre-defined filters (queries). In case the file is deleted, clicking on the menu entry will recreate it.
-- Search by Distance:  influences filter doesn't overwrite score filter or graph distance filter now. Although it was designed to do so (to output any influence without considering score), it did not work in a logical way since those filters can be manually tuned to achieve the same result while also allowing other options.
+- Search by Distance: influences filter doesn't overwrite score filter or graph distance filter now. Although it was designed to do so (to output any influence without considering score), it did not work in a logical way since those filters can be manually tuned to achieve the same result while also allowing other options.
 - Search by distance: Updated descriptors.
 - Readmes: reworked readmes submenu, now spanned horizontally. Also added separators by category.
 - Readmes: rewritten readmes to avoid line wrapping wen showing them within popup for a cleaner presentation.
@@ -509,8 +521,9 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...HEAD
-[3.0.0-beta.8]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...v3.0.0-beta.8
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.9...HEAD
+[3.0.0-beta.8]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...v3.0.0-beta.9
+[3.0.0-beta.9]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...v3.0.0-beta.8
 [3.0.0-beta.7]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.6...v3.0.0-beta.7
 [3.0.0-beta.6]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.5...v3.0.0-beta.6
 [3.0.0-beta.5]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.4...v3.0.0-beta.5
