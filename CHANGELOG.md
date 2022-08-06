@@ -35,6 +35,7 @@
 - Search by Distance: minor improvements to console logging when reporting track list.
 ### Removed
 ### Fixed
+- Forced query: forced query was not being properly saved when using pre-defined filters.
 - Search by Distance: fix to theme checking. Themes were being reported as non valid when they were fine.
 - Search by Distance: forced query was not being properly saved when using pre-defined filters.
 

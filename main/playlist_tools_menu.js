@@ -2884,25 +2884,30 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Stop execution' + (tAut.isRunning() ? '' : ' (not running)');}, func: tAut.stopStepTag, flags: firedFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					const subMenuTools = menu.newMenu('Available tools...', subMenuName);
+					menu.newEntry({menuName: subMenuTools, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 					tAut.tools.forEach((tool) => {
+						const key = tool.key;
 						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
 						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
-							tAut.toolsByKey[tool.key] = !tAut.toolsByKey[tool.key];
+							tAut.toolsByKey[key] = !tAut.toolsByKey[key];
 							// Warn about incompatible tools
-							if (tAut.toolsByKey[tool.key]) {
-								if (tAut.incompatibleTools.has(tool.key)) {
-									const toDisable = tAut.incompatibleTools.get(tool.key);
+							if (tAut.toolsByKey[key]) {
+								if (tAut.incompatibleTools.has(key)) {
+									const toDisable = tAut.incompatibleTools.get(key);
 									if (tAut.toolsByKey[toDisable]) {
 										tAut.toolsByKey[toDisable] = false; 
 										console.popup(tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
 									}
 								}
 							}
+							// Disable all other tools when pressing shift
+							if (utils.IsKeyPressed(VK_SHIFT)) {tAut.tools.filter((_) => {return _.key !== key}).forEach((_) => {tAut.toolsByKey[_.key] = false;});}
 							menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
 							overwriteMenuProperties(); // Updates panel
 							tAut.loadDependencies();
 						}, flags});
-						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tAut.toolsByKey[tool.key];});
+						menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return tAut.toolsByKey[key];});
 					});
 					menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
@@ -2914,6 +2919,13 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 							tAut.loadDependencies();
 						}});
 					});
+					menu.newEntry({menuName: subMenuTools, entryText: 'Invert selected tools', func: () => {
+						tAut.tools.forEach((tool) => {tAut.toolsByKey[tool.key] = tool.bAvailable ? !tAut.toolsByKey[tool.key] : false;});
+						tAut.incompatibleTools.uniValues().forEach((tool) => {tAut.toolsByKey[tool] = false;});
+						menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
+						overwriteMenuProperties(); // Updates panel
+						tAut.loadDependencies();
+					}});
 					// Refresh settings on startup
 					menu.newCondEntry({entryText: 'Write tags... (cond)', condFunc: (bInit = true) => {
 						if (bInit) {tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1]));}
@@ -4386,6 +4398,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 									try {fb.GetQueryItems(new FbMetadbHandleList(), input);} // Sanity check
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, 'Search by distance'); return;}
 									menu_properties['forcedQuery'][1] = input;
+									overwriteMenuProperties(); // Updates panel
 								}});
 								menu.newCheckMenu(subMenuNameThree, entryText, void(0), () => {return menu_properties['forcedQuery'][1].indexOf(input) !== -1;});
 							});
