@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.10](#300-beta10---2021-08-07)
 - [3.0.0-beta.9](#300-beta9---2021-08-06)
 - [3.0.0-beta.8](#300-beta8---2021-08-05)
 - [3.0.0-beta.7](#300-beta7---2021-05-23)
@@ -24,10 +25,18 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.10] - 2022-08-07
+### Added
+### Changed
 - Other Tools\Write tags: added menu entry to invert tools selected.
 - Other Tools\Write tags: pressing shift while clicking on a tool will disable the other tools and enable only the selected one.
 ### Removed
 ### Fixed
+- Search by Distance: graph variable 'Exclude any track with graph distance greater than (only GRAPH method' was not being parsed properly when set to a string.
+- Buttons: crash when trying to move a button when only a single button script was loaded on the panel.
 
 ## [3.0.0-beta.9] - 2022-08-06
 ### Added
@@ -522,9 +531,10 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.9...HEAD
-[3.0.0-beta.8]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...v3.0.0-beta.9
-[3.0.0-beta.9]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...v3.0.0-beta.8
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.10...HEAD
+[3.0.0-beta.10]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.9...v3.0.0-beta.10
+[3.0.0-beta.9]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...v3.0.0-beta.9
+[3.0.0-beta.8]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...v3.0.0-beta.8
 [3.0.0-beta.7]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.6...v3.0.0-beta.7
 [3.0.0-beta.6]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.5...v3.0.0-beta.6
 [3.0.0-beta.5]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.4...v3.0.0-beta.5
