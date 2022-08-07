@@ -50,29 +50,39 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({entryText: () => {return 'Stop execution' + (this.tAut.isRunning() ? '' : ' (not running)');}, func: this.tAut.stopStepTag, flags: firedFlags});
 				menu.newEntry({entryText: 'sep'});
 				const subMenuTools = menu.newMenu('Available tools...', void(0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
+				menu.newEntry({menuName: subMenuTools, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED});
+				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 				this.tAut.tools.forEach((tool) => {
+					const key = tool.key;
 					const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
 					menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
-						this.tAut.toolsByKey[tool.key] = !this.tAut.toolsByKey[tool.key];
-						// Warn about incompatible tools
-						if (this.tAut.toolsByKey[tool.key]) {
-							if (this.tAut.incompatibleTools.has(tool.key)) {
-								const toDisable = this.tAut.incompatibleTools.get(tool.key);
-								if (this.tAut.toolsByKey[toDisable]) {
-									this.tAut.toolsByKey[toDisable] = false; 
-									console.popup(this.tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+						// Disable all other tools when pressing shift
+						if (utils.IsKeyPressed(VK_SHIFT)) {
+							this.tAut.tools.filter((_) => {return _.key !== key}).forEach((_) => {this.tAut.toolsByKey[_.key] = false;});
+							this.tAut.toolsByKey[key] = true;
+						} else {
+							this.tAut.toolsByKey[key] = !this.tAut.toolsByKey[key];
+							// Warn about incompatible tools
+							if (this.tAut.toolsByKey[key]) {
+								if (this.tAut.incompatibleTools.has(key)) {
+									const toDisable = this.tAut.incompatibleTools.get(key);
+									if (this.tAut.toolsByKey[toDisable]) {
+										this.tAut.toolsByKey[toDisable] = false; 
+										console.popup(this.tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+									}
 								}
 							}
 						}
+						// Save
 						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 						overwriteProperties(this.buttonsProperties); // Force overwriting
 						this.tAut.loadDependencies();
 					}, flags});
-					menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return this.tAut.toolsByKey[tool.key];});
+					menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return this.tAut.toolsByKey[key];});
 				});
 				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 				['Enable all', 'Disable all'].forEach((entryText, i) => {
-					menu.newEntry({menuName: subMenuTools, entryText: entryText, func: () => {
+					menu.newEntry({menuName: subMenuTools, entryText, func: () => {
 						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable ? true : false;});
 						this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
 						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
@@ -80,6 +90,13 @@ buttonsBar.list.push(newButtonsProperties);
 						this.tAut.loadDependencies();
 					}});
 				});
+				menu.newEntry({menuName: subMenuTools, entryText: 'Invert selected tools', func: () => {
+					this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = tool.bAvailable ? !this.tAut.toolsByKey[tool.key] : false;});
+					this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
+					this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
+					overwriteProperties(this.buttonsProperties); // Force overwriting
+					this.tAut.loadDependencies();
+				}});
 				menu.btn_up(this.currX, this.currY + this.currH);
 			}
 		}, null, void(0), (parent) => {

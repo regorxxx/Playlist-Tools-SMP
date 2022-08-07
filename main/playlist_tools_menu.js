@@ -2890,19 +2890,23 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 						const key = tool.key;
 						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
 						menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
-							tAut.toolsByKey[key] = !tAut.toolsByKey[key];
-							// Warn about incompatible tools
-							if (tAut.toolsByKey[key]) {
-								if (tAut.incompatibleTools.has(key)) {
-									const toDisable = tAut.incompatibleTools.get(key);
-									if (tAut.toolsByKey[toDisable]) {
-										tAut.toolsByKey[toDisable] = false; 
-										console.popup(tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+							// Disable all other tools when pressing shift
+							if (utils.IsKeyPressed(VK_SHIFT)) {
+								tAut.tools.filter((_) => {return _.key !== key}).forEach((_) => {tAut.toolsByKey[_.key] = false;});
+								tAut.toolsByKey[key] = true;
+							} else {
+								tAut.toolsByKey[key] = !tAut.toolsByKey[key];
+								// Warn about incompatible tools
+								if (tAut.toolsByKey[key]) {
+									if (tAut.incompatibleTools.has(key)) {
+										const toDisable = tAut.incompatibleTools.get(key);
+										if (tAut.toolsByKey[toDisable]) {
+											tAut.toolsByKey[toDisable] = false; 
+											console.popup(tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+										}
 									}
 								}
 							}
-							// Disable all other tools when pressing shift
-							if (utils.IsKeyPressed(VK_SHIFT)) {tAut.tools.filter((_) => {return _.key !== key}).forEach((_) => {tAut.toolsByKey[_.key] = false;});}
 							menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
 							overwriteMenuProperties(); // Updates panel
 							tAut.loadDependencies();
