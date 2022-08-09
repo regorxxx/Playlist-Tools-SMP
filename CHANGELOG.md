@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.11](#300-beta11---2021-08-09)
 - [3.0.0-beta.10](#300-beta10---2021-08-07)
 - [3.0.0-beta.9](#300-beta9---2021-08-06)
 - [3.0.0-beta.8](#300-beta8---2021-08-05)
@@ -27,6 +28,17 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.11] - 2022-08-09
+### Added
+- Search by Distance: new menu entry on customizable button to show all hidden presets (recipes or themes).
+- Search by Distance: new option to hide selected preset (Shift + Click).
+### Changed
+- Search by Distance: any recipe or theme file starting with 'test_' or 'int_' will be hidden everytime when opening the customizable button's menu.
+### Removed
+### Fixed
+- Search by Distance: None preset was not being shown as current preset when there were no more presets on the list.
+- Search by Distance: 'test_with_forcedThemePath.json' recipe is no longer available by default (see change above). Previously a warning popup was shown everytime the menus were called due to inline forced theme path being wrong.
 
 ## [3.0.0-beta.10] - 2022-08-07
 ### Added
@@ -531,7 +543,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.10...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.11...HEAD
+[3.0.0-beta.11]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.10...v3.0.0-beta.11
 [3.0.0-beta.10]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.9...v3.0.0-beta.10
 [3.0.0-beta.9]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...v3.0.0-beta.9
 [3.0.0-beta.8]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.7...v3.0.0-beta.8
