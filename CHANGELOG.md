@@ -35,6 +35,7 @@
 - Search by Distance: new menu entry, on custom button, to reset entire button configuration to default values.
 ### Changed
 - Search by Distance: minor update to diagram to clarify a few things ('_images\search_by_distance_GRAPH_diagram.png').
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 - Search by Distance: composer tag was not being properly used on queries and scoring, leading to wrong results or query errors.
@@ -555,7 +556,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.11...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.12...HEAD
+[3.0.0-beta.12]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.10...v3.0.0-beta.12
 [3.0.0-beta.11]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.10...v3.0.0-beta.11
 [3.0.0-beta.10]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.9...v3.0.0-beta.10
 [3.0.0-beta.9]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.8...v3.0.0-beta.9
