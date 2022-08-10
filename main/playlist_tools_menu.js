@@ -278,7 +278,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 /* 
 	Menus
 */
-// Top Tracks from year
+// Most played tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\top_tracks_from_date.js';
 	const scriptPathElse = folders.xxx + 'main\\top_tracks.js';
@@ -295,7 +295,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 				const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
 				selYearArr.forEach( (selYear) => {
 					let selArgs = {year: selYear};
-					menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {do_top_tracks_from_date(args);}});
+					menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {topTracksFromDate(args);}});
 				});
 			}
 			menu.newEntry({menuName, entryText: 'sep'});
@@ -312,7 +312,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					try {input = Number(utils.InputBox(window.ID, 'Enter year:', scriptName + ': ' + name, selYear, true));}
 					catch (e) {return;}
 					if (!Number.isSafeInteger(input)) {return;}
-					do_top_tracks_from_date({...defaultArgs,  year: input});
+					topTracksFromDate({...defaultArgs,  year: input});
 					}});
 			}
 			{	// Input menu: last x time
@@ -321,7 +321,7 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 					try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), scriptName + ': ' + name, '4 WEEKS', true).trim();}
 					catch (e) {return;}
 					if (!input.length) {return;}
-					do_top_tracks_from_date({...defaultArgs,  last: input, bUseLast: true});
+					topTracksFromDate({...defaultArgs,  last: input, bUseLast: true});
 					}});
 			}
 			menu.newEntry({entryText: 'sep'});
