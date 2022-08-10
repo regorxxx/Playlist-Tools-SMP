@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.12](#300-beta12---2021-08-10)
 - [3.0.0-beta.11](#300-beta11---2021-08-09)
 - [3.0.0-beta.10](#300-beta10---2021-08-07)
 - [3.0.0-beta.9](#300-beta9---2021-08-06)
@@ -28,6 +29,17 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.12] - 2022-08-10
+### Added
+- Search by Distance: new menu entry, on custom button, to reset entire button configuration to default values.
+### Changed
+- Search by Distance: minor update to diagram to clarify a few things ('_images\search_by_distance_GRAPH_diagram.png').
+### Removed
+### Fixed
+- Search by Distance: composer tag was not being properly used on queries and scoring, leading to wrong results or query errors.
+- Search by Distance: custom string tag was not being properly used on queries and scoring, leading to wrong results or query errors.
+- Search by Distance: date, BPM and custom num tag was being skipped on calculations when equal to zero. While that may make sense for Date or BPM in real use-cases, the custom tag could be used to also store zero values. Now it will also compare the tags when set to zero, and only skip them when not found.
 
 ## [3.0.0-beta.11] - 2022-08-09
 ### Added
