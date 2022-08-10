@@ -34,7 +34,7 @@ addButton({
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {
-			do_top_tracks_from_date({playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1], year: this.buttonsProperties.year[1] || (new Date().getFullYear() - 1)});
+			topTracksFromDate({playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1], year: this.buttonsProperties.year[1] || (new Date().getFullYear() - 1)});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
