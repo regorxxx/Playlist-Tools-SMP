@@ -31,6 +31,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\menu_xxx.js');
+include('..\\helpers\\callbacks_xxx.js');
 
 checkCompatible('1.6.1', 'smp');
 
@@ -144,7 +145,7 @@ var shortcuts = {
 // Other script integration
 // Callbacks: append to any previously existing callback
 const plmPromises = [];
-function onNotifyData(name, info) { 
+addEventListener('on_notify_data', (name, info) => {
 	switch (name) {
 		case 'Playlist manager: playlistPath': {
 			if (info && info.length) {
@@ -175,16 +176,9 @@ function onNotifyData(name, info) {
 			break;
 		}
 	}
-}
-if (typeof on_notify_data !== 'undefined') {
-	const oldFunc = on_notify_data;
-	on_notify_data = function(name, info) {
-		oldFunc(name, info);
-		onNotifyData(name, info);
-	}
-} else {var on_notify_data = onNotifyData;}
+});
 
-function onPlaylistsChanged() {
+addEventListener('on_playlists_changed', () => {
 	if (menu_properties.bPlaylistNameCommands[1]) {
 		const playlistData = {num: plman.PlaylistCount, name: range(0, plman.PlaylistCount - 1, 1).map((idx) => {return plman.GetPlaylistName(idx);})};
 		playlistData.name.forEach((name, index) => {
@@ -240,40 +234,19 @@ function onPlaylistsChanged() {
 			}
 		});
 	}
-}
-if (typeof on_playlists_changed !== 'undefined') {
-	const oldFunc = on_playlists_changed;
-	on_playlists_changed = function() {
-		oldFunc();
-		onPlaylistsChanged();
-	}
-} else {var on_playlists_changed = onPlaylistsChanged;}
+});
 
-function onOutputDeviceChanged() {
+addEventListener('on_output_device_changed', () => {
 	if (typeof exportDevices !== 'undefined') {
 		if (defaultArgs.bHttpControl() && !exportDevices(defaultArgs.httpControlPath)) {console.log('Error saving Devices entries for http Control integration.')}
 	}
-}
-if (typeof on_output_device_changed !== 'undefined') {
-	const oldFunc = on_output_device_changed;
-	on_output_device_changed = function() {
-		oldFunc();
-		onOutputDeviceChanged();
-	}
-} else {var on_output_device_changed = onOutputDeviceChanged;}
+});
 
-function onDspPresetChanged() {
+addEventListener('on_dsp_preset_changed', () => {
 	if (typeof exportDSP !== 'undefined') {
 		if (defaultArgs.bHttpControl() && !exportDSP(defaultArgs.httpControlPath)) {console.log('Error saving DSP entries for http Control integration.')}
 	}
-}
-if (typeof on_dsp_preset_changed !== 'undefined') {
-	const oldFunc = on_dsp_preset_changed;
-	on_dsp_preset_changed = function() {
-		oldFunc();
-		onDspPresetChanged();
-	}
-} else {var on_dsp_preset_changed = onDspPresetChanged;}
+});
 
 /* 
 	Menus
