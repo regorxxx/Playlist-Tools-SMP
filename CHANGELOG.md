@@ -34,12 +34,14 @@
 ## [3.0.0-beta.13] - 2022-08-12
 ### Added
 - Search by Distance: diagrams explaining the design logic of similar artists calculation with 3 different methods ('_images\search_by_distance_SIMILAR_ARTISTS(R|V|W)_diagram.png').
+- Search by Distance: added 'Dembow' and 'Renaissance Rock', along their influences, to descriptors.
 ### Changed
 - Search by Distance: when calculating similar artists, library tracks are now filtered by nearest genre/styles to tracks by selected artist for every track, instead of using only the first track as reference. This should better reflect the works of an artist without depending on the reference track at all. Previously, output score would be heavily dependent on the reference track.
 - Search by Distance: when calculating similar artists, scores are now weighted with genre/style appearance on all artist's tracks. i.e. if 'Mdour Moctar' has 1 Reggae track on your library and 99 Rock tracks, then if the Reggae track is chosen for the calcs, it's score is weighted as 1% of the total score (instead of averaging all N scores).
 - Search by Distance: when calculating similar artists, current method uses the 2 above changes, named 'weighted'. Using only the filter change is 'variable'. Previous method based on reference track is named 'reference'. This is an internal change, but functionality -based on names- can be seen on the diagrams. 'Weighted' will be the default method from now on, not meant to be changed (unless the script 'search_bydistance_extra.js' is edited). In resume, this change is aimed to better reflect the entire work of an artist, instead of specific tracks or being tied to random variations.
 - Logging: reworked console logging to group buttons loading info into one line.
 - Logging: reduced console logging at startup.
+- Helpers: switched all callbacks to [event listeners](https://github.com/regorxxx/Callbacks-Framework-SMP).
 ### Removed
 ### Fixed
 - Search by Distance: when calculating similar artists, before choosing N random tracks, from selected artist, duplicates are now removed (to ensure no track is selected twice if it appears at different albums for ex.). Checks for Title + Artist + Date.
