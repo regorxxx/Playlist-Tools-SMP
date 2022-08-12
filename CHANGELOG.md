@@ -2,7 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0-beta.13](#300-beta13---2021-08-11)
+- [3.0.0-beta.13](#300-beta13---2021-08-12)
 - [3.0.0-beta.12](#300-beta12---2021-08-10)
 - [3.0.0-beta.11](#300-beta11---2021-08-09)
 - [3.0.0-beta.10](#300-beta10---2021-08-07)
@@ -31,17 +31,20 @@
 ### Removed
 ### Fixed
 
-## [3.0.0-beta.13] - 2022-08-11
+## [3.0.0-beta.13] - 2022-08-12
 ### Added
 - Search by Distance: diagrams explaining the design logic of similar artists calculation with 3 different methods ('_images\search_by_distance_SIMILAR_ARTISTS(R|V|W)_diagram.png').
 ### Changed
 - Search by Distance: when calculating similar artists, library tracks are now filtered by nearest genre/styles to tracks by selected artist for every track, instead of using only the first track as reference. This should better reflect the works of an artist without depending on the reference track at all. Previously, output score would be heavily dependent on the reference track.
 - Search by Distance: when calculating similar artists, scores are now weighted with genre/style appearance on all artist's tracks. i.e. if 'Mdour Moctar' has 1 Reggae track on your library and 99 Rock tracks, then if the Reggae track is chosen for the calcs, it's score is weighted as 1% of the total score (instead of averaging all N scores).
 - Search by Distance: when calculating similar artists, current method uses the 2 above changes, named 'weighted'. Using only the filter change is 'variable'. Previous method based on reference track is named 'reference'. This is an internal change, but functionality -based on names- can be seen on the diagrams. 'Weighted' will be the default method from now on, not meant to be changed (unless the script 'search_bydistance_extra.js' is edited). In resume, this change is aimed to better reflect the entire work of an artist, instead of specific tracks or being tied to random variations.
+- Logging: reworked console logging to group buttons loading info into one line.
+- Logging: reduced console logging at startup.
 ### Removed
 ### Fixed
 - Search by Distance: when calculating similar artists, before choosing N random tracks, from selected artist, duplicates are now removed (to ensure no track is selected twice if it appears at different albums for ex.). Checks for Title + Artist + Date.
 - Presets: updated Picard AcousticBrainz presets with fixes to output when values used scientific notation and other weird situations.
+- Workaround for some instances where the scripts would warn about some feature not being supported by the OS (due to an OS or SMP bug). 
 
 ## [3.0.0-beta.12] - 2022-08-10
 ### Added
@@ -249,7 +252,7 @@
 - Buttons bar: fixed some instances where the buttons properties were not properly moved along the button when changing position.
 - Buttons bar: fixed properties bugs on 'buttons_search_same_style_moods' and 'buttons_search_same_style'.
 - Helpers: file deletion failed when file was read-only.
-- Helpers: file recycling has been overhauled to bypass Unix errors and shift pressing limitation (file was being deleted permanently). Now it tries 3 different methods, the last one requires an external executable and permissions may be asked by the SO.
+- Helpers: file recycling has been overhauled to bypass Unix errors and shift pressing limitation (file was being deleted permanently). Now it tries 3 different methods, the last one requires an external executable and permissions may be asked by the OS.
 - Other Tools\Write tags: readme was missing on the readme menu.
 - Fixed some panel crashes when there was no available playlist on Foobar, so the active playlist was null.
 
@@ -349,7 +352,7 @@
 - All json files are now saved as UTF-8 without BOM. All json files are now read as UTF-8 (forced).
 ### Removed
 ### Fixed
-- Import Track List: while reading text files, they are now split by lines using any of the possible [escape sequence combinations](https://en.wikipedia.org/wiki/Newline) and not only windows ones (\r\n). This should allow to correctly read any file created in any SO (no longer limited to Windows ecosystem).
+- Import Track List: while reading text files, they are now split by lines using any of the possible [escape sequence combinations](https://en.wikipedia.org/wiki/Newline) and not only windows ones (\r\n). This should allow to correctly read any file created in any OS (no longer limited to Windows ecosystem).
 - Pools: output playlist was not being checked for locked status properly.
 - Pools: Playlist files from Playlist-Manager-SMP were not being read properly due to a typo on path detection.
 - Macros: Typo on one of the entries of the 'Test tools' macro (so it was being skipped instead of executed).
