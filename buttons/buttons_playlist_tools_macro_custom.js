@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /* 
 	Playlist Tools Macro custom
@@ -9,7 +9,7 @@
 
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
-try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {	console.log('Playlist Tools Macros (CUSTOM) Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {/*console.log('Playlist Tools Macros (CUSTOM) Button loaded.'); */} //May be loaded along other buttons
 
 var prefix = 'mac_';
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
@@ -22,7 +22,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And 
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	macroCustom: new themedButton({x: 0, y: 0, w: 98, h: 22}, newButtonsProperties.customName[1], function (mask) {
+	'Playlist Tools Macros (CUSTOM)': new themedButton({x: 0, y: 0, w: 98, h: 22}, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			if (mask === MK_SHIFT) {
 				const configMenu = new _menu();

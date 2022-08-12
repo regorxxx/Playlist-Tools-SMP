@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/07/22
+//12/08/22
 
 /* 
 	Automatic tagging...
@@ -29,7 +29,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	var newButton = {
-		automation: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function (mask) {
+		'Automate Tags': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function (mask) {
 			const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 			if (mask === MK_SHIFT) {
 				if (!this.tAut.isRunning() && handleList.Count) {this.tAut.run();} 
@@ -114,7 +114,7 @@ buttonsBar.list.push(newButtonsProperties);
 			return info;
 		}, prefix, newButtonsProperties, chars.tags),
 	};
-	newButton.automation.tAut = new tagAutomation(JSON.parse(newButtonsProperties['toolsByKey'][1]));
+	newButton['Automate Tags'].tAut = new tagAutomation(JSON.parse(newButtonsProperties['toolsByKey'][1]));
 
 	addButton(newButton);
 }

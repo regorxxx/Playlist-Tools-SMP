@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /* 
 	Fingerprint tag (FooID)
@@ -11,7 +11,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_file.js');
 var prefix = 'fp_0';
 
-try {window.DefinePanel('Fingerprint FooID Tag', {author:'xxx'});} catch (e) {console.log('Fingerprint FooID Tag Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Fingerprint FooID Tag', {author:'xxx'});} catch (e) {/* console.log('Fingerprint FooID Tag Button loaded.'); */} //May be loaded along other buttons
 
 var newButtonsProperties = { //You can simply add new properties here
 	fpTagC:			['Chromaprint Fingerprint tag', 'acoustid_fingerprint_raw'],
@@ -33,7 +33,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));
 if (!buttonsBar.list.some((properties) => {return properties.hasOwnProperty('fpTagC');})) {buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));}
 
 addButton({
-	fptf: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'FooID', function () {
+	'Fingerprint FooID Tag': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'FooID', function () {
 		// Reuse the menu entry
 		return createFpMenuLeft.bind(this)().btn_up(void(0), void(0), void(0), 'Tag with FooID');
 	}, null, void(0), (parent) => {parent.selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist); return 'Calculate FooID fingerprints for selected tracks: ' + parent.selItems.Count + ' item(s)';}, prefix, newButtonsProperties, chars.tags),

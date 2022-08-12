@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/07/22
+//12/08/22
 
 /* 
 	Search n tracks (randomly) on library with the same style(s) than the current selected track.
@@ -12,7 +12,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'sss_';
 
-try {window.DefinePanel('Search Same Button', {author:'xxx'});} catch (e) {console.log('Same Styles Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Search Same Button', {author:'xxx'});} catch (e) {/* console.log('Same Styles Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -28,7 +28,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	SameStyles: new themedButton({x: 0, y: 0, w: 93, h: 22}, 'Same Styles', function (mask) {
+	'Same Styles': new themedButton({x: 0, y: 0, w: 93, h: 22}, 'Same Styles', function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/08/22
+//12/08/22
 
 /* 
 	Playlist Tools Menu
@@ -897,8 +897,9 @@ if (typeof on_dsp_preset_changed !== 'undefined') {
 		if (!menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true) {
 			include(scriptPath);
 			readmes[newReadmeSep()] = 'sep';
-			readmes['Search similar by... (All)'] = folders.xxx + 'helpers\\readme\\search_bydistance.txt';
+			readmes['Search similar by... (main)'] = folders.xxx + 'helpers\\readme\\search_bydistance.txt';
 			readmes['Search similar by... (recipes\\themes)'] = folders.xxx + 'helpers\\readme\\search_bydistance_recipes_themes.txt';
+			readmes['Search similar by... (similar artists)'] = folders.xxx + 'helpers\\readme\\search_bydistance_similar_artists.txt';
 			readmes['Search similar by Graph'] = folders.xxx + 'helpers\\readme\\search_bydistance_graph.txt';
 			readmes['Search similar by Dyngenre'] = folders.xxx + 'helpers\\readme\\search_bydistance_dyngenre.txt';
 			readmes['Search similar by Weight'] = folders.xxx + 'helpers\\readme\\search_bydistance_weight.txt';
@@ -4782,9 +4783,13 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	// Presets
 	presets = JSON.parse(propObject['presets'][1]);
 	// Backup defaults
-	doOnce('Backup', () => {menu_propertiesBack = clone(menu_properties); menu_panelPropertiesBack = clone(menu_panelProperties); console.log('Playlist Tools: creating default settings...');})();
+	doOnce('Backup', () => {
+		menu_propertiesBack = clone(menu_properties); 
+		menu_panelPropertiesBack = clone(menu_panelProperties); 
+		if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: creating default settings...');}
+	})();
 	// Store for internal use
-	console.log('Playlist Tools: updating settings...');
+	if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: updating settings...');}
 	for (let key in propObject) {
 		menu_properties[key][1] = propObject[key][1];
 	}
@@ -4929,7 +4934,7 @@ function createMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\a
 	if (!menu_panelProperties.bDynamicMenus[1]) {return false;}
 	const bToFile = file && file.length;
 	try {
-		console.log('Playlist Tools: registering dynamic menus...');
+		if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: registering dynamic menus...');}
 		const data = bToFile ? _jsonParseFile(file, utf8) || {} : {};
 		// List menus
 		const mainMenu = menu.getMainMenuName();

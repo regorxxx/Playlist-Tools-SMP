@@ -12,7 +12,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ss_';
  
-try {window.DefinePanel('Search Similar Button', {author:'xxx'});} catch (e) {console.log('Same Styles/Moods Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Search Similar Button', {author:'xxx'});} catch (e) {/* console.log('Same Styles/Moods Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -29,7 +29,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	SearchSimilar: new themedButton({x: 0, y: 0, w: 133, h: 22}, 'Same Styles/Moods', function (mask) {
+	'Same Styles/Moods': new themedButton({x: 0, y: 0, w: 133, h: 22}, 'Same Styles/Moods', function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {

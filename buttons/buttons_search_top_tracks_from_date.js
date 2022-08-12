@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/07/22
+//12/08/22
 
 /* 
 	Top Tracks
@@ -13,7 +13,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ttd';
 
-try {window.DefinePanel('Top Tracks Button', {author:'xxx'});} catch (e) {console.log('Top Tracks from Date Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Top Tracks Button', {author:'xxx'});} catch (e) {/* console.log('Top Tracks from Date Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -30,7 +30,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	topTracksDate: new themedButton({x: 0, y: 0, w: 133, h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1))}, function (mask) {
+	'Top Tracks from Date': new themedButton({x: 0, y: 0, w: 133, h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1))}, function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {

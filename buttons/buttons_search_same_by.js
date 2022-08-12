@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/07/22
+//12/08/22
 
 /* 
 	Search same by v 1.0 28/01/20
@@ -70,7 +70,7 @@ include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ssby';
  
  
-try {window.DefinePanel('Search Same By Button', {author:'xxx'});} catch (e) {console.log('Search Same By Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Search Same By Button', {author:'xxx'});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -91,7 +91,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	searchSameBy: new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Search Same By...', function (mask) {
+	'Search Same By': new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Search Same By...', function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {

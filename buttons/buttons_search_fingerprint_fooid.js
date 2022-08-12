@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /* 
 	Fingerprint tag (FooID)
@@ -12,7 +12,7 @@ include('..\\helpers\\helpers_xxx_file.js');
 include('..\\main\\fingerprint_tools_menu.js');
 var prefix = 'fp_0';
 
-try {window.DefinePanel('Fingerprint FooID Search', {author:'xxx'});} catch (e) {console.log('Fingerprint FooID Search Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Fingerprint FooID Search', {author:'xxx'});} catch (e) {/* console.log('Fingerprint FooID Search Button loaded.'); */} //May be loaded along other buttons
 
 var newButtonsProperties = { //You can simply add new properties here
 	fpTagC:			['Chromaprint Fingerprint tag', 'acoustid_fingerprint_raw'],
@@ -34,7 +34,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));
 if (!buttonsBar.list.some((properties) => {return properties.hasOwnProperty('fpTagC');})) {buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));}
 
 addButton({
-	fpsf: new themedButton({x: 0, y: 0, w: 133, h: 22}, 'Search by fooID', function () {
+	'Fingerprint FooID Search': new themedButton({x: 0, y: 0, w: 133, h: 22}, 'Search by fooID', function () {
 		// Reuse the menu entry
 		return createFpMenuLeft.bind(this)().btn_up(void(0), void(0), void(0), 'Search by similar FooID');
 	}, null, void(0), (parent) => {parent.selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist); return 'Look for similar tracks by fingerprint to selected tracks: ' + parent.selItems.Count + ' item(s)';}, prefix, newButtonsProperties, chars.wand),

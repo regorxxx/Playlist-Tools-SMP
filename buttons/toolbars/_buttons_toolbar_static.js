@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /*
 	This is an example of how merging buttons works. Just include them...
@@ -55,10 +55,10 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 			console.log(buttonsPath[i] +' not loaded');
 		}
 	}
-	
 	/* 	
 		OR just add them manually:
 		include(folders.xxx + 'buttons\\buttons_search_same_style.js', {always_evaluate: true});
 		...
 	*/
+	console.log('Buttons loaded: ' + buttonsBar.listKeys.flat(Infinity).join(', '));
 }

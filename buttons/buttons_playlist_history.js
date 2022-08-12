@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /* 
 	Playlist History
@@ -8,13 +8,13 @@
  */
 
 include('..\\helpers\\buttons_xxx.js'); 
-try {window.DefinePanel('Playlist Tools History', {author:'xxx'});} catch (e) {console.log('Playlist Tools History Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Playlist Tools History', {author:'xxx'});} catch (e) {/* console.log('Playlist Tools History Button loaded.'); */} //May be loaded along other buttons
 include('..\\helpers\\playlist_history.js');
 
 buttonsBar.list.push({});
 
 addButton({
-	playlistHistory: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Prev. Playlist', function (mask) {
+	'Playlist Tools History': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
 			createHistoryMenu().btn_up(this.currX, this.currY + this.currH);
 		} else {

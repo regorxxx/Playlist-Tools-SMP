@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/06/22
+//12/08/22
 
 /* 
 	Playlist Tools Menu
@@ -12,7 +12,7 @@
  */
 
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
-try {window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0-beta8', features: {drag_n_drop: false}});} catch (e) {console.log('Playlist Tools Menu Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0-beta8', features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
 
 {
 	const dependencies = [
@@ -43,7 +43,7 @@ setProperties(newButtonsProperties, prefix, 0); // This sets all the panel prope
 }
 
 addButton({
-	playlistTools: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
+	'Playlist Tools': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
 		if (!defaultArgs.parent) {defaultArgs.parent = this;} // Register this button as parent
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);

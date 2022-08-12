@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/08/22
+//12/08/22
 
 /* 
 	Output device selector
@@ -12,8 +12,7 @@ include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_file.js');
 include('..\\helpers\\menu_xxx.js');
 
-try {window.DefinePanel('Output device selector button', {author:'XXX', version: '1.1.0'});} 
-catch (e) {console.log('Output device selector Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Output device selector button', {author:'XXX', version: '1.1.0'});} catch (e) {/* console.log('Output device selector Button loaded.'); */} //May be loaded along other buttons
 
 checkCompatible('1.6.1', 'smp');
 checkCompatible('1.4.0', 'fb');
@@ -21,7 +20,7 @@ checkCompatible('1.4.0', 'fb');
 buttonsBar.list.push({});
 
 addButton({
-	deviceSelector: new themedButton({x: 0, y: 0, w: 78, h: 22}, 'Devices', function () {
+	'Output device selector': new themedButton({x: 0, y: 0, w: 78, h: 22}, 'Devices', function () {
 		const menu = new _menu();
 		menu.newEntry({entryText: 'Select output:', func: null, flags: MF_GRAYED});
 		menu.newEntry({entryText: 'sep'});

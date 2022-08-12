@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /* 
 	Playlist Tools Macros
@@ -8,12 +8,12 @@
  */
 
 include('..\\helpers\\buttons_xxx.js'); 
-try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {console.log('Playlist Tools Macros Button loaded.');}  //May be loaded along other buttons
+try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {/* console.log('Playlist Tools Macros Button loaded.'); */}  //May be loaded along other buttons
 
 buttonsBar.list.push({});
 
 addButton({
-	macro: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Macros', function () {
+	'Playlist Tools Macros': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Macros', function () {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};

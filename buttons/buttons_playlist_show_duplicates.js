@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/03/22
+//12/08/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -18,7 +18,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'sd';
 
-try {window.DefinePanel('Show Duplicates Button', {author:'xxx'});} catch (e) {console.log('Show Duplicates Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Show Duplicates Button', {author:'xxx'});} catch (e) {/* console.log('Show Duplicates Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -35,7 +35,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	showDuplicates: new themedButton({x: 0, y: 0, w: 116, h: 22}, 'Show duplicates', function (mask) {
+	'Show Duplicates': new themedButton({x: 0, y: 0, w: 116, h: 22}, 'Show duplicates', function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {

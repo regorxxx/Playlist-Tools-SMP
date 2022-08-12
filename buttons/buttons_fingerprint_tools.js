@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/22
+//12/08/22
 
 /* 
 	Fingerprint tag (Chromaprint)
@@ -14,7 +14,7 @@ include('..\\main\\fooid-utils-js_fingerprint.js');
 include('..\\main\\fingerprint_tools_menu.js');
 var prefix = 'fp_0';
 
-try {window.DefinePanel('Fingerprint Tools', {author:'xxx'});} catch (e) {console.log('Fingerprint Tools Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Fingerprint Tools', {author:'xxx'});} catch (e) {/* console.log('Fingerprint Tools Button loaded.'); */} //May be loaded along other buttons
 
 var newButtonsProperties = { //You can simply add new properties here
 	fpTagC:			['Chromaprint Fingerprint tag', 'acoustid_fingerprint_raw'],
@@ -36,7 +36,7 @@ buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));
 if (!buttonsBar.list.some((properties) => {return properties.hasOwnProperty('fpTagC');})) {buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));}
 
 addButton({
-	fpto: new themedButton({x: 0, y: 0, w: 133, h: 22}, 'Fingerprint Tools', function (mask) {
+	'Fingerprint Tools': new themedButton({x: 0, y: 0, w: 133, h: 22}, 'Fingerprint Tools', function (mask) {
 		let bDone;
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			// menuAlt.btn_up(this.currX, this.currY + this.currH);

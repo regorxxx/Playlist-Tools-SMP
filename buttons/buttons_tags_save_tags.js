@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/22
+//12/08/22
 
 /* 
 	-> EDIT
@@ -9,12 +9,12 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
  
-try {window.DefinePanel('Save tags button', {author:'xxx'});} catch (e) {console.log('Sace Tags Buttons loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Save tags button', {author:'xxx'});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
 
 buttonsBar.list.push({});
 
 addButton({
-	OneButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Save tags', function () {
+	'Save tags': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
 		const readme = _open(readmePath, utf8);
 		if (readme.length) {fb.ShowPopupMessage(readme, 'Save tags and comparison');}
@@ -24,7 +24,7 @@ addButton({
 		if (!file.length) {return;}
 		saveTags({file});
 	}, null, void(0),'Save all tags from selected tracks to json', void(0), void(0), chars.save),
-	TwoButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Compare', function () {
+	'Compare tags': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Compare', function () {
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
 		catch (e) {return;}
