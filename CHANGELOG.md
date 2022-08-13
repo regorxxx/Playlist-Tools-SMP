@@ -27,9 +27,12 @@
 
 ## [Unreleased][]
 ### Added
+- Search by Distance: added 'User descriptors' readme.
 ### Changed
+- Search by Distance: user file has been moved to profile folder at 'js_data/helpers/music_graph_descriptors_xxx_user.js'. This will ensure it doesn't get overwritten on script updates. Using the menu entries to open the descriptor will automatically create a copy there and open it if it's not found. Users who have been adding changes and being careful to not overwrite the file at the current location only have to copy it manually or use the menu entry to apply the change (and future edits must be done on the data folder). This step is only required once.
 ### Removed
 ### Fixed
+- Search by Distance: minor fix about 'Tuareg Music'.
 
 ## [3.0.0-beta.13] - 2022-08-12
 ### Added
