@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/08/22
+//14/08/22
 
 /* 
 	Playlist Tools Menu
@@ -1037,11 +1037,11 @@ addEventListener('on_dsp_preset_changed', () => {
 								const missing = tags.difference(nodeList).difference(tagValuesExcluded).difference(music_graph_descriptors.map_distance_exclusions);
 								// Report
 								const userFile = folders.userHelpers + 'music_graph_descriptors_xxx_user.js';
-								const UserFileFound = _isFile(userFile) ? '' : ' (not found)';
-								const UserFileEmpty = UserFileFound &&  Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
+								const userFileFound = _isFile(userFile) ? '' : ' (not found)';
+								const userFileEmpty = !userFileFound.length && Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
 								const report = 'Graph descriptors:\n' +
 												'(scripts folder) .\\helpers\\music_graph_descriptors_xxx.js\n' +
-												'(profile folder) .\\js_data\\helpers\\music_graph_descriptors_xxx_user.js' + UserFileFound + UserFileEmpty + '\n\n' +
+												'(profile folder) .\\js_data\\helpers\\music_graph_descriptors_xxx_user.js' + userFileFound + userFileEmpty + '\n\n' +
 												'List of tags not present on the graph descriptors:\n' +
 												[...missing].sort().join(', ');
 								fb.ShowPopupMessage(report, scriptName);
@@ -1065,7 +1065,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								_deleteFile(folders.data + 'searchByDistance_cacheLinkSet.json');
 								cacheLink = void(0);
 								cacheLinkSet = void(0);
-								updateCache({bForce: true}); // Creates new one and also notifies other panels to discard their cache
+								updateCache({bForce: true, properties: menu_properties}); // Creates new one and also notifies other panels to discard their cache
 							}});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
@@ -1090,6 +1090,12 @@ addEventListener('on_dsp_preset_changed', () => {
 												if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
 												menu_properties[key][1] = input;
 												overwriteMenuProperties(); // Updates panel
+												if (tagName === 'genre' || tagName === 'style') {
+													const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+													if (answer === popup.yes) {
+														menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
+													}
+												}
 											}});
 										});
 									});
