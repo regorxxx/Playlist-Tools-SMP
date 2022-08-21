@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.14](#300-beta14---2021-08-21)
 - [3.0.0-beta.13](#300-beta13---2021-08-12)
 - [3.0.0-beta.12](#300-beta12---2021-08-10)
 - [3.0.0-beta.11](#300-beta11---2021-08-09)
@@ -27,12 +28,20 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.14] - 2022-08-21
+### Added
+- Dynamic queries: added a few new default queries to menu. (may need to restore defaults on the menu to enable it)
 - Search by Distance: added 'User descriptors' readme.
 ### Changed
 - Search by Distance: user file has been moved to profile folder at 'js_data/helpers/music_graph_descriptors_xxx_user.js'. This will ensure it doesn't get overwritten on script updates. Using the menu entries to open the descriptor will automatically create a copy there and open it if it's not found. Users who have been adding changes and being careful to not overwrite the file at the current location only have to copy it manually or use the menu entry to apply the change (and future edits must be done on the data folder). This step is only required once.
 - Search by Distance: all style/genres on the graph use now ASCII only values, so it should be easier to match any value to them if required.
 - Search by Distance: default genre and style tags use now '$ascii()' TF function. This will ensure a match when using accents, etc. See change above. On previous installations, change tags to (without quotes): '$ascii(%genre%)' & '$ascii(%style%)'
 - Search by Distance: after tag remapping, a popup asks to rebuild the cache.
+- Search by Distance: improved graph links cache asynchronous calculation.
 - HTML: tries to load the user descriptors file from data folder first, then from helpers folder if not found. Will give a warning on console on the latter.
 ### Removed
 ### Fixed
@@ -583,7 +592,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.13...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.14...HEAD
+[3.0.0-beta.14]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.13...v3.0.0-beta.14
 [3.0.0-beta.13]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.12...v3.0.0-beta.13
 [3.0.0-beta.12]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.11...v3.0.0-beta.12
 [3.0.0-beta.11]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.10...v3.0.0-beta.11
