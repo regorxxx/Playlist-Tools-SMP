@@ -43,7 +43,7 @@ var menu_prefix = 'plto'; // Update this variable when loading it along a button
 const menu_prefix_panel = menu_prefix;
 var menu_properties = { // Properties are set at the end of the script, or must be set along the button. Menus may add new properties here
 	playlistLength:				['Global Playlist length', 50],
-	forcedQuery:				['Global forced query', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
+	forcedQuery:				['Global forced query', 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %CHANNELS% LESS 3 AND NOT COMMENT HAS Quad'],
 	forcedQueryMenusEnabled:	['Menus with forced query enabled', '{}'],
 	ratingLimits:				['Set ratings extremes (ex. from 1 to 10 -> 1,10)', '1,5'],
 	presets:					['Saved presets', '{}'],
@@ -329,9 +329,9 @@ addEventListener('on_dsp_preset_changed', () => {
 				let selArgs = { ...defaultArgs};
 				let dateQuery = '';
 				if (selYear.length === 2) {
-					dateQuery = '"$year(%date%)" GREATER ' + selYear[0] + ' AND "$year(%date%)" LESS ' + selYear[1];
+					dateQuery = '"$year(%DATE%)" GREATER ' + selYear[0] + ' AND "$year(%DATE%)" LESS ' + selYear[1];
 				} else {
-					dateQuery = '"$year(%date%)" IS ' + selYear;
+					dateQuery = '"$year(%DATE%)" IS ' + selYear;
 				}
 				selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
 				selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
@@ -352,9 +352,9 @@ addEventListener('on_dsp_preset_changed', () => {
 					let selArgs = { ...defaultArgs};
 					let dateQuery = '';
 					if (selYear.length === 2) {
-						dateQuery = '"$year(%date%)" GREATER ' + selYear[0] + ' AND "$year(%date%)" LESS ' +  selYear[1];
+						dateQuery = '"$year(%DATE%)" GREATER ' + selYear[0] + ' AND "$year(%DATE%)" LESS ' +  selYear[1];
 					} else {
-						dateQuery = '"$year(%date%)" IS ' + selYear;
+						dateQuery = '"$year(%DATE%)" IS ' + selYear;
 					}
 					selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
 					selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
@@ -569,7 +569,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					{name: 'Entire library', query: 'ALL', sort: {tfo: '', direction: -1}},
 					{name: 'Entire library (forced query)', query: '', sort: {tfo: '', direction: -1}},
 					{name: 'sep'},
-					{name: 'Rating 4-5', query: '%rating% EQUAL 5 OR %rating% EQUAL 4', sort: {tfo: '%rating%', direction: 1}},
+					{name: 'Rating 4-5', query: '%RATING% EQUAL 5 OR %RATING% EQUAL 4', sort: {tfo: '%RATING%', direction: 1}},
 					{name: 'sep'},
 					{name: 'Recently played', query: '%last_played% DURING LAST 1 WEEK', sort: {tfo: '%last_played%', direction: -1}},
 					{name: 'Recently added', query: '%added% DURING LAST 1 WEEK', sort: {tfo: '%added%', direction: -1}},
@@ -722,9 +722,15 @@ addEventListener('on_dsp_preset_changed', () => {
 				let queryFilter = [
 					{name: 'Same title (any artist)'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1'},
 					{name: 'Same songs (by artist)'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST#'},
-					{name: 'Duplicates on library'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND DATE IS #$year(%date%)#'},
-					{name: 'Same date (any track)'		, query: 'DATE IS #$year(%date%)#'},
-					{name: 'Live versions of same song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
+					{name: 'Duplicates on library'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND DATE IS #$year(%DATE%)#'},
+					{name: 'sep'},
+					{name: 'Same date (any track/artist)'		, query: 'DATE IS #$year(%DATE%)#'},
+					{name: 'sep'},
+					{name: 'Acoustic versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Acoustic OR STYLE IS Acoustic OR MOOD IS Acoustic)'},
+					{name: 'Live versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
+					{name: 'Cover versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND NOT ARTIST IS #ARTIST#'},
+					{name: 'sep'},
+					{name: 'Rated >2 tracks (by artist)'	, query: '%RATING GREATER% 2 AND ARTIST IS #ARTIST#'},
 				];
 				const queryFilterDefaults = [...queryFilter];
 				let selArg = {query: queryFilter[0].query};
@@ -1292,11 +1298,11 @@ addEventListener('on_dsp_preset_changed', () => {
 					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
-							{name: 'Rating > 2', query: 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'}, 
+							{name: 'Rating > 2', query: 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
 							{name: 'Not live (none)', query: 'NOT STYLE IS Live'},  
 							{name: 'Not live (except Hi-Fi)', query: 'NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi)'},  
-							{name: 'Not multichannel', query: '%channels% LESS 3 AND NOT COMMENT HAS Quad'}, 
-							{name: 'Not SACD or DVD', query: 'NOT %_path% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
+							{name: 'Not multichannel', query: '%CHANNELS% LESS 3 AND NOT COMMENT HAS Quad'}, 
+							{name: 'Not SACD or DVD', query: 'NOT %_PATH% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
 							{name: 'Same title than sel', query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1'},
@@ -1872,9 +1878,9 @@ addEventListener('on_dsp_preset_changed', () => {
 						{name: 'sep'}
 					];
 					let sortLegacy = [
-						{name: 'Sort by Mood', tfo: '%mood%'},
-						{name: 'Sort by Date', tfo: '%date%'},
-						{name: 'Sort by BPM', tfo: '%bpm%'}
+						{name: 'Sort by Mood', tfo: '%MOOD%'},
+						{name: 'Sort by Date', tfo: '%DATE%'},
+						{name: 'Sort by BPM', tfo: '%BPM%'}
 					];
 					let selArg = {name: 'Custom', tfo: sortLegacy[0].tfo};
 					const sortLegacyDefaults = [...sortLegacy];
@@ -2996,17 +3002,17 @@ addEventListener('on_dsp_preset_changed', () => {
 						const subMenuName = menu.newMenu(name, menuName);
 						// Create new properties with previous args
 						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'track_list_to_import.txt'];
-						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%title%', ' - ', '%artist%'])];
-						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify(['%channels% LESS 3 AND NOT COMMENT HAS Quad', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', '(NOT GENRE IS live AND NOT STYLE IS live) OR ((GENRE IS live OR STYLE IS live) AND style IS hi-fi)', 'NOT GENRE IS live AND NOT STYLE IS live'])];
+						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', '%ARTIST%'])];
+						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify(['%CHANNELS% LESS 3 AND NOT COMMENT HAS Quad', 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', '(NOT GENRE IS live AND NOT STYLE IS live) OR ((GENRE IS live OR STYLE IS live) AND style IS hi-fi)', 'NOT GENRE IS live AND NOT STYLE IS live'])];
 						// Checks
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
 						menu_properties['importPlaylistMask'].push({func: isJSON}, menu_properties['importPlaylistMask'][1]);
 						menu_properties['importPlaylistFilters'].push({func: (x) => {return isJSON(x) && JSON.parse(x).every((query) => {return checkQuery(query, true);});}}, menu_properties['importPlaylistFilters'][1]);
 						// Presets
 						const maskPresets = [
-							{name: 'Numbered Track list', val: JSON.stringify(['. ','%title%',' - ','%artist%'])},
-							{name: 'Track list', val: JSON.stringify(['%title%',' - ','%artist%'])},
-							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',','%artist%',' - ','%title%'])}
+							{name: 'Numbered Track list', val: JSON.stringify(['. ','%TITLE%',' - ','%ARTIST%'])},
+							{name: 'Track list', val: JSON.stringify(['%TITLE%',' - ','%ARTIST%'])},
+							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',','%ARTIST%',' - ','%TITLE%'])}
 						];
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED});
@@ -3017,7 +3023,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							catch (e) {return;}
 							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {console.log('File does not exist.'); return ;}
 							let formatMask;
-							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%title%\', \' - \', \'%artist%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%TITLE%\', \' - \', \'%ARTIST%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							try { 
 								// Load preset if possible
@@ -3046,7 +3052,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Configure filters...', func: () => {
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n [\'%channels% LESS 3\', \'%rating% GREATER 2\']', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n [\'%CHANNELS% LESS 3\', \'%RATING% GREATER 2\']', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							if (!input.length) {input = '[]';}
 							try {JSON.parse(input);}
@@ -3118,14 +3124,14 @@ addEventListener('on_dsp_preset_changed', () => {
 			let pools = [
 				{name: 'Top tracks mix', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%rating% EQUAL 3', _LIBRARY_1: '%rating% EQUAL 4', _LIBRARY_2: '%rating% EQUAL 5'}, 
+					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Top tracks mix', 
 					sort: '',
 					}},
 				{name: 'Top tracks mix (intercalate)', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%rating% EQUAL 3', _LIBRARY_1: '%rating% EQUAL 4', _LIBRARY_2: '%rating% EQUAL 5'}, 
+					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					insertMethod: 'intercalate',
 					toPls: 'Top tracks mix', 
@@ -3134,14 +3140,14 @@ addEventListener('on_dsp_preset_changed', () => {
 				{name: 'sep'},
 				{name: 'Current genre/style and top tracks', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: 'GENRE IS #GENRE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_1: 'STYLE IS #STYLE# AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_2: '%rating% EQUAL 5'}, 
+					query: {_LIBRARY_0: 'GENRE IS #GENRE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: 'STYLE IS #STYLE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_2: '%RATING% EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and top tracks', 
 					sort: '',
 					}},
 				{name: 'Current genre/style and instrumentals', pool: {
 					fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
-					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %rating% EQUAL 5)', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'}, 
+					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %RATING% EQUAL 5)', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and instrumentals', 
 					sort: '',
@@ -3514,7 +3520,7 @@ addEventListener('on_dsp_preset_changed', () => {
 				if (!toPls.length) {console.log('Input was empty'); return;}
 				// Sort
 				let sort = '';
-				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', scriptName + ': ' + name, '%playlist_index%', true);}
+				try {sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', scriptName + ': ' + name, '%PLAYLIST_INDEX%', true);}
 				catch (e) {return;}
 				// TODO: Test sorting
 				// Object
@@ -4049,7 +4055,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								;}},
 								{name: 'sep'},
 								{name: 'Add skip Tag at current playback', func: (idx) => {
-									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\nThis is a workaround for using %playback_time% for tagging, since %playback_time% does not work within masstagger scripts.', scriptName + ': ' + name);
+									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.', scriptName + ': ' + name);
 									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
 								{name: 'Execute menu entry by name', func: (idx) => {
@@ -4362,8 +4368,8 @@ addEventListener('on_dsp_preset_changed', () => {
 									{title: 'Acoustic tracks',			query: 'STYLE IS Acoustic OR GENRE IS Acoustic OR ACOUSTICNESS GREATER 75'},
 									{title: 'Rating > 2',				query: '%RATING% GREATER 2'},
 									{title: 'Rating > 3',				query: '%RATING% GREATER 3'},
-									{title: 'Length < 6 min',			query: '%length_seconds% LESS 360'},
-									{title: 'Only Stereo',				query: '%channels% LESS 3 AND NOT COMMENT HAS Quad'},
+									{title: 'Length < 6 min',			query: '%LENGTH_SECONDS% LESS 360'},
+									{title: 'Only Stereo',				query: '%CHANNELS% LESS 3 AND NOT COMMENT HAS Quad'},
 									{title: 'sep'},		
 									{title: 'No Female vocals',			query: 'NOT (STYLE IS Female Vocal OR STYLE IS Female OR GENRE IS Female Vocal OR GENRE IS Female OR GENDER IS Female)'}, 
 									{title: 'No Instrumentals', 		query: 'NOT (STYLE IS Instrumental OR GENRE IS Instrumental OR SPEECHINESS EQUAL 0)'},
@@ -4846,11 +4852,11 @@ function menuTooltip() {
 	let info = 'No track selected\nSome menus disabled';
 	if (sel) {
 		let tfo = fb.TitleFormat(
-				'Current track:	%artist% / %track% - %title%' +
-				'$crlf()Date:		[%date%]' +
-				'$crlf()Genres:		[%genre%]' +
-				'$crlf()Styles:		[%style%]' +
-				'$crlf()Moods:		[%mood%]'
+				'Current track:	%ARTIST% / %TRACK% - %TITLE%' +
+				'$crlf()Date:		[%DATE%]' +
+				'$crlf()Genres:		[%GENRE%]' +
+				'$crlf()Styles:		[%STYLE%]' +
+				'$crlf()Moods:		[%MOOD%]'
 			);
 		info = 'Playlist:		' + plman.GetPlaylistName(plman.ActivePlaylist) + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);
