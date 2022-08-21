@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/08/22
+//21/08/22
 
 /* 
 	Playlist Tools Menu
@@ -730,7 +730,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					{name: 'Live versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
 					{name: 'Cover versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND NOT ARTIST IS #ARTIST#'},
 					{name: 'sep'},
-					{name: 'Rated >2 tracks (by artist)'	, query: '%RATING GREATER% 2 AND ARTIST IS #ARTIST#'},
+					{name: 'Rated >2 tracks (by artist)'	, query: '%RATING% GREATER 2 AND ARTIST IS #ARTIST#'},
 				];
 				const queryFilterDefaults = [...queryFilter];
 				let selArg = {query: queryFilter[0].query};
