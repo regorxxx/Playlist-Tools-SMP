@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.15](#300-beta14---2021-08-22)
 - [3.0.0-beta.14](#300-beta14---2021-08-21)
 - [3.0.0-beta.13](#300-beta13---2021-08-12)
 - [3.0.0-beta.12](#300-beta12---2021-08-10)
@@ -29,6 +30,15 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.15] - 2022-08-22
+### Added
+- Playlist locks: new menu entries at Playlist manipulation to lock/unlock playlists. Currently switches 'add, remove, replace and reorder' locks (all at once). Use [Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP) for a fine-grained control of lock types. Note playlist locked by other components or main program can not be edited via SMP.
+### Changed
+- UI: minor improvements to word lists within popups in some instances. Now split in new lines after X elements.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 
@@ -374,7 +384,7 @@
 ### Fixed
 - Import Track List: while reading text files, they are now split by lines using any of the possible [escape sequence combinations](https://en.wikipedia.org/wiki/Newline) and not only windows ones (\r\n). This should allow to correctly read any file created in any OS (no longer limited to Windows ecosystem).
 - Pools: output playlist was not being checked for locked status properly.
-- Pools: Playlist files from Playlist-Manager-SMP were not being read properly due to a typo on path detection.
+- Pools: Playlist files from [Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP) were not being read properly due to a typo on path detection.
 - Macros: Typo on one of the entries of the 'Test tools' macro (so it was being skipped instead of executed).
 - Macros: Crash when trying to save a macro with duplicated name.
 - Most played tracks from...\From last...: was reporting tracks less played in a given period, instead of the most played due to a typo. Now fixed (most played tracks within the given period will be first).
