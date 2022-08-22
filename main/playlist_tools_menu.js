@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/08/22
+//22/08/22
 
 /* 
 	Playlist Tools Menu
@@ -1852,10 +1852,106 @@ addEventListener('on_dsp_preset_changed', () => {
 					}
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
+				menu.newEntry({menuName, entryText: 'sep'});
 			} else {
 				menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 				menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 				menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+			}
+		}
+		{	// Lock / Unlock playlist
+			const nameLock = 'Lock playlist...';
+			const nameUnlock = 'Unlock playlist...';
+			if (!menusEnabled.hasOwnProperty(nameLock) || !menusEnabled.hasOwnProperty(nameUnlock) || menusEnabled[nameLock] === true || menusEnabled[nameUnlock] === true) {
+				if (!menu_properties.hasOwnProperty('playlistSplitSize')) {
+					menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
+					// Checks
+					menu_properties['playlistSplitSize'].push({greater: 1, func: isInt}, menu_properties['playlistSplitSize'][1]);
+				}
+				// Bools
+				const bLock = !menusEnabled.hasOwnProperty(nameLock) || menusEnabled[nameLock] === true;
+				const bUnlock = !menusEnabled.hasOwnProperty(nameUnlock) || menusEnabled[nameUnlock] === true;
+				// Menus
+				const subMenuNameLock = bLock ? menu.newMenu(nameLock, menuName) : null;
+				if (!bLock) {menuDisabled.push({menuName: nameLock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				const subMenuNameUnlock = bUnlock ? menu.newMenu(nameUnlock, menuName) : null;
+				if (!bUnlock) {menuDisabled.push({menuName: nameUnlock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (bLock) {
+					menu.newEntry({menuName: subMenuNameLock, entryText: 'Lock playlist: add, remove, replace and reorder', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuNameLock, entryText: 'sep'});
+				}
+				if (bUnlock) {
+					menu.newEntry({menuName: subMenuNameUnlock, entryText: 'Unlock playlist (by SMP):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuNameUnlock, entryText: 'sep'});
+				}
+				// Build submenus
+				menu.newCondEntry({entryText: 'Lock/Unlock Playlists...', condFunc: () => {
+					if (defaultArgs.bProfile) {var profiler = new FbProfiler('Lock/Unlock Playlists...');}
+					const lockTypes = ['AddItems', 'RemoveItems', 'ReplaceItems', 'ReorderItems'];
+					const playlistsNum = plman.PlaylistCount;
+					if (playlistsNum) {
+						const lockedPlaylists = playlistCountNoLocked(lockTypes);
+						const nonLockedPlaylists = playlistsNum - lockedPlaylists;
+						// Split entries in sub-menus if there are too many playlists...
+						let ss = menu_properties['playlistSplitSize'][1];
+						const lockUnlockMenu = (index, menuName, obj) => {
+							const playlist = {name: plman.GetPlaylistName(index), index};
+							const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(index));
+							const lockName = plman.GetPlaylistLockName(index);
+							const bSMPLock = lockName === 'foo_spider_monkey_panel' || !lockName;
+							const bLocked = !bSMPLock || playlistLockTypes.isSuperset(new Set(lockTypes));
+							const flags = bSMPLock ? MF_STRING: MF_GRAYED;
+							const entryText = playlist.name + (!bSMPLock ? ' ' + _p(lockName) : '');
+							if (obj.action === 'lock' && !bLocked){
+								menu.newEntry({menuName, entryText, func: () => {
+									plman.SetPlaylistLockedActions(index, lockTypes);
+								}, flags});
+								return true;
+							} else if (obj.action === 'unlock' && bLocked){
+								menu.newEntry({menuName, entryText, func: () => {
+									const newLock = [...playlistLockTypes.difference(new Set(lockTypes))];
+									plman.SetPlaylistLockedActions(index, newLock);
+								}, flags});
+								return true;
+							}
+							return false;
+						};
+						[
+							{action: 'lock', playlistsNum: nonLockedPlaylists, subMenuName: subMenuNameLock},
+							{action: 'unlock', playlistsNum: lockedPlaylists, subMenuName: subMenuNameUnlock}
+						].forEach((obj) => {
+							if (obj.playlistsNum === 0) {
+								menu.newEntry({menuName: obj.subMenuName, entryText: 'No items.', func: null, flags: MF_GRAYED});
+								return;
+							}
+							const splitBy = obj.playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+							if (obj.playlistsNum > splitBy) {
+								const subMenusCount = Math.ceil(obj.playlistsNum / splitBy);
+								for (let i = 0; i < subMenusCount; i++) {
+									const bottomIdx =  i * splitBy;
+									const topIdx = (i + 1) * splitBy - 1;
+									// Prefix ID is required to avoid collisions with same sub menu names
+									// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+									const idx = (obj.action === 'lock' ? '(Lock)' : '(Unlock)') + ' Playlists ' + bottomIdx + ' - ' + topIdx;
+									const subMenu_i = menu.newMenu(idx, obj.subMenuName);
+									let skipped = 0;
+									for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
+										if (!lockUnlockMenu(j, subMenu_i, obj)) {skipped++}
+									}
+								}
+							} else { // Or just show all
+								for (let i = 0; i < playlistsNum; i++) {lockUnlockMenu(i, obj.subMenuName, obj);}
+							}
+						});
+					} else {
+						if (bLock) {menu.newEntry({menuName: subMenuNameLock, entryText: 'No items.', func: null, flags: MF_GRAYED});}
+						if (bUnlock) {menu.newEntry({menuName: subMenuNameUnlock, entryText: 'No items.', func: null, flags: MF_GRAYED});}
+					}
+					if (defaultArgs.bProfile) {profiler.Print();}
+				}});
+			} else {
+				menuDisabled.push({menuName: nameLock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameUnlock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
 			}
 		}
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
