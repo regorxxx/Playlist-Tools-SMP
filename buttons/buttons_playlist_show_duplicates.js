@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//23/08/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -38,6 +38,9 @@ addButton({
 	'Show Duplicates': new themedButton({x: 0, y: 0, w: 116, h: 22}, 'Show duplicates', function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+		} else if (mask === MK_CONTROL) {
+			const checkKeys = Object.keys(this.buttonsProperties).map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
+			removeDuplicatesV2({checkKeys, bProfile: true});
 		} else {
 			const checkKeys = Object.keys(this.buttonsProperties).map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
 			showDuplicates({checkKeys, bProfile: true});
@@ -49,6 +52,7 @@ addButton({
 		let info = 'Show duplicates according to equal ' + checkKeys.join('|');
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
+			info += '\n(Ctrl + L. Click to remove duplicates)';
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
