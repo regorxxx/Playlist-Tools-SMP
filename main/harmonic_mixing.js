@@ -19,7 +19,7 @@ function do_harmonic_mixing({
 								selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 								playlistLength = selItems.Count, 
 								playlistName = 'Harmonic mix from ' + plman.GetPlaylistName(plman.ActivePlaylist),
-								keyTag = 'key',
+								keyTag = 'KEY',
 								bSendToPls = true,
 								bDoublePass = false,
 								bDebug = false,
