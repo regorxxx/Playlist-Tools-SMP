@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//23/08/22
 
 /*	
 	Sort by Key
@@ -11,7 +11,7 @@ include('..\\helpers\\camelot_wheel_xxx.js');
 
 function do_sort_by_key({
 								playlistIdx = plman.ActivePlaylist,
-								keyTag = 'key',
+								keyTag = 'KEY',
 								bSelection = true,
 								sortOrder = 1,
 								bDebug = false,
@@ -27,8 +27,10 @@ function do_sort_by_key({
 	// camelotWheel.keyNotation.forEach ( (val, key) => {
 		// tfo += '$if($stricmp(%' + keyTag + '%,' + key + '),' + (sortOrder * val.substring(0, val.length - 1)) +  ')';
 	// });
+	const keyTagTF = keyTag.indexOf('$') === -1 && keyTag.indexOf('%') === -1 ? '%' + keyTag + '%' : keyTag;
 	camelotWheel.keyNotation.forEach ( (val, key) => {
-		tfo += '$if($stricmp(%' + keyTag + '%,' + key + '),' + (sortOrder * val.substring(0, val.length - 1)) +  ',';
+		const sortVal = (sortOrder === -1 ? 999999999 - val.substring(0, val.length - 1) : val.substring(0, val.length - 1));
+		tfo += '$if($stricmp(' + keyTagTF + ',' + key + '),' + sortVal +  ',';
 	});
 	camelotWheel.keyNotation.forEach ( () => {tfo += ')';}); // Add closures!
 	if (bDebug) {console.log(tfo);}

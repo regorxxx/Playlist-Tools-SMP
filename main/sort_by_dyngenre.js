@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/05/22
+//23/08/22
 
 /*	
 	Sort by Dyngenre
@@ -13,7 +13,7 @@ const [,, genreStyleMap] = dyngenre_map();
 
 function do_sort_by_dyngenre({
 								playlistIdx = plman.ActivePlaylist,
-								styleGenreTag = ['genre', 'style'],
+								styleGenreTag = ['$ascii(%GENRE%)', '$ascii(%STYLE%)'],
 								bSelection = true,
 								sortOrder = 1,
 								bDebug = false,
@@ -62,7 +62,8 @@ function do_sort_by_dyngenre({
 	// Better to identify each track and assign a value to it.
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)
 	dyngenre.forEach ( (val, index) => {
-		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g,'\',\'') + '),' + (sortOrder * dyngenre[index]) + ',';
+		const sortVal = -(sortOrder === -1 ? 999999999 - dyngenre[index] : dyngenre[index]);
+		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g,'\',\'') + '),' + sortVal + ',';
 	});
 	dyngenre.forEach ( () => {tfo += ')';}); // Add closures!
 	if (bDebug) {console.log(tfo);}
