@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/08/22
+//21/08/22
 
 /* 
 	Playlist Tools Menu
@@ -1322,7 +1322,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					menu_properties['queryFilter'].push({func: isJSON}, menu_properties['queryFilter'][1]);
 					menu_properties['queryFilter'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['queryFilter'][1]);
 					// Menus
-					menu.newEntry({menuName: subMenuName, entryText: 'Filter playlists using queries:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Filter active playlist: (Ctrl + click to invert)', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Filter playlists using queries... (cond)', condFunc: () => {
 						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
@@ -1336,10 +1336,14 @@ addEventListener('on_dsp_preset_changed', () => {
 								const queryName = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
 								menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + queryName, func: () => {
 									let query = queryObj.query;
+									// Invert query when pressing Control
+									if (utils.IsKeyPressed(VK_CONTROL) && query.length) {
+										query = 'NOT ' + _p(query);
+									}
 									// Forced query
 									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
 										if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-											query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
+											query = _p(query) + ' AND ' + _p(defaultArgs.forcedQuery);
 										} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 									} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 									// Test
@@ -4965,8 +4969,8 @@ function menuTooltip() {
 	const bInfo = menu_panelProperties.bTooltipInfo[1];
 	if (bShiftNoControl || bNoShiftControl || bInfo) {info += '\n-----------------------------------------------------';}
 	if (bInfo) {info += '\n(L. Click for tools menu)';}
-	if (bShiftNoControl || bInfo) {info += '\n(Shift + L. Click to switch enabled menus)';}
 	if (bNoShiftControl || bInfo) {info += '\n(Ctrl + L. Click to copy menu names to clipboard)';}
+	if (bShiftNoControl || bInfo) {info += '\n(Shift + L. Click to switch enabled menus)';}
 	return info;
 }
 
