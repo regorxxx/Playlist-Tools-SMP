@@ -30,6 +30,9 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Remove duplicates: Ctrl + L. Click on button will show duplicates instead of removing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
+- Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
+- Playlist Manipulation\Query filtering: pressing Ctrl while clicking on a menu entry will invert the query and append 'NOT' at the beginning. i.e. if a filter is used to display tracks with rating > 3, pressing control will do the opposite and show tracks with rating < 3. Note global forced queries are added after the inversion.
 ### Removed
 ### Fixed
 
