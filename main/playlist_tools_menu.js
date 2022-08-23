@@ -49,8 +49,8 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	presets:					['Saved presets', '{}'],
 	bShortcuts:					['Show keyboard shorcuts on entries?', true],
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
-	keyTag:						['Key tag remap', 'key'], // It may be overwritten by Search by distance property too, are equivalent!
-	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['genre', 'style'])],
+	keyTag:						['Key tag remap', 'KEY'], // It may be overwritten by Search by distance property too, are equivalent!
+	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['$ascii(%GENRE%)', '$ascii(%STYLE%)'])],
 	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Write tags': true, 'Pools': false, 'Search by distance': false, 'Remove duplicates': false, 'Import track list': false})],
 	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})]
 };
