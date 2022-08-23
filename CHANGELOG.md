@@ -33,8 +33,17 @@
 - Remove duplicates: Ctrl + L. Click on button will show duplicates instead of removing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Playlist Manipulation\Query filtering: pressing Ctrl while clicking on a menu entry will invert the query and append 'NOT' at the beginning. i.e. if a filter is used to display tracks with rating > 3, pressing control will do the opposite and show tracks with rating < 3. Note global forced queries are added after the inversion.
+- Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
+- Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
 ### Removed
 ### Fixed
+- Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
+- Search by Distance: estimated time for similar artist calculation was not properly computed when having multiple tracks by same artist(s) on selection
+- Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
+- Search by Distance: remapped genre/style tags were not being properly used on similar artist calculation filtering step.
+- Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
+- Search by Distance: calculation did not have into consideration tracks with same genre/style values on  similar artist calculation filtering step.
+- Search by Distance: in some cases similar artists were duplicated.
 
 ## [3.0.0-beta.15] - 2022-08-22
 ### Added
