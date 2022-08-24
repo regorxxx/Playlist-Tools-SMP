@@ -1,8 +1,8 @@
 ﻿'use strict';
-//12/08/22
+//24/08/22
 
 /* 
-	Search same by v 1.0 28/01/20
+	Search same by v 1.0 24/08/22
 	Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
 	Note this ONLY USES existing tags, it will not calculate similarity or anything else. i.e. 'dynamic_genre' tag will not be calculated on the fly. 
 	If some tags are missing, then they get skipped.
@@ -40,8 +40,8 @@
 	A special subset of numeric tags may be cyclic, so the values can only be within a predefined range. See cyclicTags and cyclicTagsDescriptor.
 	
 	- Examples of functionality -
-	buttons_search_same_style_moods <-> use sameBy = {style: 2, mood: 6}
-	buttons_search_same_style <-> use sameBy = {style: 0}
+	buttons_search_by_tags_queries {style} <-> use sameBy = {style: 0}
+	buttons_search_by_tags_queries {style, artist} <-> use sameBy = {style: 0, artist: 0}
 	Tracks from same artist and equal rating <-> use sameBy = {artist: 0, rating: 0}
 	Tracks from same genre and style and date within 10 years <-> use sameBy = {genre: 0, style: 0, date: 10}
 	Tracks from same genre but allowing n-2 style coincidences and date within 10 years <-> use sameBy = {genre: 0, style: -2, date: 10}
@@ -67,18 +67,19 @@ include('..\\main\\search_same_by.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
-var prefix = 'ssby';
+var prefix = 'ssbytc';
  
  
-try {window.DefinePanel('Search Same By Button', {author:'xxx'});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
+try {window.DefinePanel('Search Same By Tags (Combinations) Button', {author:'xxx'});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
+	customName:		['Name for the custom UI button', 'Search Same By... (c)'],
 	playlistLength:		['Max Playlist Mix length', 50],
 	forcedQuery:		['Forced query to filter database', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
 	checkDuplicatesBy:	['Tags to look for duplicates', 'title,artist,date'],
-	sameBy: 			['Tags to look for similarity', JSON.stringify({genre:1 , style: 2, mood: 5})],
-	playlistName:		['Playlist name','Search...'],
+	sameBy: 			['Tags to look for similarity', JSON.stringify({GENRE:1 , STYLE: 2, MOOD: 5})],
+	playlistName:		['Playlist name', 'Search...'],
 };
 newButtonsProperties['playlistLength'].push({greater: 0, func: isInt}, newButtonsProperties['playlistLength'][1]);
 newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
@@ -91,11 +92,14 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Search Same By': new themedButton({x: 0, y: 0, w: 123, h: 22}, 'Search Same By...', function (mask) {
+	'Search Same By Tags (Combinations)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30, h: 22},  newButtonsProperties.customName[1], function (mask) {
 		if (mask === MK_SHIFT) {
+			const oldName = this.buttonsProperties.customName[1].toString();
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+			const newName = this.buttonsProperties.customName[1].toString();
+			if (oldName !== newName) {this.adjustNameWidth(newName);}
 		} else {
-			do_search_same_by({checkDuplicatesBy: this.buttonsProperties.checkDuplicatesBy[1].split(','), playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
+			searchSameByCombs({checkDuplicatesBy: this.buttonsProperties.checkDuplicatesBy[1].split(','), playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
