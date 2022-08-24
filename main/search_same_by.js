@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/22
+//24/08/22
 
 /* 
 	Search same by
@@ -42,8 +42,8 @@
 	A special subset of numeric tags may be cyclic, so the values can only be within a predefined range. See cyclicTags and cyclicTagsDescriptor.
 	
 	- Examples of functionality -
-	buttons_search_style_moods <-> use sameBy = {style: 2, mood: 6}
-	buttons_search_same_style <-> use sameBy = {style: 0}
+	buttons_search_by_tags_queries {style} <-> use sameBy = {style: 0}
+	buttons_search_by_tags_queries {style, artist} <-> use sameBy = {style: 0, artist: 0}
 	Tracks from same artist and equal rating <-> use sameBy = {artist: 0, rating: 0}
 	Tracks from same genre and style and date within 10 years <-> use sameBy = {genre: 0, style: 0, date: 10}
 	Tracks from same genre but allowing n-2 style coincidences and date within 10 years <-> use sameBy = {genre: 0, style: -2, date: 10}
@@ -75,7 +75,7 @@ include('..\\helpers\\helpers_xxx_playlists.js');
 include('..\\helpers\\helpers_xxx_math.js');
 include('remove_duplicates.js');
 
-function do_search_same_by({
+function searchSameByCombs({
 								sel = fb.GetFocusItem(),
 								playlistLength = 50, 
 								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
@@ -102,38 +102,38 @@ function do_search_same_by({
 			Object keys must match the tag names at cyclicTags... 
 		*/
 		//  - end Tags logic -- 
-		if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_search_same_by: playlistLength (' + playlistLength + ') must be greater than zero'); return null;}
+		if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('searchSameByCombs: playlistLength (' + playlistLength + ') must be greater than zero'); return null;}
 		let tags = Object.keys(sameBy);
 		let k_tagsCombs = Object.values(sameBy);
 		if (!isArrayStrings(tags)) {
-			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some keys are not String objects');
+			console.log('searchSameByCombs: sameBy [' + JSON.stringify(sameBy) + '] some keys are not String objects');
 			return null;
 		}
 		if (!isArrayNumbers(k_tagsCombs)) {
-			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some values are not Number objects');
+			console.log('searchSameByCombs: sameBy [' + JSON.stringify(sameBy) + '] some values are not Number objects');
 			return null;
 		}
 		if (!isArrayStrings(checkDuplicatesBy)) {
-			console.log('do_search_same_by: sameBy [' + checkDuplicatesBy + '] some keys are not String objects');
+			console.log('searchSameByCombs: checkDuplicatesBy ' + checkDuplicatesBy + ' some keys are not String');
 			return null;
 		}
 		if (tags.length !== k_tagsCombs.length) {
-			console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some keys (tags) are missing values');
+			console.log('searchSameByCombs: sameBy [' + JSON.stringify(sameBy) + '] some keys (tags) are missing values');
 			return null;
 		}
 		for (let i = 0; i < k_tagsCombs.length; i++) {
 			if (isFloat(k_tagsCombs[i]) && Math.abs(k_tagsCombs[i]) > 1) {
-				console.log('do_search_same_by: sameBy [' + JSON.stringify(sameBy) + '] some values are float numbers but not in (0,1) range');
+				console.log('searchSameByCombs: sameBy [' + JSON.stringify(sameBy) + '] some values are float numbers but not in (0,1) range');
 				return null;
 			}
 		}
 		try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return null;}
 		if (logicDic.indexOf(logic) === -1) {
-			console.log('do_search_same_by(): logic (' + logic + ') is wrong');
+			console.log('searchSameByCombs(): logic (' + logic + ') is wrong');
 			return null;
 		}
-		if (bProfile) {var test = new FbProfiler('do_search_same_by');}
+		if (bProfile) {var test = new FbProfiler('searchSameByCombs');}
         if (!sel) {
 			console.log('No track selected for mix.');
             return null;
@@ -256,6 +256,82 @@ function do_search_same_by({
 			console.log('Items retrieved by query: ' + oldCount + ' tracks');
 			sendToPlaylist(outputHandleList, playlistName);
 		}
-		if (bProfile) {test.Print('Task #1: Search same tracks by tags', false);}
+		if (bProfile) {test.Print('Task #1: Search same tracks by tags combinations', false);}
 		return outputHandleList;
+}
+
+function searchSameByQueries({
+								sel = fb.GetFocusItem(),
+								playlistLength = 50, 
+								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
+								sortBy = '', 
+								checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
+								sameBy = [['STYLE'],['MOOD']],
+								playlistName = 'Search...',
+								bSendToPls = true,
+								bProfile = false,
+								bAscii = true // Sanitize all tag values with ACII equivalent chars
+							}= {}) {
+	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('searchSameByQueries: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
+	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
+	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
+	if (bProfile) {var test = new FbProfiler('searchSameByQueries');}
+	if (!sel) {
+		console.log('No track selected for mix.');
+		return null;
+	}
+	sameBy.forEach((tags) => {
+		if (!isArrayStrings(tags)) {
+			console.log('searchSameByCombs: sameBy ' + JSON.stringify(sameBy) + ' some values are not Strings');
+			return null;
+		}
+	})
+	if (!isArrayStrings(checkDuplicatesBy)) {
+		console.log('searchSameByCombs: checkDuplicatesBy ' + checkDuplicatesBy + ' some keys are not String');
+		return null;
+	}
+	let selInfo = sel.GetFileInfo();
+	// Loop tags
+	const tagVal = new Array(sameBy.length).fill(null).map((_) => {return [];});
+	sameBy.forEach((tagsArr, i) => {
+		console.log(tagsArr);
+		tagsArr.forEach((tag) => {
+			let tagIdx = selInfo.MetaFind(tag);
+			let tagNumber = (tagIdx !== -1) ? selInfo.MetaValueCount(tagIdx) : 0;
+			if (tagNumber === 0) {return;}
+			for (let j = 0; j < tagNumber; j++) {
+				tagVal[i].push(selInfo.MetaValue(tagIdx, j));
+			}
+		});
+		if (bAscii) {tagVal[i] = tagVal[i].map((val) => {return _asciify(val);});}
+	});
+	// Query
+	let query = [];
+	tagVal.forEach((tagsArr, i) => {
+		if (tagsArr.length) {query[i] = query_join(query_combinations(tagsArr, sameBy[i], 'AND'), 'OR');}
+	});
+	query = query_join(query, 'AND');
+	if (forcedQuery) {
+		query =  _p(query) + ' AND ' + forcedQuery;
+	}
+	
+	//Load query
+	console.log('Playlist created: ' + query);
+	let outputHandleList;
+	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
+	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
+
+	//Find and remove duplicates. Sort Random
+	if (checkDuplicatesBy !== null) {
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile});
+	}
+	const oldCount = outputHandleList.Count;
+	//Limit n tracks
+	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+	if (bSendToPls) {
+		console.log('Items retrieved by query: ' + oldCount + ' tracks'); 
+		sendToPlaylist(outputHandleList, playlistName);
+	}
+	if (bProfile) {test.Print('Task #1: Search same tracks by tags query', false);}
+	return outputHandleList;
 }
