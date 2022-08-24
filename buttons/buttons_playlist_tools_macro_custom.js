@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//24/08/22
 
 /* 
 	Playlist Tools Macro custom
@@ -22,7 +22,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And 
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Macros (CUSTOM)': new themedButton({x: 0, y: 0, w: 98, h: 22}, newButtonsProperties.customName[1], function (mask) {
+	'Playlist Tools Macros (CUSTOM)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30, h: 22}, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			if (mask === MK_SHIFT) {
 				const configMenu = new _menu();
@@ -60,13 +60,13 @@ addButton({
 				configMenu.btn_up(this.currX, this.currY + this.currH);
 			} else {
 				if (this.buttonsProperties['customName'][1] === 'Customize!') {
-					const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button');
+					const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button').toString();
 					if (!newName.length) {
 						return;
 					} else {
 						this.buttonsProperties.customName[1] = newName;
 						overwriteProperties(this.buttonsProperties); // Force overwriting
-						this.text = newName;
+						this.adjustNameWidth(newName);
 					}
 				} else if (this.buttonsProperties['macro'][1].length) {
 					menu.btn_up(void(0), void(0), void(0), this.buttonsProperties['macro'][1]); // Don't clear menu on last call
