@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//24/08/22
 
 /* 
 	Playlist Tools Submenu Custom
@@ -23,7 +23,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And 
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools SubMenu (CUSTOM)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12)) + 50, h: 22}, newButtonsProperties.customName[1], function (mask) {
+	'Playlist Tools SubMenu (CUSTOM)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30, h: 22}, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];
@@ -35,9 +35,8 @@ addButton({
 						buttonMenu.newEntry({entryText: menuObj.menuName + '\t (main)', func: () => {
 							this.buttonsProperties['menu'][1] = menuObj.menuName;
 							this.buttonsProperties.customName[1] = menuObj.menuName;
-							this.text = menuObj.menuName;
 							overwriteProperties(this.buttonsProperties); // Force overwriting
-							window.Reload();
+							this.adjustNameWidth(menuObj.menuName);
 						}});
 					} else {
 						const menuName = buttonMenu.newMenu(menuObj.menuName);
@@ -48,9 +47,8 @@ addButton({
 								buttonMenu.newEntry({menuName, entryText: subMenuObj.menuName + (i === 0 ? '\t (main)' : ''), func: () => {
 									this.buttonsProperties['menu'][1] = subMenuObj.menuName;
 									this.buttonsProperties.customName[1] = subMenuObj.menuName;
-									this.text = subMenuObj.menuName;
 									overwriteProperties(this.buttonsProperties); // Force overwriting
-									window.Reload();
+									this.adjustNameWidth(subMenuObj.menuName);
 								}});
 							}
 						});
