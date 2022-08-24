@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/08/22
+//24/08/22
 
 /* 
 	Playlist Tools Menu
@@ -417,7 +417,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							// Entries
 							const sameByArgs = {...queryObj.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
-							menu.newEntry({menuName, entryText: 'By ' + queryName, func: () => {do_search_same_by(sameByArgs);}, flags: focusFlags});
+							menu.newEntry({menuName, entryText: 'By ' + queryName, func: () => {searchSameByCombs(sameByArgs);}, flags: focusFlags});
 						}
 					});
 					menu.newEntry({menuName, entryText: 'sep'});
@@ -436,7 +436,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							overwriteMenuProperties(); // Updates panel
 							const sameByArgs = {...selArg.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
-							do_search_same_by(sameByArgs);
+							searchSameByCombs(sameByArgs);
 						}, flags: focusFlags});
 						// Menu to configure property
 						menu.newEntry({menuName, entryText: 'sep'});
@@ -473,7 +473,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								if (sel) {
 									const selInfo = sel.GetFileInfo();
 									if (!Object.keys(input.args.sameBy).every((key) => {return selInfo.MetaFind(key) === -1})) {
-										try {if (!do_search_same_by({...input.args, bSendToPls: false})) {throw 'error';}}
+										try {if (!searchSameByCombs({...input.args, bSendToPls: false})) {throw 'error';}}
 										catch (e) {fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName); return;}
 									}
 								}
@@ -543,7 +543,7 @@ addEventListener('on_dsp_preset_changed', () => {
 									});
 							} else {entryText = selArg.title;}
 							let entryMenuName = selArg.hasOwnProperty('menu') ? selArg.menu : menuName;
-							menu.newEntry({menuName: entryMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {do_search_same_by(args);}, flags: focusFlags});
+							menu.newEntry({menuName: entryMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {searchSameByCombs(args);}, flags: focusFlags});
 						}
 					});
 				}

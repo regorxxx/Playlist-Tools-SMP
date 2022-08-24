@@ -29,15 +29,28 @@
 
 ## [Unreleased][]
 ### Added
+- Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
+- Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
 ### Changed
 - Remove duplicates: Ctrl + L. Click on button will show duplicates instead of removing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Playlist Manipulation\Query filtering: pressing Ctrl while clicking on a menu entry will invert the query and append 'NOT' at the beginning. i.e. if a filter is used to display tracks with rating > 3, pressing control will do the opposite and show tracks with rating < 3. Note global forced queries are added after the inversion.
+- Buttons: 'search_same_by' has been renamed to 'search_by_tags_combinations'. Console will warn about it when loading the toolbar. Replace it as needed.
+- Buttons: 'search_same_style' has been replaced with'search_by_tags_queries' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use it only style tag to mimic its behavior.
+- Buttons: 'search_same_style_moods' has been replaced with 'search_by_tags_combinations' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use {"STYLE":2,"MOOD":6} to mimic its behavior.
+- Buttons: 'search_by_tags_queries' and 'search_by_tags_combinations' can now be renamed.
+- UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
+- Helpers: updated helpers.
 ### Removed
+- Buttons: 'search_same_by' button. See warning above for replacement.
+- Buttons: 'search_same_style' button. See warning above for replacement.
+- Buttons: 'search_same_style_moods' button. See warning above for replacement.
 ### Fixed
+- UI: Custom macro button width is now adjusted to button's custom name (instead of being fixed, which was never intended).
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
+- Search by Distance: after renaming custom button, button width was not properly adjusted. Width on panel reload and after renaming did not match.
 - Search by Distance: estimated time for similar artist calculation was not properly computed when having multiple tracks by same artist(s) on selection
 - Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
 - Search by Distance: remapped genre/style tags were not being properly used on similar artist calculation filtering step.

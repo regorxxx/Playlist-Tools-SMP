@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//24/08/22
 
 /*
 	This is an example of how merging buttons works. Just include them...
@@ -23,7 +23,7 @@
 		skipped, instead of throwing and error! This is better than try/catch, since it doesn't omit coding errors while including them...
 */
 
-var bLoadTags = true; // Note this must be added before loading helpers! See buttons_search_same_by.js and search_same_by.js
+var bLoadTags = true; // Note this must be added before loading helpers! See buttons_search_by_tags_combinations.js and search_same_by.js
 include('..\\..\\helpers\\buttons_xxx.js');
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_foobar.js');
@@ -38,7 +38,7 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 
 {	// Buttons
 	let buttonsPath = [	 // Add here your buttons path
-						folders.xxx + 'buttons\\buttons_search_same_by.js',
+						folders.xxx + 'buttons\\buttons_search_by_tags_combinations.js',
 						folders.xxx + 'buttons\\buttons_playlist_remove_duplicates.js',
 						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
 						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
@@ -57,7 +57,7 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 	}
 	/* 	
 		OR just add them manually:
-		include(folders.xxx + 'buttons\\buttons_search_same_style.js', {always_evaluate: true});
+		include(folders.xxx + 'buttons\\buttons_search_by_tags_combinations.js', {always_evaluate: true});
 		...
 	*/
 	console.log('Buttons loaded: ' + buttonsBar.listKeys.flat(Infinity).join(', '));
