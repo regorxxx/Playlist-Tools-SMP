@@ -42,6 +42,7 @@
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
+- Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
 - Helpers: updated helpers.
 ### Removed
 - Buttons: 'search_same_by' button. See warning above for replacement.
