@@ -8,21 +8,26 @@ Usage:
   - Set sources:
     - Playlists matching the source names must exist to be used (*)
     - As source name, _LIBRARY_#, where # is a number, may be used.
-    - As source name, SEARCHBY$_#, where $ is GRAPH\WEIGHT\DYNGENRE, 
+    - As source name, _SEARCHBY$_#, where $ is GRAPH\WEIGHT\DYNGENRE, 
     may be used. (**)
+    - As source name, _GROUP_#, where # is a number, may be used. (***)
   - Set other parameters:
     - The query will be applied to the current source to get eligible 
     tracks.
       - Empty query will try to apply global forced query if 
       enabled, otherwise is 'ALL'.
       - 'ALL' will never apply forced query, even if enabled.
-      - Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (***)
+      - Dynamic queries may be used. i.e. 'GENRE IS #GENRE#'. (****)
     - Duplicates are removed after query (by artist|title|date).
     - Any track already selected for final playlist in previous steps 
     is removed.
     - Finally tracks are chosen using the picking method set.
     - Source(s) with less tracks than pool(s) size will use all tracks.
-  - Final playlist is created with tracks from all pools. 
+  - Final playlist is created with tracks from all pools.
+  
+See 'allowedKeys.txt' at '.\presets\Playlist Tools\pools\' for an
+extensive list of variables and structure allowed. There are multiple
+examples there too.
 
 (*) Playlist may be loaded within foobar or playlist files tracked by 
 Playlist Manager panels. Playlist A would match first a playlist within
@@ -46,6 +51,10 @@ recipe may force a theme too). Both may point to a filename (i.e. another
 Examples can be found in the presets folder for all use-cases. 
 Also see 'Search similar by... (recipes\themes)'.
 
-(***) For a selected rock track, 'GENRE IS #GENRE#' would translate into 
+(***) Mimics foo_random_pools behavior using groups defined by TF
+instead of queries. Examples can be found in the presets folder for all
+use-cases.
+ 
+(****) For a selected rock track, 'GENRE IS #GENRE#' would translate into 
 'GENRE IS Rock'. Thus using the currently selected track to define the
  pool behavior. Also see 'Dynamic Queries' readme.
