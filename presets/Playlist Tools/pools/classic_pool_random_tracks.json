@@ -1,0 +1,22 @@
+{
+	"readme": "Mimics behavior of foo_random_pools using groups (20) of tracks by TF (title), along group size (no limit).",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Classic Pools (20 random tracks)",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 20
+			},
+			"group": {
+				"_GROUP_0": "TITLE"
+			},
+			"query": {
+				"_GROUP_0": ""
+			},
+			"toPls": "Classic Pools (tracks)",
+			"sort": "%playlist_index%"
+		}
+	}]
+}
