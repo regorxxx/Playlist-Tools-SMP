@@ -29,9 +29,12 @@
 
 ## [Unreleased][]
 ### Added
-- Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
+- Presets:  new presets 'Classic Pools (20 random albums)' and 'Classic Pools (20 random tracks)' for pools. Meant to solve situations like [this](https://hydrogenaud.io/index.php/topic,77460.msg1014047.html#msg1014047) or [this](https://hydrogenaud.io/index.php/topic,77460..html#msg1013926).
+- Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
+- Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
+- Pools: duplicates are now removed, per group, in Classic Pools mode (when using _GROUP_# as source). That should bring the best of both worlds, mimicking foo_random_pools behavior while not duplicating tracks when there are multiple versions of them (for ex. original and remastered album, etc.).
 - Remove duplicates: Ctrl + L. Click on button will show duplicates instead of removing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Playlist Manipulation\Query filtering: pressing Ctrl while clicking on a menu entry will invert the query and append 'NOT' at the beginning. i.e. if a filter is used to display tracks with rating > 3, pressing control will do the opposite and show tracks with rating < 3. Note global forced queries are added after the inversion.
@@ -43,6 +46,7 @@
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
 - Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
+- Readmes: updated pools readme.
 - Helpers: updated helpers.
 ### Removed
 - Buttons: 'search_same_by' button. See warning above for replacement.
