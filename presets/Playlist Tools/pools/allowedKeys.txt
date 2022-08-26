@@ -1,0 +1,100 @@
++---------------------------------------------------------------------+
+|                                Preset                               |
++--------+--------+---------------------+-----------------------------+
+| Key    | Type   | Structure           | Allowed                     |
++--------+--------+---------------------+-----------------------------+
++--------+--------+---------------------+-----------------------------+
+| readme | String | -                   | Any long text valid in JSON |
++--------+--------+---------------------+-----------------------------+
+|        |        | Array of objects {} |                             |
+| pools  | Array  | {name[, pool]}      | See menu entries            |
++--------+--------+---------------------+-----------------------------+
+
+
++---------------------------------------------------------------------+
+|                            Menu   entries                           |
++------+--------+-------------------------+---------------------------+
+| Key  | Type   | Structure               | Allowed                   |
++------+--------+-------------------------+---------------------------+
++------+--------+-------------------------+---------------------------+
+|      |        |                         | Menu entry name.          |
+|      |        |                         |                           |
+| name | String | -                       | "sep" creates a separator |
++------+--------+-------------------------+---------------------------+
+|      |        | Collection of variables |                           |
+|      |        | {fromPls, query, toPls, |                           |
+|      |        | pickMethod[, sort,      |                           |
+|      |        | insertMethod, limit,    |                           |
+| pool | Object | recipe, theme]}         | See pool properties       |
++------+--------+-------------------------+---------------------------+
+
+
++---------------------------------------------------------------------+
+|                          Pool   properties                          |
++-----------------+--------+--------------------+---------------------+
+| Key             | Type   | Structure          | Allowed             |
++-----------------+--------+--------------------+---------------------+
++-----------------+--------+--------------------+---------------------+
+|                 |        |                    | Number (per source) |
+| fromPls         | Object | Pair source-number | See sources         |
++-----------------+--------+--------------------+---------------------+
+| query           | Object | Pair source-string | Query (per source)  |
++-----------------+--------+--------------------+---------------------+
+| toPls           | String | -                  | Any string          |
++-----------------+--------+--------------------+---------------------+
+|                 |        |                    | random              |
+|                 |        |                    | start               |
+|                 |        |                    | end                 |
+| pickMethod      | Object | Pair source-string | (per source)        |
++-----------------+--------+--------------------+---------------------+
+|                 |        | (optional for all) | TF for sorting      |
+| sort            | String |  sources)          | "" is random        |
++-----------------+--------+--------------------+---------------------+
+|                 |        |                    | standard            |
+|                 |        | (optional for all) | intercalate         |
+| insertMethod    | String |  sources)          | (per source)        |
++-----------------+--------+--------------------+---------------------+
+|                 |        | (optional for all  |                     |
+|                 |        |  _GROUP_# sources) |                     |
+| limit           | Number | Pair source-number | Number (per source) |
++-----------------+--------+--------------------+---------------------+
+|                 |        | (required for all  |                     |
+|                 |        |  _SEARCHBY..._#    | JSON filename       |
+|                 |        |  sources)          | Recipe object       |
+| recipe          | Object | Pair source-recipe | (per source)        |
++-----------------+--------+--------------------+---------------------+
+|                 |        | (required for all  |                     |
+|                 |        |  _SEARCHBY..._#    | JSON filename       |
+|                 |        |  sources)          | Theme object        |
+| theme           | Object | Pair source-theme  | (per source)        |
++-----------------+--------+--------------------+---------------------+
+
+
++---------------------------------------------------------------------+
+|                               Sources                               |
++---------------------+-----------+-----------------------------------+
+| Key                 | Structure |               Notes               |
++---------------------+-----------+-----------------------------------+
++---------------------+-----------+-----------------------------------+
+| _LIBRARY_#          | _KEY_NUM  | Search on library with queries    |
++---------------------+-----------+-----------------------------------+
+|                     | _KEY_NUM  | Random Pools plugin behavior      |
+|                     |           | Groups using TF                   |
+| _GROUP_#            |           | (foo_random_pools)                |
++---------------------+-----------+-----------------------------------+
+|                     |           | Search on playlists with queries  |
+|                     |           | Used along Playlist Manager, both |
+|                     |           | UI-only playlists and playlist    |
+| Playlist names      | String    | files may be used                 |
++---------------------+-----------+-----------------------------------+
+|                     | _KEY_NUM  | Search by distance behavior       |
+| _SEARCHBYGRAPH_#    |           | Recipe + Theme                    |
++---------------------+-----------+-----------------------------------+
+|                     | _KEY_NUM  | Search by distance behavior       |
+| _SEARCHBYWEIGHT_#   |           | Recipe + Theme                    |
++---------------------+-----------+-----------------------------------+
+|                     | _KEY_NUM  | Search by distance behavior       |
+| _SEARCHBYDYNGENRE_# |           | Recipe + Theme                    |
++---------------------+-----------+-----------------------------------+
+
+Sources are defined as _KEY_#, where # is a number. For ex. _LIBRARY_1
