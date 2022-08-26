@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/08/22
+//25/08/22
 
 /* 
 	Playlist Tools Menu
@@ -3363,6 +3363,8 @@ addEventListener('on_dsp_preset_changed', () => {
 								const query = groupTF + ' IS ' + _q(sanitizeTagTfo(tagSet[i]));
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
 								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
+								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
+								handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: ['title', 'artist', 'date']});
 							}
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
