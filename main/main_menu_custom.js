@@ -5,7 +5,7 @@ include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\callbacks_xxx.js');
 
 const onMainMenuEntries = [
-	{name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
+	{name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
 	{name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'}
 ];
 

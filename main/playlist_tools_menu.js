@@ -3991,8 +3991,8 @@ addEventListener('on_dsp_preset_changed', () => {
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
 					readmes[menuName + '\\' + name + ' custom'] = folders.xxx + 'helpers\\readme\\main_menu_dynamic_custom.txt';
 					const subMenuName = menu.newMenu(name, menuName);
-					var mainMenuSMP = Object.values(onMainMenuEntries);
-					const mainMenuSMPDefaults = Object.values(onMainMenuEntries);
+					var mainMenuSMP = clone(onMainMenuEntries);
+					const mainMenuSMPDefaults = clone(onMainMenuEntries);
 					menu_properties['mainMenuSMP'] = [menuName + '\\' + name + ' entries', JSON.stringify(mainMenuSMP)]; // On main_menu_custom.js
 					menu_properties['mainMenuSMP'].push({func: isJSON}, menu_properties['mainMenuSMP'][1]);
 					const plsListener = 'pt:listener';
@@ -4162,11 +4162,11 @@ addEventListener('on_dsp_preset_changed', () => {
 									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name, funcName , path};
 								;}},
 								{name: 'sep'},
-								{name: 'Add skip Tag at current playback', func: (idx = onMainMenuEntries.length) => {
+								{name: mainMenuSMPDefaults[0].name, func: (idx = onMainMenuEntries.length) => {
 									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.', scriptName + ': ' + name);
 									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
-								{name: 'Execute menu entry by name', func: (idx = onMainMenuEntries.length) => {
+								{name: mainMenuSMPDefaults[1].name, func: (idx = onMainMenuEntries.length) => {
 									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
 									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to be able to call an arbitrary number of tools by their menu names.\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
