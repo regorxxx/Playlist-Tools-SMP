@@ -3,14 +3,14 @@ which makes use of SMP dynamic menus and a json helper file
 to display the keys associated to entries. 
 
 First enable dynamic menus at Playlist Tools:
-Script integration\SMP Dynamic menu\Enabled SMP dynamic menus.
+'Script integration\SMP Dynamic menu\Create SMP dynamic menus'.
 This will allow foobar to run Playlist tools menu as if it were
 the native one. i.e. to allow binding a keyboard shortcut to an entry.
 
 Keyboard shortcuts should be set at foobar main menu:
 File\Preferences\Keyboard shortcuts
 You may check the shortcut is show tabbed at the right at the main menu:
-File\Spider Monkey Panel\Script Commands\[Panel Name]\...
+'File\Spider Monkey Panel\Script Commands\[Panel Name]\...'
 
 Once the keyboard shortcut is set and working, edit the shortcuts file 
 to reflect the keys associated to the menu entry. Once an entry 
