@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/10/21
+//28/08/22
 
 /* 
 	Add Skip Tag From Playback
@@ -22,10 +22,23 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 			return;
 		}
 	} else {return;}
+	const bAppend = utils.IsKeyPressed(0x10); // Append tag instead of replace when pressing shift
 	const currentPlayback = fb.PlaybackTime * 1000;
 	const time = new Date(currentPlayback).toUTCString().substr(20,5) + '.00'; // doesn't care about ms
 	const bEnd = currentPlayback > selItem[0].Length * 1000 / 2 ? true : false; // skips from start or end
-	selItem.UpdateFileInfoFromJSON(JSON.stringify([{'SKIP' : (bEnd ? '' : '-') + time}]));
-	console.log('Adding SKIP tag to current track: ' + time + (bEnd ? ' (skips end)' : ' (skips start)'));
+	const SKIP = [];
+	if (bAppend) {
+		const fileInfo = selItem[0].GetFileInfo();
+		if (fileInfo) {
+			const idx = fileInfo.MetaFind('SKIP');
+			const count = fileInfo.MetaValueCount(idx);
+			for (let i = 0; i < count; i++) {
+				SKIP.push(fileInfo.MetaValue(idx, i));
+			}
+		}
+	}
+	SKIP.push((bEnd ? '' : '-') + time);
+	selItem.UpdateFileInfoFromJSON(JSON.stringify([{SKIP}]));
+	console.log((bAppend ? 'Adding' : 'Setting') + ' SKIP tag on current track: ' + time + (bEnd ? ' (skips end)' : ' (skips start)'));
 	return time;
 }
