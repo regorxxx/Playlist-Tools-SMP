@@ -23,7 +23,7 @@
 		}
 		menu.btn_up(x, y)
 	});
-	*/
+*/
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -1478,8 +1478,8 @@ addEventListener('on_dsp_preset_changed', () => {
 								args.selItems = args.selItems();
 								args.playlistLength = args.selItems.Count; // Max allowed
 								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
-								if (defaultArgs.bProfile) {var profiler = new FbProfiler('do_harmonic_mixing');}
-								do_harmonic_mixing(args);
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('harmonicMixing');}
+								harmonicMixing(args);
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}, flags: selArg.flags ? selArg.flags : undefined});
 						}
@@ -2185,7 +2185,7 @@ addEventListener('on_dsp_preset_changed', () => {
 
 					];
 					// Menus
-					menu.newEntry({menuName: subMenuName, entryText: 'Reorder selection according to tags:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Sort avoiding repeating tags:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					selArgs.forEach( (selArg) => {
 						if (selArg.name === 'sep') {
@@ -2208,24 +2208,117 @@ addEventListener('on_dsp_preset_changed', () => {
 					include(scriptPath);
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\shuffle_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
-					const selArgs = [
-						{name: 'Shuffle by artist'		,	args: {tagName: 'artist'}},
-						{name: 'Shuffle by genre'		,	args: {tagName: 'genre'}},
-						{name: 'Shuffle by style'		,	args: {tagName: 'style'}}
+					let shuffle = [
+						{name: 'Shuffle by artist'	,	args: {tagName: 'ARTIST'}},
+						{name: 'Shuffle by genre'	,	args: {tagName: 'GENRE'}},
+						{name: 'Shuffle by style'	,	args: {tagName: 'STYLE'}}
 					];
+					let selArg = {name: 'Custom', args: shuffle[0].args};
+					const shuffleDefaults = [...shuffle];
+					// Create new properties with previous args
+					menu_properties['shuffle'] = [menuName + '\\' + name + '  entries', JSON.stringify(shuffle)];
+					menu_properties['shuffleCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', JSON.stringify(selArg)];
+					// Check
+					menu_properties['shuffle'].push({func: isJSON}, menu_properties['shuffle'][1]);
+					menu_properties['shuffleCustomArg'].push({func: isJSON}, menu_properties['shuffleCustomArg'][1]);
 					// Menus
-					menu.newEntry({menuName: subMenuName, entryText: 'Shuffle selection according to tags:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Smart shuffle (Spotify-like):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					selArgs.forEach( (selArg) => {
-						if (selArg.name === 'sep') {
-							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						} else {
-							let entryText = selArg.name;
-							menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
-							shuffleByTags(args);
+					menu.newCondEntry({entryText: 'Shuffle... (cond)', condFunc: () => {
+						// Entry list
+						shuffle = JSON.parse(menu_properties['shuffle'][1]);
+						shuffle.forEach( (shuffleObj) => {
+							// Add separators
+							if (shuffleObj.hasOwnProperty('name') && shuffleObj.name === 'sep') {
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+							} else { 
+								// Create names for all entries
+								let shuffleName = shuffleObj.name;
+								shuffleName = shuffleName.length > 40 ? shuffleName.substring(0,40) + ' ...' : shuffleName;
+								// Entries
+								menu.newEntry({menuName: subMenuName, entryText: shuffleName, func: () => {
+									shuffleByTags(shuffleObj.args);
+								}, flags: multipleSelectedFlagsReorder});
+							}
+						});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						{	// Static menu: user configurable
+							menu.newEntry({menuName: subMenuName, entryText: 'By... (tag)', func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
+								// On first execution, must update from property
+								selArg.args.tagName = JSON.parse(menu_properties['shuffleCustomArg'][1]).args.tagName;
+								// Input
+								let tagName;
+								try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
+								catch (e) {return;}
+								if (!tagName.length) {return;}
+								// Execute
+								huffleByTags({tagName});
+								// For internal use original object
+								selArg.args.tagName = tagName;
+								menu_properties['shuffleCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+								overwriteMenuProperties(); // Updates panel
 							}, flags: multipleSelectedFlagsReorder});
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						}
-					});
+						{	// Add / Remove
+							menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
+								// Input all variables
+								let input;
+								let entryName = '';
+								try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
+								catch (e) {return;}
+								if (!entryName.length) {return;}
+								if (entryName === 'sep') {input = {name: entryName};} // Add separator
+								else { // or new entry
+									let tagName = '';
+									try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
+									catch (e) {return;}
+									if (!tagName.length) {return;}
+									input = {name: entryName, args: {tagName}};
+								}
+								// Add entry
+								shuffle.push(input);
+								// Save as property
+								menu_properties['shuffle'][1] = JSON.stringify(shuffle); // And update property with new value
+								// Presets
+								if (!presets.hasOwnProperty('shuffle')) {presets.shuffle = [];}
+								presets.shuffle.push(input);
+								menu_properties['presets'][1] = JSON.stringify(presets);
+								overwriteMenuProperties(); // Updates panel
+							}});
+							{
+								const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
+								shuffle.forEach( (sortObj, index) => {
+									const entryText = (sortObj.name === 'sep' ? '------(separator)------' : (sortObj.name.length > 40 ? sortObj.name.substring(0,40) + ' ...' : sortObj.name));
+									menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
+										shuffle.splice(index, 1);
+										menu_properties['shuffle'][1] = JSON.stringify(shuffle);
+										// Presets
+										if (presets.hasOwnProperty('shuffle')) {
+											presets.shuffle.splice(presets.shuffle.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(sortObj);}), 1);
+											if (!presets.shuffle.length) {delete presets.shuffle;}
+											menu_properties['presets'][1] = JSON.stringify(presets);
+										}
+										overwriteMenuProperties(); // Updates panel
+									}});
+								});
+								if (!shuffle.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
+								menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+								menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
+									shuffle = [...shuffleDefaults];
+									menu_properties['shuffle'][1] = JSON.stringify(shuffle);
+									// Presets
+									if (presets.hasOwnProperty('shuffle')) {
+										delete presets.shuffle;
+										menu_properties['presets'][1] = JSON.stringify(presets);
+									}
+									overwriteMenuProperties(); // Updates panel
+								}});
+							}
+						}
+					}});
 					menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
@@ -3260,16 +3353,23 @@ addEventListener('on_dsp_preset_changed', () => {
 			const staticPools = [
 			];
 			const plLen = defaultArgs.playlistLength;
-			const plLenHalf = Math.ceil(plLen / 2);
-			const plLenQuart = Math.ceil(plLen / 4);
+			const plLenHalf = Math.floor(plLen / 2) + Math.ceil(plLen % 4 / 2);
+			const plLenQuart = Math.floor(plLen / 4);
 			let pools = [
 				{name: 'Top tracks mix', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
 					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
-					toPls: 'Top tracks mix', 
+					toPls: 'Top tracks mix',
 					sort: '',
-					}},
+				}},
+				{name: 'Top tracks mix (harmonic)', pool: {
+					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
+					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Top tracks mix',
+					harmonicMix: true
+				}},
 				{name: 'Top tracks mix (intercalate)', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
 					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
@@ -3277,7 +3377,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					insertMethod: 'intercalate',
 					toPls: 'Top tracks mix', 
 					sort: '%playlist_index%',
-					}},
+				}},
 				{name: 'sep'},
 				{name: 'Current genre/style and top tracks', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
@@ -3285,14 +3385,14 @@ addEventListener('on_dsp_preset_changed', () => {
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and top tracks', 
 					sort: '',
-					}},
+				}},
 				{name: 'Current genre/style and instrumentals', pool: {
 					fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
 					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %RATING% EQUAL 5)', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and instrumentals', 
 					sort: '',
-					}},
+				}},
 				{name: 'Classic Pools (50 artists current genre)', pool: {
 					fromPls: {_GROUP_0: 50},
 					group: {_GROUP_0: 'ARTIST'},
@@ -3300,7 +3400,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					query: {_GROUP_0: 'GENRE IS #GENRE#'}, 
 					toPls: 'Classic Pools (50 artists current genre)', 
 					sort: '',
-					}},
+				}},
 				{name: 'sep'},
 				{name: 'Classic Pools (50 artists)', pool: {
 					fromPls: {_GROUP_0: 50},
@@ -3309,7 +3409,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (50 artists)', 
 					sort: '',
-					}},
+				}},
 				{name: 'Classic Pools (all dates)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
 					group: {_GROUP_0: 'DATE'},
@@ -3317,7 +3417,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (all dates)', 
 					sort: '%DATE%',
-					}},
+				}},
 				{name: 'Classic Pools (3 tracks per artist letter)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
 					group: {_GROUP_0: '$left($ascii(%ARTIST%),1)'},
@@ -3325,7 +3425,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (3 tracks per letter)', 
 					sort: '',
-					}},
+				}},
 				{name: 'Classic Pools (3 tracks per genre)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
 					group: {_GROUP_0: 'GENRE'},
@@ -3333,7 +3433,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (3 tracks per genre)', 
 					sort: '',
-					}},
+				}},
 			];
 			
 			let selArg = {...pools[0]};
@@ -3394,14 +3494,14 @@ addEventListener('on_dsp_preset_changed', () => {
 							}
 							// Retrieve all possible groups
 							const group = typeof pool.group !== 'undefined' ? pool.group[plsName] : '';
-							const tagSet = [...new Set(getTagsValuesV4(handleListFrom, [group]).flat(Infinity))].filter(Boolean).shuffle();
+							const tagSet = [...new Set(getTagsValuesV4(handleListFrom, [group]).flat(Infinity).map((_) => {return sanitizeTagTfo(_.toString().toLowerCase());}))].filter(Boolean).shuffle();
 							// Retrieve n random groups
 							const num = Math.min(pool.fromPls[plsName] || Infinity, tagSet.length) - 1;
 							const limit = typeof pool.limit !== 'undefined' ? pool.limit[plsName] : Infinity;
 							const handleListsGroups = [];
 							for (let i = 0; i <= num; i++) {
 								const groupTF = group.indexOf('$') !== -1 ? _q(group) : group;
-								const query = groupTF + ' IS ' + _q(sanitizeTagTfo(tagSet[i]));
+								const query = groupTF + ' IS ' + _q(tagSet[i]);
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
 								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
 								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
@@ -3410,7 +3510,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
 							handleListsGroups.forEach((handleList) => {handleListFrom.AddRange(handleList);});
-							console.log('Playlist tools Pools: group -> ' + limit + ' tracks per ' + (group.length ? group : 'entire library'));
+							console.log('Playlist tools Pools: group -> ' + limit + ' track(s) per ' + (group.length ? group : 'entire library'));
 							break;
 						}
 						case plsName.startsWith('_SEARCHBYGRAPH_'): { // Search by GRAPH
@@ -3600,11 +3700,37 @@ addEventListener('on_dsp_preset_changed', () => {
 				if (addLock(idxTo) || removeLock(idxTo)) {Console.log('Output playlist is locked for adding\\removing items: ' + pool.toPls); return;}
 				plman.UndoBackup(idxTo);
 				plman.ClearPlaylist(idxTo);
+				// Harmonic mix?
+				if (typeof pool.harmonicMix !== 'undefined' && pool.harmonicMix) {
+					const handleListMix = harmonicMixing({selItems: handleListTo,	keyTag: defaultArgs.keyTag,	bSendToPls: false,	bDoublePass: true, bDebug: defaultArgs.bDebug});
+					const newCount = handleListMix ? handleListMix.Count : 0;
+					const oriCount = handleListTo.Count;
+					if (!newCount) { // For ex. without key tags
+						handleListMix.RemoveAll();
+						handleListMix.AddRange(handleListTo);
+					} else if (newCount !== oriCount) {
+						const cloneMix = handleListMix.Clone();
+						cloneMix.Sort();
+						const cloneOri = handleListTo.Clone();
+						cloneOri.Sort();
+						cloneOri.MakeDifference(cloneMix);
+						// Add missing tracks to the end randomly
+						cloneOri.Convert().shuffle().forEach((handle) => {
+							handleListMix.Add(handle);
+						});
+					}
+					handleListTo.RemoveAll();
+					handleListTo.AddRange(handleListMix);
+					console.log('Playlist tools Pools: harmonic mix -> ' + newCount + ' ' + _p('+' + (oriCount - newCount)) + ' tracks');
+				}
 				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
-				if (typeof pool.sort !== 'undefined') {
+				// Sort only when not doing harmonic mix
+				if (typeof pool.harmonicMix !== 'undefined' && !pool.harmonicMix && typeof pool.sort !== 'undefined') {
 					plman.SortByFormat(idxTo, pool.sort);
+					console.log('Playlist tools Pools: sorting ' + _p(pool.sort.length ? pool.sort : 'random'));
 				}
 				plman.ActivePlaylist = idxTo;
+				console.log('Playlist tools Pools: playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks');
 				if (defaultArgs.bProfile) {profiler.Print();}
 			}
 			const inputPool = () => {
