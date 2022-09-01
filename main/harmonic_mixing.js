@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/02/22
+//01/09/22
 
 /*
 	Harmonic Mixing
@@ -15,7 +15,7 @@ include('..\\helpers\\camelot_wheel_xxx.js');
 include('..\\helpers\\helpers_xxx_playlists.js');
 include('..\\helpers\\helpers_xxx_prototypes.js');
 
-function do_harmonic_mixing({
+function harmonicMixing({
 								selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 								playlistLength = selItems.Count, 
 								playlistName = 'Harmonic mix from ' + plman.GetPlaylistName(plman.ActivePlaylist),
@@ -26,7 +26,7 @@ function do_harmonic_mixing({
 							} = {}) {
 	// Safety checks
 	if (!keyTag.length) {return;}
-	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_harmonic_mixing: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return false;}
+	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('harmonicMixing: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return false;}
 	if (!selItems || !selItems.Count) {return;}
 	if (selItems.Count < playlistLength) {playlistLength = selItems.Count;}
 	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
@@ -42,7 +42,7 @@ function do_harmonic_mixing({
 		else {return handleList;}
 		
 	} else {
-		console.log('do_harmonic_mixing: ' + error);
+		console.log('harmonicMixing: ' + error);
 		console.log(pattern);
 		return null;
 	}

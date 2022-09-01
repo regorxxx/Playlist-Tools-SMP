@@ -11,9 +11,9 @@
 
 // For an specific value (tagValue) for a given tag (tagName)
 function scatterByTags({
-							tagName = 'genre,style',
+							tagName = 'GENRE,STYLE',
 							tagValue = 'Instrumental',
-							selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+							selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null,
 							bSendToActivePls = true,
 							} = {}) {
 	// Safety checks
@@ -22,8 +22,8 @@ function scatterByTags({
 	if (!selItems || selItems.Count <= 2) {return;}
 	// Convert input
 	const totalTracks = selItems.Count;
-	tagName = tagName.split(',');
-	tagValue = tagValue.toLowerCase().split(',');
+	tagName = tagName.split(/;|,/g);
+	tagValue = tagValue.toLowerCase().split(/;|,/g);
 	const tagValueSet = new Set(tagValue);
 	let selItemsArray = selItems.Clone().Convert();
 	// Get tag values and find tag value
@@ -93,8 +93,8 @@ function scatterByTags({
 
 // Does the same but for any value for a given tag
 function intercalateByTags({
-							tagName = 'artist',
-							selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+							tagName = 'ARTIST',
+							selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null,
 							bSendToActivePls = true,
 							} = {}) {
 	// Safety checks
@@ -102,7 +102,7 @@ function intercalateByTags({
 	if (!selItems || selItems.Count <= 2) {return;}
 	// Convert input
 	const totalTracks = selItems.Count;
-	tagName = tagName.split(',');
+	tagName = tagName.split(/;|,/g);
 	let selItemsArray = selItems.Convert();
 	let selItemsArrayOut = [];
 	// Get tag values and find tag value
@@ -171,8 +171,8 @@ function intercalateByTags({
 // Based on: https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/
 // Note for some proportions there is an exact solution, and that's used instead of relying on the random method
 function shuffleByTags({
-							tagName = 'artist',
-							selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+							tagName = 'ARTIST',
+							selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null,
 							bSendToActivePls = true,
 							} = {}) {
 	// Safety checks
@@ -180,7 +180,7 @@ function shuffleByTags({
 	if (!selItems || selItems.Count <= 2) {return;}
 	// Convert input and shuffle
 	const totalTracks = selItems.Count;
-	tagName = tagName.split(',');
+	tagName = tagName.split(/;|,/g);
 	let selItemsArray = selItems.Convert().shuffle();
 	let selItemsClone = new FbMetadbHandleList(selItemsArray);
 	let selItemsArrayOut = [];
