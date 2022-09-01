@@ -1,0 +1,25 @@
+{
+	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF (date), along group size (1) and finally using harmonic mixing.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Harmonic mix of 50 artists",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 50
+			},
+			"group": {
+				"_GROUP_0": "ARTIST"
+			},
+			"limit": {
+				"_GROUP_0": 1
+			},
+			"query": {
+				"_GROUP_0": ""
+			},
+			"toPls": "Harmonic mix of 50 artists",
+			"harmonicMix": true
+		}
+	}]
+}
