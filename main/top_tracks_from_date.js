@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/08/22
+//07/09/22
 
 /* 
 	Top X Tracks From Date
@@ -10,19 +10,19 @@
 
 include('..\\helpers\\helpers_xxx_playlists.js');
 include('remove_duplicates.js');
-if (!utils.CheckComponent('foo_playcount')) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
+if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
 
 const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
 
 // Most played n Tracks from date
 function topTracksFromDate({
 						playlistLength = 25, 
-						sortBy = '$sub(99999,%play_count%)', 
-						checkDuplicatesBy = ['title', 'artist', 'date'],
+						sortBy = '$sub(99999,%PLAY_COUNT%)', 
+						checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
 						year =  new Date().getFullYear() - 1, // Previous year
 						last = '1 WEEKS',
 						bUseLast = false,
-						forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)',
+						forcedQuery = 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)',
 						bSendToPls = true,
 						bProfile = false
 						} = {}) {
@@ -43,7 +43,7 @@ function topTracksFromDate({
 	}
 	if (bProfile) {var test = new FbProfiler('topTracksFromDate');}
 	// Load query
-	const query = bUseLast ? '%last_played% DURING LAST ' + last.toUpperCase() : '%last_played% AFTER ' + year + '-01-01 AND NOT %first_played% AFTER ' + (year + 1) + '-01-01';
+	const query = bUseLast ? '%LAST_PLAYED% DURING LAST ' + last.toUpperCase() : '%LAST_PLAYED% AFTER ' + year + '-01-01 AND NOT %FIRST_PLAYED% AFTER ' + (year + 1) + '-01-01';
 	let outputHandleList;
 	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query));} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return;}
@@ -52,11 +52,11 @@ function topTracksFromDate({
 		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy});
 	}
 	// Filter Play counts by date
-	const datesArray = fb.TitleFormat('[%played_times%]').EvalWithMetadbs(outputHandleList);
-	const datesLastFMArray = fb.TitleFormat('[%lastfm_played_times%]').EvalWithMetadbs(outputHandleList);
-	const lastPlayedArray = fb.TitleFormat('[%last_played%]').EvalWithMetadbs(outputHandleList);
-	const firstPlayedArray = fb.TitleFormat('[%first_played%]').EvalWithMetadbs(outputHandleList);
-	const playCountArray = fb.TitleFormat('[%play_count%]').EvalWithMetadbs(outputHandleList);
+	const datesArray = fb.TitleFormat('[%PLAYED_TIMES%]').EvalWithMetadbs(outputHandleList);
+	const datesLastFMArray = fb.TitleFormat('[%LASTFM_PLAYED_TIMES%]').EvalWithMetadbs(outputHandleList);
+	const lastPlayedArray = fb.TitleFormat('[%LAST_PLAYED%]').EvalWithMetadbs(outputHandleList);
+	const firstPlayedArray = fb.TitleFormat('[%FIRST_PLAYED%]').EvalWithMetadbs(outputHandleList);
+	const playCountArray = fb.TitleFormat('[%PLAY_COUNT%]').EvalWithMetadbs(outputHandleList);
 	const datesArrayLength = datesArray.length;
 	let dataPool = [];
 	let pool = [];

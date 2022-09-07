@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/22
+//07/09/22
 
 /* 
 	Top Tracks
@@ -10,14 +10,14 @@
  
 include('..\\helpers\\helpers_xxx_playlists.js');
 include('remove_duplicates.js');
-if (!utils.CheckComponent('foo_playcount')) {fb.ShowPopupMessage('top_tracks: foo_playcount component is not installed. Script can not work without it.');}
+if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount'))) {fb.ShowPopupMessage('top_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Tracks
 function do_top_tracks({
 						playlistLength = 25, 
-						sortBy = '$sub(99999,%play_count%)', 
-						checkDuplicatesBy = ['title', 'artist', 'date'],
-						forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)',
+						sortBy = '$sub(99999,%PLAY_COUNT%)', 
+						checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
+						forcedQuery = 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)',
 						playlistName = 'Top ' + playlistLength + ' Tracks',
 						bSendToPls = true,
 						bProfile = false
@@ -27,7 +27,7 @@ function do_top_tracks({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
 	if (bProfile) {var test = new FbProfiler('do_top_tracks');}
 	//Load query
-	let query = '%play_count% GREATER 1';
+	let query = '%PLAY_COUNT% GREATER 1';
 	let outputHandleList;
 	query = forcedQuery.length ? '(' + query + ') AND (' + forcedQuery + ')' : query;
 	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check

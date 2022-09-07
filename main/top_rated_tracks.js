@@ -10,16 +10,16 @@
 
 include('..\\helpers\\helpers_xxx_playlists.js');
 include('remove_duplicates.js');
-if (!utils.CheckComponent('foo_playcount')) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
+if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Rated Tracks
 function do_top_rated_tracks({
 						playlistLength = 50, 
-						sortBy = '$sub(99999,%play_count%)', 
-						checkDuplicatesBy = ['title', 'artist', 'date'],
+						sortBy = '$sub(99999,%PLAY_COUNT%)', 
+						checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
 						forcedQuery = '',
 						ratingLimits = [1,5],
-						ratingTag = 'rating',
+						ratingTag = 'RATING',
 						playlistName = 'Top ' + playlistLength + ' Rated Tracks',
 						bSendToPls = true,
 						bProfile = false
