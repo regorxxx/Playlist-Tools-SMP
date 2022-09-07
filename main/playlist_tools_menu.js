@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/08/22
+//07/09/22
 
 /* 
 	Playlist Tools Menu
@@ -299,7 +299,7 @@ addEventListener('on_dsp_preset_changed', () => {
 			}
 			menu.newEntry({entryText: 'sep'});
 		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
-	} else if (utils.CheckComponent('foo_playcount') && _isFile(scriptPathElse)) {
+	} else if ((isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
@@ -314,7 +314,7 @@ addEventListener('on_dsp_preset_changed', () => {
 // Top rated Tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\top_rated_tracks.js';
-	if (utils.CheckComponent('foo_playcount') && _isFile(scriptPath)) {
+	if ((isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) && _isFile(scriptPath)) {
 		const name = 'Top rated Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);
@@ -4289,7 +4289,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								;}},
 								{name: 'sep'},
 								{name: mainMenuSMPDefaults[0].name, func: (idx = onMainMenuEntries.length) => {
-									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.', scriptName + ': ' + name);
+									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\n\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\n	- Pressing shift while calling the action will append tag to existing SKIP tags (instead of replacing them). Meant to add skipped parts at multiple points for ex.\n\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.\n\nMost common usage would be adding a button to a native buttons toolbar and assigning it this action via main menus (File\Spider Monkey Panel\Script commands\....)', scriptName + ': ' + name);
 									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
 								{name: mainMenuSMPDefaults[1].name, func: (idx = onMainMenuEntries.length) => {
@@ -4840,7 +4840,7 @@ addEventListener('on_dsp_preset_changed', () => {
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			let iCount = 0;
 			if (Object.keys(readmes).length) {
-				const rgex = /sep\b|separator\b/gi;
+				const rgex = /^sep$|^separator$/i;
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
 					if (rgex.test(value)) {menu.newEntry({menuName: subMenuName, entryText: 'sep'}); return;}
 					else if (_isFile(value)) { 
