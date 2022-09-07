@@ -74,6 +74,8 @@
 - Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
 - Search by Distance: calculation did not have into consideration tracks with same genre/style values on  similar artist calculation filtering step.
 - Search by Distance: in some cases similar artists were duplicated.
+- Readmes: separators not being properly identified on readme files checking.
+- Rating related scripts not compatible with foobar2000 2.0+.
 
 ## [3.0.0-beta.15] - 2022-08-22
 ### Added
