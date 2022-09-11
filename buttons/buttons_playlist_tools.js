@@ -12,7 +12,7 @@
  */
 
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
-try {window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0-beta16', features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
+try {window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0-beta.16', features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
 
 {
 	const dependencies = [

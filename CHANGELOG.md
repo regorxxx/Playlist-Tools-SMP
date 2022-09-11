@@ -2,7 +2,8 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0-beta.15](#300-beta14---2021-08-22)
+- [3.0.0-beta.16](#300-beta16---2021-09-15)
+- [3.0.0-beta.15](#300-beta15---2021-08-22)
 - [3.0.0-beta.14](#300-beta14---2021-08-21)
 - [3.0.0-beta.13](#300-beta13---2021-08-12)
 - [3.0.0-beta.12](#300-beta12---2021-08-10)
@@ -29,12 +30,20 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.16] - 2022-09-15
+### Added
 - Playlist locks: new menu entries at Playlist manipulation to switch playlists locked status. It's meant to be used via Dynamic menus in a button, allowing to lock/unlock specific playlists with the same button.
 - Selection manipulation\Shuffle: shuffles tracks according to tags (for ex. artist) in a semi-random pattern, ensuring no 2 consecutive tracks have the same tag. Follows [Spotify design](https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/). Differs from 'Scatter by tags' (intercalate) in the way tracks are ordered (without strict alternation), i.e. it doesn't follow a pattern ABCABAA when it's possible to ensure no A tracks are together (ABACABA).
 - Pools: pools now also allow harmonic mixing. Key tag used follows tag remapping of the button. Check '50_random_artists_harmonic.json' for a preset example and 'Top tracks mix (harmonic)' within pools menu.
 - Presets: new presets 'Classic Pools (20 random albums)' and 'Classic Pools (20 random tracks)' for pools. Meant to solve situations like [this](https://hydrogenaud.io/index.php/topic,77460.msg1014047.html#msg1014047) or [this](https://hydrogenaud.io/index.php/topic,77460..html#msg1013926).
 - Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
+- Advanced sort: decremental sort by DynGenre entry added.
+- Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
@@ -53,8 +62,13 @@
 - Buttons: 'search_by_tags_queries' and 'search_by_tags_combinations' can now be renamed.
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
+- Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
+- Search by Distance: changed style cluster distance. Presets have been reworked to account for that.
+- Search by Distance: updated descriptors with multiple additions.
 - Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
 - Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
+- Search by Distance: reverted default string tags to raw tags instead of using '$ascii(%TAG%)' in favor of internally converting values to ASCII. Works better for multi-value tags in queries. It's recommended to reset tag remapping to default for most users (or manually removing the TF functions if using other tags).
+- Search by Distance: when using TF functions on tags, queries now use 'HAS' instead of 'IS' to ensure multi-value tags are taken into consideration (otherwise only single-value tags match). Note this has the side-effect of partial matching being allowed (i.e. 'Rock' matches 'Progressive Rock' too, but not the opposite).
 - Readmes: updated pools readme.
 - Helpers: updated helpers.
 ### Removed
@@ -646,7 +660,9 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.14...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.15...HEAD
+[3.0.0-beta.16]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.15...v3.0.0-beta.16
+[3.0.0-beta.15]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.14...v3.0.0-beta.15
 [3.0.0-beta.14]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.13...v3.0.0-beta.14
 [3.0.0-beta.13]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.12...v3.0.0-beta.13
 [3.0.0-beta.12]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.11...v3.0.0-beta.12
