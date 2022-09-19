@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/07/22
+//16/09/22
 
 include(fb.ComponentPath + 'docs\\Codepages.js');
 include('helpers_xxx.js');
@@ -9,6 +9,7 @@ include('helpers_xxx_tags.js');
 include('helpers_xxx_playlists.js');
 include('helpers_xxx_playlists_files_xspf.js');
 include('helpers_xxx_playlists_files_xsp.js');
+var regExListenBrainz = /^(https:\/\/listenbrainz.org\/)|(recording)|(playlist)|\//g;
 
 /* 
 	Global Variables 
@@ -58,13 +59,16 @@ const pathTF = '$put(path,%path%)$if($stricmp($ext($get(path)),iso),\',\'%subson
 	Playlist file manipulation 
 */
 
-function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName = '', useUUID = null, bLocked = false, category = '', tags = [], relPath = '', trackTags = [], bBOM = false) {
+function savePlaylist({playlistIndex, handleList, playlistPath, ext = '.m3u8', playlistName = '', useUUID = null, bLocked = false, category = '', tags = [], relPath = '', trackTags = [], playlist_mbid = '', bBOM = false}) {
+	if (!playlistIndex && !handleList) {return false;}
 	const extension = ext.toLowerCase();
 	if (!writablePlaylistFormats.has(extension)){
 		console.log('savePlaylist(): Wrong extension set \'' + extension + '\', only allowed ' + Array.from(writablePlaylistFormats).join(', '));
 		return false;
 	}
 	if (!_isFile(playlistPath)) {
+		if (!handleList) {handleList = plman.GetPlaylistItems(playlistIndex);}
+		const itemsCount = handleList.Count;
 		const arr = utils.SplitFilePath(playlistPath);
 		playlistPath = playlistPath.replaceLast(arr[2], extension);
 		if (!playlistName.length) {playlistName = (arr[1].endsWith(arr[2])) ? arr[1].replace(arr[2],'') : arr[1];} // <1.4.0 Bug: [directory, filename + filename_extension, filename_extension]
@@ -84,13 +88,13 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 			playlistText.push('#TRACKTAGS:' + (isArray(trackTags) ? JSON.stringify(trackTags) : ''));
 			playlistText.push('#PLAYLISTSIZE:');
 			playlistText.push('#DURATION:');
+			playlistText.push('#PLAYLIST_MBID:' + playlist_mbid);
 			// Tracks text
 			if (playlistIndex !== -1) { // Tracks from playlist
 				let trackText = [];
 				// const tfo = fb.TitleFormat('#EXTINF:%_length_seconds%,%artist% - %title%$crlf()%path%');
 				const tfo = fb.TitleFormat('#EXTINF:%_length_seconds%,%artist% - %title%$crlf()' + pathTF);
-				const items = plman.GetPlaylistItems(playlistIndex);
-				trackText = tfo.EvalWithMetadbs(items);
+				trackText = tfo.EvalWithMetadbs(handleList);
 				if (relPath.length) { // Relative path conversion
 					let trackPath = '';
 					let trackInfo = '';
@@ -100,12 +104,12 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 						return trackInfo + '\n' + trackPath;
 					});
 				}
-				playlistText[8] += items.Count.toString(); // Add number of tracks to size
-				playlistText[9] += items.CalcTotalDuration(); // Add number of tracks to size
+				playlistText[8] += itemsCount.toString(); // Add number of tracks to size
+				playlistText[9] += handleList.CalcTotalDuration(); // Add time to duration
 				playlistText = playlistText.concat(trackText);
 			} else { //  Else empty playlist
 				playlistText[8] += '0'; // Add number of tracks to size
-				playlistText[9] += '0'; // Add number of tracks to size
+				playlistText[9] += '0'; // Add time to duration
 			} 
 		// ---------------- PLS
 		} else if (extension === '.pls') { // The standard doesn't allow comments... so no UUID here.
@@ -116,8 +120,7 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 				let trackText = [];
 				const trackInfoPre = 'File#placeholder#=';
 				const tfo = fb.TitleFormat((relPath.length ? '' : trackInfoPre) + '%path%' + '$crlf()Title#placeholder#=%title%' + '$crlf()Length#placeholder#=%_length_seconds%');
-				const items = plman.GetPlaylistItems(playlistIndex);
-				trackText = tfo.EvalWithMetadbs(items);
+				trackText = tfo.EvalWithMetadbs(handleList);
 				if (relPath.length) { // Relative path conversion
 					let trackPath = '';
 					let trackInfo = '';
@@ -134,7 +137,7 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 					trackText[i] += '\r\n'; // EoL after every track info group... just for readability
 				}
 				playlistText = playlistText.concat(trackText);
-				playlistText.push('NumberOfEntries=' + items.Count); // Add number of tracks to size footer
+				playlistText.push('NumberOfEntries=' + itemsCount); // Add number of tracks to size footer
 			} else { //  Else empty playlist footer
 				playlistText.push('NumberOfEntries=0');
 			} 
@@ -149,6 +152,7 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 			playlist.title = playlistName;
 			playlist.creator = 'Playlist-Manager-SMP';
 			playlist.date = new Date().toISOString();
+			playlist.identifier = playlist_mbid.length ? 'https://listenbrainz.org/playlist/' + playlist_mbid : '';
 			playlist.meta = [
 				{uuid: (useUUID ? nextId(useUUID) : '')},
 				{locked: bLocked},
@@ -156,13 +160,12 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 				{tags: (isArrayStrings(tags) ? tags.join(';') : '')},
 				{trackTags: (isArray(trackTags) ? JSON.stringify(trackTags) : '')},
 				{playlistSize: 0},
-				{duration: totalDuration}
+				{duration: totalDuration},
+				{playlist_mbid}
 			];
 			// Tracks text
 			if (playlistIndex !== -1) { // Tracks from playlist
-				const items = plman.GetPlaylistItems(playlistIndex);
-				const itemsCount = items.Count;
-				const tags = getTagsValuesV4(items, ['title', 'artist', 'album', 'track', 'length_seconds_fp', 'path', 'subsong']);
+				const tags = getTagsValuesV4(handleList, ['TITLE', 'ARTIST', 'ALBUM', 'TRACK', 'LENGTH_SECONDS_FP', 'PATH', 'SUBSONG', 'MUSICBRAINZ_TRACKID']);
 				for (let i = 0; i < itemsCount; i++) {
 					const title = tags[0][i][0];
 					const creator = tags[1][i].join(', ');
@@ -173,6 +176,7 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 					const location = [relPath.length ? getRelPath(tags[5][i][0], relPathSplit) : tags[5][i][0]].map((path) => {return 'file:///' + encodeURI(path.replace(/\\/g,'/').replace(/&/g,'%26'));});
 					const subSong = Number(tags[6][i][0]);
 					const meta = location[0].endsWith('.iso') ? [{subSong}] : [];
+					const identifier = [tags[7][i][0]];
 					playlist.track.push({
 						location,
 						annotation: void(0),
@@ -183,7 +187,7 @@ function savePlaylist(playlistIndex, playlistPath, ext = '.m3u8', playlistName =
 						album,
 						duration,
 						trackNum,
-						identifier: [],
+						identifier,
 						extension: {},
 						link: [],
 						meta
@@ -327,7 +331,7 @@ function addHandleToPlaylist(handleList, playlistPath, relPath = '', bBOM = fals
 		// ---------------- XSPF
 		} else if (extension === '.xspf') {
 			const durationTF = '$puts(l,%length_seconds_fp%)$puts(d,$strchr($get(l),.))$puts(i,$substr($get(l),0,$sub($get(d),1)))$puts(f,$substr($get(l),$add($get(d),1),$add($get(d),3)))$add($mul($get(i),1000),$get(f))';
-			const tfo = fb.TitleFormat('$tab(2)<track>$crlf()$tab(3)<location>$put(path,%path%)</location>$crlf()$tab(3)<title>%title%</title>$crlf()$tab(3)<creator>%artist%</creator>$crlf()$tab(3)<album>%album%</album>$crlf()$tab(3)<duration>' + durationTF + '</duration>$crlf()$tab(3)<trackNum>%track%</trackNum>$if($stricmp($ext($get(path)),iso),$crlf()$tab(3)<subSong>%subsong%<subSong>,)$crlf()$tab(2)</track>');
+			const tfo = fb.TitleFormat('$tab(2)<track>$crlf()$tab(3)<location>$put(path,%PATH%)</location>$crlf()$tab(3)<title>%TITLE%</title>$crlf()$tab(3)<creator>%ARTIST%</creator>$crlf()$tab(3)<album>%ALBUM%</album>$crlf()$tab(3)<duration>' + durationTF + '</duration>$crlf()$tab(3)<trackNum>%TRACK%</trackNum>$crlf()$tab(3)<identifier>%MUSICBRAINZ_TRACKID%</identifier>$if($stricmp($ext($get(path)),iso),$crlf()$tab(3)<subSong>%subsong%<subSong>,)$crlf()$tab(2)</track>');
 			let newTrackText = tfo.EvalWithMetadbs(handleList);
 			const bRel = relPath.length ? true : false;
 			let trackPath = '';
@@ -519,10 +523,13 @@ function loadTracksFromPlaylist(playlistPath, playlistIndex, relPath = '', remDu
 		plman.AddLocations(playlistIndex, playlistPath, true);
 		bDone = true;
 	} else {
-		let handlePlaylist = getHandlesFromPlaylist(playlistPath, relPath, void(0), remDupl);
+		const {handlePlaylist, pathsNotFound} = getHandlesFromPlaylist(playlistPath, relPath, void(0), remDupl, true);
 		if (handlePlaylist) {
 			plman.InsertPlaylistItems(playlistIndex, 0, handlePlaylist);
 			bDone = true;
+			if (pathsNotFound && pathsNotFound.length && extension === '.xspf') {
+				// plman.AddLocations(playlistIndex, pathsNotFound);
+			}
 		}
 	}
 	return bDone;
@@ -530,10 +537,10 @@ function loadTracksFromPlaylist(playlistPath, playlistIndex, relPath = '', remDu
 
 // Loading m3u, m3u8 & pls playlist files is really slow when there are many files
 // Better to find matches on the library (by path) and use those! A query or addLocation approach is easily 100x times slower
-function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = false, remDupl = []/*['title','artist','date']*/) {
+function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = false, remDupl = []/*['title','artist','date']*/, bReturnNotFound = false) {
 	let test = new FbProfiler('getHandlesFromPlaylist');
 	const extension = utils.SplitFilePath(playlistPath)[2].toLowerCase();
-	let handlePlaylist = null;
+	let handlePlaylist = null, pathsNotFound = null;
 	if (extension === '.xsp') {
 		const bCache = xspCache.has(playlistPath);
 		let playlistText;
@@ -619,7 +626,7 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 		}
 		let count = 0;
 		let notFound = new Set();
-		let bXSPF= extension === '.xspf' ? true : false;
+		let bXSPF = (extension === '.xspf' ? true : false);
 		for (let i = 0; i < playlistLength; i++) {
 			if (pathPool.has(filePaths[i])) {
 				const idx = pathPool.get(filePaths[i]);
@@ -630,8 +637,7 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 					break;
 				}
 				count++;
-			} else if (bXSPF) {notFound.add(i);}
-			else {console.log(filePaths[i]);}
+			} else {notFound.add(i);}
 		}
 		
 		if (bXSPF && count !== filePaths.length) {
@@ -648,7 +654,7 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 				const playlist = jspf.playlist;
 				const rows = playlist.track;
 				const rowsLength = rows.length;
-				const lookupKeys = [{xspfKey: 'title', queryKey: 'TITLE'}, {xspfKey: 'creator', queryKey: 'ARTIST'}, {xspfKey: 'album', queryKey: 'ALBUM'}, {xspfKey: 'trackNum', queryKey: 'TRACK'}, {xspfKey: 'identifier', queryKey: 'IDENTIFIER'}];
+				const lookupKeys = [{xspfKey: 'title', queryKey: 'TITLE'}, {xspfKey: 'creator', queryKey: 'ARTIST'}, {xspfKey: 'album', queryKey: 'ALBUM'}, {xspfKey: 'trackNum', queryKey: 'TRACK'}, {xspfKey: 'identifier', queryKey: 'MUSICBRAINZ_TRACKID'}];
 				const conditions = [['TITLE','ARTIST','ALBUM','TRACK'], ['TITLE','ARTIST','ALBUM'], ['TRACK','ARTIST','ALBUM'], ['TITLE','ALBUM'],  ['TITLE','ARTIST'], ['IDENTIFIER']];
 				for (let i = 0; i < rowsLength; i++) {
 					if (!notFound.has(i)) {continue;}
@@ -658,7 +664,7 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 						const key = look.xspfKey;
 						const queryKey = look.queryKey;
 						if (rows[i].hasOwnProperty(key) && rows[i][key] && rows[i][key].length) {
-							lookup[queryKey] = queryKey + ' IS ' + (key === 'IDENTIFIER' ? decodeURI(rows[i][key]) : rows[i][key]);
+							lookup[queryKey] = queryKey + ' IS ' + (key === 'identifier' ? decodeURI(rows[i][key]).replace(regExListenBrainz, '') : rows[i][key]);
 						}
 					});
 					for (let condition of conditions) {
@@ -673,18 +679,19 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 							}
 						}
 					}
-					if (!handlePlaylist[i]) {console.log(filePaths[i]);}
+					// if (!handlePlaylist[i]) {console.log(filePaths[i]);}
 				}
 			}
 		}
+		pathsNotFound = [...notFound].map((idx) => {return filePaths[idx];});
 		if (count === filePaths.length && filePaths.length) {
 			console.log(playlistPath.split('\\').pop() + ': Found all tracks on library.');
 			handlePlaylist = new FbMetadbHandleList(handlePlaylist);
 		} else if (bOmitNotFound && handlePlaylist !== null) {
-			console.log(playlistPath.split('\\').pop() + ': omitting not found items on library (' + (filePaths.length - count) + ').');
+			console.log(playlistPath.split('\\').pop() + ': omitting not found items on library (' + (filePaths.length - count) + ').' + '\n' + pathsNotFound.join('\n'));
 			handlePlaylist = new FbMetadbHandleList(handlePlaylist.filter((n) => n)); // Must filter since there are holes
 		} else {
-			console.log(playlistPath.split('\\').pop() + ': some items were not found on library (' + (filePaths.length - count) + ').');
+			console.log(playlistPath.split('\\').pop() + ': some items were not found on library (' + (filePaths.length - count) + ').' + '\n' + pathsNotFound.join('\n'));
 			handlePlaylist = null;
 		}
 		if (handlePlaylist !== null) {
@@ -693,7 +700,7 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 		}
 	}
 	test.Print();
-	return handlePlaylist;
+	return (!bReturnNotFound ? handlePlaylist : {handlePlaylist, pathsNotFound});
 }
 
 // Loading m3u, m3u8 & pls playlist files is really slow when there are many files
