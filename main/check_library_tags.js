@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/22
+//14/09/22
 
 /*
 	Check Library Tags
@@ -57,10 +57,10 @@ include('..\\helpers\\helpers_xxx_levenshtein.js');
 include('..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
 
 const checkTags_properties = {
-	tagNamesToCheck: 	['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople'],
+	tagNamesToCheck: 	['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople,title'],
 	tagsToCompare:	 	['Tags to compare against (\'tag name,...\')', 'genre,style;composer,involvedpeople,artist'],
 	tagValuesExcludedPath: 	['File listing tag values to be excluded', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'check_library_tags_exclusion.json'],
-	tagNamesExcludedDic:['Tags to be excluded at dictionary checking (\'tag name,...\')', 'album,composer,involvedpeople,artist'],
+	tagNamesExcludedDic:['Tags to be excluded at dictionary checking (\'tag name,...\')', 'album,composer,involvedpeople,artist,title'],
 	bAskForConfigTags: 	['Enables popup asking to config excluded tags', false],
 	bUseDic:		 	['Enables dictionary checking for every tag value (slow!)', false],
 	dictName:			['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
@@ -316,10 +316,10 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 				else if (!tagValue[0].trim().length) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0].trim().length !== tagValue[0].length) {countArrayFiltered[index].push(tagValue);}
 				else if (tagValue[0] === '?') {countArrayFiltered[index].push(tagValue);}
-				else if (tagValue[0].indexOf('  ') !== -1) {countArrayFiltered[index].push(tagValue);}
-				else if (tagValue[0].indexOf(';') !== -1) {countArrayFiltered[index].push(tagValue);}
-				else if (tagValue[0].indexOf(',') !== -1) {countArrayFiltered[index].push(tagValue);}
-				else if (tagValue[0].indexOf('/') !== -1) {countArrayFiltered[index].push(tagValue);}
+				else if (tagValue[0].indexOf('  ') !== -1 && tag.toLowerCase() !== 'title') {countArrayFiltered[index].push(tagValue);}
+				else if (tagValue[0].indexOf(';') !== -1 && tag.toLowerCase() !== 'title') {countArrayFiltered[index].push(tagValue);}
+				else if (tagValue[0].indexOf(',') !== -1 && tag.toLowerCase() !== 'title') {countArrayFiltered[index].push(tagValue);}
+				else if (tagValue[0].indexOf('/') !== -1 && tag.toLowerCase() !== 'title') {countArrayFiltered[index].push(tagValue);}
 			});
 			// Then all tags according to freq. filter (excluding previously added ones)
 			if (freqThreshold === 1 && !isFinite(maxSizePerTag)) { // When forced to check all tags, just push them all
@@ -349,10 +349,10 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 	else if (!tagValueA[0].trim().length) {alternativesMap.set(tagKey, 'Tag set to blank space(s)');}
 	else if (tagValueA[0].trim().length !== tagValueA[0].length) {alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes');}
 	else if (tagValueA[0] === '?') {alternativesMap.set(tagKey, 'Tag not set');}
-	else if (tagValueA[0].indexOf('  ') !== -1) {alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)');}
-	else if (tagValueA[0].indexOf(';') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
-	else if (tagValueA[0].indexOf(',') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
-	else if (tagValueA[0].indexOf('/') !== -1) {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
+	else if (tagValueA[0].indexOf('  ') !== -1 && tagA.toLowerCase() !== 'title') {alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)');}
+	else if (tagValueA[0].indexOf(';') !== -1 && tagA.toLowerCase() !== 'title') {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
+	else if (tagValueA[0].indexOf(',') !== -1 && tagA.toLowerCase() !== 'title') {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
+	else if (tagValueA[0].indexOf('/') !== -1 && tagA.toLowerCase() !== 'title') {alternativesMap.set(tagKey, 'Possible multivalue tag not split');}
 	else if (bCompare){ // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
 		let similValues = [];
 		tagsToCheck.forEach( (tagB, indexB) => {
