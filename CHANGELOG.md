@@ -46,6 +46,7 @@
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
+- Other tools\Check Tags: added TITLE' to the list of default tags to be checked. Added special conditions to title tags.
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
 - Script Integration\Add SKIP tag at current playback: pressing Shift while calling the menu now adds a skip tag to the existing ones, instead of replacing.
 - Online controllers integration: reworked and updated all code for full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx) now using dynamic menus.
@@ -77,6 +78,7 @@
 - Buttons: 'search_same_style_moods' button. See warning above for replacement.
 - Script Integration\SMP Main menu: all functionality removed. Replace it as needed with custom Dynamic menus.
 ### Fixed
+- Dynamic queries: duplicated queries are removed before joining them with 'OR'. i.e. selecting 10 tracks by 'Mdou Moctar' for a query 'ARTIST IS #ARTIST#' will not output 10 time the same query, but only once. While functionality and final results don't change at all, it seems processing time greatly speeds up with shorter queries.
 - Script Integration\SMP Dynamic menu: excluded some entries which were not supposed to be exposed after changes on latest versions.
 - UI: custom macro button width is now adjusted to button's custom name (instead of being fixed, which was never intended).
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
@@ -86,7 +88,7 @@
 - Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
 - Search by Distance: remapped genre/style tags were not being properly used on similar artist calculation filtering step.
 - Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
-- Search by Distance: calculation did not have into consideration tracks with same genre/style values on  similar artist calculation filtering step.
+- Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
 - Search by Distance: in some cases similar artists were duplicated.
 - Readmes: separators not being properly identified on readme files checking.
 - Rating related scripts not compatible with foobar2000 2.0+.
