@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/22
+//19/09/22
 
 /* 
 	Playlist Tools Menu
@@ -1027,42 +1027,25 @@ addEventListener('on_dsp_preset_changed', () => {
 						const submenu = menu.newMenu('Search by Distance', configMenu);
 						{ 	// Find genre/styles not on graph
 							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: () => {
-								// Skipped values at pre-filter
-								const tagValuesExcluded = new Set(menu_properties['genreStyleFilter'][1].split(',').filter(Boolean)); // Filter holes and remove duplicates
-								// Get all tags and their frequency
-								const tagsToCheck = [...new Set(menu_properties['genreTag'][1].concat(',', menu_properties['styleTag'][1]).split(',').filter(Boolean))]; // Merge and filter
-								if (!tagsToCheck.length) {
-									fb.ShowPopupMessage('There are no tags to check set at properties panel:\n' + menu_properties['genreTag'][0], scriptName);
-									return;
-								}
-								// Get tags
-								const tags = new Set(getTagsValuesV4(fb.GetLibraryItems(), tagsToCheck, false, true).flat(Infinity));
-								// Get node list (+ weak substitutions + substitutions + style cluster)
-								const nodeList = new Set(music_graph_descriptors.style_supergenre.flat(Infinity)).union(new Set(music_graph_descriptors.style_weak_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_cluster.flat(Infinity)));
-								// Compare (- user exclusions - graph exclusions)
-								const missing = tags.difference(nodeList).difference(tagValuesExcluded).difference(music_graph_descriptors.map_distance_exclusions);
-								// Report
-								const userFile = folders.userHelpers + 'music_graph_descriptors_xxx_user.js';
-								const userFileFound = _isFile(userFile) ? '' : ' (not found)';
-								const userFileEmpty = !userFileFound.length && Object.keys(music_graph_descriptors_user).length ? '' : ' (empty)';
-								const report = 'Graph descriptors:\n' +
-												'(scripts folder) .\\helpers\\music_graph_descriptors_xxx.js\n' +
-												'(profile folder) .\\js_data\\helpers\\music_graph_descriptors_xxx_user.js' + userFileFound + userFileEmpty + '\n\n' +
-												'List of tags not present on the graph descriptors:\n' +
-												[...missing].sort().join(', ');
-								fb.ShowPopupMessage(report, scriptName);
+								findStyleGenresMissingGraph({
+									genreStyleFilter: menu_properties.genreStyleFilter[1].split(',').filter(Boolean),
+									genretag: menu_properties.genreTag[1],
+									styleTag: menu_properties.styleTag[1], 
+									bAscii: menu_properties.bAscii[1],
+									bPopup: true
+								});
 							}});
 							// Graph debug
 							menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
 								if (defaultArgs.bProfile) {var profiler = new FbProfiler('graphDebug');}
-								graphDebug(all_music_graph, true); // Show popup on pass
+								graphDebug(allMusicGraph, true); // Show popup on pass
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							// Graph test
 							menu.newEntry({menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
 								if (defaultArgs.bProfile) {var profiler = new FbProfiler('testGraph');}
-								testGraph(all_music_graph);
-								testGraphV2(all_music_graph);
+								testGraph(allMusicGraph);
+								testGraphV2(allMusicGraph);
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							// Graph cache reset Async
@@ -1104,6 +1087,22 @@ addEventListener('on_dsp_preset_changed', () => {
 												}
 											}});
 										});
+									});
+									[configSubmenu, submenuTwo].forEach((sm) => {
+										menu.newEntry({menuName: sm, entryText: 'sep'});
+										menu.newEntry({menuName: sm, entryText: 'Reset to default...', func: () => {
+											options.forEach((key) => {
+												const tagName = key + 'Tag';
+												if (menu_properties.hasOwnProperty(tagName) && menu_propertiesBack.hasOwnProperty(tagName)) {
+													menu_properties[tagName][1] = menu_propertiesBack[tagName][1];
+												}
+											});
+											overwriteMenuProperties(); // Force overwriting
+											const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+											if (answer === popup.yes) {
+												menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
+											}
+										}});
 									});
 								}});
 							}
@@ -1350,7 +1349,8 @@ addEventListener('on_dsp_preset_changed', () => {
 									let focusHandle = fb.GetFocusItem(true);
 									if (focusHandle && query.indexOf('#') !== -1) {
 										if (bEvalSel) {
-											query = query_join(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}), 'OR')
+											const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}))];
+											query = query_join(queries, 'OR');
 										} else {
 											query = queryReplaceWithCurrent(query, focusHandle);
 										}
@@ -1379,7 +1379,8 @@ addEventListener('on_dsp_preset_changed', () => {
 							let focusHandle = fb.GetFocusItem(true);
 							if (focusHandle && query.indexOf('#') !== -1) {
 								if (bEvalSel) {
-									query = query_join(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}), 'OR')
+									const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}))];
+									query = query_join(queries, 'OR');
 								} else {
 									query = queryReplaceWithCurrent(query, focusHandle);
 								}
@@ -2148,6 +2149,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
 							{name: 'Incremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: 1}},
+							{name: 'Decremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: -1}},
 						].forEach((val) => {selArgs.push(val);});
 					}
 				}
@@ -4113,6 +4115,7 @@ addEventListener('on_dsp_preset_changed', () => {
 				const name = 'SMP Dynamic menu';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath);
+					include(folders.xxx + 'helpers\\helpers_xxx_controller.js');
 					include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
 					readmes[menuName + '\\' + name + ' custom'] = folders.xxx + 'helpers\\readme\\main_menu_dynamic_custom.txt';
@@ -4160,24 +4163,6 @@ addEventListener('on_dsp_preset_changed', () => {
 						return _save(path + 'playlisttoolsentries.json', JSON.stringify(listExport, null, '\t'));
 					}
 					// Global scope
-					var exportDSP = function exportDSP(path) {
-						const listExport = JSON.parse(fb.GetDSPPresets()); // Reformat with tabs
-						return _save(path + 'dsp.json', JSON.stringify(listExport, null, '\t'));
-					}
-					var exportDevices = function exportDevices(path) {
-						const listExport = JSON.parse(fb.GetOutputDevices()); // Reformat with tabs
-						return _save(path + 'devices.json', JSON.stringify(listExport, null, '\t'));
-					}
-					var exportComponents = function exportComponents(path) {
-						const listExport = {
-							foo_run_main: utils.CheckComponent('foo_run_main', true),
-							foo_runcmd: utils.CheckComponent('foo_runcmd', true),
-							foo_quicksearch: utils.CheckComponent('foo_quicksearch', true),
-							foo_youtube: utils.CheckComponent('foo_youtube', true),
-							bDynamicMenus: menu_panelProperties.bDynamicMenus[1],
-						};
-						return _save(path + 'components.json', JSON.stringify(listExport, null, '\t'));
-					}
 					var executeByName = function executeByName(path) {
 						const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
 						const localFile = folders.data + 'toexecute.json';
@@ -4217,7 +4202,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
 							if (!exportDSP(defaultArgs.httpControlPath)) {console.log('Error saving DSP entries for http Control integration.')}
 							if (!exportDevices(defaultArgs.httpControlPath)) {console.log('Error saving Devices entries for http Control integration.')}
-							if (!exportComponents(defaultArgs.httpControlPath)) {console.log('Error saving Components entries for http Control integration.')}
+							if (!exportComponents(defaultArgs.httpControlPath, {bDynamicMenusPT: menu_panelProperties.bDynamicMenus[1]})) {console.log('Error saving Components entries for http Control integration.')}
 						}
 					}});
 					//  Menus
@@ -4364,7 +4349,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						menu.newEntry({menuName: subMenuName, entryText: 'Create SMP dynamic menus', func: () => {
 							menu_panelProperties.bDynamicMenus[1] = !menu_panelProperties.bDynamicMenus[1];
 							overwritePanelProperties(); // Updates panel
-							exportComponents(defaultArgs.httpControlPath);
+							exportComponents(defaultArgs.httpControlPath,  {bDynamicMenus: menu_panelProperties.bDynamicMenus[1]});
 							// Disable UI shortcuts if they can not be used
 							if (!menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]) {
 								fb.ShowPopupMessage('Keyboard shortcuts are now disabled and not shown on the menu entries.', window.Name);
@@ -4660,6 +4645,16 @@ addEventListener('on_dsp_preset_changed', () => {
 						overwriteMenuProperties(); // Updates panel
 					}});
 				});
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+				menu.newEntry({menuName: subMenuName, entryText: 'Reset to default...', func: () => {
+					options.forEach((key) => {
+						const tagName = key + 'Tag';
+						if (menu_properties.hasOwnProperty(tagName) && menu_propertiesBack.hasOwnProperty(tagName)) {
+							menu_properties[tagName][1] = menu_propertiesBack[tagName][1];
+						}
+					});
+					overwriteMenuProperties(); // Force overwriting
+				}});
 			}
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});

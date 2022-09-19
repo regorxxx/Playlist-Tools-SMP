@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/22
+//14/09/22
 
 /*
 	Dynamic Query
@@ -13,8 +13,10 @@ function do_dynamic_query({query = 'ARTIST IS #ARTIST#', sort = {tfo: null, dire
 	
 	if (query.indexOf('#') !== -1) {
 		if (!handle && !handleList) {return null;} // May pass a standard query which doesn't need a handle to evaluate
-		else if (handleList) {query = query_join(handleList.Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}), 'OR');}
-		else if (handle) {query = queryReplaceWithCurrent(query, handle);}
+		else if (handleList) {
+			const queries = [...new Set(handleList.Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}))];
+			query = query_join(queries, 'OR');
+		} else if (handle) {query = queryReplaceWithCurrent(query, handle);}
 	}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'do_dynamic_query'); return null;}
