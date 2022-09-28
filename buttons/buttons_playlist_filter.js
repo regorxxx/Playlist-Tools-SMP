@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//28/09/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -41,7 +41,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 addButton({
 	'Filter Playlist': new themedButton({x: 0, y: 0, w: 100, h: 22}, 'Filter playlist', function (mask) {
-			if (mask === MK_SHIFT) {
+		if (mask === MK_SHIFT) {
 			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
 		} else {
 			const tagKeys = Object.keys(this.buttonsProperties).filter((key) => {return key.indexOf('checkInput') !== -1;});
