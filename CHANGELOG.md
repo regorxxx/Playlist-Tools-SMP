@@ -43,10 +43,12 @@
 - Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
 - Advanced sort: decremental sort by DynGenre entry added.
+- Search by Distance: tags cache for Foobar2000 2.0, enabled by default. Disabled on lower versions (since it brings no improvement on processing time). After proper setup and caching of all library tags associated to remapped tags, processing time should be similar to Foobar2000 1.6+ versions.
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
-- Other tools\Check Tags: added TITLE' to the list of default tags to be checked. Added special conditions to title tags.
+- Other tools\Playlist revive: 'ACOUSTID_ID' and 'MUSICBRAINZ_TRACKID' are now checked to find exact matches, if MD5 and all other exact match rules fail.
+- Other tools\Check Tags: added 'TITLE' to the list of default tags to be checked. Added special conditions to title tags.
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
 - Script Integration\Add SKIP tag at current playback: pressing Shift while calling the menu now adds a skip tag to the existing ones, instead of replacing.
 - Online controllers integration: reworked and updated all code for full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx) now using dynamic menus.
@@ -80,9 +82,11 @@
 ### Fixed
 - Dynamic queries: duplicated queries are removed before joining them with 'OR'. i.e. selecting 10 tracks by 'Mdou Moctar' for a query 'ARTIST IS #ARTIST#' will not output 10 time the same query, but only once. While functionality and final results don't change at all, it seems processing time greatly speeds up with shorter queries.
 - Script Integration\SMP Dynamic menu: excluded some entries which were not supposed to be exposed after changes on latest versions.
+- Script Integration: fixed some inconsistencies on ajquery-xxx export files.
 - UI: custom macro button width is now adjusted to button's custom name (instead of being fixed, which was never intended).
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
 - Pools: some additional checks to ensure non ASCII chars, casing or numbers are correctly identified as equivalent. For ex. 'Classic Pools (3 tracks per artist letter)' would output an artist starting with A and another with a as 2 different letters. Same applies to ASCII equivalences, etc. Now all the values are reduced to an ASCII lowercase string.
+- Pools: 'Current genre/style and instrumentals' query had a typo.
 - Search by Distance: after renaming custom button, button width was not properly adjusted. Width on panel reload and after renaming did not match.
 - Search by Distance: estimated time for similar artist calculation was not properly computed when having multiple tracks by same artist(s) on selection
 - Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
