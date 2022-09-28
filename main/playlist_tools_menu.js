@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/09/22
+//27/09/22
 
 /* 
 	Playlist Tools Menu
@@ -1048,6 +1048,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								testGraphV2(allMusicGraph);
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
+							menu.newEntry({menuName: submenu, entryText: 'sep'});
 							// Graph cache reset Async
 							menu.newEntry({menuName: submenu, entryText: 'Reset link cache', func: () => {
 								_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
@@ -1056,6 +1057,17 @@ addEventListener('on_dsp_preset_changed', () => {
 								cacheLinkSet = void(0);
 								updateCache({bForce: true, properties: menu_properties}); // Creates new one and also notifies other panels to discard their cache
 							}});
+							// Tags cache reset Async
+							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (menu_properties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
+								const keys = ['genreTag', 'styleTag', 'moodTag', 'dateTag', 'keyTag', 'bpmTag', 'composerTag', 'customStrTag', 'customNumTag'].map((key) => {return menu_properties[key][1].split(',').filter(Boolean);});
+								const tags = keys.concat([['TITLE']])
+									.map((tagName) => {return tagName.map((subTagName) => {return (subTagName.indexOf('$') === -1 ? '%' + subTagName + '%' : subTagName);});})
+									.map((tagName) => {return tagName.join(', ');}).filter(Boolean)
+									.filter((tagName) => {return !tagsCache.cache.has(tagName);});
+								tagsCache.clear(tags);
+								tagsCache.save();
+								tagsCache.cacheTags(tags, iStepsLibrary, iDelayLibrary, fb.GetLibraryItems().Convert(), true);
+							}, flags: menu_properties.bTagsCache[1] ? MF_STRING : MF_GRAYED});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{
@@ -1087,6 +1099,38 @@ addEventListener('on_dsp_preset_changed', () => {
 												}
 											}});
 										});
+									});
+									[configSubmenu, submenuTwo].forEach((sm) => {
+										menu.newEntry({menuName: sm, entryText: 'sep'});
+										{	// Cache
+											const options = ['bAscii', 'bTagsCache'];
+											options.forEach((key, i) => {
+												const keyText = menu_properties[key][0];
+												const entryText = keyText.replace('\'Search similar\' ','') + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '');
+												menu.newEntry({menuName: sm, entryText, func: () => {
+													menu_properties[key][1] = !menu_properties[key][1];
+													overwriteMenuProperties(); // Updates panel
+													if (key === 'bAscii') {
+														const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+														if (answer === popup.yes) {
+															menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
+														}
+													} else if (key === 'bTagsCache') {
+														if (menu_properties.bTagsCache[1]) {
+															fb.ShowPopupMessage('This feature should only be enabled on Foobar2000 versions >= 2.0.\nPrevious versions already cached tags values, thus not requiring it.', 'Tags cache');
+															tagsCache.load();
+															const answer = WshShell.Popup('Reset tags cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+															if (answer === popup.yes) {
+																menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset tags cache');
+															}
+														} else {
+															tagsCache.unload();
+														}
+													}
+												}, flags: key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? MF_GRAYED : MF_STRING});
+												menu.newCheckMenu(sm, entryText, void(0), () => {return menu_properties[key][1];});
+											});
+										}
 									});
 									[configSubmenu, submenuTwo].forEach((sm) => {
 										menu.newEntry({menuName: sm, entryText: 'sep'});
@@ -3390,7 +3434,7 @@ addEventListener('on_dsp_preset_changed', () => {
 				}},
 				{name: 'Current genre/style and instrumentals', pool: {
 					fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
-					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %RATING% EQUAL 5)', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
+					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %RATING% EQUAL 5', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and instrumentals', 
 					sort: '',
@@ -3492,7 +3536,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								if (checkQuery(processedQuery, true)) {
 									console.log('Playlist tools Pools: filter -> ' + processedQuery);
 									handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
-								} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
+								} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 							}
 							// Retrieve all possible groups
 							const group = typeof pool.group !== 'undefined' ? pool.group[plsName] : '';
@@ -3676,7 +3720,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							if (checkQuery(processedQuery, true)) {
 								console.log('Playlist tools Pools: filter -> ' + processedQuery);
 								handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
-							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n' + processedQuery, scriptName); bAbort = true; return;}
+							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 						}
 						// Remove duplicates
 						handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: ['title', 'artist', 'date']});
@@ -4997,6 +5041,9 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		menu_panelPropertiesBack = clone(menu_panelProperties); 
 		if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: creating default settings...');}
 	})();
+	doOnce('Load tags cache', debounce(() => {
+		if (menu_properties.bTagsCache[1] && typeof tagsCache !== 'undefined') {tagsCache.load();}
+	}, 5000))();
 	// Store for internal use
 	if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: updating settings...');}
 	for (let key in propObject) {
@@ -5221,6 +5268,7 @@ function exportMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\a
 deferFunc.push({name: 'createMainMenuDynamic', func: () => {
 	if (menu_panelProperties.bDynamicMenus[1]) {createMainMenuDynamic();}
 }});
+
 /* 
 	Shortcuts
 */
