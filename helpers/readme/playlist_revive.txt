@@ -7,24 +7,42 @@ Querying:
 	- TITLE
 	- AUDIOMD5 (tag from foo_md5 if found) (*)
 	- MD5 (tag from foo_md5 if found) (*)
+	- ACOUSTID_ID (***)
+	- MUSICBRAINZ_TRACKID (***)
+	- Multiple path/filename variables
 
 Matching (rules by order):
 	- Audio MD5 (file info) (Exact Match) (*)
 	- AUDIOMD5 (tag from foo_md5 if found) (Exact Match) (*)
 	- MD5 (tag from foo_md5 if found) (Exact Match) (*) (**)
 	- TITLE + Length + Size (Exact Match)
+	- AcoustID (Exact Match) (***)
+	- MusicBrainz Track Id (Exact Match) (***)
 	- Tags (Similarity)
+	- Path (Alternative items & Similarity)
 
 Usage:
 	- Select the tracks in the relevant playlist.
 	- Apply script (using a button, menu entry, main menu SMP, etc. 
-	associated to it).
+		associated to it).
 	- The tools allow to only replace with exact matches or by some 
-	similarity threshold. 
+		similarity threshold. 
 	- 'Simulate' options just simulates the processing, does nothing
-	but reporting you -planned- changes.
+		but reporting you -planned- changes.
 	- The console always reports the tracks changed and info, contrary
-	to what foo_playlist_revive plugin did.
+		to what foo_playlist_revive plugin did.
+	
+Methods:
+	- Replace dead items: only allow exact matches. Useful when old
+		tags are still cached on library and items have changed
+		paths.
+	- By similarity: allows results over a set threshold. Useful when
+		files have not only been moved but their tags also changed
+		in some way. Exact matches are still preferred.
+	- Alternative items: similarity + complex path comparisons. Useful 
+		when old tags are no longer cached on library, so 
+		comparisons may only be done by paths (i.e. filename, 
+		directory name, ...). May retrieve wrong results.
 
 (*) Audio MD5 is a feature of some formats which store audio checksums as 
 part of their file info. That's different, although similar, to a tag
@@ -41,3 +59,7 @@ https://foobar.hyv.fi/?view=foo_audiomd5
 Note that for formats having CRC checks (like flac), you can also get an 
 md5 tag with mass tagger scripts: $info(MD5) -> copy -> AUDIOMD5
 You can find such preset at '.\presets\Masstagger'
+
+(***) MusicBrainz compatible software, like foo_musicbrainz or Picard 
+(https://picard.musicbrainz.org/), identify tracks by an unique ID no
+ matter their format, release, etc. and also a fingerprint ID.

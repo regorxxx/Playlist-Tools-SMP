@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/22
+//28/09/22
 
 /*
 	Playlist Revive
@@ -49,7 +49,7 @@ function playlistRevive({
 	// Filter library with items with same tags
 	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
 	// The other tags are considered crc checks -> Exact Match: any crc tag is matched. Otherwise, continue checking the other tags (See above).
-	const tagsToCheck = ['title', 'audiomd5', 'md5', '%directoryname%', '%filename%', (bFindAlternative || simThreshold < 1) ? '"$directory(%path%,2)"' : null].filter(Boolean);
+	const tagsToCheck = ['TITLE', 'AUDIOMD5', 'MD5', 'ACOUSTID_ID', 'MUSICBRAINZ_TRACKID', '%DIRECTORYNAME%', '%FILENAME%', (bFindAlternative || simThreshold < 1) ? '"$directory(%PATH%,2)"' : null].filter(Boolean);
 	const tags = getTagsValuesV4(items, tagsToCheck.map((tag) => {return tag.replace(/^%|%$/g, '');}), void(0), void(0), null);
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
@@ -63,7 +63,7 @@ function playlistRevive({
 	try {fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	const libraryItems = fb.GetQueryItems(fb.GetLibraryItems(), query);
-	const tagsLibrary = getTagsValuesV4(libraryItems, tagsToCheck.slice(0,3), void(0), void(0), null);  // discard path related tags
+	const tagsLibrary = getTagsValuesV4(libraryItems, tagsToCheck.slice(0, 5), void(0), void(0), null);  // discard path related tags
 	const libraryItemsArr = libraryItems.Convert();
 	// Find coincidences in library
 	// Checks all tags from reference track and compares to all tags from library tracks that passed the filter
@@ -112,24 +112,64 @@ function playlistRevive({
 		} else {
 			let numTags = 0;
 			for (let i = 0; i < info.MetaCount; i++) {numTags += info.MetaValueCount(i);}
-			let bExact = false; // For exact matching: title, size and length
+			let bExact = false;
+			// Check for MD5 exact matches
 			libraryItemsArr.forEach( (handleLibr, indexLibr) => {
 				if (bExact) {return;} // No need to continue then
 				const infoLibr = handleLibr.GetFileInfo();
 				if (!infoLibr) {return;}
-				let count = 0;
-				const md5Idx = info.InfoFind('md5'), md5LibrIdx = infoLibr.InfoFind('md5'); // With same MD5 info, it's an exact match
-				if (md5Idx !== -1 && md5LibrIdx !== -1 && info.InfoValue(md5Idx) === infoLibr.InfoValue(md5LibrIdx)) {count = numTags; bExact = true;}
-				let tag = tags[1][index][0], tagLibr = tagsLibrary[1][indexLibr][0];
-				if (tag.length && tagLibr.length && tag === tagLibr) {count = numTags; bExact = true;} // With same AUDIOMD5 tag, it's an exact match too
-				tag = tags[2][index][0], tagLibr = tagsLibrary[2][indexLibr][0];
-				if (tag.length && tagLibr.length && tag === tagLibr) {count = numTags; bExact = true;} // With same MD5 tag, it's an exact match too
-				// Check tags
+				// With same MD5 info, it's an exact match
+				const md5Idx = info.InfoFind('MD5'), md5LibrIdx = infoLibr.InfoFind('MD5');
+				if (md5Idx !== -1 && md5LibrIdx !== -1 && info.InfoValue(md5Idx) === infoLibr.InfoValue(md5LibrIdx)) {bExact = true;}
+				// With same AUDIOMD5, MD5 tag, it's an exact match too
+				let tag, tagLibr;
+				for (let i = 1; i <= 2; i++) {
+					tag = tags[i][index][0], tagLibr = tagsLibrary[i][indexLibr][0];
+					if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true; break;} 
+				}
+				if (bExact && !alternativesSet.has(indexLibr)) {
+					alternativesSet.add(indexLibr);
+					alternativesObj.push({idx: indexLibr, simil: 100, bExact});
+				}
+			});
+			// Check for title + length + filesize
+			!bExact && libraryItemsArr.forEach( (handleLibr, indexLibr) => {
+				if (bExact) {return;} // No need to continue then
 				if (new Set(tags[0][index]).intersectionSize(new Set(tagsLibrary[0][indexLibr]))) { // Instead of checking equality, tracks may have more than one title (?)
-					if (handle.Length === handleLibr.Length) {
-						count++; // Bonus score if it changed tags and thus size but length is the same
-						if (handle.FileSize === handleLibr.FileSize) {count = numTags; bExact = true;}  // Or may have changed nothing, being exact match
-					}
+					if (handle.Length === handleLibr.Length && handle.FileSize === handleLibr.FileSize) {bExact = true;}  // may have changed nothing, being exact match
+				}
+				if (bExact && !alternativesSet.has(indexLibr)) {
+					alternativesSet.add(indexLibr);
+					alternativesObj.push({idx: indexLibr, simil: 100, bExact});
+				}
+			});
+			// Check for ACOUSTID_ID
+			!bExact && libraryItemsArr.forEach( (handleLibr, indexLibr) => {
+				if (bExact) {return;} // No need to continue then
+				const tag = tags[3][index][0], tagLibr = tagsLibrary[3][indexLibr][0];
+				if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true;} 
+				if (bExact && !alternativesSet.has(indexLibr)) {
+					alternativesSet.add(indexLibr);
+					alternativesObj.push({idx: indexLibr, simil: 100, bExact});
+				}
+			});
+			// Check for MUSICBRAINZ_TRACKID
+			!bExact && libraryItemsArr.forEach( (handleLibr, indexLibr) => {
+				if (bExact) {return;} // No need to continue then
+				const tag = tags[4][index][0], tagLibr = tagsLibrary[4][indexLibr][0];
+				if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true;} 
+				if (bExact && !alternativesSet.has(indexLibr)) {
+					alternativesSet.add(indexLibr);
+					alternativesObj.push({idx: indexLibr, simil: 100, bExact});
+				}
+			});
+			// Finally check tags for similarity
+			!bExact && libraryItemsArr.forEach( (handleLibr, indexLibr) => {
+				const infoLibr = handleLibr.GetFileInfo();
+				if (!infoLibr) {return;}
+				let count = 0;
+				if (new Set(tags[0][index]).intersectionSize(new Set(tagsLibrary[0][indexLibr]))) { // Instead of checking equality, tracks may have more than one title (?)
+					if (handle.Length === handleLibr.Length) {count++;} // Bonus score if it changed tags and thus size but length is the same
 					for (let i = 0; i < info.MetaCount; i++) {
 						if (numTags === count) {break;}
 						for (let j = 0; j < infoLibr.MetaCount; j++) {
@@ -147,7 +187,7 @@ function playlistRevive({
 						}
 					}
 				}
-				if (bExact || isFinite(numTags) && numTags !== 0 && count / numTags >= simThreshold && !alternativesSet.has(indexLibr)) {
+				if (isFinite(numTags) && numTags !== 0 && count / numTags >= simThreshold && !alternativesSet.has(indexLibr)) {
 					alternativesSet.add(indexLibr);
 					alternativesObj.push({idx: indexLibr, simil: Math.round(count / numTags * 100), bExact});
 				}
@@ -187,7 +227,7 @@ function playlistRevive({
 		});
 		// Extra info
 		if (bOverHundred) {console.log('Tracks with a similarity value over 100% have been found. It\'s not an error, but an indicator that the new track matches all tags and has new ones compared to the dead one');}
-		if (bExact) {console.log('Exact matches have been found. That means the tracks have the same Audio MD5 or Title + Length + File Size.');}
+		if (bExact) {console.log('Exact matches have been found. That means the tracks have the same Audio MD5, Title + Length + File Size, AcoustID or MBID.');}
 		// Remove all handles and insert new ones
 		if (!bSimulate) {
 			plman.UndoBackup(playlist);
