@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/09/22
+//29/09/22
 
 /* 
 	Playlist Tools Menu
@@ -1262,8 +1262,8 @@ addEventListener('on_dsp_preset_changed', () => {
 					include(scriptPath);
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\remove_duplicates.txt';
 					let subMenuName = menu.newMenu(name, menuName);
-					let sortInputDuplic = ['title', 'artist', 'date'];
-					let sortInputFilter = ['title', 'artist', 'date'];
+					let sortInputDuplic = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'];
+					let sortInputFilter = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'];
 					let nAllowed = 2;
 					// Create new properties with previous args
 					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
@@ -3425,6 +3425,21 @@ addEventListener('on_dsp_preset_changed', () => {
 					sort: '%playlist_index%',
 				}},
 				{name: 'sep'},
+				{name: 'Top recently played tracks mix', pool: {
+					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
+					query: {_LIBRARY_0: '%RATING% EQUAL 3 AND %LAST_PLAYED% DURING LAST 3 WEEKS', _LIBRARY_1: '%RATING% EQUAL 4 AND %LAST_PLAYED% DURING LAST 1 WEEKS', _LIBRARY_2: '%RATING% EQUAL 5 AND %LAST_PLAYED% DURING LAST 5 WEEKS'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Top recently played tracks mix',
+					sort: '',
+				}},
+				{name: 'Top recently added tracks mix', pool: {
+					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
+					query: {_LIBRARY_0: '%RATING% EQUAL 3 AND %ADDED% DURING LAST 3 WEEKS', _LIBRARY_1: '%RATING% EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS', _LIBRARY_2: '%RATING% EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Top recently added tracks mix',
+					sort: '',
+				}},
+				{name: 'sep'},
 				{name: 'Current genre/style and top tracks', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
 					query: {_LIBRARY_0: 'GENRE IS #GENRE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: 'STYLE IS #STYLE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_2: '%RATING% EQUAL 5'}, 
@@ -3551,7 +3566,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
 								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
 								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
-								handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: ['title', 'artist', 'date']});
+								handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i]});
 							}
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
@@ -3723,7 +3738,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 						}
 						// Remove duplicates
-						handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: ['title', 'artist', 'date']});
+						handleListFrom = removeDuplicatesV2({handleList: handleListFrom});
 					}
 					// Remove tracks on destination list
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});
@@ -3747,7 +3762,7 @@ addEventListener('on_dsp_preset_changed', () => {
 				plman.UndoBackup(idxTo);
 				plman.ClearPlaylist(idxTo);
 				// Harmonic mix?
-				if (typeof pool.harmonicMix !== 'undefined' && pool.harmonicMix) {
+				if (pool.hasOwnProperty('harmonicMix') && pool.harmonicMix) {
 					const handleListMix = harmonicMixing({selItems: handleListTo,	keyTag: defaultArgs.keyTag,	bSendToPls: false,	bDoublePass: true, bDebug: defaultArgs.bDebug});
 					const newCount = handleListMix ? handleListMix.Count : 0;
 					const oriCount = handleListTo.Count;
@@ -3771,7 +3786,8 @@ addEventListener('on_dsp_preset_changed', () => {
 				}
 				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
 				// Sort only when not doing harmonic mix
-				if (typeof pool.harmonicMix !== 'undefined' && !pool.harmonicMix && typeof pool.sort !== 'undefined') {
+				if ((!pool.hasOwnProperty('harmonicMix') || !pool.harmonicMix) && typeof pool.sort !== 'undefined') {
+					
 					plman.SortByFormat(idxTo, pool.sort);
 					console.log('Playlist tools Pools: sorting ' + _p(pool.sort.length ? pool.sort : 'random'));
 				}
@@ -5123,7 +5139,7 @@ function menuTooltip() {
 				'$crlf()Styles:		[%STYLE%]' +
 				'$crlf()Moods:		[%MOOD%]'
 			);
-		info = 'Playlist:		' + plman.GetPlaylistName(plman.ActivePlaylist) + infoMul + '\n';
+		info = 'Playlist:		' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistName(plman.ActivePlaylist) : '-none-') + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);
 	}
 	// Modifiers
