@@ -18,7 +18,7 @@ const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
 function topTracksFromDate({
 						playlistLength = 25, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
-						checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
+						checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
 						year =  new Date().getFullYear() - 1, // Previous year
 						last = '1 WEEKS',
 						bUseLast = false,

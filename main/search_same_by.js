@@ -78,9 +78,9 @@ include('remove_duplicates.js');
 function searchSameByCombs({
 								sel = fb.GetFocusItem(),
 								playlistLength = 50, 
-								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
+								forcedQuery = 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %CHANNELS% LESS 3 AND NOT COMMENT HAS Quad',
 								sortBy = '', 
-								checkDuplicatesBy = ['title', 'artist', 'date'],
+								checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
 								sameBy = {genre: 1, style: 2 , mood: 5},
 								playlistName = 'Search...',
 								logic = 'AND',

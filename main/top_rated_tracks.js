@@ -16,7 +16,7 @@ if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.
 function do_top_rated_tracks({
 						playlistLength = 50, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
-						checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
+						checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
 						forcedQuery = '',
 						ratingLimits = [1,5],
 						ratingTag = 'RATING',

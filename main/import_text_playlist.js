@@ -22,8 +22,8 @@ include('remove_duplicates.js');
 // Track A by Artist B
 function importTextPlaylist({
 		path = folders.data + 'playlistImport.txt',
-		formatMask = ['', '. ', '%title%', ' - ', '%artist%'],
-		duplicatesMask = ['title', 'artist'],
+		formatMask = ['', '. ', '%TITLE%', ' - ', '%ARTIST%'],
+		duplicatesMask = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST'],
 		queryFilters = ['NOT GENRE IS live AND NOT STYLE IS live']
 	} = {}) {
 	if (!path || !path.length) {
