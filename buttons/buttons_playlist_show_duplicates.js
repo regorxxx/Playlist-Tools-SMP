@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/08/22
+//30/09/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -22,14 +22,10 @@ try {window.DefinePanel('Show Duplicates Button', {author:'xxx'});} catch (e) {/
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	checkInputA:	['Tag or titleformat expression to check (1)', 'artist'	],
-	checkInputB:	['Tag or titleformat expression to check (2)', 'date'	],
-	checkInputC:	['Tag or titleformat expression to check (3)', 'title'	],
+	checkInputA:	['Tag or titleformat expression to check (1)', 'ARTIST', {func: isStringWeak}, 'ARTIST'],
+	checkInputB:	['Tag or titleformat expression to check (2)', '$year(%DATE%)', {func: isStringWeak}, '$year(%DATE%)'],
+	checkInputC:	['Tag or titleformat expression to check (3)', '$ascii($lower($trim(%TITLE%)))', {func: isStringWeak}, '$ascii($lower($trim(%TITLE%)))'],
 };
-newButtonsProperties['checkInputA'].push({func: isStringWeak}, newButtonsProperties['checkInputA'][1]);
-newButtonsProperties['checkInputB'].push({func: isStringWeak}, newButtonsProperties['checkInputB'][1]);
-newButtonsProperties['checkInputC'].push({func: isStringWeak}, newButtonsProperties['checkInputC'][1]);
-
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -37,7 +33,7 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Show Duplicates': new themedButton({x: 0, y: 0, w: 116, h: 22}, 'Show duplicates', function (mask) {
 		if (mask === MK_SHIFT) {
-			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+			settingsMenu(this, true, ['buttons_playlist_show_duplicates.js']).btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) {
 			const checkKeys = Object.keys(this.buttonsProperties).map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
 			removeDuplicatesV2({checkKeys, bProfile: true});

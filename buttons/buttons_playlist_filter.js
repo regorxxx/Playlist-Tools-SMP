@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/09/22
+//30/09/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -25,16 +25,11 @@ try {window.DefinePanel('Filter Playlist Button', {author:'xxx'});} catch (e) {/
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	checkInputA:	['Tag or titleformat expression to check (1)', 'artist'	],
-	checkInputB:	['Tag or titleformat expression to check (2)', 'date'	],
-	checkInputC:	['Tag or titleformat expression to check (3)', 'title'	],
-	nAllowed:	['Number of duplicates allowed (n + 1)'		 , 1		]
+	checkInputA:	['Tag or titleformat expression to check (1)', 'ARTIST', {func: isStringWeak}, 'ARTIST'],
+	checkInputB:	['Tag or titleformat expression to check (2)', '$year(%DATE%)', {func: isStringWeak}, '$year(%DATE%)'],
+	checkInputC:	['Tag or titleformat expression to check (3)', '$ascii($lower($trim(%TITLE%)))', {func: isStringWeak}, '$ascii($lower($trim(%TITLE%)))'],
+	nAllowed:		['Number of duplicates allowed (n + 1)'		 , 1, {greaterEq: 0, func: isInt}, 1]
 };
-newButtonsProperties['checkInputA'].push({func: isStringWeak}, newButtonsProperties['checkInputA'][1]);
-newButtonsProperties['checkInputB'].push({func: isStringWeak}, newButtonsProperties['checkInputB'][1]);
-newButtonsProperties['checkInputC'].push({func: isStringWeak}, newButtonsProperties['checkInputC'][1]);
-newButtonsProperties['nAllowed'].push({greaterEq: 0, func: isInt}, newButtonsProperties['nAllowed'][1]);
-
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -42,7 +37,7 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Filter Playlist': new themedButton({x: 0, y: 0, w: 100, h: 22}, 'Filter playlist', function (mask) {
 		if (mask === MK_SHIFT) {
-			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+			settingsMenu(this, true, ['buttons_playlist_filter.js']).btn_up(this.currX, this.currY + this.currH);
 		} else {
 			const tagKeys = Object.keys(this.buttonsProperties).filter((key) => {return key.indexOf('checkInput') !== -1;});
 			const checkKeys = tagKeys.map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!

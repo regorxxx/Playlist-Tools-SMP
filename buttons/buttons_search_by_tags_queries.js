@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/08/22
+//30/09/22
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -18,19 +18,13 @@ try {window.DefinePanel('Search Same By Tags (Queries) Button', {author:'xxx'});
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	customName:		['Name for the custom UI button', 'Search Same By... (q)'],
-	playlistLength:		['Max Playlist Mix length', 50],
-	forcedQuery:		['Forced query to filter database', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
-	checkDuplicatesBy:	['Tags to look for duplicates', 'title,artist,date'],
-	sameBy: 			['Tags to look for similarity', JSON.stringify([['STYLE'], ['MOOD']])],
-	playlistName:		['Playlist name', 'Search...']
+	customName:			['Name for the custom UI button', 'Search Same By... (q)', {func: isString}, 'Search Same By... (q)'],
+	playlistLength:		['Max Playlist Mix length', 50, {greater: 0, func: isInt}, 50],
+	forcedQuery:		['Forced query to filter database', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad', {func: (query) => {return checkQuery(query, true);}}, 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
+	checkDuplicatesBy:	['Tags to look for duplicates', JSON.stringify(['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)']), {func: isJSON}, JSON.stringify(['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'])],
+	sameBy: 			['Tags to look for similarity', JSON.stringify([['STYLE'], ['MOOD']]), {func: isJSON}, JSON.stringify([['STYLE'], ['MOOD']])],
+	playlistName:		['Playlist name', 'Search...', {func: isString}, 'Search...']
 };
-newButtonsProperties['playlistLength'].push({greater: 0, func: isInt}, newButtonsProperties['playlistLength'][1]);
-newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
-newButtonsProperties['checkDuplicatesBy'].push({func: isString}, newButtonsProperties['checkDuplicatesBy'][1]);
-newButtonsProperties['sameBy'].push({func: isString}, newButtonsProperties['sameBy'][1]);
-newButtonsProperties['playlistName'].push({func: isString}, newButtonsProperties['playlistName'][1]);
-
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -39,11 +33,11 @@ addButton({
 	'Search Same By Tags (Queries)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12)) + 30, h: 22},  newButtonsProperties.customName[1], function (mask) {
 		if (mask === MK_SHIFT) {
 			const oldName = this.buttonsProperties.customName[1].toString();
-			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+			settingsMenu(this, true, ['buttons_search_by_tags_queries.js']).btn_up(this.currX, this.currY + this.currH);
 			const newName = this.buttonsProperties.customName[1].toString();
 			if (oldName !== newName) {this.adjustNameWidth(newName);}
 		} else {
-			searchSameByQueries({checkDuplicatesBy: this.buttonsProperties.checkDuplicatesBy[1].split(','), playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
+			searchSameByQueries({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
