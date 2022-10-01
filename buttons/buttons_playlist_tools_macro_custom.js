@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/08/22
+//30/09/22
 
 /* 
 	Playlist Tools Macro custom
@@ -14,8 +14,8 @@ try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {/*
 var prefix = 'mac_';
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
-	customName: ['Name for the custom UI button', 'Customize!'],
-	macro: 		['Macro entry', ''],
+	customName: ['Name for the custom UI button', 'Customize!', {func: isString}, 'Customize!'],
+	macro: 		['Macro entry', '', {func: isStringWeak}, '']
 };
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve

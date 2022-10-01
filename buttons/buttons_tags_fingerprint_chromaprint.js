@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//30/09/22
 
 /* 
 	Fingerprint tag (Chromaprint)
@@ -14,20 +14,15 @@ var prefix = 'fp_0';
 
 try {window.DefinePanel('Fingerprint Chromaprint Tag', {author:'xxx'});};} catch (e) {/* console.log('Fingerprint Chromaprint Tag Button loaded.'); */} //May be loaded along other buttons
 
-var newButtonsProperties = { //You can simply add new properties here
-	fpTagC:			['Chromaprint Fingerprint tag', 'acoustid_fingerprint_raw'],
-	bMergeC:		['Merge Chromaprint values sep by \', \' into one', true],
-	thresholdC:		['Chromaprint minimum score', 85],
-	fpTagF:			['FooID Fingerprint tag', 'fingerprint_fooid'],
-	thresholdF:		['FooID minimum score', 85],
-	playlistName:	['Playlist name','Search...'],
+var newButtonsProperties = {
+	fpTagC:			['Chromaprint Fingerprint tag', 'ACOUSTID_FINGERPRINT_RAW', {func: isString}, 'ACOUSTID_FINGERPRINT_RAW'],
+	bMergeC:		['Merge Chromaprint values sep by \', \' into one', true, {func: isBoolean}, true],
+	thresholdC:		['Chromaprint minimum score', 85, {greater: 0, lowerEq: 100, func: isInt}, 85],
+	fpTagF:			['FooID Fingerprint tag', 'FINGERPRINT_FOOID', {func: isString}, 'FINGERPRINT_FOOID'],
+	thresholdF:		['FooID minimum score', 85, {greater: 0, lowerEq: 100, func: isInt}, 85],
+	playlistName:	['Playlist name', 'Search...', {func: isString}, 'Search...'],
 	databaseHash:	['Chromaprint database hash', -1]
 };
-newButtonsProperties['fpTagC'].push({func: isStringWeak}, newButtonsProperties['fpTagC'][1]);
-newButtonsProperties['thresholdC'].push({greater: 0, lowerEq: 100, func: isInt}, newButtonsProperties['thresholdC'][1]);
-newButtonsProperties['fpTagF'].push({func: isStringWeak}, newButtonsProperties['fpTagF'][1]);
-newButtonsProperties['thresholdF'].push({greater: 0, lowerEq: 100, func: isInt}, newButtonsProperties['thresholdF'][1]);
-newButtonsProperties['playlistName'].push({func: isString}, newButtonsProperties['playlistName'][1]);
 
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix, 0));

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//30/09/22
 
 /* 
 	Automatic tagging...
@@ -23,6 +23,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = {	//You can simply add new properties here
 	toolsByKey: ['Tools enabled', JSON.stringify(new tagAutomation(void(0), true))]
 };
+newButtonsProperties['toolsByKey'].push({func: isJSON}, newButtonsProperties['toolsByKey'][1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);

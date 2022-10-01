@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//30/09/22
 
 /* 
 	Top Tracks
@@ -17,14 +17,10 @@ try {window.DefinePanel('Top Tracks Button', {author:'xxx'});} catch (e) {/* con
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	playlistLength:	['Length of playlist', 25],
-	forcedQuery: 	['Forced query to pre-filter database','NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'],
-	year: 			['Year', 0],
+	playlistLength:	['Length of playlist', 25, {greater: 0, func: isInt}, 25],
+	forcedQuery: 	['Forced query to pre-filter database','NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)', {func: (query) => {return checkQuery(query, true);}}, 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1)'],
+	year: 			['Year', 0, {greaterEq: 0, func: isInt}, 0],
 };
-newButtonsProperties['playlistLength'].push({greater: 0, func: isInt}, newButtonsProperties['playlistLength'][1]);
-newButtonsProperties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, newButtonsProperties['forcedQuery'][1]);
-newButtonsProperties['year'].push({greaterEq: 0, func: isInt}, newButtonsProperties['playlistLength'][1]);
-
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -32,7 +28,7 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Top Tracks from Date': new themedButton({x: 0, y: 0, w: 133, h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1))}, function (mask) {
 		if (mask === MK_SHIFT) {
-			settingsMenu(this, true).btn_up(this.currX, this.currY + this.currH);
+			settingsMenu(this, true, ['buttons_search_top_tracks_from_date.js']).btn_up(this.currX, this.currY + this.currH);
 		} else {
 			topTracksFromDate({playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1], year: this.buttonsProperties.year[1] || (new Date().getFullYear() - 1)});
 		}

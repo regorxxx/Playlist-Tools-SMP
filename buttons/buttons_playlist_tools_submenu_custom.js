@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/08/22
+//30/09/22
 
 /* 
 	Playlist Tools Submenu Custom
@@ -14,8 +14,8 @@ try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {co
 var prefix = 'ptc_';
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
-	customName: ['Name for the custom UI button', 'Customize!'],
-	menu: 		['Menu entry', ''],
+	customName: ['Name for the custom UI button', 'Customize!', {func: isString}, 'Customize!'],
+	menu: 		['Menu entry', '', {func: isStringWeak}, ''],
 };
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 buttonsBar.list.push(getPropertiesPairs(newButtonsProperties, prefix));

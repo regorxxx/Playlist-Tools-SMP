@@ -63,6 +63,7 @@
 - Buttons: 'search_same_style' has been replaced with'search_by_tags_queries' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use it only style tag to mimic its behavior.
 - Buttons: 'search_same_style_moods' has been replaced with 'search_by_tags_combinations' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use {"STYLE":2,"MOOD":6} to mimic its behavior.
 - Buttons: 'search_by_tags_queries' and 'search_by_tags_combinations' can now be renamed.
+- Buttons: internal changes to also allow images as icons on buttons. Previously only chars were allowed.
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
@@ -73,7 +74,10 @@
 - Search by Distance: reverted default string tags to raw tags instead of using '$ascii(%TAG%)' in favor of internally converting values to ASCII. Works better for multi-value tags in queries. It's recommended to reset tag remapping to default for most users (or manually removing the TF functions if using other tags).
 - Search by Distance: when using TF functions on tags, queries now use 'HAS' instead of 'IS' to ensure multi-value tags are taken into consideration (otherwise only single-value tags match). Note this has the side-effect of partial matching being allowed (i.e. 'Rock' matches 'Progressive Rock' too, but not the opposite).
 - Readmes: updated pools readme.
+- Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
+- Removed Duplicates: all uses of function changed to make use of '$year(%DATE%)' and '$ascii($lower($trim(%TITLE%))' instead of 'DATE' and 'TITLE'. This is a changed ported from Search by Distance, to ensure the most matches possible.
 - Helpers: updated helpers.
+- Properties: additional checks to properties. In case a previous property is not valid, reset to default using menus where applicable.
 ### Removed
 - Buttons: 'search_same_by' button. See warning above for replacement.
 - Buttons: 'search_same_style' button. See warning above for replacement.
@@ -94,6 +98,7 @@
 - Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
 - Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
 - Search by Distance: in some cases similar artists were duplicated.
+- Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
 - Readmes: separators not being properly identified on readme files checking.
 - Rating related scripts not compatible with foobar2000 2.0+.
 
