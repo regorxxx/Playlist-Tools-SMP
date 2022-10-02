@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/09/22
+//02/10/22
 
 /* 
 	Playlist Tools Menu
@@ -85,8 +85,6 @@ const defaultArgs = {
 					playlistLength: menu_properties['playlistLength'][1], 
 					forcedQuery: menu_properties['forcedQuery'][1], 
 					ratingLimits: menu_properties['ratingLimits'][1].split(','),
-					bHttpControl: () => {return utils.CheckComponent('foo_httpcontrol') && _isFolder(fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx')},
-					httpControlPath: fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\',
 					bDebug: menu_panelProperties['bDebug'][1],
 					bProfile: menu_panelProperties['bProfile'][1],
 					keyTag: menu_properties['keyTag'][1],
@@ -238,13 +236,13 @@ addEventListener('on_playlists_changed', () => {
 
 addEventListener('on_output_device_changed', () => {
 	if (typeof exportDevices !== 'undefined') {
-		if (defaultArgs.bHttpControl() && !exportDevices(defaultArgs.httpControlPath)) {console.log('Error saving Devices entries for http Control integration.')}
+		if (folders.ajqueryCheck() && !exportDevices(folders.ajquerySMP)) {console.log('Error saving Devices entries for http Control integration.')}
 	}
 });
 
 addEventListener('on_dsp_preset_changed', () => {
 	if (typeof exportDSP !== 'undefined') {
-		if (defaultArgs.bHttpControl() && !exportDSP(defaultArgs.httpControlPath)) {console.log('Error saving DSP entries for http Control integration.')}
+		if (folders.ajqueryCheck() && !exportDSP(folders.ajquerySMP)) {console.log('Error saving DSP entries for http Control integration.')}
 	}
 });
 
@@ -4224,7 +4222,7 @@ addEventListener('on_dsp_preset_changed', () => {
 					}
 					// Global scope
 					var executeByName = function executeByName(path) {
-						const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
+						const ajQueryFile = folders.ajquerySMP + 'toexecute.json';
 						const localFile = folders.data + 'toexecute.json';
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) !== 0 ? plman.GetPlaylistItems(pls[0]).Convert().map((handle) => {return {name: handle.Path.split('_').pop()};}) : null;
@@ -4257,12 +4255,12 @@ addEventListener('on_dsp_preset_changed', () => {
 								}
 							}
 						});
-						if (defaultArgs.bHttpControl()) {
-							if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
-							if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
-							if (!exportDSP(defaultArgs.httpControlPath)) {console.log('Error saving DSP entries for http Control integration.')}
-							if (!exportDevices(defaultArgs.httpControlPath)) {console.log('Error saving Devices entries for http Control integration.')}
-							if (!exportComponents(defaultArgs.httpControlPath, {bDynamicMenusPT: menu_panelProperties.bDynamicMenus[1]})) {console.log('Error saving Components entries for http Control integration.')}
+						if (folders.ajqueryCheck()) {
+							if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.')}
+							if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
+							if (!exportDSP(folders.ajquerySMP)) {console.log('Error saving DSP entries for http Control integration.')}
+							if (!exportDevices(folders.ajquerySMP)) {console.log('Error saving Devices entries for http Control integration.')}
+							if (!exportComponents(folders.ajquerySMP, {bDynamicMenusPT: menu_panelProperties.bDynamicMenus[1]})) {console.log('Error saving Components entries for http Control integration.')}
 						}
 					}});
 					//  Menus
@@ -4338,7 +4336,7 @@ addEventListener('on_dsp_preset_changed', () => {
 									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
 								{name: mainMenuSMPDefaults[1].name, func: (idx = onMainMenuEntries.length) => {
-									const ajQueryFile = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\toexecute.json';
+									const ajQueryFile = folders.ajquerySMP + 'toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
 									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to be able to call an arbitrary number of tools by their menu names.\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
 									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
@@ -4364,8 +4362,10 @@ addEventListener('on_dsp_preset_changed', () => {
 										onMainMenuDynamicEntries.push({...onMainMenuEntries[idx], onMainMenuEntries: true});
 										menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 										overwriteMenuProperties(); // Updates panel
-										if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
-										if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
+										if (folders.ajqueryCheck()) {
+											if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.');}
+											if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.');}
+										}
 									}});
 								}
 							});
@@ -4386,8 +4386,10 @@ addEventListener('on_dsp_preset_changed', () => {
 										menu_properties['presets'][1] = JSON.stringify(presets);
 									}
 									overwriteMenuProperties(); // Updates panel
-									if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
-									if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
+									if (folders.ajqueryCheck()) {
+										if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.');}
+										if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.');}
+									}
 								}});
 							});
 							if (!mainMenuSMP.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
@@ -4401,15 +4403,19 @@ addEventListener('on_dsp_preset_changed', () => {
 									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
 								overwriteMenuProperties(); // Updates panel
-								if (!exportMenus(defaultArgs.httpControlPath)) {console.log('Error saving SMP main menus for http Control integration.')}
-								if (!exportEntries(defaultArgs.httpControlPath)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
+								if (folders.ajqueryCheck()) {
+									if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.');}
+									if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.');}
+								}
 							}});
 						}
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Create SMP dynamic menus', func: () => {
 							menu_panelProperties.bDynamicMenus[1] = !menu_panelProperties.bDynamicMenus[1];
 							overwritePanelProperties(); // Updates panel
-							exportComponents(defaultArgs.httpControlPath,  {bDynamicMenus: menu_panelProperties.bDynamicMenus[1]});
+							if (folders.ajqueryCheck()) {
+								exportComponents(folders.ajquerySMP,  {bDynamicMenus: menu_panelProperties.bDynamicMenus[1]});
+							}
 							// Disable UI shortcuts if they can not be used
 							if (!menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]) {
 								fb.ShowPopupMessage('Keyboard shortcuts are now disabled and not shown on the menu entries.', window.Name);
@@ -5269,13 +5275,13 @@ function createMainMenuDynamic() {
 	} catch (e) {console.log('createMainMenuDynamic: unknown error'); console.log(e.message);}
 	return false;
 }
-function exportMainMenuDynamic({file = fb.ProfilePath + 'foo_httpcontrol_data\\ajquery-xxx\\smp\\playlisttoolsentriescmd.json', menuList = []} = {}) {
+function exportMainMenuDynamic({file = folders.ajquerySMP + 'playlisttoolsentriescmd.json', menuList = []} = {}) {
 	let bReturn = false;
 	try {
 		const bToFile = file && file.length;
 		const data = bToFile ? _jsonParseFile(file, utf8) || {} : {};
 		data[window.Name] = menuList;
-		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !_isFolder(file.split('\\').slice(0, -1).join('\\'))) {return true;}
+		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !folders.ajqueryCheck()) {) {return true;}
 		bReturn = bToFile ? _save(file, JSON.stringify(data, null, '\t')) : true;
 	} catch (e) {console.log('exportMainMenuDynamic: unknown error'); console.log(e.message);}
 	return bReturn;
