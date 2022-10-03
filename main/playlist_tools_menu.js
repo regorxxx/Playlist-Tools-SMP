@@ -1972,10 +1972,11 @@ addEventListener('on_dsp_preset_changed', () => {
 							return false;
 						};
 						[
-							{action: 'lock', playlistsNum: nonLockedPlaylists, subMenuName: subMenuNameLock},
-							{action: 'unlock', playlistsNum: lockedPlaylists, subMenuName: subMenuNameUnlock},
-							{action: 'switch', playlistsNum, subMenuName: subMenuNameSwitch}
+							{action: 'lock', playlistsNum: nonLockedPlaylists, subMenuName: subMenuNameLock, bEnabled: bLock},
+							{action: 'unlock', playlistsNum: lockedPlaylists, subMenuName: subMenuNameUnlock, bEnabled: bUnlock},
+							{action: 'switch', playlistsNum, subMenuName: subMenuNameSwitch, bEnabled: bSwitch}
 						].forEach((obj) => {
+							if (!obj.bEnabled) {return;}
 							if (obj.playlistsNum === 0) {
 								menu.newEntry({menuName: obj.subMenuName, entryText: 'No items.', func: null, flags: MF_GRAYED});
 								return;
@@ -1998,6 +1999,22 @@ addEventListener('on_dsp_preset_changed', () => {
 							} else { // Or just show all
 								for (let i = 0; i < playlistsNum; i++) {lockUnlockMenu(i, obj.subMenuName, obj);}
 							}
+							menu.newEntry({menuName: obj.subMenuName, entryText: 'sep'});
+							const flags = plman.ActivePlaylist !== -1 ? MF_STRING: MF_GRAYED;
+							menu.newEntry({menuName: obj.subMenuName, entryText: 'Active playlist', func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
+								const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(ap));
+								const lockName = plman.GetPlaylistLockName(ap);
+								const bSMPLock = lockName === 'foo_spider_monkey_panel' || !lockName;
+								const bLocked = !bSMPLock || playlistLockTypes.isSuperset(new Set(lockTypes));
+								if ((obj.action === 'lock' || obj.action === 'switch') && !bLocked){
+										plman.SetPlaylistLockedActions(ap, lockTypes);
+								} else if ((obj.action === 'unlock' || obj.action === 'switch') && bLocked){
+										const newLock = [...playlistLockTypes.difference(new Set(lockTypes))];
+										plman.SetPlaylistLockedActions(ap, newLock);
+								}
+							}, flags});
 						});
 					} else {
 						if (bLock) {menu.newEntry({menuName: subMenuNameLock, entryText: 'No items.', func: null, flags: MF_GRAYED});}
@@ -5227,8 +5244,9 @@ function createMainMenuDynamic() {
 				}
 			}
 		});
-		const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...','Additional pre-defined filters...','Set menus...', 'Lock playlist...', 'Unlock playlist...']);
-		const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length','Tag remapping...','Search by Distance...','(Lock) Playlists','(Unlock) Playlists'];
+		const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...','Additional pre-defined filters...','Set menus...']);
+		const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length','Tag remapping...','Search by Distance...','(Merge with)', '(Difference with)', '(Intersect with)'];
+		const toRegEx = [/(Switch lock playlist\.\.\.\\)(?!Active playlist$)/, /(Lock playlist\.\.\.\\)(?!Active playlist$)/, /(Unlock playlist\.\.\.\\)(?!Active playlist$)/];
 		const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...','By... (tags)','By... (expression)','Find or create playlist...','To specified position','Select next tracks...']);
 		const toSkipDynamic = new Set([]);
 		allEntries.filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
@@ -5237,6 +5255,7 @@ function createMainMenuDynamic() {
 			// Skip
 			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
 			if (toSkipStarts.some((title) => {return entryText.startsWith(title);}) || toSkipStarts.some((title) => {return menuName.startsWith(title);})) {return;}
+			if (toRegEx.some((regex) => {return (regex.test(menuName + '\\' + entryText));})) {return;}
 			// Save
 			if (!toSkipExport.has(entryText) && !toSkipExport.has(menuName)) {
 				if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}

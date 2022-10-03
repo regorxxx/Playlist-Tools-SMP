@@ -39,3 +39,7 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 		}
 	}
 });
+
+addEventListener('on_script_unload', () => {
+	deleteMainMenuDynamic();
+});
