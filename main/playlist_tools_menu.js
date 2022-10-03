@@ -5281,7 +5281,7 @@ function exportMainMenuDynamic({file = folders.ajquerySMP + 'playlisttoolsentrie
 		const bToFile = file && file.length;
 		const data = bToFile ? _jsonParseFile(file, utf8) || {} : {};
 		data[window.Name] = menuList;
-		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !folders.ajqueryCheck()) {) {return true;}
+		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !folders.ajqueryCheck()) {return true;}
 		bReturn = bToFile ? _save(file, JSON.stringify(data, null, '\t')) : true;
 	} catch (e) {console.log('exportMainMenuDynamic: unknown error'); console.log(e.message);}
 	return bReturn;
