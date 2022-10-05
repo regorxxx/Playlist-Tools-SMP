@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/10/22
+//05/10/22
 
 /* 
 	Playlist Tools Menu
@@ -43,7 +43,7 @@ var menu_prefix = 'plto'; // Update this variable when loading it along a button
 const menu_prefix_panel = menu_prefix;
 var menu_properties = { // Properties are set at the end of the script, or must be set along the button. Menus may add new properties here
 	playlistLength:				['Global Playlist length', 50],
-	forcedQuery:				['Global forced query', 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %CHANNELS% LESS 3 AND NOT COMMENT HAS Quad'],
+	forcedQuery:				['Global forced query', globQuery.filter],
 	forcedQueryMenusEnabled:	['Menus with forced query enabled', '{}'],
 	ratingLimits:				['Set ratings extremes (ex. from 1 to 10 -> 1,10)', '1,5'],
 	presets:					['Saved presets', '{}'],
@@ -1260,8 +1260,8 @@ addEventListener('on_dsp_preset_changed', () => {
 					include(scriptPath);
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\remove_duplicates.txt';
 					let subMenuName = menu.newMenu(name, menuName);
-					let sortInputDuplic = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'];
-					let sortInputFilter = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'];
+					let sortInputDuplic = globTags.remDupl;
+					let sortInputFilter = globTags.remDupl;
 					let nAllowed = 2;
 					// Create new properties with previous args
 					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
@@ -1339,10 +1339,10 @@ addEventListener('on_dsp_preset_changed', () => {
 					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
-							{name: 'Rating > 2', query: 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
-							{name: 'Not live (none)', query: 'NOT STYLE IS Live'},  
-							{name: 'Not live (except Hi-Fi)', query: 'NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi)'},  
-							{name: 'Not multichannel', query: '%CHANNELS% LESS 3 AND NOT COMMENT HAS Quad'}, 
+							{name: 'Rating > 2', query: globQuery.notLowRating}, 
+							{name: 'Not live (none)', query: globQuery.noLiveNone},  
+							{name: 'Not live (except Hi-Fi)', query: globQuery.noLive},  
+							{name: 'Not multichannel', query: globQuery.stereo}, 
 							{name: 'Not SACD or DVD', query: 'NOT %_PATH% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
@@ -3298,7 +3298,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						// Create new properties with previous args
 						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'track_list_to_import.txt'];
 						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', '%ARTIST%'])];
-						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify(['%CHANNELS% LESS 3 AND NOT COMMENT HAS Quad', 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', '(NOT GENRE IS live AND NOT STYLE IS live) OR ((GENRE IS live OR STYLE IS live) AND style IS hi-fi)', 'NOT GENRE IS live AND NOT STYLE IS live'])];
+						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify([globQuery.stereo, globQuery.notLowRating, globQuery.noLive, globQuery.noLiveNone])];
 						// Checks
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
 						menu_properties['importPlaylistMask'].push({func: isJSON}, menu_properties['importPlaylistMask'][1]);

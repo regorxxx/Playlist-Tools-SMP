@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/22
+//05/10/22
 
 /* 
 	Top Rated Tracks
@@ -16,7 +16,7 @@ if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.
 function do_top_rated_tracks({
 						playlistLength = 50, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
-						checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
+						checkDuplicatesBy = globTags.remDupl,
 						forcedQuery = '',
 						ratingLimits = [1,5],
 						ratingTag = 'RATING',

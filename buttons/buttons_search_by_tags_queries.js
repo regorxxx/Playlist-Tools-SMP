@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/09/22
+//05/10/22
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -20,8 +20,8 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
 	customName:			['Name for the custom UI button', 'Search Same By... (q)', {func: isString}, 'Search Same By... (q)'],
 	playlistLength:		['Max Playlist Mix length', 50, {greater: 0, func: isInt}, 50],
-	forcedQuery:		['Forced query to filter database', 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad', {func: (query) => {return checkQuery(query, true);}}, 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad'],
-	checkDuplicatesBy:	['Tags to look for duplicates', JSON.stringify(['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)']), {func: isJSON}, JSON.stringify(['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'])],
+	forcedQuery:		['Forced query to filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
+	checkDuplicatesBy:	['Tags to look for duplicates', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
 	sameBy: 			['Tags to look for similarity', JSON.stringify([['STYLE'], ['MOOD']]), {func: isJSON}, JSON.stringify([['STYLE'], ['MOOD']])],
 	playlistName:		['Playlist name', 'Search...', {func: isString}, 'Search...']
 };

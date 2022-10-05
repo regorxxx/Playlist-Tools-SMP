@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/08/22
+//05/10/22
 
 /* 
 	Search same by
@@ -33,7 +33,7 @@
     You can change sorting, playlist name and/or force a final query (added to the other requisites).
 	
 	- Tags logic - 
-	Title-format only tags, like 'rating' or '$year(%date%)' are acquired via TF, but must be written without '%', like the rest. See dynamicTags.
+	Title-format only tags, like 'rating' or '$year(%DATE%)' are acquired via TF, but must be written without '%', like the rest. See dynamicTags.
 	ONLY expressions defined there can be used. Why? No way to know if the output is a number, a string, etc. if arbitrary TF expressions are allowed.
 	
 	When the tags are not strings (genre, etc.) but numeric values (date, etc.), the pair {key: value} work as a range. See numericTags.
@@ -78,9 +78,9 @@ include('remove_duplicates.js');
 function searchSameByCombs({
 								sel = fb.GetFocusItem(),
 								playlistLength = 50, 
-								forcedQuery = 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %CHANNELS% LESS 3 AND NOT COMMENT HAS Quad',
+								forcedQuery = globQuery.filter,
 								sortBy = '', 
-								checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
+								checkDuplicatesBy = globTags.remDupl,
 								sameBy = {genre: 1, style: 2 , mood: 5},
 								playlistName = 'Search...',
 								logic = 'AND',
@@ -263,7 +263,7 @@ function searchSameByCombs({
 function searchSameByQueries({
 								sel = fb.GetFocusItem(),
 								playlistLength = 50, 
-								forcedQuery = 'NOT (%rating% EQUAL 2 OR %rating% EQUAL 1) AND NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi) AND %channels% LESS 3 AND NOT COMMENT HAS Quad',
+								forcedQuery = globQuery.filter,
 								sortBy = '', 
 								checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
 								sameBy = [['STYLE'],['MOOD']],

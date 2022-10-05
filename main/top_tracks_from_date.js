@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/22
+//05/10/22
 
 /* 
 	Top X Tracks From Date
@@ -18,11 +18,11 @@ const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
 function topTracksFromDate({
 						playlistLength = 25, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
-						checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
+						checkDuplicatesBy = globTags.remDupl,
 						year =  new Date().getFullYear() - 1, // Previous year
 						last = '1 WEEKS',
 						bUseLast = false,
-						forcedQuery = 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)',
+						forcedQuery = globQuery.notLowRating,
 						bSendToPls = true,
 						bProfile = false
 						} = {}) {

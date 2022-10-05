@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/22
+//05/10/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -23,8 +23,8 @@ include('remove_duplicates.js');
 function importTextPlaylist({
 		path = folders.data + 'playlistImport.txt',
 		formatMask = ['', '. ', '%TITLE%', ' - ', '%ARTIST%'],
-		duplicatesMask = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST'],
-		queryFilters = ['NOT GENRE IS live AND NOT STYLE IS live']
+		duplicatesMask = [globTags.title, globTags.artist],
+		queryFilters = [globQuery.noLiveNone]
 	} = {}) {
 	if (!path || !path.length) {
 		console.log('importTextPlaylist(): no file was provided');

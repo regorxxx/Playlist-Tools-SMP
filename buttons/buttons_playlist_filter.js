@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/09/22
+//05/10/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -25,9 +25,9 @@ try {window.DefinePanel('Filter Playlist Button', {author:'xxx'});} catch (e) {/
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	checkInputA:	['Tag or titleformat expression to check (1)', 'ARTIST', {func: isStringWeak}, 'ARTIST'],
-	checkInputB:	['Tag or titleformat expression to check (2)', '$year(%DATE%)', {func: isStringWeak}, '$year(%DATE%)'],
-	checkInputC:	['Tag or titleformat expression to check (3)', '$ascii($lower($trim(%TITLE%)))', {func: isStringWeak}, '$ascii($lower($trim(%TITLE%)))'],
+	checkInputA:	['Tag or titleformat expression to check (1)', globTags.artist, {func: isStringWeak}, globTags.artist],
+	checkInputB:	['Tag or titleformat expression to check (2)', globTags.date, {func: isStringWeak}, globTags.date],
+	checkInputC:	['Tag or titleformat expression to check (3)', globTags.title, {func: isStringWeak}, globTags.title],
 	nAllowed:		['Number of duplicates allowed (n + 1)'		 , 1, {greaterEq: 0, func: isInt}, 1]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/22
+//05/10/22
 
 /* 
 	Top Tracks
@@ -16,8 +16,8 @@ if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount'))) {fb.S
 function do_top_tracks({
 						playlistLength = 25, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
-						checkDuplicatesBy = ['$ascii($lower($trim(%TITLE%)))', 'ARTIST', '$year(%DATE%)'],
-						forcedQuery = 'NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)',
+						checkDuplicatesBy = globTags.remDupl,
+						forcedQuery = globQuery.notLowRating,
 						playlistName = 'Top ' + playlistLength + ' Tracks',
 						bSendToPls = true,
 						bProfile = false
