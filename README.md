@@ -100,7 +100,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* **Playlist History:** history of previously active playlists (for macros).  
 		.\xxx-scripts\helpers\playlist_history.js
 	* **Include scripts:** add multiple SMP scripts into the same panel.  
-* **Pools:** use playlist(s), (dynamic) queries, etc. as source pool(s) for a destination playlist. [*] 
+* **Pools:** use playlist(s), (dynamic) queries, etc. as source pool(s) for a destination playlist. [^pools] 
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
 * **Other scripts integration:**
@@ -110,7 +110,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 
 The menus are highly customizable. They are created on demand according to the selected tracks or current playlist, and many entries can be added, removed or edited to suit your needs. Also if some scripts are missing, the menu is rebuilt skipping those entries (letting you to install selectively what you need).
 
-[*] SQL database functionality from Random Pools will not be replicated since I consider it an inferior and user-inaccessible feature which may be easily replicated by other means. Advanced pools may be created using JSON presets, which allow to create really complex actions with different sources. It's not a matter of which implementation is "better"; so if you feel some functionality is missing (not replicable in conjuction with the other tools available), let me know. ;)
+[^pools]: Note for sensitive souls: SQL database functionality from Random Pools will not be replicated since I consider it an inferior and user-inaccessible feature -with slower performance- which may be easily replicated by other means. On the other hand, things like duplication removal are totally absent on the original plugin, which may be a reason to switch to this alternative in some libraries. Advanced pools may be created using JSON presets, which allow to create really complex actions with different sources or built-in harmonic mixing. **It's not a matter of which implementation is "better"; so if you feel some functionality is missing (not replicable in conjuction with the other tools available), let me know. ;)**
 
 ![pt_availablemenus](https://user-images.githubusercontent.com/83307074/176501175-2eb1af4d-92a2-4f54-96e4-36c60c4c0cb8.gif)
 
