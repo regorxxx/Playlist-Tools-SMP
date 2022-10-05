@@ -13,7 +13,7 @@ A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_
 
 It's impossible to offer a complete list of the things that can be done with these tools, in a few words: anything related to playlist creation, sorting, library maintenance, automation, etc. but a readme for every utility can be found using the corresponding menu (on configuration). 
 
-The collection of scripts provided here are not only a direct replacement of [Random Pools](https://www.foobar2000.org/components/view/foo_random_pools) or [MusicIp](https://www.spicefly.com/section.php?section=musicip) but an improvement and generalization in many aspects of those tools. To use this plugin at its best and to benefit the most from your library, you will want to make sure that your songs have the most possible information on genre, style, key, moods, etc.
+The collection of scripts provided here are not only an alternative to [Random Pools](https://www.foobar2000.org/components/view/foo_random_pools) or [MusicIp](https://www.spicefly.com/section.php?section=musicip) but an improvement and generalization in many aspects of those tools. To use this plugin at its best and to benefit the most from your library, you will want to make sure that your songs have the most possible information on genre, style, key, moods, etc.
 
 * **Macros:** allows to record and save the menus entries used, as a macro, to be called later. Automatic custom playlist creation and edits without limits. Works with all tools. (only limitation are popups, which still require user input)
 * **Dynamic Queries:** queries which adapt to the currently selected track. i.e. placeholders tags are substituted with the actual values of the currently selected track, then the query is evaluated as usual. Queries created this way are pretty situational, save a lot of writing time and are meant to be used by multiple playlist creation tools.
@@ -23,7 +23,7 @@ The collection of scripts provided here are not only a direct replacement of [Ra
 * **User configurable presets:** many tools allow you to add your own presets (for ex. Standard Queries) as menu entries for later use. They may be used along macros to greatly expand their functionality, exported and imported as "addons".
 * **Keyboard shortcuts:** keyboard shortcuts may be assigned to most of the tools (without requiring panel to be in focus). Shown on the related menu entries tabbed to the right. They are assigned the same than native keyboard shortcuts.
 * **Include other scripts (experimental):** easily include ('merge') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don't require any UI, user interaction,... like scripts which set the main menu SPM entries (File\\Spider Monkey Panel).
-* **Reduce components loaded with better replacements:** one of the main limitations of windows (and thus foobar) is there is a limit of plugins (dlls) that can be associated to a given [process](https://hydrogenaud.io/index.php/topic,110142.0.html). Thus, in some installations, specially those using VSTs, when the limit is reached strange things start happening, random crashes, bugs, etc. Something I have experienced myself when running a few VSTs. It's not so hard to reach that limit since many components use multiple dlls! When you count the ones by foobar itself, VSTs, etc. as soon as you configure a bit your installation you come into problems. Therefore Playlist Tools is a solution that can help in that sense, replacing multiple components whose functionality is already included (or improved): Random Pools, Playlist Revive, Best version picker, Database Search, ...
+* **Reduce components loaded:** one of the main limitations of windows (and thus foobar) is there is a limit of plugins (dlls) that can be associated to a given [process](https://hydrogenaud.io/index.php/topic,110142.0.html). Thus, in some installations, specially those using VSTs, when the limit is reached strange things start happening, random crashes, bugs, etc. Something I have experienced myself when running a few VSTs. It's not so hard to reach that limit since many components use multiple dlls! When you count the ones by foobar itself, VSTs, etc. as soon as you configure a bit your installation you come into problems. Therefore Playlist Tools is a solution that can help in that sense, replacing multiple components whose functionality is already included (or improved): Random Pools, Playlist Revive, Best version picker, Database Search, ...
 * **Online controller integration (ajquery-xxx):** online controller fully compatible with most of the offered tools, which can be called as any other main menu entry. Also available with CMD scripting.
 * **Wine - Unix - non IE SOs compatible:** all the UI, tools, popups, configuration and external helpers have been carefully designed to work in all systems without requiring IE installation, HTML popups or editing the panel properties. Scripts are expected to work 100% the same in any SO.
 * **Configurable UI and accessibility design:** most of the UI is configurable (size, colors, position, draggable buttons). All the UI is managed within menus, so it may be used with a narrator (for blindness).
@@ -100,7 +100,7 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* **Playlist History:** history of previously active playlists (for macros).  
 		.\xxx-scripts\helpers\playlist_history.js
 	* **Include scripts:** add multiple SMP scripts into the same panel.  
-* **Pools:** use playlist(s), (dynamic) queries, etc. as source pool(s) for a destination playlist.  
+* **Pools:** use playlist(s), (dynamic) queries, etc. as source pool(s) for a destination playlist. [*] 
 * **Macros:** record and save menus entries used, as a macro, to be called later.  
 	.\xxx-scripts\helpers\playlist_tools_menu_macros.js
 * **Other scripts integration:**
@@ -109,6 +109,8 @@ The sky is the limit once you use the current scripts to create your own buttons
 	* SMP Dynamic menus: tools are also available as main menu entries -if enabled-, which allows to bind them to keyboard shortcuts, toolbar buttons or executing them using command line.
 
 The menus are highly customizable. They are created on demand according to the selected tracks or current playlist, and many entries can be added, removed or edited to suit your needs. Also if some scripts are missing, the menu is rebuilt skipping those entries (letting you to install selectively what you need).
+
+[*] SQL database functionality from Random Pools will not be replicated since I consider it an inferior and user-inaccessible feature which may be easily replicated by other means. Advanced pools may be created using JSON presets, which allow to create really complex actions with different sources. It's not a matter of which implementation is "better"; so if you feel some functionality is missing (not replicable in conjuction with the other tools available), let me know. ;)
 
 ![pt_availablemenus](https://user-images.githubusercontent.com/83307074/176501175-2eb1af4d-92a2-4f54-96e4-36c60c4c0cb8.gif)
 
