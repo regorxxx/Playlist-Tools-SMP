@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//06/10/22
 
 /* 
 	Playlist Tools Menu
@@ -49,8 +49,8 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	presets:					['Saved presets', '{}'],
 	bShortcuts:					['Show keyboard shorcuts on entries?', true],
 	bPlaylistNameCommands:		['Enable playlist name commands', false],
-	keyTag:						['Key tag remap', 'KEY'], // It may be overwritten by Search by distance property too, are equivalent!
-	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['$ascii(%GENRE%)', '$ascii(%STYLE%)'])],
+	keyTag:						['Key tag remap', globTags.key], // It may be overwritten by Search by distance property too, are equivalent!
+	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['$ascii(%' + globTags.genre + '%)', '$ascii(%' + globTags.style + '%)'])],
 	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Write tags': true, 'Pools': false, 'Search by distance': false, 'Remove duplicates': false, 'Import track list': false})],
 	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})]
 };
@@ -327,9 +327,9 @@ addEventListener('on_dsp_preset_changed', () => {
 				let selArgs = { ...defaultArgs};
 				let dateQuery = '';
 				if (selYear.length === 2) {
-					dateQuery = '"$year(%DATE%)" GREATER ' + selYear[0] + ' AND "$year(%DATE%)" LESS ' + selYear[1];
+					dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' + selYear[1];
 				} else {
-					dateQuery = '"$year(%DATE%)" IS ' + selYear;
+					dateQuery = _q(globTags.date)+ ' IS ' + selYear;
 				}
 				selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
 				selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
@@ -350,9 +350,9 @@ addEventListener('on_dsp_preset_changed', () => {
 					let selArgs = { ...defaultArgs};
 					let dateQuery = '';
 					if (selYear.length === 2) {
-						dateQuery = '"$year(%DATE%)" GREATER ' + selYear[0] + ' AND "$year(%DATE%)" LESS ' +  selYear[1];
+						dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' +  selYear[1];
 					} else {
-						dateQuery = '"$year(%DATE%)" IS ' + selYear;
+						dateQuery = _q(globTags.date) + ' IS ' + selYear;
 					}
 					selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
 					selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
@@ -567,18 +567,18 @@ addEventListener('on_dsp_preset_changed', () => {
 					{name: 'Entire library', query: 'ALL', sort: {tfo: '', direction: -1}},
 					{name: 'Entire library (forced query)', query: '', sort: {tfo: '', direction: -1}},
 					{name: 'sep'},
-					{name: 'Rating 4-5', query: '%RATING% EQUAL 5 OR %RATING% EQUAL 4', sort: {tfo: '%RATING%', direction: 1}},
+					{name: 'Rating 4-5', query: globTags.rating + ' EQUAL 5 OR ' + globTags.rating + ' EQUAL 4', sort: {tfo: globTags.rating, direction: 1}},
 					{name: 'sep'},
-					{name: 'Recently played', query: '%last_played% DURING LAST 1 WEEK', sort: {tfo: '%last_played%', direction: -1}},
-					{name: 'Recently added', query: '%added% DURING LAST 1 WEEK', sort: {tfo: '%added%', direction: -1}},
+					{name: 'Recently played', query: '%LAST_PLAYED% DURING LAST 1 WEEK', sort: {tfo: '%LAST_PLAYED%', direction: -1}},
+					{name: 'Recently added', query: '%ADDED% DURING LAST 1 WEEK', sort: {tfo: '%ADDED%', direction: -1}},
 					{name: 'sep'},
-					{name: 'Rock tracks', query: 'GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Psychedelic tracks', query: 'GENRE IS Psychedelic Rock OR GENRE IS Psychedelic OR STYLE IS Neo-Psychedelia OR STYLE IS Psychedelic Folk', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Folk \\ Country tracks', query: 'GENRE IS Folk OR GENRE IS Folk-Rock OR GENRE IS Country', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Blues tracks', query: 'GENRE IS Blues', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Jazz tracks', query: 'GENRE IS Jazz OR GENRE IS Jazz Vocal', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Soul \\ RnB tracks', query: 'GENRE IS Soul OR STYLE IS R&B', sort: {tfo: '$rand()', direction: 1}},
-					{name: 'Hip-Hop tracks', query: 'GENRE IS Hip-Hop', sort: {tfo: '$rand()', direction: 1}}
+					{name: 'Rock tracks', query: globTags.genre + ' IS rock OR ' + globTags.genre + ' IS alt. rock OR ' + globTags.genre + ' IS progressive rock OR ' + globTags.genre + ' IS hard rock OR ' + globTags.genre + ' IS rock & roll', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Psychedelic tracks', query: globTags.genre + ' IS psychedelic rock OR ' + globTags.genre + ' IS psychedelic OR ' + globTags.style + ' IS neo-psychedelia OR ' + globTags.style + ' IS psychedelic Folk', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Folk \\ Country tracks', query: globTags.genre + ' IS folk OR ' + globTags.genre + ' IS folk-rock OR ' + globTags.genre + ' IS country', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Blues tracks', query: globTags.genre + ' IS blues', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Jazz tracks', query: globTags.genre + ' IS jazz OR ' + globTags.genre + ' IS jazz vocal', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Soul \\ RnB tracks', query: globTags.genre + ' IS soul OR ' + globTags.style + ' IS r&b', sort: {tfo: '$rand()', direction: 1}},
+					{name: 'Hip-Hop tracks', query: globTags.genre + ' IS hip-hop', sort: {tfo: '$rand()', direction: 1}}
 				];
 				let selArg = {name: 'Custom', query: queryFilter[0].query};
 				const queryFilterDefaults = [...queryFilter];
@@ -718,17 +718,17 @@ addEventListener('on_dsp_preset_changed', () => {
 			const menuName = menu.newMenu(name);
 			{	// Dynamic menu
 				let queryFilter = [
-					{name: 'Same title (any artist)'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1'},
-					{name: 'Same songs (by artist)'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST#'},
-					{name: 'Duplicates on library'		, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND DATE IS #$year(%DATE%)#'},
+					{name: 'Same title (any artist)'	, query: globQuery.compareTitle},
+					{name: 'Same songs (by artist)'		, query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
+					{name: 'Duplicates on library'		, query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'},
 					{name: 'sep'},
-					{name: 'Same date (any track/artist)'		, query: 'DATE IS #$year(%DATE%)#'},
+					{name: 'Same date (any track/artist)'		, query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
 					{name: 'sep'},
-					{name: 'Acoustic versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Acoustic OR STYLE IS Acoustic OR MOOD IS Acoustic)'},
-					{name: 'Live versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# AND (GENRE IS Live OR STYLE IS Live)'},
-					{name: 'Cover versions of song'	, query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND NOT ARTIST IS #ARTIST#'},
+					{name: 'Acoustic versions of song'	, query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + globTags.genre + ' IS acoustic OR ' + globTags.style + ' IS acoustic OR ' + globTags.mood + ' IS acoustic)'},
+					{name: 'Live versions of song'	, query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + globTags.genre + ' IS live OR ' + globTags.style + ' IS live)'},
+					{name: 'Cover versions of song'	, query: globQuery.compareTitle + ' AND NOT (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
 					{name: 'sep'},
-					{name: 'Rated >2 tracks (by artist)'	, query: '%RATING% GREATER 2 AND ARTIST IS #ARTIST#'},
+					{name: 'Rated >2 tracks (by artist)'	, query: globTags.rating + ' GREATER 2 AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
 				];
 				const queryFilterDefaults = [...queryFilter];
 				let selArg = {query: queryFilter[0].query};
@@ -1005,7 +1005,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						{name: 'Harmonic mix with similar genre/styles', args: {dyngenreWeight: 20, genreWeight: 15, styleWeight: 15, dyngenreRange: 2, keyWeight: 0, dateWeight: 5, dateRange: 25, scoreFilter: 70, method: 'DYNGENRE', 
 							bInKeyMixingPlaylist: true}},
 						{name: 'Harmonic mix with similar moods', args: {moodWeight: 35, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 25, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true}},
-						{name: 'Harmonic mix with only instrumental tracks', args: {moodWeight: 15, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 35, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: 'GENRE IS Instrumental OR STYLE IS Instrumental'}}
+						{name: 'Harmonic mix with only instrumental tracks', args: {moodWeight: 15, genreWeight: 5, styleWeight: 5, dateWeight: 5, dateRange: 35, dyngenreWeight: 10, dyngenreRange: 3, keyWeight: 0, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: globQuery.instrumental}}
 						];
 					// Menus
 					function loadMenusCond(method){
@@ -1157,6 +1157,8 @@ addEventListener('on_dsp_preset_changed', () => {
 								const styleTag = menu_properties['styleTag'][1].split(',').filter(Boolean);
 								const moodTag = menu_properties['moodTag'][1].split(',').filter(Boolean);
 								const dateTag = menu_properties['dateTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								const keyTag = menu_properties['keyTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								const bpmTag = menu_properties['bpmTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
 								const composerTag = menu_properties['composerTag'][1].split(',').filter(Boolean);
 								const customStrTag = menu_properties['customStrTag'][1].split(',').filter(Boolean);
 								const customNumTag = menu_properties['customNumTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
@@ -1167,7 +1169,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								const mood = moodTag.length ? getTagsValuesV3(selHandleList, moodTag, true).flat().filter(Boolean) : [];
 								const composer = composerTag.length ? getTagsValuesV3(selHandleList, composerTag, true).flat().filter(Boolean) : [];
 								const customStr = customStrTag.length ? getTagsValuesV3(selHandleList, customStrTag, true).flat().filter(Boolean) : [];
-								const restTagNames = ['key', dateTag.length ? dateTag[0] : 'skip', 'bpm', customNumTag.length ? customNumTag[0] : 'skip']; // 'skip' returns empty arrays...
+								const restTagNames = [keyTag.length ? keyTag[0] : 'skip', dateTag.length ? dateTag[0] : 'skip', bpmTag.length ? bpmTag[0] : 'skip', customNumTag.length ? customNumTag[0] : 'skip']; // 'skip' returns empty arrays...
 								const [keyArr, dateArr, bpmArr, customNumArr] = getTagsValuesV4(selHandleList, restTagNames).flat();
 								const key = keyArr;
 								const date = dateTag.length ? [Number(dateArr[0])] : [];
@@ -1343,16 +1345,16 @@ addEventListener('on_dsp_preset_changed', () => {
 							{name: 'Not live (none)', query: globQuery.noLiveNone},  
 							{name: 'Not live (except Hi-Fi)', query: globQuery.noLive},  
 							{name: 'Not multichannel', query: globQuery.stereo}, 
-							{name: 'Not SACD or DVD', query: 'NOT %_PATH% HAS .iso AND NOT CODEC IS MLP AND NOT CODEC IS DSD64 AND NOT CODEC IS DST64'}, 
+							{name: 'Not SACD or DVD', query: globQuery.noSACD}, 
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
-							{name: 'Same title than sel', query: '"$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1'},
-							{name: 'Same song than sel', query: 'ARTIST IS #ARTIST# AND "$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND DATE IS #DATE#'},
-							{name: 'Same genre than sel', query: 'GENRE IS #GENRE#'},
-							{name: 'Same key than sel', query: 'KEY IS #KEY#'},
+							{name: 'Same title than sel', query: globQuery.compareTitle},
+							{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artist + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
+							{name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#'},
+							{name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#'},
 							{name: 'sep'},
-							{name: 'Different genre than sel', query: 'NOT GENRE IS #GENRE#'},
-							{name: 'Different style than sel', query: 'NOT STYLE IS #STYLE#'}
+							{name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#'},
+							{name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#'}
 					];
 					let selArg = {name: 'Custom', query: queryFilter[0].query};
 					const queryFilterDefaults = [...queryFilter];
@@ -2049,9 +2051,9 @@ addEventListener('on_dsp_preset_changed', () => {
 						{name: 'sep'}
 					];
 					let sortLegacy = [
-						{name: 'Sort by Mood', tfo: '%MOOD%'},
-						{name: 'Sort by Date', tfo: '%DATE%'},
-						{name: 'Sort by BPM', tfo: '%BPM%'}
+						{name: 'Sort by Mood', tfo: '%' + globTags.mood + '%'},
+						{name: 'Sort by Date', tfo: globTags.date},
+						{name: 'Sort by BPM', tfo: '%' + globTags.bpm + '%'}
 					];
 					let selArg = {name: 'Custom', tfo: sortLegacy[0].tfo};
 					const sortLegacyDefaults = [...sortLegacy];
@@ -2232,17 +2234,17 @@ addEventListener('on_dsp_preset_changed', () => {
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
-						{name: 'Scatter instrumental tracks'	, 	args: {tagName: 'genre,style', tagValue: 'Instrumental,Jazz,Instrumental Rock'}},
-						{name: 'Scatter acoustic tracks'		, 	args: {tagName: 'genre,style,mood', tagValue: 'Acoustic'}},
-						{name: 'Scatter electronic tracks'		,	args: {tagName: 'genre,style', tagValue: 'Electronic'}},
-						{name: 'Scatter female vocal tracks'	,	args: {tagName: 'genre,style', tagValue: 'Female Vocal'}},
+						{name: 'Scatter instrumental tracks'	, 	args: {tagName: [globTags.genre, globTags.style].join(','), tagValue: 'instrumental,jazz,instrumental rock'}},
+						{name: 'Scatter acoustic tracks'		, 	args: {tagName: [globTags.genre, globTags.style, globTags.mood].join(','), tagValue: 'acoustic'}},
+						{name: 'Scatter electronic tracks'		,	args: {tagName: [globTags.genre, globTags.style].join(','), tagValue: 'electronic'}},
+						{name: 'Scatter female vocal tracks'	,	args: {tagName: [globTags.genre, globTags.style].join(','), tagValue: 'female vocal'}},
 						{name: 'sep'},
-						{name: 'Scatter sad mood tracks'		,	args: {tagName: 'mood', tagValue: 'Sad'}},
-						{name: 'Scatter aggressive mood tracks', 	args: {tagName: 'mood', tagValue: 'Aggressive'}},
+						{name: 'Scatter sad mood tracks'		,	args: {tagName: globTags.mood, tagValue: 'sad'}},
+						{name: 'Scatter aggressive mood tracks', 	args: {tagName: globTags.mood, tagValue: 'aggressive'}},
 						{name: 'sep'},
-						{name: 'Intercalate same artist tracks'		,	args: {tagName: 'artist', tagValue: null}},
-						{name: 'Intercalate same genre tracks'		,	args: {tagName: 'genre', tagValue: null}},
-						{name: 'Intercalate same style tracks'		,	args: {tagName: 'style', tagValue: null}}
+						{name: 'Intercalate same artist tracks'		,	args: {tagName: globTags.artist, tagValue: null}},
+						{name: 'Intercalate same genre tracks'		,	args: {tagName: globTags.genre, tagValue: null}},
+						{name: 'Intercalate same style tracks'		,	args: {tagName: globTags.style, tagValue: null}}
 
 					];
 					// Menus
@@ -2270,9 +2272,9 @@ addEventListener('on_dsp_preset_changed', () => {
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\shuffle_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					let shuffle = [
-						{name: 'Shuffle by artist'	,	args: {tagName: 'ARTIST'}},
-						{name: 'Shuffle by genre'	,	args: {tagName: 'GENRE'}},
-						{name: 'Shuffle by style'	,	args: {tagName: 'STYLE'}}
+						{name: 'Shuffle by artist'	,	args: {tagName: globTags.artist}},
+						{name: 'Shuffle by genre'	,	args: {tagName: globTags.genre}},
+						{name: 'Shuffle by style'	,	args: {tagName: globTags.style}}
 					];
 					let selArg = {name: 'Custom', args: shuffle[0].args};
 					const shuffleDefaults = [...shuffle];
@@ -2897,17 +2899,17 @@ addEventListener('on_dsp_preset_changed', () => {
 				menu.newEntry({menuName: subMenuName, entryText: 'Expand selection by:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				const selArgs = [
-					{name: 'By Artist', args: ['%ARTIST%']},
+					{name: 'By Artist', args: ['%' + globTags.artist + '%']},
 					{name: 'By Album', args: ['%ALBUM%']},
 					{name: 'By Directory', args: ['%DIRECTORYNAME%']},
-					{name: 'By Date', args: ['%DATE%']},
-					{name: 'By Genre', args: ['%GENRE%']},
-					{name: 'By Style', args: ['%STYLE%']},
-					{name: 'By Key', args: ['%KEY%']},
-					{name: 'By Mood', args: ['%MOOD%']},
+					{name: 'By Date', args: [globTags.date]},
+					{name: 'By Genre', args: ['%' + globTags.genre + '%']},
+					{name: 'By Style', args: ['%' + globTags.style + '%']},
+					{name: 'By Key', args: ['%' + globTags.key + '%']},
+					{name: 'By Mood', args: ['%' + globTags.mood + '%']},
 					{name: 'sep'},
 					{name: 'By... (tags)', args: () => {
-						let input = '%ARTIST%;%ALBUM%';
+						let input = '%' + globTags.artist + '%;%ALBUM%';
 						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
 						catch (e) {return [];}
 						if (!input.length) {return [];}
@@ -2952,17 +2954,17 @@ addEventListener('on_dsp_preset_changed', () => {
 					menu.newMenu('Previous', subMenuName)
 				];
 				const selArgs = [
-					{name: 'By Artist', args: ['%ARTIST%']},
+					{name: 'By Artist', args: ['%' + globTags.artist + '%']},
 					{name: 'By Album', args: ['%ALBUM%']},
 					{name: 'By Directory', args: ['%DIRECTORYNAME%']},
-					{name: 'By Date', args: ['%DATE%']},
-					{name: 'By Genre', args: ['%GENRE%']},
-					{name: 'By Style', args: ['%STYLE%']},
+					{name: 'By Date', args: [globTags.date]},
+					{name: 'By Genre', args: ['%' + globTags.genre + '%']},
+					{name: 'By Style', args: ['%' + globTags.style + '%']},
 					{name: 'By Key', args: [defaultArgs.keyTag]}, // Uses remapped tag. Probably missing %, fixed later.
-					{name: 'By Mood', args: ['%MOOD%']},
+					{name: 'By Mood', args: ['%' + globTags.mood + '%']},
 					{name: 'sep'},
 					{name: 'By... (tags)', args: () => {
-						let input = '%ARTIST%;%ALBUM%';
+						let input = '%' + globTags.artist + '%;%ALBUM%';
 						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
 						catch (e) {return [];}
 						if (!input.length) {return [];}
@@ -3042,14 +3044,14 @@ addEventListener('on_dsp_preset_changed', () => {
 					menu_properties = {...menu_properties, ...toMerge};
 					// For submenus
 					const tagsToCheck = [
-						{tag: 'genre'						, dscrpt: 'Genre (+ dictionary)'		, bUseDic: true	}, 
-						{tag: 'style'						, dscrpt: 'Style (+ dictionary)'		, bUseDic: true	},
-						{tag: 'mood'						, dscrpt: 'Mood (+ dictionary)'			, bUseDic: true	},
-						{tag: 'composer'					, dscrpt: 'Composer'					, bUseDic: false},
-						{tag: 'title'						, dscrpt: 'Title'						, bUseDic: false},
+						{tag: globTags.genre								, dscrpt: 'Genre (+ dictionary)'		, bUseDic: true	}, 
+						{tag: globTags.style								, dscrpt: 'Style (+ dictionary)'		, bUseDic: true	},
+						{tag: globTags.mood									, dscrpt: 'Mood (+ dictionary)'			, bUseDic: true	},
+						{tag: 'composer'									, dscrpt: 'Composer'					, bUseDic: false},
+						{tag: 'title'										, dscrpt: 'Title'						, bUseDic: false},
 						'sep'																						 ,
-						{tag: 'genre,style'					, dscrpt: 'Genre + Style (+ dictionary)', bUseDic: true	},
-						{tag: 'composer,artist,albumartist'	, dscrpt: 'Composer + Artist'			, bUseDic: false},
+						{tag: [globTags.genre, globTags.style].join(',')	, dscrpt: 'Genre + Style (+ dictionary)', bUseDic: true	},
+						{tag: 'composer,artist,albumartist'					, dscrpt: 'Composer + Artist'			, bUseDic: false},
 					];
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
@@ -3297,7 +3299,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						const subMenuName = menu.newMenu(name, menuName);
 						// Create new properties with previous args
 						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'track_list_to_import.txt'];
-						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', '%ARTIST%'])];
+						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', '%' + globTags.artist + '%'])];
 						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify([globQuery.stereo, globQuery.notLowRating, globQuery.noLive, globQuery.noLiveNone])];
 						// Checks
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
@@ -3305,9 +3307,9 @@ addEventListener('on_dsp_preset_changed', () => {
 						menu_properties['importPlaylistFilters'].push({func: (x) => {return isJSON(x) && JSON.parse(x).every((query) => {return checkQuery(query, true);});}}, menu_properties['importPlaylistFilters'][1]);
 						// Presets
 						const maskPresets = [
-							{name: 'Numbered Track list', val: JSON.stringify(['. ','%TITLE%',' - ','%ARTIST%'])},
-							{name: 'Track list', val: JSON.stringify(['%TITLE%',' - ','%ARTIST%'])},
-							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',','%ARTIST%',' - ','%TITLE%'])}
+							{name: 'Numbered Track list', val: JSON.stringify(['. ','%TITLE%',' - ','%' + globTags.artist + '%'])},
+							{name: 'Track list', val: JSON.stringify(['%TITLE%',' - ','%' + globTags.artist + '%'])},
+							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',','%' + globTags.artist + '%',' - ','%TITLE%'])}
 						];
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED});
@@ -3419,21 +3421,21 @@ addEventListener('on_dsp_preset_changed', () => {
 			let pools = [
 				{name: 'Top tracks mix', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
+					query: {_LIBRARY_0: globTags.rating + ' EQUAL 3', _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Top tracks mix',
 					sort: '',
 				}},
 				{name: 'Top tracks mix (harmonic)', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
+					query: {_LIBRARY_0: globTags.rating + ' EQUAL 3', _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Top tracks mix',
 					harmonicMix: true
 				}},
 				{name: 'Top tracks mix (intercalate)', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%RATING% EQUAL 3', _LIBRARY_1: '%RATING% EQUAL 4', _LIBRARY_2: '%RATING% EQUAL 5'}, 
+					query: {_LIBRARY_0: globTags.rating + ' EQUAL 3', _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					insertMethod: 'intercalate',
 					toPls: 'Top tracks mix', 
@@ -3442,14 +3444,14 @@ addEventListener('on_dsp_preset_changed', () => {
 				{name: 'sep'},
 				{name: 'Top recently played tracks mix', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%RATING% EQUAL 3 AND %LAST_PLAYED% DURING LAST 3 WEEKS', _LIBRARY_1: '%RATING% EQUAL 4 AND %LAST_PLAYED% DURING LAST 1 WEEKS', _LIBRARY_2: '%RATING% EQUAL 5 AND %LAST_PLAYED% DURING LAST 5 WEEKS'}, 
+					query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %LAST_PLAYED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %LAST_PLAYED% DURING LAST 1 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %LAST_PLAYED% DURING LAST 5 WEEKS'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Top recently played tracks mix',
 					sort: '',
 				}},
 				{name: 'Top recently added tracks mix', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: '%RATING% EQUAL 3 AND %ADDED% DURING LAST 3 WEEKS', _LIBRARY_1: '%RATING% EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS', _LIBRARY_2: '%RATING% EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'}, 
+					query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Top recently added tracks mix',
 					sort: '',
@@ -3457,30 +3459,30 @@ addEventListener('on_dsp_preset_changed', () => {
 				{name: 'sep'},
 				{name: 'Current genre/style and top tracks', pool: {
 					fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-					query: {_LIBRARY_0: 'GENRE IS #GENRE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: 'STYLE IS #STYLE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_2: '%RATING% EQUAL 5'}, 
+					query: {_LIBRARY_0: '' + globTags.genre + ' IS #' + globTags.genre + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: globTags.style + ' IS #' + globTags.style + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and top tracks', 
 					sort: '',
 				}},
 				{name: 'Current genre/style and instrumentals', pool: {
 					fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
-					query: {_LIBRARY_0: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)', _LIBRARY_1: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND %RATING% EQUAL 5', _LIBRARY_2: '((GENRE IS #GENRE#) OR (STYLE IS #STYLE#)) AND GENRE IS Instrumental AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)'}, 
+					query: {_LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5', _LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globTags.genre + ' IS instrumental or ' + globTags.style + ' IS instrumental) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)'}, 
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					toPls: 'Current genre/style and instrumentals', 
 					sort: '',
 				}},
 				{name: 'Classic Pools (50 artists current genre)', pool: {
 					fromPls: {_GROUP_0: 50},
-					group: {_GROUP_0: 'ARTIST'},
+					group: {_GROUP_0: globTags.artist},
 					limit: {_GROUP_0: 3},
-					query: {_GROUP_0: 'GENRE IS #GENRE#'}, 
+					query: {_GROUP_0: '' + globTags.genre + ' IS #' + globTags.genre + '#'}, 
 					toPls: 'Classic Pools (50 artists current genre)', 
 					sort: '',
 				}},
 				{name: 'sep'},
 				{name: 'Classic Pools (50 artists)', pool: {
 					fromPls: {_GROUP_0: 50},
-					group: {_GROUP_0: 'ARTIST'},
+					group: {_GROUP_0: globTags.artist},
 					limit: {_GROUP_0: 3},
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (50 artists)', 
@@ -3488,15 +3490,15 @@ addEventListener('on_dsp_preset_changed', () => {
 				}},
 				{name: 'Classic Pools (all dates)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
-					group: {_GROUP_0: 'DATE'},
+					group: {_GROUP_0: globTags.date},
 					limit: {_GROUP_0: 2},
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (all dates)', 
-					sort: '%DATE%',
+					sort: globTags.date,
 				}},
 				{name: 'Classic Pools (3 tracks per artist letter)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
-					group: {_GROUP_0: '$left($ascii(%ARTIST%),1)'},
+					group: {_GROUP_0: '$lower($ascii($left(%' + globTags.artist + '%,1)))'},
 					limit: {_GROUP_0: 3},
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (3 tracks per letter)', 
@@ -3504,7 +3506,7 @@ addEventListener('on_dsp_preset_changed', () => {
 				}},
 				{name: 'Classic Pools (3 tracks per genre)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
-					group: {_GROUP_0: 'GENRE'},
+					group: {_GROUP_0: globTags.genre},
 					limit: {_GROUP_0: 3},
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (3 tracks per genre)', 
@@ -4654,19 +4656,19 @@ addEventListener('on_dsp_preset_changed', () => {
 								options = _jsonParseFileCheck(file, 'Query filters json', 'Playlist Tools', utf8) || [];
 							} else {
 								options = [
-									{title: 'Female vocals',			query: 'STYLE IS Female Vocal OR STYLE IS Female OR GENRE IS Female Vocal OR GENRE IS Female OR GENDER IS Female'}, 
-									{title: 'Instrumentals',			query: 'STYLE IS Instrumental OR GENRE IS Instrumental OR SPEECHINESS EQUAL 0'},
-									{title: 'Acoustic tracks',			query: 'STYLE IS Acoustic OR GENRE IS Acoustic OR ACOUSTICNESS GREATER 75'},
-									{title: 'Rating > 2',				query: '%RATING% GREATER 2'},
-									{title: 'Rating > 3',				query: '%RATING% GREATER 3'},
-									{title: 'Length < 6 min',			query: '%LENGTH_SECONDS% LESS 360'},
-									{title: 'Only Stereo',				query: '%CHANNELS% LESS 3 AND NOT COMMENT HAS Quad'},
+									{title: 'Female vocals',			query: globQuery.female}, 
+									{title: 'Instrumentals',			query: globQuery.instrumental},
+									{title: 'Acoustic tracks',			query: globQuery.acoustic},
+									{title: 'Rating > 2',				query: globQuery.ratingGr2},
+									{title: 'Rating > 3',				query: globQuery.ratingGr3},
+									{title: 'Length < 6 min',			query: globQuery.shortLength},
+									{title: 'Only Stereo',				query: globQuery.stereo},
 									{title: 'sep'},		
-									{title: 'No Female vocals',			query: 'NOT (STYLE IS Female Vocal OR STYLE IS Female OR GENRE IS Female Vocal OR GENRE IS Female OR GENDER IS Female)'}, 
-									{title: 'No Instrumentals', 		query: 'NOT (STYLE IS Instrumental OR GENRE IS Instrumental OR SPEECHINESS EQUAL 0)'},
-									{title: 'No Acoustic tracks',		query: 'NOT (STYLE IS Acoustic OR GENRE IS Acoustic OR ACOUSTICNESS GREATER 75)' },
-									{title: 'Not rated',				query: '%RATING% MISSING'},
-									{title: 'Not Live (unless Hi-Fi)',	query: 'NOT (STYLE IS Live AND NOT STYLE IS Hi-Fi)'}
+									{title: 'No Female vocals',			query: globQuery.noFemale}, 
+									{title: 'No Instrumentals', 		query: globQuery.noInstrumental},
+									{title: 'No Acoustic tracks',		query: globQuery.noAcoustic},
+									{title: 'Not rated',				query: globQuery.noRating},
+									{title: 'Not Live (unless Hi-Fi)',	query: globQuery.noLive}
 								];
 							}
 							menu.newEntry({menuName: subMenuNameThree, entryText: 'Appended to Global Forced Query:', flags: MF_GRAYED});
@@ -4719,7 +4721,7 @@ addEventListener('on_dsp_preset_changed', () => {
 				options.forEach((tagName) => {
 					const key = tagName + 'Tag';
 					menu.newEntry({menuName: subMenuName, entryText: () => capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
-						fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like \'Search same by tags...\' since those queries are saved as text.\nIf you want to change tags at those tools, use the apropiate menus to remove/add your own entries.\nAlternatively, you may look at the properties panel to directly edit the menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags (and entries) are already configurable...', scriptName + ': ' + configMenu);
+						fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like\n\'Search same by tags...\' since those queries are saved as text.\n\nIf you want to change tags at those tools, use the apropiate menus\nto remove/add your own entries.\n\nOtherwise, for a global change, edit the default tags and queries,\nwhich are used internally. Don\'t forget to reload the\npanels or restart foobar and \'Restore defaults\' on all relevant buttons\nand menus to use the new values. Files may be found at:\nFOOBAR PROFILE FOLDER]\\js_data\\presets\\global\n\n\nAlternatively, you may look at the properties panel to directly edit\nthe menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags\n(and entries) are already directly configurable...', scriptName + ': ' + configMenu);
 						const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, menu_properties[key][1]);
 						if (!input.length) {return;}
 						if (menu_properties[tagName + 'Tag'][1] === input) {return;}
@@ -4907,6 +4909,14 @@ addEventListener('on_dsp_preset_changed', () => {
 						// Save all
 						menu_properties['presets'][1] = JSON.stringify(presets);
 						overwriteMenuProperties(); // Updates panel
+					}
+					for (let key in defaultArgs) {
+						if (menu_properties.hasOwnProperty(key)) {
+							if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(menu_properties[key][1]);}
+							else {defaultArgs[key] = menu_properties[key][1];}
+						} else if (menu_panelProperties.hasOwnProperty(key)) {
+							defaultArgs[key] = menu_panelProperties[key][1];
+						}
 					}
 				}
 			}});
@@ -5157,10 +5167,10 @@ function menuTooltip() {
 	if (sel) {
 		let tfo = fb.TitleFormat(
 				'Current track:	%ARTIST% / %TRACK% - %TITLE%' +
-				'$crlf()Date:		[%DATE%]' +
-				'$crlf()Genres:		[%GENRE%]' +
-				'$crlf()Styles:		[%STYLE%]' +
-				'$crlf()Moods:		[%MOOD%]'
+				'$crlf()Date:		[' + globTags.date + ']' +
+				'$crlf()Genres:		[%' + globTags.genre + '%]' +
+				'$crlf()Styles:		[%' + globTags.style + '%]' +
+				'$crlf()Moods:		[%' + globTags.mood + '%]'
 			);
 		info = 'Playlist:		' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistName(plman.ActivePlaylist) : '-none-') + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);

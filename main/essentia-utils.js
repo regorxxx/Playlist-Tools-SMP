@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/04/22
+//06/10/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -10,7 +10,7 @@ const essentia = {};
 
 essentia.calculateKey = function calculateKey({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
-		tagName = 'KEY',
+		tagName = globTags.key,
 		essentiaPath = folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe',
 		bDebug = false,
 		bProfile = true
@@ -75,7 +75,7 @@ essentia.calculateKey = function calculateKey({
 
 essentia.calculateHighLevelTags = function calculateHighLevelTags({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
-		tagName = ['KEY','BPM','DANCENESS','LRA'],
+		tagName = [globTags.key, globTags.bpm, 'DANCENESS', 'LRA'],
 		essentiaPath = folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe',
 		bDebug = false,
 		bProfile = true

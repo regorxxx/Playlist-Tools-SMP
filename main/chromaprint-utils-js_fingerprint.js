@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/22
+//06/10/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -17,7 +17,7 @@ chromaPrintUtils.tagLenReverse = 700; // How many ints are checked for the rever
 chromaPrintUtils.compareFingerprints = function compareFingerprints({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 		toHandleList = fb.GetLibraryItems(),
-		tagName = 'acoustid_fingerprint_raw',
+		tagName = globTags.acoustidFP,
 		threshold = 85,
 		tagLen = this.tagLen,
 		playlistName = 'Search...',
@@ -104,7 +104,7 @@ chromaPrintUtils.compareFingerprints = function compareFingerprints({
 chromaPrintUtils.compareFingerprintsFilter = function compareFingerprints({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 		toHandleList = fb.GetLibraryItems(),
-		tagName = 'acoustid_fingerprint_raw',
+		tagName = globTags.acoustidFP,
 		reverseDbPath = folders.data + 'fpChromaprintReverseMap.json',
 		reverseDbIdxPath = folders.data + 'fpChromaprintReverseMapIdx.json',
 		dbPath = folders.data + 'fpChromaprintDb.json',
@@ -205,7 +205,7 @@ chromaPrintUtils.compareFingerprintsFilter = function compareFingerprints({
 
 chromaPrintUtils.calculateFingerprints = function calculateFingerprints({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
-		tagName = 'acoustid_fingerprint_raw',
+		tagName = globTags.acoustidFP,
 		bMerge = true,
 		fpcalcPath = folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe',
 		bDebug = false,
@@ -285,7 +285,7 @@ chromaPrintUtils.reverseIndexingIter = function reverseIndexingIter({
 		bFastMap = this.bFastMap,
 		reverseIdxLen = this.reverseIdxLen,
 		tagLen = this.tagLenReverse,
-		tagName = 'acoustid_fingerprint_raw',
+		tagName = globTags.acoustidFP,
 		bProfile = true
 	}) {
 	const toHandleListArr = toHandleList.Convert();

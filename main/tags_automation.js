@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/05/22
+//06/10/22
 
 /* 
 	Automatic tagging...
@@ -27,16 +27,16 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	this.notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'ffmpegLRA', 'massTag', 'essentiaFastKey','essentiaKey','essentiaBPM','essentiaDanceness','essentiaLRA']);
 	this.incompatibleTools = new biMap({ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey'});
 	this.tools = [
-		{key: 'biometric', tag: ['FINGERPRINT_FOOID'], title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true)},
-		{key: 'chromaPrint', tag: ['ACOUSTID_FINGERPRINT_RAW'], title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe')},
+		{key: 'biometric', tag: [globTags.fooidFP], title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true)},
+		{key: 'chromaPrint', tag: [globTags.acoustidFP], title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe')},
 		{key: 'massTag', tag: ['AUDIOMD5'], title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true)},
 		{key: 'audioMd5', tag: ['MD5'], title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true)},
 		{key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'], title: 'ReplayGain', bAvailable: utils.CheckComponent('foo_rgscan', true)},
 		{key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'], title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true)},
 		{key: 'ffmpegLRA', tag: ['LRA'], title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe')},
-		{key: 'essentiaFastKey', tag: ['KEY'], title: 'Key (essentia fast)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe')},
-		{key: 'essentiaKey', tag: ['KEY'], title: 'Key (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe')},
-		{key: 'essentiaBPM', tag: ['BPM'], title: 'BPM (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe')},
+		{key: 'essentiaFastKey', tag: [globTags.key], title: 'Key (essentia fast)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe')},
+		{key: 'essentiaKey', tag: [globTags.key], title: 'Key (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe')},
+		{key: 'essentiaBPM', tag: [globTags.bpm], title: 'BPM (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe')},
 		{key: 'essentiaDanceness', tag: ['DANCENESS'], title: 'Danceness (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe')},
 		{key: 'essentiaLRA', tag: ['LRA'], title: 'EBUR 128 Scanner (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe')},
 	];
@@ -92,7 +92,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 			// Check if there are ISO/CUE files (which can not be piped to ffmpeg)
 			this.bSubSong = this.selItems.Convert().some((handle) => {return handle.SubSong !== 0;});
 			if (this.bSubSong) {
-				console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (an will be omitted in such steps):\n' + this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean).join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%ACOUSTID_FINGERPRINT_RAW%), Essentia (%KEY%, %LRA%, %DACENESS%, %BPM%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
+				console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (an will be omitted in such steps):\n' + this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean).join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (%' + globTags.key + '%, %LRA%, %DACENESS%, %' + globTags.bpm + '%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 				// Remove old tags
 				{	// Update subSong tracks with safe tools
 					this.selItemsSubSong = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return handle.SubSong === 0;}));

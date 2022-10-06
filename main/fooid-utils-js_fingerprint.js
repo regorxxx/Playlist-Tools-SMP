@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/11/21
+//06/10/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -9,7 +9,7 @@ include('..\\helpers-external\\fooid-utils-js\\fooid-utils-js.js');
 fooidUtils.compareFingerprints = function compareFingerprints({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 		toHandleList = fb.GetLibraryItems(),
-		tagName = 'fingerprint_fooid',
+		tagName = globTags.fooidFP,
 		threshold = 85,
 		playlistName = 'Search...',
 		bSendToPls = true

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//06/10/22
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -22,7 +22,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	playlistLength:		['Max Playlist Mix length', 50, {greater: 0, func: isInt}, 50],
 	forcedQuery:		['Forced query to filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
 	checkDuplicatesBy:	['Tags to look for duplicates', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
-	sameBy: 			['Tags to look for similarity', JSON.stringify([['STYLE'], ['MOOD']]), {func: isJSON}, JSON.stringify([['STYLE'], ['MOOD']])],
+	sameBy: 			['Tags to look for similarity', JSON.stringify([[globTags.style], [globTags.mood]]), {func: isJSON}, JSON.stringify([[globTags.style], [globTags.mood]])],
 	playlistName:		['Playlist name', 'Search...', {func: isString}, 'Search...']
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
