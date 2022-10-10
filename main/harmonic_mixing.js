@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/09/22
+//10/10/22
 
 /*
 	Harmonic Mixing
@@ -30,7 +30,7 @@ function harmonicMixing({
 	if (!selItems || !selItems.Count) {return;}
 	if (selItems.Count < playlistLength) {playlistLength = selItems.Count;}
 	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
-	const pattern = createHarmonicMixingPattern(playlistLength); // On camelot_wheel_xxx.js
+	const pattern = camelotWheel.createHarmonicMixingPattern(playlistLength); // On camelot_wheel_xxx.js
 	if (bDebug) {
 		console.log('Original pattern:');
 		console.log(pattern);

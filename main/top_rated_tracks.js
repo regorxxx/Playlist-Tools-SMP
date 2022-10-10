@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//08/10/22
 
 /* 
 	Top Rated Tracks
@@ -13,7 +13,7 @@ include('remove_duplicates.js');
 if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Rated Tracks
-function do_top_rated_tracks({
+function topRatedTracks({
 						playlistLength = 50, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
 						checkDuplicatesBy = globTags.remDupl,
@@ -27,7 +27,7 @@ function do_top_rated_tracks({
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_top_tracks: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
-	if (bProfile) {var test = new FbProfiler('do_top_rated_tracks');}
+	if (bProfile) {var test = new FbProfiler('topRatedTracks');}
 	// Check rating tag
 	let bFunc = false;
 	if (ratingTag.indexOf('$') === -1) {
