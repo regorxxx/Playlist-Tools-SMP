@@ -61,6 +61,9 @@
 - Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Playlist Manipulation\Query filtering: pressing Ctrl while clicking on a menu entry will invert the query and append 'NOT' at the beginning. i.e. if a filter is used to display tracks with rating > 3, pressing control will do the opposite and show tracks with rating < 3. Note global forced queries are added after the inversion.
 - Selection manipulation\Scatter by tags: now conserves selection and focus.
+- Top rated tracks from: is now automatically built by decades from 1950 onwards, up to 20 entries.
+- Top rated tracks from: a new entry is added to include all tracks before the lowest date.
+- Top rated tracks from: a new entry is added to include all tracks between the current date and last 2 decades.
 - Buttons: 'search_same_by' has been renamed to 'search_by_tags_combinations'. Console will warn about it when loading the toolbar. Replace it as needed.
 - Buttons: 'search_same_style' has been replaced with'search_by_tags_queries' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use it only style tag to mimic its behavior.
 - Buttons: 'search_same_style_moods' has been replaced with 'search_by_tags_combinations' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use {"STYLE":2,"MOOD":6} to mimic its behavior.
@@ -75,10 +78,12 @@
 - Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
 - Search by Distance: reverted default string tags to raw tags instead of using '$ascii(%TAG%)' in favor of internally converting values to ASCII. Works better for multi-value tags in queries. It's recommended to reset tag remapping to default for most users (or manually removing the TF functions if using other tags).
 - Search by Distance: when using TF functions on tags, queries now use 'HAS' instead of 'IS' to ensure multi-value tags are taken into consideration (otherwise only single-value tags match). Note this has the side-effect of partial matching being allowed (i.e. 'Rock' matches 'Progressive Rock' too, but not the opposite).
+- Search by Distance: queries involving key tags now use all possibles equivalences in different notations (standard, Open keys, Camelot keys). For ex: '((KEY IS A) OR (KEY IS 4d) OR (KEY IS 11B))'.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
 - Removed Duplicates: all uses of function changed to make use of '$year(%DATE%)' and '$ascii($lower($trim(%TITLE%))' instead of 'DATE' and 'TITLE'. This is a changed ported from Search by Distance, to ensure the most matches possible.
 - Helpers: updated helpers.
+- Helpers: rewritten [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation) helper.
 - Properties: additional checks to properties. In case a previous property is not valid, reset to default using menus where applicable.
 ### Removed
 - Buttons: 'search_same_by' button. See warning above for replacement.
@@ -93,6 +98,7 @@
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
 - Pools: some additional checks to ensure non ASCII chars, casing or numbers are correctly identified as equivalent. For ex. 'Classic Pools (3 tracks per artist letter)' would output an artist starting with A and another with a as 2 different letters. Same applies to ASCII equivalences, etc. Now all the values are reduced to an ASCII lowercase string.
 - Pools: 'Current genre/style and instrumentals' query had a typo.
+- Search by Distance: tracks with a key difference greater than 6 were not properly evaluated, since they are nearer on the key wheel. Being the real distance (6 - difference). i.e. a track with key 12A would be considered at a distance 11 from a track 1A, instead of a distance 1. This happened at the scoring stage (it was properly evaluated at other places), resulting in less tracks being output as similar tracks in most cases (where KEY was used for weighting).
 - Search by Distance: after renaming custom button, button width was not properly adjusted. Width on panel reload and after renaming did not match.
 - Search by Distance: estimated time for similar artist calculation was not properly computed when having multiple tracks by same artist(s) on selection
 - Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
@@ -100,7 +106,9 @@
 - Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
 - Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
 - Search by Distance: in some cases similar artists were duplicated.
+- Top rated tracks from: is now invariant to date order. i.e. 2012,2013 will output the same than 2013,2012 (previously empty output).
 - Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
+- Buttons: no background on buttons configuration for toolbar was not properly set on script init/reloading.
 - Readmes: separators not being properly identified on readme files checking.
 - Rating related scripts not compatible with foobar2000 2.0+.
 
