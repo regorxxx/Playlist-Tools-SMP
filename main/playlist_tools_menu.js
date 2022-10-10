@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/10/22
+//08/10/22
 
 /* 
 	Playlist Tools Menu
@@ -321,19 +321,34 @@ addEventListener('on_dsp_preset_changed', () => {
 			menu.newEntry({menuName, entryText: 'Based on ratings (' + defaultArgs.ratingLimits.join(' to ') + '):', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			const currentYear = new Date().getFullYear();
-			const selYearArr = [ [currentYear], [currentYear - 1], 'sep', [2000, currentYear], [1990, 2000], [1980, 1990], [1970, 1980], [1960, 1970], [1950, 1960], [1940, 1950]];
-			selYearArr.forEach( (selYear) => {
-				if (selYear === 'sep') {menu.newEntry({menuName, entryText: 'sep'}); return;}
-				let selArgs = { ...defaultArgs};
+			const fromTo = [1950, Math.ceil(currentYear / 10) * 10];
+			const step = 10;
+			const selYearArr = [];
+			for (let i = fromTo[0]; i < fromTo[1]; i += step) {
+				selYearArr.push([i, Math.min(i + step, currentYear)]);
+			}
+			selYearArr.push('sep', [fromTo[1] - 20, currentYear], 'sep', [currentYear - 1], [currentYear]);
+			if (selYearArr.length > 20) {selYearArr.length = 20;} // Safecheck
+			selYearArr.splice(0, 0, [0, selYearArr[0][0]], 'sep');
+			const queryDateAndName = (selArgs, selYear) => {
 				let dateQuery = '';
 				if (selYear.length === 2) {
-					dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' + selYear[1];
+					dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' +  selYear[1];
 				} else {
-					dateQuery = _q(globTags.date)+ ' IS ' + selYear;
+					dateQuery = _q(globTags.date) + ' IS ' + selYear;
 				}
-				selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
-				selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
-				menu.newEntry({menuName, entryText: 'Top rated from ' + selYear.join('-'), func: (args = selArgs) => {do_top_rated_tracks(args);}});
+				dateQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
+				const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
+				const plsName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + dateName;
+				return [dateQuery, plsName];
+			};
+			selYearArr.reverse().forEach( (selYear) => {
+				if (selYear === 'sep') {menu.newEntry({menuName, entryText: 'sep'}); return;}
+				selYear.sort(); // Invariant to order
+				let selArgs = { ...defaultArgs};
+				[selArgs.forcedQuery, selArgs.playlistName] = queryDateAndName(selArgs, selYear);
+				const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
+				menu.newEntry({menuName, entryText: 'Top rated' + dateName, func: (args = selArgs) => {topRatedTracks(args);}});
 			});
 			menu.newEntry({menuName, entryText: 'sep'});
 			{	// Input menu
@@ -347,16 +362,10 @@ addEventListener('on_dsp_preset_changed', () => {
 						selYear[i] = Number(selYear[i]);
 						if (!Number.isSafeInteger(selYear[i])) {return;}
 					}
+					selYear.sort(); // Invariant to order
 					let selArgs = { ...defaultArgs};
-					let dateQuery = '';
-					if (selYear.length === 2) {
-						dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' +  selYear[1];
-					} else {
-						dateQuery = _q(globTags.date) + ' IS ' + selYear;
-					}
-					selArgs.forcedQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
-					selArgs.playlistName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + selYear.join('-');
-					do_top_rated_tracks(selArgs);
+					[selArgs.forcedQuery, selArgs.playlistName] = queryDateAndName(selArgs, selYear);
+					topRatedTracks(selArgs);
 				}});
 			}
 			menu.newEntry({entryText: 'sep'});
@@ -4910,14 +4919,7 @@ addEventListener('on_dsp_preset_changed', () => {
 						menu_properties['presets'][1] = JSON.stringify(presets);
 						overwriteMenuProperties(); // Updates panel
 					}
-					for (let key in defaultArgs) {
-						if (menu_properties.hasOwnProperty(key)) {
-							if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(menu_properties[key][1]);}
-							else {defaultArgs[key] = menu_properties[key][1];}
-						} else if (menu_panelProperties.hasOwnProperty(key)) {
-							defaultArgs[key] = menu_panelProperties[key][1];
-						}
-					}
+					overwriteDefaultArgs();
 				}
 			}});
 		}
@@ -5030,9 +5032,19 @@ loadProperties();
 /*
 	Helpers
 */
-function overwriteMenuProperties() {overwriteProp(menu_properties, menu_prefix);}
-function overwritePanelProperties() {overwriteProp(menu_panelProperties, menu_prefix_panel);}
+function overwriteMenuProperties() {overwriteProp(menu_properties, menu_prefix); overwriteDefaultArgs();}
+function overwritePanelProperties() {overwriteProp(menu_panelProperties, menu_prefix_panel); overwriteDefaultArgs();}
 function overwriteProp(properties, prefix) {setProperties(properties, prefix, 0, false, true);}
+function overwriteDefaultArgs() {
+	for (let key in defaultArgs) {
+		if (menu_properties.hasOwnProperty(key)) {
+			if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(menu_properties[key][1]);}
+			else {defaultArgs[key] = menu_properties[key][1];}
+		} else if (menu_panelProperties.hasOwnProperty(key)) {
+			defaultArgs[key] = menu_panelProperties[key][1];
+		}
+	}
+}
 
 function loadProperties() {
 	if (typeof buttonsBar === 'undefined' && Object.keys(menu_properties).length) { // Merge all properties when not loaded along buttons
