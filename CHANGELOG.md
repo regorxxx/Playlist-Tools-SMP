@@ -91,6 +91,8 @@
 - Buttons: 'search_same_style_moods' button. See warning above for replacement.
 - Script Integration\SMP Main menu: all functionality removed. Replace it as needed with custom Dynamic menus.
 ### Fixed
+- Advanced sort: sort by key now properly differentiates between major (A) an minor keys (B), putting firt the major key and then the minor one when sorting (instead of mixing them when having the same number).
+- Advanced sort: sort by DynGenre now properly creates an undo backup point on the modified playlist before being applied, allowing to restore the previous state with Ctrl + Z. It should have worked that way, the same than any other tool, from the beginning.
 - Dynamic queries: duplicated queries are removed before joining them with 'OR'. i.e. selecting 10 tracks by 'Mdou Moctar' for a query 'ARTIST IS #ARTIST#' will not output 10 time the same query, but only once. While functionality and final results don't change at all, it seems processing time greatly speeds up with shorter queries.
 - Script Integration\SMP Dynamic menu: excluded some entries which were not supposed to be exposed after changes on latest versions.
 - Script Integration: fixed some inconsistencies on ajquery-xxx export files.
