@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/10/22
+//11/10/22
 
 /*	
 	Sort by Key
@@ -27,7 +27,9 @@ function do_sort_by_key({
 	const keyTagTF = keyTag.indexOf('$') === -1 && keyTag.indexOf('%') === -1 ? '%' + keyTag + '%' : keyTag;
 	let i = 0;
 	camelotWheel.getKeyNotationTable().forEach ((val, key) => {
-		const sortVal = (sortOrder === -1 ? 999999999 - val.substring(0, val.length - 1) : val.substring(0, val.length - 1));
+		const num = val.slice(0, -1);
+		const letter = val.slice(-1);
+		const sortVal = (sortOrder === -1 ? 999999999 - ( num + (letter === 'A' ? 0 : 1)) : num + (letter === 'A' ? 0 : 1));
 		tfo += '$if($stricmp(' + keyTagTF + ',' + key + '),' + sortVal +  ',';
 		i++;
 		// Instead of
@@ -35,7 +37,6 @@ function do_sort_by_key({
 	});
 	tfo += ')'.repeat(i) // Add closures!
 	if (bDebug) {console.log(tfo);}
-	console.log(tfo);
 	plman.UndoBackup(plman.ActivePlaylist);
 	return plman.SortByFormat(playlistIdx, tfo, bSelection);
 }
