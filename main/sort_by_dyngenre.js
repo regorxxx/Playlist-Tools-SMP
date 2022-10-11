@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/08/22
+//11/10/22
 
 /*	
 	Sort by Dyngenre
@@ -67,5 +67,6 @@ function do_sort_by_dyngenre({
 	});
 	dyngenre.forEach ( () => {tfo += ')';}); // Add closures!
 	if (bDebug) {console.log(tfo);}
+	plman.UndoBackup(plman.ActivePlaylist);
 	return plman.SortByFormat(playlistIdx, tfo, bSelection);
 }
