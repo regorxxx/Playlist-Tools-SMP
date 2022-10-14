@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/10/22
+//14/10/22
 
 /*	
 	Sort by Dyngenre
@@ -11,12 +11,13 @@ include('..\\helpers\\dyngenre_map_xxx.js');
 
 const [,, genreStyleMap] = dyngenre_map();
 
-function do_sort_by_dyngenre({
+function sortByDyngenre({
 								playlistIdx = plman.ActivePlaylist,
-								styleGenreTag = ['$ascii(%GENRE%)', '$ascii(%STYLE%)'],
+								styleGenreTag = typeof globTags !== 'undefined' ? [globTags.genre, globTags.style] : ['GENRE', 'STYLE'],
 								bSelection = true,
 								sortOrder = 1,
-								bDebug = false,
+								bAscii = true,
+								bDebug = false
 							} = {}) {
 	// Safety checks
 	if (!styleGenreTag.length) {return false;}
@@ -27,7 +28,7 @@ function do_sort_by_dyngenre({
 	const handleList = bSelection ? plman.GetPlaylistSelectedItems(playlistIdx) : plman.GetPlaylistItems(playlistIdx);
 	const count = handleList.Count;
 	// Tags
-	const idTfo = '[%tracknumber%]-[%title%]-[%path%]';
+	const idTfo = '[%PATH%]-[%SUBSONG%]';
 	const ids = fb.TitleFormat(idTfo).EvalWithMetadbs(handleList);
 	const styleGenre = getTagsValuesV3(handleList, styleGenreTag, true);
 	let dyngenre = [[]];
@@ -37,7 +38,7 @@ function do_sort_by_dyngenre({
 		let dyngenreNum = 0;
 		if (styleGenreLength) {
 			for (let j = 0; j < styleGenreLength; j++) {
-				let dyngenre_j = genreStyleMap.get(styleGenre_i[j]);
+				let dyngenre_j = genreStyleMap.get(bAscii ? _asciify(styleGenre_i[j]) : styleGenre_i[j]);
 				if (dyngenre_j) {
 					let k;
 					let dyngenre_j_length = dyngenre_j.length;
@@ -57,7 +58,7 @@ function do_sort_by_dyngenre({
 	}
 	let tfo = '';
 	// Translate into something usable on TF
-	// Can not do the same than do_sort_by_key() because track may have multiple genre/styles
+	// Can not do the same than sortByKey() because track may have multiple genre/styles
 	// Therefore it would require a giant tfo comparing each value and then dividing by total number...
 	// Better to identify each track and assign a value to it.
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)

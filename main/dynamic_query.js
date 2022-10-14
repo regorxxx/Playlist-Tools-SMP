@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/09/22
+//14/10/22
 
 /*
 	Dynamic Query
@@ -8,7 +8,7 @@
 
 include('..\\helpers\\helpers_xxx_playlists.js');
 
-function do_dynamic_query({query = 'ARTIST IS #ARTIST#', sort = {tfo: null, direction: 1}, handle = fb.GetFocusItem(true), handleList = null, playlistName = 'Search...', bSendToPls = true} = {}) {
+function dynamicQuery({query = 'ARTIST IS #ARTIST#', sort = {tfo: null, direction: 1}, handle = fb.GetFocusItem(true), handleList = null, playlistName = 'Search...', bSendToPls = true} = {}) {
 	if (!query || !query.length) {return null;}
 	
 	if (query.indexOf('#') !== -1) {
@@ -19,7 +19,7 @@ function do_dynamic_query({query = 'ARTIST IS #ARTIST#', sort = {tfo: null, dire
 		} else if (handle) {query = queryReplaceWithCurrent(query, handle);}
 	}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
-	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'do_dynamic_query'); return null;}
+	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'dynamicQuery'); return null;}
 	let outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query);
 	if (sort !== null && sort.tfo !== null) {outputHandleList.OrderByFormat(fb.TitleFormat(sort.tfo), sort.direction || 1)}
 	if (bSendToPls) {

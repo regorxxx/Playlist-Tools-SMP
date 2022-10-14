@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//14/10/22
 
 /* 
 	Top Tracks
@@ -13,7 +13,7 @@ include('remove_duplicates.js');
 if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount'))) {fb.ShowPopupMessage('top_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Tracks
-function do_top_tracks({
+function topTracks({
 						playlistLength = 25, 
 						sortBy = '$sub(99999,%PLAY_COUNT%)', 
 						checkDuplicatesBy = globTags.remDupl,
@@ -22,10 +22,10 @@ function do_top_tracks({
 						bSendToPls = true,
 						bProfile = false
 					} = {}) {
-	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('do_top_tracks: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
+	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('topTracks: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
-	if (bProfile) {var test = new FbProfiler('do_top_tracks');}
+	if (bProfile) {var test = new FbProfiler('topTracks');}
 	//Load query
 	let query = '%PLAY_COUNT% GREATER 1';
 	let outputHandleList;

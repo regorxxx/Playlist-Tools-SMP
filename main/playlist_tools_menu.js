@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/10/22
+//14/10/22
 
 /* 
 	Playlist Tools Menu
@@ -273,7 +273,7 @@ addEventListener('on_dsp_preset_changed', () => {
 			if (_isFile(scriptPathElse)){
 				// All years
 				include(scriptPathElse);
-				menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {do_top_tracks(args);}});
+				menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {topTracks(args);}});
 				menu.newEntry({menuName, entryText: 'sep'});
 			}
 			{	// Input menu: x year
@@ -303,7 +303,7 @@ addEventListener('on_dsp_preset_changed', () => {
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
 			// All years
 			include(scriptPathElse);
-			menu.newEntry({entryText: name, func: (args = { ...defaultArgs}) => {do_top_tracks(args);}}); // Skips menu name, added to top
+			menu.newEntry({entryText: name, func: (args = { ...defaultArgs}) => {topTracks(args);}}); // Skips menu name, added to top
 			menu.newEntry({entryText: 'sep'});
 		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length  + disabledCount++});}
 	}
@@ -620,7 +620,7 @@ addEventListener('on_dsp_preset_changed', () => {
 										query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
 									} else if (!query.length) {query =  defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
-								do_dynamic_query({query, sort: queryObj.sort}); 
+								dynamicQuery({query, sort: queryObj.sort}); 
 							}});
 						}
 					});
@@ -634,7 +634,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true);}
 							catch (e) {return;}
 							// Playlist
-							let handleList = do_dynamic_query({query: forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (query.length && query.toUpperCase() !== 'ALL' ? '(' + query + ') AND (' + defaultArgs.forcedQuery + ')' : query) : (!query.length ? 'ALL' : query)});
+							let handleList = dynamicQuery({query: forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (query.length && query.toUpperCase() !== 'ALL' ? '(' + query + ') AND (' + defaultArgs.forcedQuery + ')' : query) : (!query.length ? 'ALL' : query)});
 							if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 							// For internal use original object
 							selArg.query = query;
@@ -772,8 +772,8 @@ addEventListener('on_dsp_preset_changed', () => {
 										query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
 									} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
-								if (bEvalSel) {do_dynamic_query({query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)})}
-								else{do_dynamic_query({query, sort: queryObj.sort});}
+								if (bEvalSel) {dynamicQuery({query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)})}
+								else{dynamicQuery({query, sort: queryObj.sort});}
 							}, flags: selectedFlags});
 						}
 					});
@@ -789,7 +789,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							if (input.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return;}
 							// Playlist
 							const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
-							const handleList = bEvalSel ? do_dynamic_query({query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)}) : do_dynamic_query({query});
+							const handleList = bEvalSel ? dynamicQuery({query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)}) : dynamicQuery({query});
 							if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return;}
 							// For internal use original object
 							selArg.query = input; 
@@ -823,7 +823,7 @@ addEventListener('on_dsp_preset_changed', () => {
 								direction = direction > 0 ? 1 : -1;
 								input = {name: entryName, query, sort: {tfo, direction}};
 								// Final check
-								try {if (!do_dynamic_query({query, bSendToPls: false})) {throw 'error';}}
+								try {if (!dynamicQuery({query, bSendToPls: false})) {throw 'error';}}
 								catch (e) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return;}
 							}
 							// Add entry
@@ -1411,7 +1411,7 @@ addEventListener('on_dsp_preset_changed', () => {
 									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 									// Execute
-									do_filter_by_query(null, query);
+									filterByQuery(null, query);
 								}, flags: playlistCountFlagsAddRem});
 							}
 						});
@@ -1441,7 +1441,7 @@ addEventListener('on_dsp_preset_changed', () => {
 							try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 							catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 							// Execute
-							do_filter_by_query(null, query);
+							filterByQuery(null, query);
 							// For internal use original object
 							selArg.query = input; 
 							menu_properties['queryFilterCustomArg'][1] = input; // And update property with new value
@@ -2206,8 +2206,8 @@ addEventListener('on_dsp_preset_changed', () => {
 						readmes[name + '\\' + 'Sort by Key'] = folders.xxx + 'helpers\\readme\\sort_by_key.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
-							{name: 'Incremental key (Camelot Wheel)', 	func: do_sort_by_key, args: {sortOrder: 1}},
-							{name: 'Decremental key (Camelot Wheel)',	func: do_sort_by_key, args: {sortOrder: -1}},
+							{name: 'Incremental key (Camelot Wheel)', 	func: sortByKey, args: {sortOrder: 1}},
+							{name: 'Decremental key (Camelot Wheel)',	func: sortByKey, args: {sortOrder: -1}},
 						].forEach((val) => {selArgs.push(val);});
 					}
 				}
@@ -2218,8 +2218,8 @@ addEventListener('on_dsp_preset_changed', () => {
 						readmes[name + '\\' + 'Sort by DynGenre'] = folders.xxx + 'helpers\\readme\\sort_by_dyngenre.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
-							{name: 'Incremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: 1}},
-							{name: 'Decremental genre/styles (DynGenre)', func: do_sort_by_dyngenre, args: {sortOrder: -1}},
+							{name: 'Incremental genre/styles (DynGenre)', func: sortByDyngenre, args: {sortOrder: 1}},
+							{name: 'Decremental genre/styles (DynGenre)', func: sortByDyngenre, args: {sortOrder: -1}},
 						].forEach((val) => {selArgs.push(val);});
 					}
 				}

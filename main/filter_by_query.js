@@ -1,12 +1,12 @@
 ﻿'use strict';
-//04/02/22
+//14/10/22
 
 /*
 	Filter by Query
 	Filters handle list or playlist using query
 */	
 
-function do_filter_by_query(handleList = null, query = 'ALL') {
+function filterByQuery(handleList = null, query = 'ALL') {
 	if (!query || !query.length || query === 'ALL') {
 		return handleList;
 	}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/10/22
+//14/10/22
 
 /*	
 	Sort by Key
@@ -9,12 +9,12 @@
 
 include('..\\helpers\\camelot_wheel_xxx.js');
 
-function do_sort_by_key({
+function sortByKey({
 						playlistIdx = plman.ActivePlaylist,
-						keyTag = 'KEY',
+						keyTag = typeof globTags !== 'undefined' ? globTags.key : 'KEY',
 						bSelection = true,
 						sortOrder = 1,
-						bDebug = false,
+						bDebug = false
 					} = {}) {
 	// Safety checks
 	if (!keyTag.length) {return false;}
