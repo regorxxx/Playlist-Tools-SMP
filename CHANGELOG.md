@@ -104,6 +104,7 @@
 - Search by Distance: after renaming custom button, button width was not properly adjusted. Width on panel reload and after renaming did not match.
 - Search by Distance: estimated time for similar artist calculation was not properly computed when having multiple tracks by same artist(s) on selection
 - Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
+- Search by Distance: remapped key and BPM tags were not being used on theme creation.
 - Search by Distance: remapped genre/style tags were not being properly used on similar artist calculation filtering step.
 - Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
 - Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
