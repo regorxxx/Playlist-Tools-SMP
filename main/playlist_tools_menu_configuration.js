@@ -229,39 +229,7 @@
 		}
 		menu.newEntry({menuName: configMenu, entryText: 'sep'});
 		{	// Import presets
-			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: () => {
-				let file;
-				try {file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, folders.data + 'playlistTools_presets.json', true);}
-				catch (e) {return;}
-				if (!file.length) {return;}
-				const newPresets = _jsonParseFileCheck(file, 'Presets', scriptName, utf8);
-				if (!newPresets) {return;}
-				// Load description
-				let readme = '';
-				if (newPresets.hasOwnProperty('readme')) {
-					readme = newPresets.readme;
-					delete newPresets.readme;
-				}
-				// List entries
-				const presetList = Object.keys(newPresets).map((key) => {return '+ ' + key + ' -> ' + menu_properties[key][0] + '\n\t- ' + newPresets[key].map((preset) => {return preset.name + (preset.hasOwnProperty('method') ? ' (' + preset.method + ')': '');}).join('\n\t- ');});
-				readme += (readme.length ? '\n\n' : '') + 'List of presets:\n' + presetList;
-				fb.ShowPopupMessage(readme, scriptName + ': Presets (' + file.split('\\').pop() + ')')
-				// Accept?
-				const answer = WshShell.Popup('Check the popup for description. Do you want to import it?', 0, scriptName + ': Presets (' + file.split('\\').pop() + ')', popup.question + popup.yes_no);
-				if (answer === popup.no) {return;}
-				// Import
-				Object.keys(newPresets).forEach((key) => {
-					// Merge with current presets
-					let currentMenu = JSON.parse(menu_properties[key][1]);
-					if (presets.hasOwnProperty(key)) {presets[key] = [...presets[key], ...newPresets[key]];} 
-					else {presets[key] = newPresets[key];}
-					currentMenu = currentMenu.concat(newPresets[key]);
-					menu_properties[key][1] = JSON.stringify(currentMenu);
-				});
-				// Save all
-				menu_properties['presets'][1] = JSON.stringify(presets);
-				overwriteMenuProperties(); // Updates panel
-			}});
+			menu.newEntry({menuName: configMenu, entryText: 'Import user presets... ', func: importPreset});
 		}
 		{	// Export all presets
 			menu.newEntry({menuName: configMenu, entryText: 'Export all user presets... ', func: () => {
@@ -331,13 +299,14 @@
 			menu.newEntry({menuName: subMenuName, entryText: 'Open popup with readme:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 			let iCount = 0;
+			const breakOn = 20;
 			if (Object.keys(readmes).length) {
 				const rgex = /^sep$|^separator$/i;
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
 					if (rgex.test(value)) {menu.newEntry({menuName: subMenuName, entryText: 'sep'}); return;}
 					else if (_isFile(value)) { 
 						const readme = _open(value, utf8); // Executed on script load
-						const flags = iCount < 8 ? MF_STRING : iCount == 8 ? MF_MENUBREAK : (iCount - 8) % 10 ? MF_STRING : MF_MENUBREAK; // Span horizontally
+						const flags = iCount < breakOn ? MF_STRING : iCount === breakOn ? MF_MENUBREAK : (iCount - breakOn) % (breakOn + 1) ? MF_STRING : MF_MENUBREAK; // Span horizontally
 						if (readme.length) {
 							menu.newEntry({menuName: subMenuName, entryText: key, func: () => { // Executed on menu click
 								if (_isFile(value)) {
