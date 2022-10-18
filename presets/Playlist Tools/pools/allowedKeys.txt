@@ -129,7 +129,7 @@ Example of pool (X tracks per source):
 			"_LIBRARY_1": 25
 		},
 		"query": {
-			"_LIBRARY_0": "MOOD IS happy",
+			"_LIBRARY_0": "MOOD IS happy AND NOT MOOD IS aggressive",
 			"_LIBRARY_1": "MOOD IS acoustic"
 		},
 		"toPls": "Happy Mix",
