@@ -32,6 +32,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\menu_xxx.js');
 include('..\\helpers\\callbacks_xxx.js');
+include('playlist_tools_menu_helpers.js');
 
 checkCompatible('1.6.1', 'smp');
 
@@ -355,141 +356,6 @@ include('playlist_tools_menu_configuration.js');
 	Properties after menu creation
 */ 
 loadProperties();
-
-/*
-	Helpers
-*/
-function overwriteMenuProperties() {overwriteProp(menu_properties, menu_prefix); overwriteDefaultArgs();}
-function overwritePanelProperties() {overwriteProp(menu_panelProperties, menu_prefix_panel); overwriteDefaultArgs();}
-function overwriteProp(properties, prefix) {setProperties(properties, prefix, 0, false, true);}
-function overwriteDefaultArgs() {
-	for (let key in defaultArgs) {
-		if (menu_properties.hasOwnProperty(key)) {
-			if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(menu_properties[key][1]);}
-			else {defaultArgs[key] = menu_properties[key][1];}
-		} else if (menu_panelProperties.hasOwnProperty(key)) {
-			defaultArgs[key] = menu_panelProperties[key][1];
-		}
-	}
-}
-
-function loadProperties() {
-	if (typeof buttonsBar === 'undefined' && Object.keys(menu_properties).length) { // Merge all properties when not loaded along buttons
-		// With const var creating new properties is needed, instead of reassigning using A = {...A,...B}
-		if (Object.keys(menu_panelProperties).length) {
-			Object.entries(menu_panelProperties).forEach(([key, value]) => {menu_properties[key] = value;});
-		}
-		setProperties(menu_properties, menu_prefix, 0);
-		updateMenuProperties(getPropertiesPairs(menu_properties, menu_prefix, 0));
-	} else { // With buttons, set these properties only once per panel
-		if (Object.keys(menu_panelProperties).length) {
-			setProperties(menu_panelProperties, menu_prefix_panel, 0);
-		}
-	}
-}
-
-function updateMenuProperties(propObject, menuFunc = deferFunc) {
-	// Sanity checks
-	propObject['playlistLength'][1] = Number(propObject['playlistLength'][1]);
-	if (!Number.isSafeInteger(propObject['playlistLength'][1]) || propObject['playlistLength'][1] <= 0) {fb.ShowPopupMessage('Playlist length must be a positive integer.\n' + propObject['playlistLength'].slice(0,2), scriptName);}
-	try {fb.GetQueryItems(new FbMetadbHandleList(), propObject['forcedQuery'][1]);}
-	catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + propObject['forcedQuery'], scriptName);}
-	// Info Popup
-	let panelPropObject = (typeof buttonsBar !== 'undefined') ? getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0) : propObject;
-	if (!panelPropObject['firstPopup'][1]) {
-		panelPropObject['firstPopup'][1] = true;
-		overwriteProperties(panelPropObject); // Updates panel
-		const readmeKeys = ['Playlist Tools Menu', 'Macros', 'Tagging requisites']; // Must read files on first execution
-		readmeKeys.forEach( (key) => {
-			const readmePath = readmes[key];
-			const readme = _open(readmePath, utf8);
-			if (readme.length) {fb.ShowPopupMessage(readme, key);}
-		});
-	}
-	// And update
-	Object.entries(panelPropObject).forEach(([key, value]) => {
-		if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = value[1];}
-	});
-	Object.entries(propObject).forEach(([key, value]) => {
-		if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = value[1];}
-		// if (menu_properties.hasOwnProperty(key)) {menu_properties[key] = value;}
-		// if (menu_panelProperties.hasOwnProperty(key)) {menu_panelProperties[key] = value;}
-			// Specific
-		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
-		if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(defaultArgs[key]);}
-	});
-	if (propObject.hasOwnProperty('sortInputDuplic') && propObject.hasOwnProperty('sortInputFilter') && propObject.hasOwnProperty('nAllowed')) {
-		updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});
-	}
-	// Presets
-	presets = JSON.parse(propObject['presets'][1]);
-	// Backup defaults
-	doOnce('Backup', () => {
-		menu_propertiesBack = clone(menu_properties); 
-		menu_panelPropertiesBack = clone(menu_panelProperties); 
-		if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: creating default settings...');}
-	})();
-	doOnce('Load tags cache', debounce(() => {
-		if (menu_properties.bTagsCache[1] && typeof tagsCache !== 'undefined') {tagsCache.load();}
-	}, 5000))();
-	// Store for internal use
-	if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: updating settings...');}
-	for (let key in propObject) {
-		menu_properties[key][1] = propObject[key][1];
-	}
-	for (let key in panelPropObject) {
-		menu_panelProperties[key][1] = panelPropObject[key][1];
-	}
-	// Other funcs by menus
-	menuFunc.forEach((obj) => {
-		if (obj.hasOwnProperty('func') && isFunction(obj.func)) {
-			obj.func(propObject);
-		}
-	});
-}
-
-function updateShortcutsNames(keys = {}) {
-	if (_isFile(shortcutsPath)) {
-		const data = _jsonParseFileCheck(shortcutsPath, 'Shortcuts json', scriptName, utf8);
-		if (data) {
-			if (Object.keys(keys).length) {
-				const sortInputDuplic = keys.hasOwnProperty('sortInputDuplic') ? keys.sortInputDuplic.replace(/,/g, ', ') : null;
-				const sortInputFilter = keys.hasOwnProperty('sortInputFilter') ? keys.sortInputFilter.replace(/,/g, ', ') : null;
-				const nAllowed = keys.hasOwnProperty('nAllowed') ? '(' + keys.nAllowed + ')' : null;
-				for (const key in data) {
-					if (data[key].menu === 'Duplicates and tag filtering\\Remove duplicates by ' && sortInputDuplic) {data[key].menu += sortInputDuplic;}
-					if (data[key].menu === 'Duplicates and tag filtering\\Filter playlist by ' && sortInputFilter && nAllowed) {data[key].menu += sortInputFilter + ' ' + nAllowed;}
-				}
-			}
-			shortcuts = data;
-		}
-	} else {
-		_save(shortcutsPath, JSON.stringify(shortcuts, null, '\t'));
-	}
-}
-
-/* 
-	Flags
-*/
-
-function focusFlags() {return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED);}
-
-function playlistCountFlags(idx = plman.ActivePlaylist) {return (plman.PlaylistItemCount(idx) ? MF_STRING : MF_GRAYED);}
-function playlistCountFlagsRem(idx = plman.ActivePlaylist) {return (plman.PlaylistItemCount(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED);}
-function playlistCountFlagsAddRem(idx = plman.ActivePlaylist) {return (plman.PlaylistItemCount(idx) && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED);}
-
-function multipleSelectedFlags(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count >= 3 ? MF_STRING : MF_GRAYED);}
-function multipleSelectedFlagsReorder(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count >= 3 && !reorderLock(idx) ? MF_STRING : MF_GRAYED);}
-
-function selectedFlags(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count ? MF_STRING : MF_GRAYED);}
-function selectedFlagsReorder(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count  && !reorderLock(idx) ? MF_STRING : MF_GRAYED);}
-function selectedFlagsRem(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count && !removeLock(idx) ? MF_STRING : MF_GRAYED);}
-function selectedFlagsAddRem(idx = plman.ActivePlaylist) {return (plman.GetPlaylistSelectedItems(idx).Count  && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED);}
-
-// plman.ActivePlaylist must be !== -1 to avoid crashes!
-function reorderLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedActions(idx).indexOf('ReorderItems') !== -1;}
-function addLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedActions(idx).indexOf('AddItems') !== -1;}
-function removeLock(idx = plman.ActivePlaylist) {return plman.GetPlaylistLockedActions(idx).indexOf('RemoveItems') !== -1;}
 
 /* 
 	Tooltip
