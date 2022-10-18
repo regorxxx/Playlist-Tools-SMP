@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/08/28
+//06/10/22
 
 /*	
 	Scatter by tags
@@ -12,7 +12,7 @@
 // For an specific value (tagValue) for a given tag (tagName)
 function scatterByTags({
 							tagName = 'GENRE,STYLE',
-							tagValue = 'Instrumental',
+							tagValue = 'instrumental',
 							selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null,
 							bSendToActivePls = true,
 							} = {}) {
