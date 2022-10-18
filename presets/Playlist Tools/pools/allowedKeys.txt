@@ -101,3 +101,42 @@
 +---------------------+-----------+-----------------------------------+
 
 Sources are defined as _KEY_#, where # is a number. For ex. _LIBRARY_1
+
+Example of classic pool (X groups with configurable size/limit):
+{
+	"name": "Classic Pools (20 random albums)",
+	"pool": {
+		"fromPls": {
+			"_GROUP_0": 20
+		},
+		"group": {
+			"_GROUP_0": "ALBUM"
+		},
+		"query": {
+			"_GROUP_0": ""
+		},
+		"toPls": "Classic Pools (albums)",
+		"sort": "%PLAYLIST_INDEX%"
+	}
+}
+
+Example of pool (X tracks per source):
+{
+	"name": "Happy Mix",
+	"pool": {
+		"fromPls": {
+			"_LIBRARY_0": 25,
+			"_LIBRARY_1": 25
+		},
+		"query": {
+			"_LIBRARY_0": "MOOD IS happy",
+			"_LIBRARY_1": "MOOD IS acoustic"
+		},
+		"toPls": "Happy Mix",
+		"sort": "",
+		"pickMethod": {
+			"_LIBRARY_0": "random",
+			"_LIBRARY_1": "random"
+		}
+	}
+}
