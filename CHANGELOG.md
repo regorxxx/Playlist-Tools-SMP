@@ -49,6 +49,7 @@
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
+- UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
 - Other tools\Playlist revive: 'ACOUSTID_ID' and 'MUSICBRAINZ_TRACKID' are now checked to find exact matches, if MD5 and all other exact match rules fail.
 - Other tools\Check Tags: added 'TITLE' to the list of default tags to be checked. Added special conditions to title tags.
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
