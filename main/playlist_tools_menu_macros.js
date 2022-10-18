@@ -113,36 +113,18 @@
 					menu_properties['presets'][1] = JSON.stringify(presets);
 					overwriteProperties(menu_properties); // Updates panel
 				}});
-				// Delete
-				{
-					const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
-					propMacros.forEach( (macro, index) => {
-						const entryText = (macro.name === 'sep' ? '------(separator)------' : (macro.name.length > 40 ? macro.name.substring(0,40) + ' ...' : macro.name));
-						menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-							propMacros.splice(index, 1);
-							menu_properties['macros'][1] = JSON.stringify(propMacros);
-							// Presets
-							if (presets.hasOwnProperty('macros')) {
-								presets.macros.splice(presets.macros.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(macro);}), 1);
-								if (!presets.macros.length) {delete presets.macros;}
-								menu_properties['presets'][1] = JSON.stringify(presets);
-							}
-							overwriteProperties(menu_properties); // Updates panel
-							macros = propMacros; // Discards any non saved macro
-						}});
+				menu.newEntry({menuName, entryText: 'sep'});
+				{	// Add / Remove
+					createSubMenuEditEntries(menuName, {
+						name,
+						list: propMacros, 
+						propName: 'macros', 
+						defaults: macrosDefaults, 
+						defaultPreset: null,
+						input: null,
+						bAdd: false,
+						bImport: false
 					});
-					if (!macros.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-					menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-						propMacros = [...macrosDefaults];
-						menu_properties['macros'][1] = JSON.stringify(propMacros);
-						if (presets.hasOwnProperty('macros')) {
-							delete presets.macros;
-							menu_properties['presets'][1] = JSON.stringify(presets);
-						}
-						overwriteMenuProperties(); // Updates panel
-						macros = []; // Discards any non saved macro
-					}});
 				}
 			}});
 		}

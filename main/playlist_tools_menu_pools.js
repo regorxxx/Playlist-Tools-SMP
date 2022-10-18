@@ -15,6 +15,7 @@
 		}
 		readmes[newReadmeSep()] = 'sep';
 		readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_pools.txt';
+		readmes[name + ' (allowed keys)'] = folders.xxx + '\\presets\\Playlist Tools\\pools\\allowedKeys.txt';
 		forcedQueryMenusEnabled[name] = true;
 		let menuName = menu.newMenu(name);
 		{	// Automate tags
@@ -44,7 +45,7 @@
 					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 					insertMethod: 'intercalate',
 					toPls: 'Top tracks mix', 
-					sort: '%playlist_index%',
+					sort: '%PLAYLIST_INDEX%',
 				}},
 				{name: 'sep'},
 				{name: 'Top recently played tracks mix', pool: {
@@ -76,6 +77,16 @@
 					toPls: 'Current genre/style and instrumentals', 
 					sort: '',
 				}},
+				{name: 'Current genre/style and instrumentals', pool: {
+					fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
+					query: {_LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', 
+					_LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5', 
+					_LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globTags.genre + ' IS instrumental or ' + globTags.style + ' IS instrumental) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)'}, 
+					pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
+					toPls: 'Current genre/style and instrumentals', 
+					sort: '',
+				}},
+				{name: 'sep'},
 				{name: 'Classic Pools (50 artists current genre)', pool: {
 					fromPls: {_GROUP_0: 50},
 					group: {_GROUP_0: globTags.artist},
@@ -84,8 +95,7 @@
 					toPls: 'Classic Pools (50 artists current genre)', 
 					sort: '',
 				}},
-				{name: 'sep'},
-				{name: 'Classic Pools (50 artists)', pool: {
+				{name: 'Classic Pools (50 random artists)', pool: {
 					fromPls: {_GROUP_0: 50},
 					group: {_GROUP_0: globTags.artist},
 					limit: {_GROUP_0: 3},
@@ -149,8 +159,8 @@
 					}
 				},
 			};
-			const do_pool = (pool, properties) => {
-				if (defaultArgs.bProfile) {var profiler = new FbProfiler('do_pool');}
+			const processPool = (pool, properties) => {
+				if (defaultArgs.bProfile) {var profiler = new FbProfiler('processPool');}
 				let handleListTo = new FbMetadbHandleList();
 				let bAbort = false;
 				Object.keys(pool.fromPls).forEach((plsName, n) => {
@@ -385,7 +395,7 @@
 				plman.ClearPlaylist(idxTo);
 				// Harmonic mix?
 				if (pool.hasOwnProperty('harmonicMix') && pool.harmonicMix) {
-					const handleListMix = harmonicMixing({selItems: handleListTo,	keyTag: defaultArgs.keyTag,	bSendToPls: false,	bDoublePass: true, bDebug: defaultArgs.bDebug});
+					const handleListMix = harmonicMixing({selItems: handleListTo, keyTag: defaultArgs.keyTag, bSendToPls: false, bDoublePass: true, bDebug: defaultArgs.bDebug});
 					const newCount = handleListMix ? handleListMix.Count : 0;
 					const oriCount = handleListTo.Count;
 					if (!newCount) { // For ex. without key tags
@@ -432,7 +442,7 @@
 					return pair;
 				});
 				if (fromPls.some((pair) => {return pair.length % 2 !== 0})) {console.log('Input was not a list of pairs separated \';\''); return;}
-				if (fromPls.some((pair) => {return isNaN(pair[1])})) {console.log('# tracks was not a number'); return;}
+				if (fromPls.some((pair) => {return Number.isNaN(pair[1])})) {console.log('# tracks was not a number'); return;}
 				fromPls = Object.fromEntries(fromPls);
 				// Queries
 				let query;
@@ -477,7 +487,7 @@
 				catch (e) {return;}
 				// TODO: Test sorting
 				// Object
-				return {fromPls, query, toPls, sort, pickMethod};
+				return {pool : {fromPls, query, toPls, sort, pickMethod}};
 			}
 			// Menus
 			menu.newEntry({menuName, entryText: 'Use Playlists / Queries as pools:', func: null, flags: MF_GRAYED});
@@ -505,7 +515,7 @@
 							}
 						});
 					}
-					menu.newEntry({menuName, entryText, func: () => {do_pool(pool);}});
+					menu.newEntry({menuName, entryText, func: () => {processPool(pool);}});
 				}
 			});
 			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: () => {
@@ -536,7 +546,7 @@
 								}
 							});
 						}
-						menu.newEntry({menuName, entryText: poolName, func: () => {do_pool(pool, menu_properties);}});
+						menu.newEntry({menuName, entryText: poolName, func: () => {processPool(pool, menu_properties);}});
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
@@ -547,7 +557,7 @@
 						// Input
 						const input = inputPool();
 						if (!input) {return;}
-						const pool = clone(input);
+						const pool = clone(input.pool);
 						if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {
 							Object.keys(pool.query).forEach((key) => { // With forced query enabled
 								if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
@@ -564,7 +574,7 @@
 							});
 						}
 						// Execute
-						do_pool(pool, menu_properties);
+						processPool(pool, menu_properties);
 						// For internal use original object
 						selArg.pool = input;
 						menu_properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
@@ -574,58 +584,14 @@
 					menu.newEntry({menuName, entryText: 'sep'});
 				}
 				{	// Add / Remove
-					menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: () => {
-						// Input all variables
-						let input;
-						let entryName = '';
-						try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
-						catch (e) {return;}
-						if (!entryName.length) {return;}
-						if (entryName === 'sep') {input = {name: entryName};} // Add separator
-						else { // or new entry
-							const pool = inputPool();
-							if (!pool) {return;}
-							input = {name: entryName, pool}
-						}
-						// Add entry
-						pools.push(input);
-						// Save as property
-						menu_properties['pools'][1] = JSON.stringify(pools); // And update property with new value
-						// Presets
-						if (!presets.hasOwnProperty('pools')) {presets.pools = [];}
-						presets.pools.push(input);
-						menu_properties['presets'][1] = JSON.stringify(presets);
-						overwriteMenuProperties(); // Updates panel
-					}});
-					{
-						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
-						pools.forEach( (pool, index) => {
-							const entryText = (pool.name === 'sep' ? '------(separator)------' : (pool.name.length > 40 ? pool.name.substring(0,40) + ' ...' : pool.name));
-							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-								pools.splice(index, 1);
-								menu_properties['pools'][1] = JSON.stringify(pools);
-								// Presets
-								if (presets.hasOwnProperty('pools')) {
-									presets.pools.splice(presets.pools.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(pool);}), 1);
-									if (!presets.pools.length) {delete presets.pools;}
-									menu_properties['presets'][1] = JSON.stringify(presets);
-								}
-								overwriteMenuProperties(); // Updates panel
-							}});
-						});
-						if (!pools.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-							pools = [...poolsDefaults];
-							menu_properties['pools'][1] = JSON.stringify(pools);
-							// Presets
-							if (presets.hasOwnProperty('pools')) {
-								delete presets.pools;
-								menu_properties['presets'][1] = JSON.stringify(presets);
-							}
-							overwriteMenuProperties(); // Updates panel
-						}});
-					}
+					createSubMenuEditEntries(menuName, {
+						name,
+						list: pools, 
+						propName: 'pools', 
+						defaults: poolsDefaults, 
+						defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pools\\themes.json',
+						input : inputPool
+					});
 				}
 			}});
 			menu.newCondEntry({entryText: 'Get playlist manager path (cond)', condFunc: () => {

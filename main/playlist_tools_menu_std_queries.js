@@ -38,6 +38,23 @@
 				// Checks
 				menu_properties['searchQueries'].push({func: isJSON}, menu_properties['searchCustomArg'][1]);
 				menu_properties['searchCustomArg'].push({func: isJSON}, menu_properties['searchCustomArg'][1]);
+				// Helpers
+				const inputStdQuery = () => {
+					let query = '';
+					try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true);}
+					catch (e) {return;}
+					if (!query.length) {return;}
+					if (!checkQuery(query, true)) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return}
+					let tfo = '';
+					try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true);}
+					catch (e) {return;}
+					let direction = 1;
+					try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true));}
+					catch (e) {return;}
+					if (isNaN(direction)) {return;}
+					direction = direction > 0 ? 1 : -1;
+					return {query, sort: {tfo, direction}};
+				};
 				// Menus
 				menu.newEntry({menuName, entryText: 'Standard search with queries:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
@@ -86,69 +103,14 @@
 						menu.newEntry({menuName, entryText: 'sep'});
 					}
 					{	// Add / Remove
-						menu.newEntry({menuName, entryText: 'Add new entry to list...' , func: () => {
-							// Input all variables
-							let input;
-							let entryName = '';
-							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName, '', true);}
-							catch (e) {return;}
-							if (!entryName.length) {return;}
-							if (entryName === 'sep') {input = {name: entryName};} // Add separator
-							else { // or new entry
-								let query = '';
-								try {query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true);}
-								catch (e) {return;}
-								if (!query.length) {return;}
-								if (!checkQuery(query, true)) {fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName);return}
-								let tfo = '';
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true);}
-								catch (e) {return;}
-								let direction = 1;
-								try {direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true));}
-								catch (e) {return;}
-								if (isNaN(direction)) {return;}
-								direction = direction > 0 ? 1 : -1;
-								input = {name: entryName, query, sort: {tfo, direction}};
-							}
-							// Add entry
-							queryFilter.push(input);
-							// Save as property
-							menu_properties['searchQueries'][1] = JSON.stringify(queryFilter); // And update property with new value
-							// Presets
-							if (!presets.hasOwnProperty('searchQueries')) {presets.searchQueries = [];}
-							presets.searchQueries.push(input);
-							menu_properties['presets'][1] = JSON.stringify(presets);
-							overwriteMenuProperties(); // Updates panel
-						}});
-						{
-							const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), menuName);
-							queryFilter.forEach( (queryObj, index) => {
-								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
-								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-									queryFilter.splice(index, 1);
-									menu_properties['searchQueries'][1] = JSON.stringify(queryFilter);
-									// Presets
-									if (presets.hasOwnProperty('searchQueries')) {
-										presets.searchQueries.splice(presets.searchQueries.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
-										if (!presets.searchQueries.length) {delete presets.searchQueries;}
-										menu_properties['presets'][1] = JSON.stringify(presets);
-									}
-									overwriteMenuProperties(); // Updates panel
-								}});
-							});
-							if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-								queryFilter = [...queryFilterDefaults];
-								menu_properties['searchQueries'][1] = JSON.stringify(queryFilter);
-								// Presets
-								if (presets.hasOwnProperty('searchQueries')) {
-									delete presets.searchQueries;
-									menu_properties['presets'][1] = JSON.stringify(presets);
-								}
-								overwriteMenuProperties(); // Updates panel
-							}});
-						}
+						createSubMenuEditEntries(menuName, {
+							name,
+							list: queryFilter, 
+							propName: 'searchQueries', 
+							defaults: queryFilterDefaults, 
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\std_query_filter\\themes.json',
+							input : inputStdQuery
+						});
 					}
 				}});
 			}

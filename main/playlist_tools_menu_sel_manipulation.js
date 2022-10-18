@@ -33,6 +33,14 @@
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Sort selection (legacy):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					// Helper
+					const inputSort = () => {
+						let tfo = '';
+						try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true);}
+						catch (e) {return;}
+						if (!tfo.length) {return;}
+						return {tfo};
+					};
 					// Static menus
 					selArgs.forEach( (selArg) => {
 						if (selArg.name === 'sep') {
@@ -74,10 +82,9 @@
 								// On first execution, must update from property
 								selArg.tfo = JSON.parse(menu_properties['sortLegacyCustomArg'][1]).tfo;
 								// Input
-								let tfo;
-								try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true);}
-								catch (e) {return;}
-								if (!tfo.length) {return;}
+								const input = inputSort();
+								if (!input) {return;}
+								const tfo = input.tfo;
 								// Execute
 								plman.UndoBackup(ap);
 								plman.SortByFormat(ap, tfo, true);
@@ -90,60 +97,14 @@
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						}
 						{	// Add / Remove
-							menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
-								// Input all variables
-								let input;
-								let entryName = '';
-								try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
-								catch (e) {return;}
-								if (!entryName.length) {return;}
-								if (entryName === 'sep') {input = {name: entryName};} // Add separator
-								else { // or new entry
-									let tfo = '';
-									try {tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true);}
-									catch (e) {return;}
-									if (!tfo.length) {return;}
-									input = {name: entryName, tfo};
-								}
-								// Add entry
-								sortLegacy.push(input);
-								// Save as property
-								menu_properties['sortLegacy'][1] = JSON.stringify(sortLegacy); // And update property with new value
-								// Presets
-								if (!presets.hasOwnProperty('sortLegacy')) {presets.sortLegacy = [];}
-								presets.sortLegacy.push(input);
-								menu_properties['presets'][1] = JSON.stringify(presets);
-								overwriteMenuProperties(); // Updates panel
-							}});
-							{
-								const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
-								sortLegacy.forEach( (sortObj, index) => {
-									const entryText = (sortObj.name === 'sep' ? '------(separator)------' : (sortObj.name.length > 40 ? sortObj.name.substring(0,40) + ' ...' : sortObj.name));
-									menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-										sortLegacy.splice(index, 1);
-										menu_properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
-										// Presets
-										if (presets.hasOwnProperty('sortLegacy')) {
-											presets.sortLegacy.splice(presets.sortLegacy.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(sortObj);}), 1);
-											if (!presets.sortLegacy.length) {delete presets.sortLegacy;}
-											menu_properties['presets'][1] = JSON.stringify(presets);
-										}
-										overwriteMenuProperties(); // Updates panel
-									}});
-								});
-								if (!sortLegacy.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-									sortLegacy = [...sortLegacyDefaults];
-									menu_properties['sortLegacy'][1] = JSON.stringify(sortLegacy);
-									// Presets
-									if (presets.hasOwnProperty('sortLegacy')) {
-										delete presets.sortLegacy;
-										menu_properties['presets'][1] = JSON.stringify(presets);
-									}
-									overwriteMenuProperties(); // Updates panel
-								}});
-							}
+							createSubMenuEditEntries(subMenuName, {
+								name,
+								list: sortLegacy, 
+								propName: 'sortLegacy', 
+								defaults: sortLegacyDefaults, 
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\sort\\themes.json',
+								input: inputSort
+							});
 						}
 					}});
 				}
@@ -251,6 +212,14 @@
 					// Check
 					menu_properties['shuffle'].push({func: isJSON}, menu_properties['shuffle'][1]);
 					menu_properties['shuffleCustomArg'].push({func: isJSON}, menu_properties['shuffleCustomArg'][1]);
+					// Helpers
+					const inputShuffle = () => {
+						let tagName = '';
+						try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
+						catch (e) {return;}
+						if (!tagName.length) {return;}
+						return {args: {tagName}};
+					};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Smart shuffle (Spotify-like):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -279,74 +248,26 @@
 								// On first execution, must update from property
 								selArg.args.tagName = JSON.parse(menu_properties['shuffleCustomArg'][1]).args.tagName;
 								// Input
-								let tagName;
-								try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
-								catch (e) {return;}
-								if (!tagName.length) {return;}
+								const input = inputShuffle();
+								if (!input) {return;}
 								// Execute
-								huffleByTags({tagName});
+								shuffleByTags(input.args);
 								// For internal use original object
-								selArg.args.tagName = tagName;
+								selArg.args = input.args;
 								menu_properties['shuffleCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
 								overwriteMenuProperties(); // Updates panel
 							}, flags: multipleSelectedFlagsReorder});
 							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						}
 						{	// Add / Remove
-							menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
-								// Input all variables
-								let input;
-								let entryName = '';
-								try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
-								catch (e) {return;}
-								if (!entryName.length) {return;}
-								if (entryName === 'sep') {input = {name: entryName};} // Add separator
-								else { // or new entry
-									let tagName = '';
-									try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
-									catch (e) {return;}
-									if (!tagName.length) {return;}
-									input = {name: entryName, args: {tagName}};
-								}
-								// Add entry
-								shuffle.push(input);
-								// Save as property
-								menu_properties['shuffle'][1] = JSON.stringify(shuffle); // And update property with new value
-								// Presets
-								if (!presets.hasOwnProperty('shuffle')) {presets.shuffle = [];}
-								presets.shuffle.push(input);
-								menu_properties['presets'][1] = JSON.stringify(presets);
-								overwriteMenuProperties(); // Updates panel
-							}});
-							{
-								const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
-								shuffle.forEach( (sortObj, index) => {
-									const entryText = (sortObj.name === 'sep' ? '------(separator)------' : (sortObj.name.length > 40 ? sortObj.name.substring(0,40) + ' ...' : sortObj.name));
-									menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-										shuffle.splice(index, 1);
-										menu_properties['shuffle'][1] = JSON.stringify(shuffle);
-										// Presets
-										if (presets.hasOwnProperty('shuffle')) {
-											presets.shuffle.splice(presets.shuffle.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(sortObj);}), 1);
-											if (!presets.shuffle.length) {delete presets.shuffle;}
-											menu_properties['presets'][1] = JSON.stringify(presets);
-										}
-										overwriteMenuProperties(); // Updates panel
-									}});
-								});
-								if (!shuffle.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-								menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-									shuffle = [...shuffleDefaults];
-									menu_properties['shuffle'][1] = JSON.stringify(shuffle);
-									// Presets
-									if (presets.hasOwnProperty('shuffle')) {
-										delete presets.shuffle;
-										menu_properties['presets'][1] = JSON.stringify(presets);
-									}
-									overwriteMenuProperties(); // Updates panel
-								}});
-							}
+							createSubMenuEditEntries(subMenuName, {
+								name,
+								list: shuffle, 
+								propName: 'shuffle', 
+								defaults: shuffleDefaults, 
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\shuffle\\themes.json',
+								input : inputShuffle
+							});
 						}
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});

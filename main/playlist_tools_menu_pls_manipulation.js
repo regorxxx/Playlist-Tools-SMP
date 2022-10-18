@@ -117,6 +117,17 @@
 					// Check
 					menu_properties['queryFilter'].push({func: isJSON}, menu_properties['queryFilter'][1]);
 					menu_properties['queryFilter'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['queryFilter'][1]);
+					// Helpers
+					const inputPlsQuery = () => {
+							let query;
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true);}
+							catch (e) {return;}
+							if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
+								try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
+								catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
+							}
+							return {query};
+						};
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Filter active playlist: (Ctrl + click to invert)', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -192,60 +203,14 @@
 							overwriteMenuProperties(); // Updates panel
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Add new query to list...' , func: () => {
-							let input;
-							let entryName;
-							try {entryName = utils.InputBox(window.ID, 'Enter name for menu entr.\nWrite \'sep\' to add a line.', scriptName + ': ' + name, '', true);}
-							catch (e) {return;}
-							if (!entryName.length) {return;}
-							if (entryName === 'sep') {input = {name: entryName};} // Add separator
-							else {
-								let query;
-								try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true);}
-								catch (e) {return;}
-								if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
-									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
-									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
-								}
-								input = {name: entryName, query};
-							}
-							queryFilter.push(input);
-							menu_properties['queryFilter'][1] = JSON.stringify(queryFilter);
-							// Presets
-							if (!presets.hasOwnProperty('queryFilter')) {presets.queryFilter = [];}
-							presets.queryFilter.push(input);
-							menu_properties['presets'][1] = JSON.stringify(presets);
-							overwriteMenuProperties(); // Updates panel
-						}});
-						{
-							const subMenuSecondName = menu.newMenu('Remove query from list...', subMenuName);
-							queryFilter.forEach( (queryObj, index) => {
-								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
-								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-									queryFilter.splice(index, 1);
-									menu_properties['queryFilter'][1] = JSON.stringify(queryFilter);
-									// Presets
-									if (presets.hasOwnProperty('queryFilter')) {
-										presets.queryFilter.splice(presets.queryFilter.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
-										if (!presets.queryFilter.length) {delete presets.queryFilter;}
-										menu_properties['presets'][1] = JSON.stringify(presets);
-									}
-									overwriteMenuProperties(); // Updates panel
-								}});
-							});
-							if (!queryFilter.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-								queryFilter = [...queryFilterDefaults];
-								menu_properties['queryFilter'][1] = JSON.stringify(queryFilter);
-								// Presets
-								if (presets.hasOwnProperty('queryFilter')) {
-									delete presets.queryFilter;
-									menu_properties['presets'][1] = JSON.stringify(presets);
-								}
-								overwriteMenuProperties(); // Updates panel
-							}});
-						}
+						createSubMenuEditEntries(subMenuName, {
+							name,
+							list: queryFilter, 
+							propName: 'queryFilter', 
+							defaults: queryFilterDefaults, 
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_query_filter\\themes.json',
+							input : inputPlsQuery
+						});
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
