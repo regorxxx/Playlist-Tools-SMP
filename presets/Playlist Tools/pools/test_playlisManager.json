@@ -12,10 +12,10 @@
 			},
 			"query": {
 				"test": "ALL",
-				"_LIBRARY_1": "GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll"
+				"_LIBRARY_1": "GENRE IS progressive rock OR GENRE IS hard rock OR GENRE IS rock & roll"
 			},
 			"toPls": "Playlist Manager test",
-			"sort": "%playlist_index%",
+			"sort": "%PLAYLIST_INDEX%",
 			"pickMethod": {
 				"test": "random",
 				"_LIBRARY_1": "random"

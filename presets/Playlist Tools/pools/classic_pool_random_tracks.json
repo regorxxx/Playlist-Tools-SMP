@@ -16,7 +16,7 @@
 				"_GROUP_0": ""
 			},
 			"toPls": "Classic Pools (tracks)",
-			"sort": "%playlist_index%"
+			"sort": "%PLAYLIST_INDEX%"
 		}
 	}]
 }

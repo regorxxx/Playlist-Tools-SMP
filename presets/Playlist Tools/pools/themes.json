@@ -1,5 +1,5 @@
 {
-	"readme": "Mixes which use 'mood', 'genre/styles' and 'bpm' tags for theme related playlists.",
+	"readme": "Mixes which use 'MOOD', 'GENRE/STYLES' and 'BPM' tags for theme related playlists.",
 	"pools": [{
 		"name": "sep"
 	},
@@ -12,9 +12,9 @@
 				"_LIBRARY_2": 15
 			},
 			"query": {
-				"_LIBRARY_0": "((GENRE IS Rock OR GENRE IS Alt. Rock OR GENRE IS Hard Rock) AND NOT (STYLE IS R&B OR STYLE IS Acoustic OR STYLE IS Americana OR STYLE IS Classic Rock) AND (MOOD IS Uplifting OR MOOD IS Upbeat OR MOOD IS Heavy OR MOOD IS Fast)) AND NOT (MOOD IS Acoustic OR MOOD IS Not electronic OR MOOD IS Relaxed) AND BPM GREATER 120",
-				"_LIBRARY_1": "((GENRE IS Hip-Hop AND NOT (MOOD IS Acoustic OR MOOD IS Not electronic)) OR (GENRE IS Electronic AND NOT (MOOD IS Acoustic OR MOOD IS Not electronic OR MOOD IS Relaxed))) AND BPM GREATER 90",
-				"_LIBRARY_2": "(STYLE IS Gangsta OR STYLE IS Future Bass OR STYLE IS Dance OR STYLE IS Deep House) AND NOT (MOOD IS Acoustic OR MOOD IS Not electronic) AND BPM GREATER 90"
+				"_LIBRARY_0": "((GENRE IS rock OR GENRE IS alt. rock OR GENRE IS hard rock) AND NOT (STYLE IS r&b OR STYLE IS acoustic OR STYLE IS americana OR STYLE IS classic rock) AND (MOOD IS uplifting OR MOOD IS upbeat OR MOOD IS heavy OR MOOD IS fast)) AND NOT (MOOD IS acoustic OR MOOD IS not electronic OR MOOD IS relaxed) AND BPM GREATER 120",
+				"_LIBRARY_1": "((GENRE IS hip-hop AND NOT (MOOD IS acoustic OR MOOD IS not electronic)) OR (GENRE IS electronic AND NOT (MOOD IS acoustic OR MOOD IS not electronic OR MOOD IS relaxed))) AND BPM GREATER 90",
+				"_LIBRARY_2": "(STYLE IS gangsta OR STYLE IS future bass OR STYLE IS dance OR STYLE IS deep house) AND NOT (MOOD IS acoustic OR MOOD IS not electronic) AND BPM GREATER 90"
 			},
 			"toPls": "Workout playlist",
 			"sort": "",

@@ -17,7 +17,7 @@
 				"Playlist C": "ALL"
 			},
 			"toPls": "Intercalate mix",
-			"sort": "%playlist_index%",
+			"sort": "%PLAYLIST_INDEX%",
 			"pickMethod": {
 				"Playlist A": "random",
 				"Playlist B": "random",

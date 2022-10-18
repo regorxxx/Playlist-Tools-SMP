@@ -12,9 +12,9 @@
 				"_LIBRARY_2": 25
 			},
 			"query": {
-				"_LIBRARY_0": "ARTIST IS Arthur",
-				"_LIBRARY_1": "ARTIST IS Barry",
-				"_LIBRARY_2": "ARTIST IS Cherry"
+				"_LIBRARY_0": "ARTIST IS arthur",
+				"_LIBRARY_1": "ARTIST IS barry",
+				"_LIBRARY_2": "ARTIST IS cherry"
 			},
 			"toPls": "Intercalate mix",
 			"sort": "%playlist_index%",

@@ -27,7 +27,7 @@
 				"_SEARCHBYDYNGENRE_0": "ALL"
 			},
 			"toPls": "Search by Distance test",
-			"sort": "%playlist_index%",
+			"sort": "%PLAYLIST_INDEX%",
 			"pickMethod": {
 				"_SEARCHBYGRAPH_0": "random",
 				"_SEARCHBYWEIGHT_0": "random",

@@ -11,8 +11,8 @@
 				"_LIBRARY_1": 25
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Rock OR GENRE IS Alt. Rock",
-				"_LIBRARY_1": "GENRE IS Progressive Rock OR GENRE IS Hard Rock OR GENRE IS Rock & Roll"
+				"_LIBRARY_0": "GENRE IS rock OR GENRE IS alt. rock",
+				"_LIBRARY_1": "GENRE IS progressive rock OR GENRE IS hard rock OR GENRE IS rock & roll"
 			},
 			"toPls": "Rock playlist",
 			"sort": "",
@@ -30,8 +30,8 @@
 				"_LIBRARY_1": 25
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Psychedelic Rock OR GENRE IS Psychedelic",
-				"_LIBRARY_1": "STYLE IS Neo-Psychedelia OR STYLE IS Psychedelic Folk"
+				"_LIBRARY_0": "GENRE IS psychedelic rock OR GENRE IS psychedelic",
+				"_LIBRARY_1": "STYLE IS neo-psychedelia OR STYLE IS psychedelic folk"
 			},
 			"toPls": "Psychedelic playlist",
 			"sort": "",
@@ -49,8 +49,8 @@
 				"_LIBRARY_1": 25
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Folk OR GENRE IS Folk-Rock",
-				"_LIBRARY_1": "GENRE IS Country"
+				"_LIBRARY_0": "GENRE IS folk OR GENRE IS folk-rock",
+				"_LIBRARY_1": "GENRE IS country"
 			},
 			"toPls": "Folk \\ Country playlist",
 			"sort": "",
@@ -68,8 +68,8 @@
 				"_LIBRARY_1": 25
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Blues",
-				"_LIBRARY_1": "GENRE IS Blues"
+				"_LIBRARY_0": "GENRE IS blues",
+				"_LIBRARY_1": "GENRE IS blues"
 			},
 			"toPls": "Blues playlist",
 			"sort": "",
@@ -87,8 +87,8 @@
 				"_LIBRARY_1": 25
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Jazz",
-				"_LIBRARY_1": "GENRE IS Jazz Vocal"
+				"_LIBRARY_0": "GENRE IS jazz",
+				"_LIBRARY_1": "GENRE IS jazz vocal"
 			},
 			"toPls": "Jazz playlist",
 			"sort": "",
@@ -106,8 +106,8 @@
 				"_LIBRARY_1": 25
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Soul OR STYLE IS R&B",
-				"_LIBRARY_1": "GENRE IS Soul OR STYLE IS R&B"
+				"_LIBRARY_0": "GENRE IS soul",
+				"_LIBRARY_1": "STYLE IS r&b"
 			},
 			"toPls": "Soul \\ RnB playlist",
 			"sort": "",
@@ -121,18 +121,15 @@
 		"name": "Hip-Hop playlist",
 		"pool": {
 			"fromPls": {
-				"_LIBRARY_0": 25,
-				"_LIBRARY_1": 25
+				"_LIBRARY_0": 50
 			},
 			"query": {
-				"_LIBRARY_0": "GENRE IS Hip-Hop",
-				"_LIBRARY_1": "GENRE IS Hip-Hop"
+				"_LIBRARY_0": "GENRE IS hip-hop"
 			},
 			"toPls": "Hip-Hop playlist",
 			"sort": "",
 			"pickMethod": {
-				"_LIBRARY_0": "random",
-				"_LIBRARY_1": "random"
+				"_LIBRARY_0": "random"
 			}
 		}
 	}]
