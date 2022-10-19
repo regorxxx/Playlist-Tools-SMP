@@ -124,8 +124,8 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName:, de
 			try {newEntry = utils.InputBox(window.ID, 'Edit entry as JSON:', scriptName + ': ' + options.name, oriEntry, true);}
 			catch (e) {return;}
 			if (newEntry === oriEntry) {return;}
-			if (!newEntry || !newEntry.length) {return;}
-			try {newEntry = JSON.parse(newEntry);} catch (e) {return;}
+			if (!newEntry || !newEntry.length) {fb.ShowPopupMessage('Input: ' + newEntry + '\n\nNon valid entry.', 'JSON error'); return;}
+			try {newEntry = JSON.parse(newEntry);} catch (e) {fb.ShowPopupMessage('Input: ' + newEntry.toString() + '\n\n' + e, 'JSON error'); return;}
 			if (!newEntry) {return;}
 			options.list[index] = newEntry;
 			menu_properties[options.propName][1] = JSON.stringify(options.list);
