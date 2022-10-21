@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/10/22
+//19/10/22
 
 /*	
 	Scatter by tags
@@ -57,6 +57,7 @@ function scatterByTags({
 	if (bSendToActivePls) {
 		// 'Hack' Inserts on focus (may be at any place of selection), but then removes the original selection, 
 		// so inserted tracks get sent to the right position. Only works for contiguous selections!
+		const focusIdx = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
 		plman.UndoBackup(plman.ActivePlaylist);
 		plman.InsertPlaylistItems(plman.ActivePlaylist, plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist), selItemsArray);
 		plman.RemovePlaylistSelection(plman.ActivePlaylist); 
@@ -249,8 +250,8 @@ function shuffleByTags({
 	if (bSendToActivePls) {
 		// 'Hack' Inserts on focus (may be at any place of selection), but then removes the original selection, 
 		// so inserted tracks get sent to the right position. Only works for contiguous selections!
-		plman.UndoBackup(plman.ActivePlaylist);
 		const focusIdx = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
+		plman.UndoBackup(plman.ActivePlaylist);
 		plman.InsertPlaylistItems(plman.ActivePlaylist, plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist), selItemsArray);
 		plman.RemovePlaylistSelection(plman.ActivePlaylist);
 		// Try to restore prev. selection
