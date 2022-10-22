@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/10/22
+//22/10/22
 
 /* 
 	Top Tracks
@@ -15,7 +15,7 @@ if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount'))) {fb.S
 // Top n Tracks
 function topTracks({
 						playlistLength = 25, 
-						sortBy = '$sub(99999,%PLAY_COUNT%)', 
+						sortBy = globTags.sortPlayCount, 
 						checkDuplicatesBy = globTags.remDupl,
 						forcedQuery = globQuery.notLowRating,
 						playlistName = 'Top ' + playlistLength + ' Tracks',
@@ -27,7 +27,7 @@ function topTracks({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
 	if (bProfile) {var test = new FbProfiler('topTracks');}
 	//Load query
-	let query = '%PLAY_COUNT% GREATER 1';
+	let query = _q(globTags.playCount) + ' GREATER 1';
 	let outputHandleList;
 	query = forcedQuery.length ? '(' + query + ') AND (' + forcedQuery + ')' : query;
 	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check

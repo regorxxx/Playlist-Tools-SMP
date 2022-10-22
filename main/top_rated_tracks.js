@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/10/22
+//22/10/22
 
 /* 
 	Top Rated Tracks
@@ -15,11 +15,11 @@ if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.
 // Top n Rated Tracks
 function topRatedTracks({
 						playlistLength = 50, 
-						sortBy = '$sub(99999,%PLAY_COUNT%)', 
+						sortBy = globTags.sortPlayCount, 
 						checkDuplicatesBy = globTags.remDupl,
 						forcedQuery = '',
 						ratingLimits = [1,5],
-						ratingTag = 'RATING',
+						ratingTag = globTags.rating,
 						playlistName = 'Top ' + playlistLength + ' Rated Tracks',
 						bSendToPls = true,
 						bProfile = false

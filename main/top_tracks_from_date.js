@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/10/22
+//22/10/22
 
 /* 
 	Top X Tracks From Date
@@ -17,7 +17,7 @@ const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
 // Most played n Tracks from date
 function topTracksFromDate({
 						playlistLength = 25, 
-						sortBy = '$sub(99999,%PLAY_COUNT%)', 
+						sortBy = globTags.sortPlayCount, 
 						checkDuplicatesBy = globTags.remDupl,
 						year =  new Date().getFullYear() - 1, // Previous year
 						last = '1 WEEKS',
@@ -43,7 +43,9 @@ function topTracksFromDate({
 	}
 	if (bProfile) {var test = new FbProfiler('topTracksFromDate');}
 	// Load query
-	const query = bUseLast ? '%LAST_PLAYED% DURING LAST ' + last.toUpperCase() : '%LAST_PLAYED% AFTER ' + year + '-01-01 AND NOT %FIRST_PLAYED% AFTER ' + (year + 1) + '-01-01';
+	const query = bUseLast 
+		? '%LAST_PLAYED_ENHANCED% DURING LAST ' + last.toUpperCase()
+		: '%LAST_PLAYED_ENHANCED% AFTER ' + year + '-01-01 AND NOT %FIRST_PLAYED_ENHANCED% AFTER ' + (year + 1) + '-01-01';
 	let outputHandleList;
 	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query));} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return;}
@@ -52,11 +54,11 @@ function topTracksFromDate({
 		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy});
 	}
 	// Filter Play counts by date
-	const datesArray = fb.TitleFormat('[%PLAYED_TIMES%]').EvalWithMetadbs(outputHandleList);
-	const datesLastFMArray = fb.TitleFormat('[%LASTFM_PLAYED_TIMES%]').EvalWithMetadbs(outputHandleList);
-	const lastPlayedArray = fb.TitleFormat('[%LAST_PLAYED%]').EvalWithMetadbs(outputHandleList);
-	const firstPlayedArray = fb.TitleFormat('[%FIRST_PLAYED%]').EvalWithMetadbs(outputHandleList);
-	const playCountArray = fb.TitleFormat('[%PLAY_COUNT%]').EvalWithMetadbs(outputHandleList);
+	const datesArray = fb.TitleFormat(_bt('PLAYED_TIMES')).EvalWithMetadbs(outputHandleList);
+	const datesLastFMArray = fb.TitleFormat(_bt('LASTFM_PLAYED_TIMES')).EvalWithMetadbs(outputHandleList);
+	const lastPlayedArray = fb.TitleFormat(_bt('LAST_PLAYED_ENHANCED')).EvalWithMetadbs(outputHandleList);
+	const firstPlayedArray = fb.TitleFormat(_bt('FIRST_PLAYED_ENHANCED')).EvalWithMetadbs(outputHandleList);
+	const playCountArray = fb.TitleFormat(_b(globTags.playCount)).EvalWithMetadbs(outputHandleList);
 	const datesArrayLength = datesArray.length;
 	let dataPool = [];
 	let pool = [];
