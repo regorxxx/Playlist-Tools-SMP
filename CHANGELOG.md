@@ -49,6 +49,9 @@
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
+- Top Rated Tracks from...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
+- Most played Tracks...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
+- Most Played Tracks from...: now also includes scrobbles from Last.Fm. So in case tracks have been played at Spotify or other players, as long as scrobbles as synced by 'Enhanced playback statistics' plugin, those tracks are considered eligible the same than any track played within Foobar2000.
 - UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
 - Other tools\Playlist revive: 'ACOUSTID_ID' and 'MUSICBRAINZ_TRACKID' are now checked to find exact matches, if MD5 and all other exact match rules fail.
 - Other tools\Check Tags: added 'TITLE' to the list of default tags to be checked. Added special conditions to title tags.
@@ -668,8 +671,8 @@
 ### Fixed
 - Search by Distance Descriptors: Multiple fixes on descriptors found with the new debug code.
 - Buttons framework: icon bugfix.
-- 'Top rated Tracks from...\From year' crash on input.
-- 'Most Played Tracks from Date' crash.
+- Top rated Tracks from...\From year: crash on input.
+- Most Played Tracks from Date: crash.
 
 ## [1.0.1] - 2021-05-02
 ### Added
