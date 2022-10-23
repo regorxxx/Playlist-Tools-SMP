@@ -1,7 +1,7 @@
 ﻿'use strict';
-//10/10/22
+//23/10/22
 
-/*	
+/*
 	Search by Distance
 	-----------------------------------
 	Creates a playlist with similar tracks to the currently selected one according
@@ -920,7 +920,7 @@ async function do_searchby_distance({
 				.filter((tagName) => {return !tagsCache.cache.has(tagName);});
 			if (missingOnCache.length) {
 				console.log('Caching missing tags...');
-				await tagsCache.cacheLibraryTags(missingOnCache, 100, 50, libraryItems.Convert(), true);
+				await tagsCache.cacheTags(missingOnCache, 100, 50, libraryItems.Convert(), true);
 			}
 		}
 		
