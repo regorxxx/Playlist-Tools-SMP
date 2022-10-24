@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//24/10/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -25,6 +25,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	checkInputA:	['Tag or titleformat expression to check (1)', globTags.artist, {func: isStringWeak}, globTags.artist],
 	checkInputB:	['Tag or titleformat expression to check (2)', globTags.date, {func: isStringWeak}, globTags.date],
 	checkInputC:	['Tag or titleformat expression to check (3)', globTags.title, {func: isStringWeak}, globTags.title],
+	bAdvTitle:		['Advanced RegExp title matching?', true, {func: isBoolean}, true]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -33,13 +34,16 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Show Duplicates': new themedButton({x: 0, y: 0, w: 116, h: 22}, 'Show duplicates', function (mask) {
 		if (mask === MK_SHIFT) {
-			settingsMenu(this, true, ['buttons_playlist_show_duplicates.js']).btn_up(this.currX, this.currY + this.currH);
-		} else if (mask === MK_CONTROL) {
-			const checkKeys = Object.keys(this.buttonsProperties).map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
-			removeDuplicatesV2({checkKeys, bProfile: true});
+			settingsMenu(this, true, ['buttons_playlist_show_duplicates.js'], {bAdvTitle: {popup: globRegExp.title.desc}}).btn_up(this.currX, this.currY + this.currH);
 		} else {
-			const checkKeys = Object.keys(this.buttonsProperties).map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
-			showDuplicates({checkKeys, bProfile: true});
+			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => {return key.startsWith('check')})
+				.map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
+			const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
+			if (mask === MK_CONTROL) {
+				removeDuplicatesV2({checkKeys, bAdvTitle, bProfile: true});
+			} else {
+				showDuplicates({checkKeys, bAdvTitle, bProfile: true});
+			}
 		}
 	}, null, void(0), (parent) => {
 		const checkKeys = Object.keys(parent.buttonsProperties).map((key) => {return parent.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!

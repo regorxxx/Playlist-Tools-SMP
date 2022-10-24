@@ -82,7 +82,7 @@
 							queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
 							queryObj.name = queryName;
 							// Entries
-							const sameByArgs = {...queryObj.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery};
+							const sameByArgs = {...queryObj.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery, checkDuplicatesBy: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
 							menu.newEntry({menuName, entryText: 'By ' + queryName, func: () => {searchSameByCombs(sameByArgs);}, flags: focusFlags});
 						}
@@ -101,7 +101,7 @@
 							selArg.args.sameBy = convertStringToObject(input, 'number', ',');
 							menu_properties['sameByCustomArg'][1] = convertObjectToString(selArg.args.sameBy); // And update property with new value
 							overwriteMenuProperties(); // Updates panel
-							const sameByArgs = {...selArg.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery};
+							const sameByArgs = {...selArg.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery, checkDuplicatesBy: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
 							searchSameByCombs(sameByArgs);
 						}, flags: focusFlags});

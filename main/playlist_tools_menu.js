@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//24/10/22
 
 /* 
 	Playlist Tools Menu
@@ -53,7 +53,9 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	keyTag:						['Key tag remap', globTags.key], // It may be overwritten by Search by distance property too, are equivalent!
 	styleGenreTag:				['Style/Genre tags for Dyngenre translation', JSON.stringify(['$ascii(%' + globTags.genre + '%)', '$ascii(%' + globTags.style + '%)'])],
 	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Write tags': true, 'Pools': false, 'Search by distance': false, 'Remove duplicates': false, 'Import track list': false})],
-	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})]
+	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})],
+	checkDuplicatesBy:			['Remove duplicates by', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
+	bAdvTitle:					['Duplicates RegExp title matching?', true, {func: isBoolean}, true],
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
@@ -69,27 +71,29 @@ let menu_propertiesBack = JSON.parse(JSON.stringify(menu_properties));
 let menu_panelPropertiesBack = JSON.parse(JSON.stringify(menu_panelProperties));
 
 // Checks
-menu_properties['playlistLength'].push({greater: 0, func: isInt}, menu_properties['playlistLength'][1]);
-menu_properties['forcedQuery'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['forcedQuery'][1]);
-menu_properties['forcedQueryMenusEnabled'].push({func: isJSON}, menu_properties['forcedQueryMenusEnabled'][1]);
-menu_properties['presets'].push({func: isJSON}, menu_properties['presets'][1]);
-menu_properties['keyTag'].push({func: (x) => {return (x === null || isStringWeak(x));}}, menu_properties['keyTag'][1]);
-menu_properties['styleGenreTag'].push({func: isJSON}, menu_properties['styleGenreTag'][1]);
-menu_properties['async'].push({func: isJSON}, menu_properties['async'][1]);
-menu_properties['dynQueryEvalSel'].push({func: isJSON}, menu_properties['dynQueryEvalSel'][1]);
-menu_properties['ratingLimits'].push({func: (str) => {return (isString(str) && str.length === 3 && str.indexOf(',') === 1);}}, menu_properties['ratingLimits'][1]);
+menu_properties.playlistLength.push({greater: 0, func: isInt}, menu_properties.playlistLength[1]);
+menu_properties.forcedQuery.push({func: (query) => {return checkQuery(query, true);}}, menu_properties.forcedQuery[1]);
+menu_properties.forcedQueryMenusEnabled.push({func: isJSON}, menu_properties.forcedQueryMenusEnabled[1]);
+menu_properties.presets.push({func: isJSON}, menu_properties.presets[1]);
+menu_properties.keyTag.push({func: (x) => {return (x === null || isStringWeak(x));}}, menu_properties.keyTag[1]);
+menu_properties.styleGenreTag.push({func: isJSON}, menu_properties.styleGenreTag[1]);
+menu_properties.async.push({func: isJSON}, menu_properties.async[1]);
+menu_properties.dynQueryEvalSel.push({func: isJSON}, menu_properties.dynQueryEvalSel[1]);
+menu_properties.ratingLimits.push({func: (str) => {return (isString(str) && str.length === 3 && str.indexOf(',') === 1);}}, menu_properties.ratingLimits[1]);
 
 /* 
 	Load properties and set default global Parameters
 */
 const defaultArgs = {
-					playlistLength: menu_properties['playlistLength'][1], 
-					forcedQuery: menu_properties['forcedQuery'][1], 
-					ratingLimits: menu_properties['ratingLimits'][1].split(','),
-					bDebug: menu_panelProperties['bDebug'][1],
-					bProfile: menu_panelProperties['bProfile'][1],
-					keyTag: menu_properties['keyTag'][1],
-					styleGenreTag: JSON.parse(menu_properties['styleGenreTag'][1]),
+					playlistLength: menu_properties.playlistLength[1], 
+					forcedQuery: menu_properties.forcedQuery[1], 
+					ratingLimits: menu_properties.ratingLimits[1].split(','),
+					bDebug: menu_panelProperties.bDebug[1],
+					bProfile: menu_panelProperties.bProfile[1],
+					keyTag: menu_properties.keyTag[1],
+					styleGenreTag: JSON.parse(menu_properties.styleGenreTag[1]),
+					checkDuplicatesBy: JSON.parse(menu_properties.checkDuplicatesBy[1]),
+					bAdvTitle: menu_properties.bAdvTitle[1],
 					parent: null
 };
 const newReadmeSep = (() => {let i = 0; return (bFull = false) => {return (bFull ? {['sep' + ++i]: 'sep'} : ['sep' + ++i]);}})()

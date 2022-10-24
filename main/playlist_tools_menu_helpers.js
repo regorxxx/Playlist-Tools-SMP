@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//24/10/22
 
 /*
 	Helpers
@@ -9,8 +9,9 @@ function overwritePanelProperties() {overwriteProp(menu_panelProperties, menu_pr
 function overwriteProp(properties, prefix) {setProperties(properties, prefix, 0, false, true);}
 function overwriteDefaultArgs() {
 	for (let key in defaultArgs) {
-		if (menu_properties.hasOwnProperty(key)) {
-			if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(menu_properties[key][1]);}
+		if (menu_properties.hasOwnProperty(key)) { // Also check updateMenuProperties()
+			if (key === 'styleGenreTag' || key === 'checkDuplicatesBy') {defaultArgs[key] = JSON.parse(menu_properties[key][1]);}
+			if (key === 'ratingLimits') {defaultArgs[key] = menu_properties[key][1].split(',');}
 			else {defaultArgs[key] = menu_properties[key][1];}
 		} else if (menu_panelProperties.hasOwnProperty(key)) {
 			defaultArgs[key] = menu_panelProperties[key][1];
@@ -57,11 +58,9 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	});
 	Object.entries(propObject).forEach(([key, value]) => {
 		if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = value[1];}
-		// if (menu_properties.hasOwnProperty(key)) {menu_properties[key] = value;}
-		// if (menu_panelProperties.hasOwnProperty(key)) {menu_panelProperties[key] = value;}
-			// Specific
+		// Specific
 		if (key === 'ratingLimits') {defaultArgs[key] = defaultArgs[key].split(',');}
-		if (key === 'styleGenreTag') {defaultArgs[key] = JSON.parse(defaultArgs[key]);}
+		if (key === 'styleGenreTag' || key === 'checkDuplicatesBy') {defaultArgs[key] = JSON.parse(defaultArgs[key]);}
 	});
 	if (propObject.hasOwnProperty('sortInputDuplic') && propObject.hasOwnProperty('sortInputFilter') && propObject.hasOwnProperty('nAllowed')) {
 		updateShortcutsNames({sortInputDuplic: propObject.sortInputDuplic[1], sortInputFilter: propObject.sortInputFilter[1], nAllowed: propObject.nAllowed[1]});

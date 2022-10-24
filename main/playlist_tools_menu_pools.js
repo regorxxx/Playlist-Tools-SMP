@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//24/10/22
 
 // Pools
 {
@@ -198,7 +198,7 @@
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
 								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
 								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
-								handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i]});
+								handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
 							}
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
@@ -370,7 +370,7 @@
 							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 						}
 						// Remove duplicates
-						handleListFrom = removeDuplicatesV2({handleList: handleListFrom});
+						handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
 					}
 					// Remove tracks on destination list
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});

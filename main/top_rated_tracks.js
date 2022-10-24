@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/10/22
+//24/10/22
 
 /* 
 	Top Rated Tracks
@@ -17,6 +17,7 @@ function topRatedTracks({
 						playlistLength = 50, 
 						sortBy = globTags.sortPlayCount, 
 						checkDuplicatesBy = globTags.remDupl,
+						bAdvTitle = true,
 						forcedQuery = '',
 						ratingLimits = [1,5],
 						ratingTag = globTags.rating,
@@ -46,7 +47,7 @@ function topRatedTracks({
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 		//Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			handleList_i = removeDuplicatesV2({handleList: handleList_i, sortOutput: sortBy, checkKeys: checkDuplicatesBy});
+			handleList_i = removeDuplicatesV2({handleList: handleList_i, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bAdvTitle});
 		}
 		outputHandleList.AddRange(handleList_i);
 		currRating--;

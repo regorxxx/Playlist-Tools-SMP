@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//24/10/22
 
 // Configuration...
 {
@@ -122,6 +122,30 @@
 				menu_properties['playlistLength'][1] = input;
 				overwriteMenuProperties(); // Updates panel
 			}});
+		}
+		{	// Menu to configure properties: tags
+			const subMenuName = menu.newMenu('Duplicates handling...', configMenu);
+			{
+				menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates on playlist creation:', func: null, flags: MF_GRAYED})
+				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
+				menu.newEntry({menuName: subMenuName, entryText: 'Configure Tags or TF expression...', func: () => {
+					let input = [];
+					try {input = JSON.parse(utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(sep by comma)', scriptName + ': ' + configMenu, JSON.stringify(defaultArgs.checkDuplicatesBy), true));}
+					catch (e) {return;}
+					if (input) {input = input.filter((n) => n);}
+					if (isArrayEqual(defaultArgs.checkDuplicatesBy, input)) {return;}
+					defaultArgs.checkDuplicatesBy = input;
+					menu_properties.checkDuplicatesBy[1] = JSON.stringify(input);
+					overwriteMenuProperties();
+				}});
+				menu.newEntry({menuName: subMenuName, entryText: 'Use RegExp for title matching?', func: () => {
+					defaultArgs.bAdvTitle = !defaultArgs.bAdvTitle;
+					menu_properties.bAdvTitle[1] = defaultArgs.bAdvTitle;
+					if (defaultArgs.bAdvTitle) {fb.ShowPopupMessage(globRegExp.title.desc, window.Name);}
+					overwriteMenuProperties();
+				}});
+				menu.newCheckMenu(subMenuName, 'Use RegExp for title matching?', void(0), () => {return menu_properties.bAdvTitle[1];});
+			}
 		}
 		{	// Menu to configure properties: tags
 			const subMenuName = menu.newMenu('Tag remapping...', configMenu);

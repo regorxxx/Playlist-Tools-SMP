@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//24/10/22
 
 // Playlist manipulation...
 {
@@ -34,11 +34,13 @@
 						sortInputDuplic = menu_properties.sortInputDuplic[1].split(',');
 						sortInputFilter = menu_properties.sortInputFilter[1].split(',');
 						nAllowed = menu_properties.nAllowed[1];
-						// Menus		
-						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + sortInputDuplic.join(', '), func: () => {removeDuplicatesV2({checkKeys: sortInputDuplic});}, flags: playlistCountFlagsAddRem});
-						menu.newEntry({menuName: subMenuName, entryText: 'Show duplicates by ' + sortInputDuplic.join(', '), func: () => {showDuplicates({checkKeys: sortInputDuplic});}, flags: playlistCountFlagsAddRem});
+						// Menus
+						const entryKeysD = sortInputDuplic.join(', ').replace(globTags.title, 'Title').replace(globTags.date, 'Year').toLowerCase();
+						const entryKeysF = sortInputFilter.join(', ').replace(globTags.title, 'Title').replace(globTags.date, 'Year').toLowerCase();
+						menu.newEntry({menuName: subMenuName, entryText: 'Remove duplicates by ' + entryKeysD, func: () => {removeDuplicatesV2({checkKeys: sortInputDuplic, bAdvTitle: defaultArgs.bAdvTitle});}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Show duplicates by ' + entryKeysD, func: () => {showDuplicates({checkKeys: sortInputDuplic, bAdvTitle: defaultArgs.bAdvTitle});}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + sortInputFilter.join(', ') + ' (n = ' + nAllowed + ')', func: () => {removeDuplicates({checkKeys: sortInputFilter, nAllowed});}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + entryKeysF + ' (n = ' + nAllowed + ')', func: () => {removeDuplicates({checkKeys: sortInputFilter, nAllowed, bAdvTitle: defaultArgs.bAdvTitle});}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
 							let tags;
@@ -50,7 +52,7 @@
 							try {n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true));}
 							catch (e) {return;}
 							if (!Number.isSafeInteger(n)) {return;}
-							removeDuplicates({checkKeys: tags, nAllowed: n});
+							removeDuplicates({checkKeys: tags, nAllowed: n, bAdvTitle: defaultArgs.bAdvTitle});
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)...', func: () => {

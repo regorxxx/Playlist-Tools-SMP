@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//24/10/22
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_tags.js');
@@ -24,6 +24,7 @@ function importTextPlaylist({
 		path = folders.data + 'playlistImport.txt',
 		formatMask = ['', '. ', '%TITLE%', ' - ', '%ARTIST%'],
 		duplicatesMask = [globTags.title, globTags.artist],
+		bAdvTitle = true,
 		queryFilters = [globQuery.noLiveNone]
 	} = {}) {
 	if (!path || !path.length) {
@@ -36,7 +37,7 @@ function importTextPlaylist({
 		if (!text.length) {return -1;}
 		const codePage = checkCodePage(text.split(/\r\n|\n\r|\n|\r/), '.' + path.split('.').pop(), true);
 		if (codePage !== -1) {text = _open(path, codePage); if (!text.length) {return -1;}}
-		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
+		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters, bAdvTitle);
 	} else if (path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1) {
 		let request = new ActiveXObject('Microsoft.XMLHTTP');
 		request.open('GET', path, true);
@@ -47,7 +48,7 @@ function importTextPlaylist({
 					var type = request.getResponseHeader('Content-Type');
 					if (type.indexOf('text') !== 1) {
 						text = request.responseText;
-						return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters);
+						return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters, bAdvTitle);
 					} else {console.log('importTextPlaylist(): could not retrieve any text from ' + path); return -1;}
 				} else {console.log('HTTP error: ' + request.status);}
 			}
@@ -55,7 +56,7 @@ function importTextPlaylist({
 	} else {console.log('importTextPlaylist(): file does not exist. ' + path); return -1;}
 }
 
-function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters) {
+function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters, bAdvTitle) {
 	let {handlePlaylist, notFound} = getHandlesFromText(text, formatMask, queryFilters);
 	if (notFound && notFound.length) {
 		const report = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '')+ 'Line ' + line.idx + '-> ' + Object.keys(line.tags).map((key) => {return capitalize(key) + ': ' + line.tags[key]}).join(', ');}, '');
@@ -64,7 +65,7 @@ function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFil
 		fb.ShowPopupMessage(report, 'Tracks not found at source');
 	}
 	if (handlePlaylist) {
-		if (duplicatesMask && duplicatesMask.length) {handlePlaylist = removeDuplicatesV2({handleList: handlePlaylist, checkKeys: duplicatesMask.filter((n) => n)});}
+		if (duplicatesMask && duplicatesMask.length) {handlePlaylist = removeDuplicatesV2({handleList: handlePlaylist, checkKeys: duplicatesMask.filter((n) => n), bAdvTitle});}
 		const idx = plman.PlaylistCount;
 		plman.InsertPlaylistItems(plman.CreatePlaylist(idx, 'Import'), 0, handlePlaylist);
 		if (!handlePlaylist.Count) {console.log('importTextPlaylist(): could not find any track with the given text');}

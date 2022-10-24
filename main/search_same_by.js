@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//24/10/22
 
 /* 
 	Search same by
@@ -81,6 +81,7 @@ function searchSameByCombs({
 								forcedQuery = globQuery.filter,
 								sortBy = '', 
 								checkDuplicatesBy = globTags.remDupl,
+								bAdvTitle = true,
 								sameBy = {genre: 1, style: 2 , mood: 5},
 								playlistName = 'Search...',
 								logic = 'AND',
@@ -247,7 +248,7 @@ function searchSameByCombs({
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null) {
-			outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile});
+			outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile, bAdvTitle});
 		}
 		const oldCount = outputHandleList.Count;	
 		// Limit n tracks
@@ -265,7 +266,8 @@ function searchSameByQueries({
 								playlistLength = 50, 
 								forcedQuery = globQuery.filter,
 								sortBy = '', 
-								checkDuplicatesBy = ['TITLE', 'ARTIST', 'DATE'],
+								checkDuplicatesBy = globTags.remDupl,
+								bAdvTitle = true,
 								sameBy = [['STYLE'],['MOOD']],
 								playlistName = 'Search...',
 								bSendToPls = true,
@@ -323,7 +325,7 @@ function searchSameByQueries({
 
 	//Find and remove duplicates. Sort Random
 	if (checkDuplicatesBy !== null) {
-		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile});
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile, bAdvTitle});
 	}
 	const oldCount = outputHandleList.Count;
 	//Limit n tracks

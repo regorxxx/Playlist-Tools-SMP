@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/10/22
+//24/10/22
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -69,7 +69,6 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ssbytc';
  
- 
 try {window.DefinePanel('Search Same By Tags (Combinations) Button', {author:'xxx'});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
@@ -78,6 +77,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	playlistLength:		['Max Playlist Mix length', 50, {greater: 0, func: isInt}, 50],
 	forcedQuery:		['Forced query to filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
 	checkDuplicatesBy:	['Tags to look for duplicates', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
+	bAdvTitle:			['Advanced RegEx title matching?', true, {func: isBoolean}, true],
 	sameBy: 			['Tags to look for similarity', JSON.stringify({GENRE:1 , STYLE: 2, MOOD: 5}), {func: isJSON}, JSON.stringify({GENRE:1 , STYLE: 2, MOOD: 5})],
 	playlistName:		['Playlist name', 'Search...', {func: isString}, 'Search...']
 };
@@ -89,11 +89,11 @@ addButton({
 	'Search Same By Tags (Combinations)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30, h: 22},  newButtonsProperties.customName[1], function (mask) {
 		if (mask === MK_SHIFT) {
 			const oldName = this.buttonsProperties.customName[1].toString();
-			settingsMenu(this, true, ['buttons_search_by_tags_combinations.js']).btn_up(this.currX, this.currY + this.currH);
+			settingsMenu(this, true, ['buttons_search_by_tags_combinations.js'], {bAdvTitle: {popup: globRegExp.title.desc}}).btn_up(this.currX, this.currY + this.currH);
 			const newName = this.buttonsProperties.customName[1].toString();
 			if (oldName !== newName) {this.adjustNameWidth(newName);}
 		} else {
-			searchSameByCombs({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
+			searchSameByCombs({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), bAdvTitle: this.buttonsProperties.bAdvTitle[1], playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);

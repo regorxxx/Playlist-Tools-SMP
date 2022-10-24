@@ -1,11 +1,11 @@
 ﻿'use strict';
-//22/03/22
+//24/10/22
 
 include('menu_xxx.js');
 include('helpers_xxx_properties.js')
 include('helpers_xxx_file.js');
 
-function settingsMenu(parent, bShowValues = false, readmeFiles = []) {
+function settingsMenu(parent, bShowValues = false, readmeFiles = [], popups = {}) {
 	const menu = new _menu();
 	const properties = parent.buttonsProperties;
 	const parentName = isFunction(parent.text) ? parent.text(parent) : parent.text;
@@ -17,28 +17,48 @@ function settingsMenu(parent, bShowValues = false, readmeFiles = []) {
 		const options = Object.keys(properties);
 		options.forEach((key) => {
 			const value = properties[key][1];
-			const entryText = properties[key][0].replace(/[A-z]*[0-9]*_*[0-9]*\./,'') + (bShowValues ? '\t[' + (typeof value === 'string' && value.length > 10 ? value.slice(0,10) + '...' : value) + ']' : '');
+			const type = typeof value;
+			const entryText = properties[key][0].replace(/[A-z]*[0-9]*_*[0-9]*\./,'') + (bShowValues && type !== 'boolean' ? '\t[' + (typeof value === 'string' && value.length > 10 ? value.slice(0,10) + '...' : value) + ']' : '');
+			const desc = popups && popups.hasOwnProperty(key) ? popups[key].input || '' : '';
 			menu.newEntry({entryText, func: () => {
 				let input;
-				switch (typeof value) {
-					case 'number': {
-						input;
-						try {input = Number(utils.InputBox(window.ID, 'Enter number:', parentName, value, true));}
+				switch (type) {
+					case 'object': {
+						try {input = JSON.parse(utils.InputBox(window.ID, desc || 'Enter JSON value:', parentName, JSON.stringify(value), true));}
 						catch(e) {return;}
-						if (isNaN(input)) {return;}
+						if (!input) {fb.ShowPopupMessage('Value must be a JSON object.', parentName); return;}
+						break;
+					}
+					case 'number': {
+						try {input = Number(utils.InputBox(window.ID, desc || 'Enter number:', parentName, value, true));}
+						catch(e) {return;}
+						if (isNaN(input)) {fb.ShowPopupMessage('Value must be a number.', parentName); return;}
 						break;
 					}
 					case 'string': {
 						input = '';
-						try {input = utils.InputBox(window.ID, 'Enter value:', parentName, value, true);}
+						try {input = utils.InputBox(window.ID, desc || 'Enter value:', parentName, value, true);}
 						catch(e) {return;}
+						break;
+					}
+					case 'boolean': {
+						input = !value;
 						break;
 					}
 				}
 				if (value === input) {return;}
+				if (!checkProperty(properties[key], input)) {return;} // Apply properties check which should be personalized for input value
 				properties[key][1] = input;
 				overwriteProperties(properties); // Updates panel
+				if (popups && popups.hasOwnProperty(key)) {
+					if (type !== 'boolean' || (type === 'boolean' && input)) {
+						fb.ShowPopupMessage(popups[key].popup, parentName);
+					}
+				}
 			}});
+			if (type === 'boolean') {
+				menu.newCheckMenu(void(0), entryText, void(0), () => {return value;});
+			}
 		});
 	}
 	menu.newEntry({entryText: 'sep'});
