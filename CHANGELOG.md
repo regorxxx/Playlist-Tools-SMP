@@ -52,7 +52,6 @@
 - Top Rated Tracks from...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
 - Most played Tracks...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
 - Most Played Tracks from...: now also includes scrobbles from Last.Fm. So in case tracks have been played at Spotify or other players, as long as scrobbles as synced by 'Enhanced playback statistics' plugin, those tracks are considered eligible the same than any track played within Foobar2000.
-- UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
 - Other tools\Playlist revive: 'ACOUSTID_ID' and 'MUSICBRAINZ_TRACKID' are now checked to find exact matches, if MD5 and all other exact match rules fail.
 - Other tools\Check Tags: added 'TITLE' to the list of default tags to be checked. Added special conditions to title tags.
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
@@ -62,7 +61,12 @@
 - Pools: improved and expanded console logging.
 - Pools: minor change to default pool entries to ensure final playlist length matches the global playlist length set at button. There were some rounding errors before with even track numbers.
 - Remove duplicates: Ctrl + L. Click on button will show duplicates instead of removing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
+- Remove duplicates: advanced RegEx title matching option. For example, tracks like these would be considered to be duplicates: 'My track (live)', 'My track (acoustic)', 'My track (2022 remix)', ' My track [take 3]', ... but not those with keywrods like 'part', 'pt.', 'act' or Roman numerals.
 - Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
+- Show duplicates: advanced RegEx title matching option. See above.
+- Playlist filter: advanced RegEx title matching option. See above.
+- Search by tags (combinations): duplicates advanced RegEx title matching option. See above.
+- Search by tags (queries): duplicates advanced RegEx title matching option. See above.
 - Playlist Manipulation\Query filtering: pressing Ctrl while clicking on a menu entry will invert the query and append 'NOT' at the beginning. i.e. if a filter is used to display tracks with rating > 3, pressing control will do the opposite and show tracks with rating < 3. Note global forced queries are added after the inversion.
 - Selection manipulation\Scatter by tags: now conserves selection and focus.
 - Top rated tracks from: is now automatically built by decades from 1950 onwards, up to 20 entries.
@@ -73,8 +77,12 @@
 - Buttons: 'search_same_style_moods' has been replaced with 'search_by_tags_combinations' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use {"STYLE":2,"MOOD":6} to mimic its behavior.
 - Buttons: 'search_by_tags_queries' and 'search_by_tags_combinations' can now be renamed.
 - Buttons: internal changes to also allow images as icons on buttons. Previously only chars were allowed.
+- Buttons: reworked buttons configuration menu to show when a 'true/fals'e option is checked. Some options now output a popup giving a description or tip. Also, a popup is thrown when an input value is non valid.
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
+- UI: exposed the TF/tag expression to match duplicates along the advanced RegEx title matching option. See above. Used on all tools within Playlist Tools menu.
+- UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
+- Search by Distance: duplicates advanced RegEx title matching option. See above.
 - Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
 - Search by Distance: changed style cluster distance. Presets have been reworked to account for that.
 - Search by Distance: updated descriptors with multiple additions.
@@ -82,6 +90,7 @@
 - Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
 - Search by Distance: reverted default string tags to raw tags instead of using '$ascii(%TAG%)' in favor of internally converting values to ASCII. Works better for multi-value tags in queries. It's recommended to reset tag remapping to default for most users (or manually removing the TF functions if using other tags).
 - Search by Distance: when using TF functions on tags, queries now use 'HAS' instead of 'IS' to ensure multi-value tags are taken into consideration (otherwise only single-value tags match). Note this has the side-effect of partial matching being allowed (i.e. 'Rock' matches 'Progressive Rock' too, but not the opposite).
+- Search by Distance: TF/tag expression to match duplicates along the advanced RegEx title matching option can be configured on the customizable button.
 - Search by Distance: queries involving key tags now use all possibles equivalences in different notations (standard, Open keys, Camelot keys). For ex: '((KEY IS A) OR (KEY IS 4d) OR (KEY IS 11B))'.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
