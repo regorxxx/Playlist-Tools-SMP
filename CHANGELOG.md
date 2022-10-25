@@ -81,6 +81,7 @@
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - UI: exposed the TF/tag expression to match duplicates along the advanced RegEx title matching option. See above. Used on all tools within Playlist Tools menu.
 - UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
+- UI: reworked 'Remove duplicates' and 'Show duplicates' buttons tooltip.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: duplicates advanced RegEx title matching option. See above.
 - Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
