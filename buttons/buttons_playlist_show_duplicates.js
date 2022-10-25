@@ -46,10 +46,12 @@ addButton({
 			}
 		}
 	}, null, void(0), (parent) => {
-		const checkKeys = Object.keys(parent.buttonsProperties).map((key) => {return parent.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
+		const checkKeys = Object.keys(parent.buttonsProperties).filter((key) => {return key.startsWith('check')})
+			.map((key) => {return parent.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		let info = 'Show duplicates according to equal ' + checkKeys.join('|');
+		let info = 'Show duplicates according to equal:\n' + checkKeys.join('|');
+		info += '\nTitle RegEx: ' + parent.buttonsProperties.bAdvTitle[1];
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Ctrl + L. Click to remove duplicates)';
