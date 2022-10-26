@@ -173,14 +173,14 @@
 							// Graph debug
 							menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
 								if (defaultArgs.bProfile) {var profiler = new FbProfiler('graphDebug');}
-								graphDebug(allMusicGraph, true); // Show popup on pass
+								graphDebug(sbd.allMusicGraph, true); // Show popup on pass
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							// Graph test
 							menu.newEntry({menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
 								if (defaultArgs.bProfile) {var profiler = new FbProfiler('testGraph');}
-								testGraph(allMusicGraph);
-								testGraphV2(allMusicGraph);
+								testGraph(sbd.allMusicGraph);
+								testGraphV2(sbd.allMusicGraph);
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							menu.newEntry({menuName: submenu, entryText: 'sep'});
