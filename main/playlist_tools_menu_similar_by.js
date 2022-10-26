@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/10/22
+//26/10/22
 
 // Similar by...Graph\Dyngenre\Weight
 {
@@ -187,7 +187,7 @@
 							// Graph cache reset Async
 							menu.newEntry({menuName: submenu, entryText: () => 'Reset link cache' + (sbd.isCalculatingCache ? '\t -processing-' : ''), func: () => {
 								if (sbd.isCalculatingCache) {
-									fb.ShowPopupMessage('There is a calculation currently on process.\nTry again after it finishes. Check console.', 'Graph cache');
+									fb.ShowPopupMessage('There is a calculation currently on process.\nTry again after it finishes. Check console (or animation).', 'Graph cache');
 									return;
 								}
 								_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
