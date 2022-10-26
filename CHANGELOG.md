@@ -94,6 +94,7 @@
 - Search by Distance: TF/tag expression to match duplicates along the advanced RegEx title matching option can be configured on the customizable button.
 - Search by Distance: queries involving key tags now use all possibles equivalences in different notations (standard, Open keys, Camelot keys). For ex: '((KEY IS A) OR (KEY IS 4d) OR (KEY IS 11B))'.
 - Search by Distance: improved graph links cache asynchronous calculation.
+- Search by Distance: buttons are animated while graph links cache or graph statistics are being calculated.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
 - Removed Duplicates: all uses of function changed to make use of '$year(%DATE%)' and '$ascii($lower($trim(%TITLE%))' instead of 'DATE' and 'TITLE'. This is a changed ported from Search by Distance, to ensure the most matches possible.
