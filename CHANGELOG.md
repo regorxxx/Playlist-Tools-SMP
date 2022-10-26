@@ -126,6 +126,7 @@
 - Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
 - Search by Distance: in some cases similar artists were duplicated.
 - Search by Distance: graph links cache re-calculation is now blocked when there is already an on-going calculation. User is asked to manually re-run it afterwards via popups now.
+- Search by Distance: multiple crashes due to wrong variable name when opening popups.
 - Top rated tracks from: is now invariant to date order. i.e. 2012,2013 will output the same than 2013,2012 (previously empty output).
 - Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
 - Buttons: no background on buttons configuration for toolbar was not properly set on script init/reloading.
