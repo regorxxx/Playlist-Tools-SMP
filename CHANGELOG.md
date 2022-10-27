@@ -46,6 +46,7 @@
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
 - Advanced sort: decremental sort by DynGenre entry added.
 - Search by Distance: tags cache for Foobar2000 2.0, enabled by default. Disabled on lower versions (since it brings no improvement on processing time). After proper setup and caching of all library tags associated to remapped tags, processing time should be similar to Foobar2000 1.6+ versions.
+- Search by Distance: smart shuffle option. See above. Overrides any other sorting when enabled. Note this is different to intercalation, since the order will be randomized on every call, and also the position of tracks which may differ according to some random offset.
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 ### Changed
@@ -95,6 +96,7 @@
 - Search by Distance: queries involving key tags now use all possibles equivalences in different notations (standard, Open keys, Camelot keys). For ex: '((KEY IS A) OR (KEY IS 4d) OR (KEY IS 11B))'.
 - Search by Distance: improved graph links cache asynchronous calculation.
 - Search by Distance: buttons are animated while graph links cache or graph statistics are being calculated.
+- Search by Distance: customizable button now doesn't allow setting playlist sorting when using harmonic mixing. Submenu is greyed out.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
 - Removed Duplicates: all uses of function changed to make use of '$year(%DATE%)' and '$ascii($lower($trim(%TITLE%))' instead of 'DATE' and 'TITLE'. This is a changed ported from Search by Distance, to ensure the most matches possible.
