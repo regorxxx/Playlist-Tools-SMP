@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/10/22
+//26/10/22
 
 /*	
 	Sort by Dyngenre
@@ -9,7 +9,7 @@
 
 include('..\\helpers\\dyngenre_map_xxx.js');
 
-const [,, genreStyleMap] = dyngenre_map();
+const [,, genreStyleMap] = dyngenreMap();
 
 function sortByDyngenre({
 								playlistIdx = plman.ActivePlaylist,

@@ -4,8 +4,8 @@
 /* 
 	Search same by v 1.0 24/08/22
 	Search n tracks (randomly) on library matching the conditions given according to the current selected track and tags.
-	Note this ONLY USES existing tags, it will not calculate similarity or anything else. i.e. 'dynamic_genre' tag will not be calculated on the fly. 
-	If some tags are missing, then they get skipped.
+	Note this ONLY USES existing tags, it will not calculate similarity or anything else. i.e. 'dynamic_genre' tag will not
+	be calculated on the fly. If some tags are missing, then they get skipped.
 	
 	Conditions are set as an object with keys (tags) and values (number of coincidences):
 	sameBy = {genre: 1, style: 2 , mood: 5} -> Must match at least 1 genre value, 2 style values and 5 mood values.
