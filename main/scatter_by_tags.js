@@ -1,5 +1,8 @@
 ﻿'use strict';
-//19/10/22
+//27/10/22
+
+include('..\\helpers\\helpers_xxx_basic_js.js');
+include('..\\helpers\\helpers_xxx_prototypes.js');
 
 /*	
 	Scatter by tags
@@ -172,23 +175,40 @@ function intercalateByTags({
 // Based on: https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/
 // Note for some proportions there is an exact solution, and that's used instead of relying on the random method
 function shuffleByTags({
-							tagName = 'ARTIST',
-							selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null,
-							bSendToActivePls = true,
-							} = {}) {
+		tagName = 'ARTIST',
+		selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null,
+		bSendToActivePls = true,
+		data = {handleArray: [], dataArray: [], tagsArray: []} // Shallow copies are made
+	} = {}) {
 	// Safety checks
-	if (!tagName.length) {return;}
-	if (!selItems || selItems.Count <= 2) {return;}
+	const dataHandleLen = data && data.handleArray ? data.handleArray.length : 0;
+	const dataTagsLen = data && data.tagsArray ? data.tagsArray.length : 0;
+	const dataLen = data && data.dataArray ? data.dataArray.length : null;
+	const itemsCount = selItems ? selItems.Count : 0;
+	if (dataHandleLen <= 2 && itemsCount <= 2) {return null;}
+	if (!tagName.length || (dataTagsLen !== dataHandleLen && dataTagsLen !== itemsCount)) {return null;}
+	if (dataLen && dataLen !== dataHandleLen && dataLen !== itemsCount) {return null;}
 	// Convert input and shuffle
-	const totalTracks = selItems.Count;
+	const totalTracks = dataHandleLen || itemsCount;
 	tagName = tagName.split(/;|,/g);
-	let selItemsArray = selItems.Convert().shuffle();
-	let selItemsClone = new FbMetadbHandleList(selItemsArray);
+	let dataArray = dataLen ? [...data.dataArray] : null;
+	let selItemsArray = dataHandleLen 
+			? [...data.handleArray]
+			: selItems.Convert();
+	if (dataArray) {Array.shuffle(selItemsArray, dataArray);} // Shuffle both at the same time
+	else {selItemsArray.shuffle();}
+	let selItemsClone = dataTagsLen 
+		? null 
+		: new FbMetadbHandleList(selItemsArray);
 	let selItemsArrayOut = [];
 	let tagValuesOut = [];
+	let dataValuesOut = [];
 	// Get tag values and find tag value
 	// Split elements by equal value, by reverse order
-	const tagValues = getTagsValuesV3(selItemsClone, tagName, true).map((item) => {return item.filter(Boolean).sort().map((item) => {return item.toLowerCase();}).join(',');});
+	const tagValues = (selItemsClone 
+			? getTagsValuesV3(selItemsClone, tagName, true)
+			: [...data.tagsArray]
+		).map((item) => {return item.filter(Boolean).sort().map((item) => {return item.toLowerCase();}).join(',');});
 	let valMap = new ReverseIterableMap();
 	for (let i = totalTracks - 1; i >= 0; i--) {
 		const val = tagValues[i];
@@ -224,12 +244,18 @@ function shuffleByTags({
 		distMap.forEach((value, key) => {
 			const line = [];
 			line.push({pos: value.offset, key});
-			for (let i = 1; i < value.total; i++) {
-				line.push({pos: value.offset + value.dist * (1 + (Math.random() * 2 - 1) * Math.random() * 0.3 ) * i, key});
+			for (let i = 1; i < value.total; i++) { // Apply a random shift by only a 33% of the space between consecutive artist's tracks
+				line.push({pos: value.offset + value.dist * i + (value.total > 1 ? ((Math.random() * 2 - 1) * Math.random() * (value.dist - 1) * 0.33) : 0), key});
 			}
 			timeLineMap.set(key, line);
 		})
 		timeLine = [...timeLineMap.values()].flat(Infinity).sort((a,b) => {return a.pos - b.pos;});
+		// Double check there are no consecutive artist's tracks due to random shifting (mostly for value.dist ~ 3)
+		for (let i = 1; i < totalTracks - 2; i++) {
+			if (timeLine[i].key === timeLine[i + 1].key) { // This ensures previous values did not match
+				[timeLine[i - 1], timeLine[i]] = [timeLine[i], timeLine[i - 1]];
+			}
+		}
 	}
 	timeLine.forEach((track) => {
 		const key = track.key;
@@ -240,26 +266,27 @@ function shuffleByTags({
 		const index = tracks.splice(n, 1);
 		selItemsArrayOut.push(selItemsArray[index]);
 		tagValuesOut.push(tagValues[index]);
+		if (dataArray) {dataValuesOut.push(dataArray[index]);}
 		// Delete empty values
 		if ((tracksNum - 1) === 0) {
 			valMap.delete(key); 
 		}
 	});
 	// And output
-	selItemsArray = new FbMetadbHandleList(selItemsArrayOut);
+	const selItemsList = new FbMetadbHandleList(selItemsArrayOut);
 	if (bSendToActivePls) {
 		// 'Hack' Inserts on focus (may be at any place of selection), but then removes the original selection, 
 		// so inserted tracks get sent to the right position. Only works for contiguous selections!
 		const focusIdx = plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist);
 		plman.UndoBackup(plman.ActivePlaylist);
-		plman.InsertPlaylistItems(plman.ActivePlaylist, plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist), selItemsArray);
+		plman.InsertPlaylistItems(plman.ActivePlaylist, plman.GetPlaylistFocusItemIndex(plman.ActivePlaylist), selItemsList);
 		plman.RemovePlaylistSelection(plman.ActivePlaylist);
 		// Try to restore prev. selection
 		let idx = [];
 		if (focusIdx === 0) {
 			idx = range(0, totalTracks - 1, 1);
 		} else {
-			const clone = selItemsArray.Clone();
+			const clone = selItemsList.Clone();
 			clone.Sort();
 			const plsItems = plman.GetPlaylistItems(plman.ActivePlaylist).Convert();
 			const end = focusIdx - totalTracks + 1;
@@ -282,5 +309,5 @@ function shuffleByTags({
 		}
 		console.log('Selection scattered by tag(s) \'' + tagName.join(',') + '\' on playlist: ' + plman.GetPlaylistName(plman.ActivePlaylist));
 	}
-	return selItemsArray;
+	return {handleList: selItemsList, handleArray: selItemsArrayOut, dataArray: dataValuesOut, tagsArray: tagValuesOut};
 }
