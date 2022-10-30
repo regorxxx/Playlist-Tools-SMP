@@ -103,6 +103,7 @@
 - Helpers: updated helpers.
 - Helpers: rewritten [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation) helper.
 - Properties: additional checks to properties. In case a previous property is not valid, reset to default using menus where applicable.
+- Properties: remapped tags properties have been rewritten, previous config will be lost. Tags now follow a JSON format, which will be more compatible with TF functions in any field.
 ### Removed
 - Buttons: 'search_same_by' button. See warning above for replacement.
 - Buttons: 'search_same_style' button. See warning above for replacement.
@@ -127,6 +128,7 @@
 - Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
 - Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
 - Search by Distance: in some cases similar artists were duplicated.
+- Search by Distance: crash on similar artists when date tag was not set (now uses tracks from any date in such case).
 - Search by Distance: graph links cache re-calculation is now blocked when there is already an on-going calculation. User is asked to manually re-run it afterwards via popups now.
 - Search by Distance: multiple crashes due to wrong variable name when opening popups.
 - Top rated tracks from: is now invariant to date order. i.e. 2012,2013 will output the same than 2013,2012 (previously empty output).
