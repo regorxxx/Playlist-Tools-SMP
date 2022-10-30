@@ -1573,7 +1573,7 @@ async function do_searchby_distance({
 			// Spotify's smart shuffle by artist
 			if (bSmartShuffle) { // Sort arrays in place using original data
 				if (bSortRandom) {console.log('Warning: Smart Shuffle is overriding Random Sorting.');}
-				if (bScatterInstrumentals) {console.log('Warning: Smart Shuffle  is overriding Instrumental track\'s Scattering.');}
+				if (bScatterInstrumentals) {console.log('Warning: Smart Shuffle is overriding Instrumental track\'s Scattering.');}
 				const shuffle = shuffleByTags({
 					tagName: smartShuffleTag, 
 					data: {handleArray: selectedHandlesArray, dataArray: selectedHandlesData, tagsArray: null},
