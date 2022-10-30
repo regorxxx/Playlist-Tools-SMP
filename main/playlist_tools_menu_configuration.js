@@ -155,13 +155,23 @@
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'})
 				options.forEach((tagName) => {
 					const key = tagName + 'Tag';
-					menu.newEntry({menuName: subMenuName, entryText: () => capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
+					const entryText = () => {
+						const value = JSON.parse(menu_properties[key][1]).join(',');
+						return capitalize(tagName) + '\t[' + (
+							typeof value === 'string' && value.length > 10 
+							? value.slice(0,10) + '...' 
+							: value
+						) + ']';
+					}
+					menu.newEntry({menuName: subMenuName, entryText, func: () => {
 						fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like\n\'Search same by tags...\' since those queries are saved as text.\n\nIf you want to change tags at those tools, use the apropiate menus\nto remove/add your own entries.\n\nOtherwise, for a global change, edit the default tags and queries,\nwhich are used internally. Don\'t forget to reload the\npanels or restart foobar and \'Restore defaults\' on all relevant buttons\nand menus to use the new values. Files may be found at:\nFOOBAR PROFILE FOLDER]\\js_data\\presets\\global\n\n\nAlternatively, you may look at the properties panel to directly edit\nthe menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags\n(and entries) are already directly configurable...', scriptName + ': ' + configMenu);
-						const input = utils.InputBox(window.ID, 'Enter desired tag name:', scriptName + ': ' + configMenu, menu_properties[key][1]);
-						if (!input.length) {return;}
-						if (menu_properties[tagName + 'Tag'][1] === input) {return;}
-						defaultArgs[key] = input;
-						menu_properties[key][1] = input;
+						let input;
+						try {input = JSON.parse(utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(In some cases merging multiple tags is allowed, check the readme)\n(JSON)', scriptName + ': ' + configMenu, menu_properties[key][1], true));}
+						catch (e) {return;}
+						if (input) {input = input.filter((n) => n);}
+						if (isArrayEqual(JSON.parse(menu_properties[key][1]), input)) {return;}
+						if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
+						menu_properties[key][1] = JSON.stringify(input);
 						overwriteMenuProperties(); // Updates panel
 					}});
 				});

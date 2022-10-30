@@ -30,7 +30,7 @@
 			let similarBy = [
 				];
 			// Delete unused properties
-			const toDelete = ['genreWeight', 'styleWeight', 'dyngenreWeight', 'dyngenreRange', 'moodWeight', 'keyWeight', 'keyRange', 'dateWeight', 'dateRange', 'bpmWeight', 'bpmRange', 'composerWeight', 'customStrWeight', 'customNumWeight', 'customNumRange', 'forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'sbd_max_graph_distance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesBy'];
+			const toDelete = ['genreWeight', 'styleWeight', 'dyngenreWeight', 'dyngenreRange', 'moodWeight', 'keyWeight', 'keyRange', 'dateWeight', 'dateRange', 'bpmWeight', 'bpmRange', 'composerWeight', 'customStrWeight', 'customNumWeight', 'customNumRange', 'forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'sbd_max_graph_distance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesByTag', 'bSmartShuffle'];
 			let toMerge = {}; // Deep copy
 			Object.keys(SearchByDistance_properties).forEach((key) => {
 				if (toDelete.indexOf(key) === -1) {
@@ -44,7 +44,7 @@
 			// Check
 			menu_properties['similarBy'].push({func: isJSON}, menu_properties['similarBy'][1]);
 			// Set default args
-			const scriptDefaultArgs = {properties: menu_properties, genreWeight: 0, styleWeight: 0, dyngenreWeight: 0, moodWeight: 0, keyWeight: 0, dateWeight: 0, bpmWeight: 0, composerWeight: 0, customStrWeight: 0, customNumWeight: 0, dyngenreRange: 0, keyRange: 0, dateRange: 0, bpmRange: 0, customNumRange: 0, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, sbd_max_graph_distance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: true, bProgressiveListOrder: false, bScatterInstrumentals: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN:1, bCreatePlaylist: true};
+			const scriptDefaultArgs = {properties: menu_properties, genreWeight: 0, styleWeight: 0, dyngenreWeight: 0, moodWeight: 0, keyWeight: 0, dateWeight: 0, bpmWeight: 0, composerWeight: 0, customStrWeight: 0, customNumWeight: 0, dyngenreRange: 0, keyRange: 0, dateRange: 0, bpmRange: 0, customNumRange: 0, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, sbd_max_graph_distance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: false, bProgressiveListOrder: false, bScatterInstrumentals: false, bSmartShuffle: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN:1, bCreatePlaylist: true};
 			// Menus
 			function loadMenus(menuName, selArgs, entryArgs = []){
 				selArgs.forEach( (selArg) => {
@@ -163,9 +163,9 @@
 						{ 	// Find genre/styles not on graph
 							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: () => {
 								findStyleGenresMissingGraph({
-									genreStyleFilter: menu_properties.genreStyleFilter[1].split(',').filter(Boolean),
-									genretag: menu_properties.genreTag[1],
-									styleTag: menu_properties.styleTag[1], 
+									genreStyleFilterTag: JSON.parse(menu_properties.genreStyleFilterTag[1]).filter(Boolean),
+									genretag: JSON.parse(menu_properties.genreTag[1]),
+									styleTag: JSON.parse(menu_properties.styleTag[1]), 
 									bAscii: menu_properties.bAscii[1],
 									bPopup: true
 								});
@@ -198,7 +198,7 @@
 							}, flags: () => !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED});
 							// Tags cache reset Async
 							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (sbd.panelProperties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
-								const keys = ['genreTag', 'styleTag', 'moodTag', 'dateTag', 'keyTag', 'bpmTag', 'composerTag', 'customStrTag', 'customNumTag'].map((key) => {return menu_properties[key][1].split(',').filter(Boolean);});
+								const keys = ['genreTag', 'styleTag', 'moodTag', 'dateTag', 'keyTag', 'bpmTag', 'composerTag', 'customStrTag', 'customNumTag'].map((key) => {return JSON.pasrse(menu_properties[key][1]).filter(Boolean);});
 								const tags = keys.concat([['TITLE']])
 									.map((tagName) => {return tagName.map((subTagName) => {return (subTagName.indexOf('$') === -1 ? '%' + subTagName + '%' : subTagName);});})
 									.map((tagName) => {return tagName.join(', ');}).filter(Boolean)
@@ -222,13 +222,21 @@
 									const configSubmenu = menu.newMenu(submenu + '...' + nextId('invisible', true, false), configMmenu);
 									options.forEach((tagName) => {
 										const key = tagName + 'Tag';
+										const value = JSON.parse(menu_properties[key][1]).join(',');
+										const entryText = capitalize(tagName) + '\t[' + (
+												typeof value === 'string' && value.length > 10 
+												? value.slice(0,10) + '...' 
+												: value
+											) + ']';
 										[configSubmenu, submenuTwo].forEach((sm) => {
-											menu.newEntry({menuName: sm, entryText: capitalize(tagName) + '\t[' + menu_properties[key][1] + ']', func: () => {
-												const input = utils.InputBox(window.ID, 'Enter desired tag name(s):\n(In some cases merging multiple tags is allowed, check the readme)', scriptName + ': ' + configMenu, menu_properties[key][1]);
-												if (!input.length) {return;}
-												if (menu_properties[tagName + 'Tag'][1] === input) {return;}
+											menu.newEntry({menuName: sm, entryText, func: () => {
+												let input;
+												try {input = JSON.parse(utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(In some cases merging multiple tags is allowed, check the readme)\n(JSON)', scriptName + ': ' + configMenu, menu_properties[key][1], true));}
+												catch (e) {return;}
+												if (input) {input = input.filter((n) => n);}
+												if (isArrayEqual(JSON.parse(menu_properties[key][1]), input)) {return;}
 												if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
-												menu_properties[key][1] = input;
+												menu_properties[key][1] = JSON.stringify(input);
 												overwriteMenuProperties(); // Updates panel
 												if (tagName === 'genre' || tagName === 'style') {
 													const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
@@ -246,7 +254,7 @@
 											options.forEach((key, i) => {
 												const propObj = key === 'bTagsCache' ? sbd.panelProperties : menu_properties;
 												const keyText = propObj[key][0];
-												const entryText = keyText.replace('\'Search similar\' ','') + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '');
+												const entryText = (keyText.substr(keyText.indexOf('.') + 1) + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ','');
 												menu.newEntry({menuName: sm, entryText, func: () => {
 													propObj[key][1] = !propObj[key][1];
 													overwriteMenuProperties(); // Updates panel
@@ -295,15 +303,15 @@
 						{ // Create theme
 							menu.newEntry({menuName: submenu, entryText: 'Create theme file with selected track', func: () => {
 								// Tag names
-								const genreTag = menu_properties['genreTag'][1].split(',').filter(Boolean);
-								const styleTag = menu_properties['styleTag'][1].split(',').filter(Boolean);
-								const moodTag = menu_properties['moodTag'][1].split(',').filter(Boolean);
-								const dateTag = menu_properties['dateTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
-								const keyTag = menu_properties['keyTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
-								const bpmTag = menu_properties['bpmTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
-								const composerTag = menu_properties['composerTag'][1].split(',').filter(Boolean);
-								const customStrTag = menu_properties['customStrTag'][1].split(',').filter(Boolean);
-								const customNumTag = menu_properties['customNumTag'][1].split(',').filter(Boolean); // only allows 1 value, but put it into an array
+								const genreTag = JSON.parse(menu_properties.genreTag[1]).filter(Boolean);
+								const styleTag = JSON.parse(menu_properties.styleTag[1]).filter(Boolean);
+								const moodTag = JSON.parse(menu_properties.moodTag[1]).filter(Boolean);
+								const dateTag = JSON.parse(menu_properties.dateTag[1]).filter(Boolean); // only allows 1 value, but put it into an array
+								const keyTag = JSON.parse(menu_properties.keyTag[1]).filter(Boolean); // only allows 1 value, but put it into an array
+								const bpmTag = JSON.parse(menu_properties.bpmTag[1]).filter(Boolean); // only allows 1 value, but put it into an array
+								const composerTag = JSON.parse(menu_properties.composerTag[1]).filter(Boolean);
+								const customStrTag = JSON.parse(menu_properties.customStrTag[1]).filter(Boolean);
+								const customNumTag = JSON.parse(menu_properties.customNumTag[1]).filter(Boolean); // only allows 1 value, but put it into an array
 								// Tag Values
 								const selHandleList = new FbMetadbHandleList(fb.GetFocusItem());
 								const genre = genreTag.length ? getTagsValuesV3(selHandleList, genreTag, true).flat().filter(Boolean) : [];
