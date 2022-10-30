@@ -197,16 +197,16 @@
 								updateCache({bForce: true, properties: menu_properties}); // Creates new one and also notifies other panels to discard their cache
 							}, flags: () => !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED});
 							// Tags cache reset Async
-							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (menu_properties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
+							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (sbd.panelProperties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
 								const keys = ['genreTag', 'styleTag', 'moodTag', 'dateTag', 'keyTag', 'bpmTag', 'composerTag', 'customStrTag', 'customNumTag'].map((key) => {return menu_properties[key][1].split(',').filter(Boolean);});
 								const tags = keys.concat([['TITLE']])
 									.map((tagName) => {return tagName.map((subTagName) => {return (subTagName.indexOf('$') === -1 ? '%' + subTagName + '%' : subTagName);});})
 									.map((tagName) => {return tagName.join(', ');}).filter(Boolean)
-									.filter((tagName) => {return !tagsCache.cache.has(tagName);});
+									.filter((tagName) => {return tagsCache.cache.has(tagName);});
 								tagsCache.clear(tags);
 								tagsCache.save();
 								tagsCache.cacheTags(tags, iStepsLibrary, iDelayLibrary, fb.GetLibraryItems().Convert(), true);
-							}, flags: menu_properties.bTagsCache[1] ? MF_STRING : MF_GRAYED});
+							}, flags: sbd.panelProperties.bTagsCache[1] ? MF_STRING : MF_GRAYED});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{
@@ -244,10 +244,11 @@
 										{	// Cache
 											const options = ['bAscii', 'bTagsCache'];
 											options.forEach((key, i) => {
-												const keyText = menu_properties[key][0];
+												const propObj = key === 'bTagsCache' ? sbd.panelProperties : menu_properties;
+												const keyText = propObj[key][0];
 												const entryText = keyText.replace('\'Search similar\' ','') + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '');
 												menu.newEntry({menuName: sm, entryText, func: () => {
-													menu_properties[key][1] = !menu_properties[key][1];
+													propObj[key][1] = !propObj[key][1];
 													overwriteMenuProperties(); // Updates panel
 													if (key === 'bAscii') {
 														const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
@@ -255,7 +256,7 @@
 															menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
 														}
 													} else if (key === 'bTagsCache') {
-														if (menu_properties.bTagsCache[1]) {
+														if (propObj.bTagsCache[1]) {
 															fb.ShowPopupMessage('This feature should only be enabled on Foobar2000 versions >= 2.0.\nPrevious versions already cached tags values, thus not requiring it.', 'Tags cache');
 															tagsCache.load();
 															const answer = WshShell.Popup('Reset tags cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
@@ -267,7 +268,7 @@
 														}
 													}
 												}, flags: key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? MF_GRAYED : MF_STRING});
-												menu.newCheckMenu(sm, entryText, void(0), () => {return menu_properties[key][1];});
+												menu.newCheckMenu(sm, entryText, void(0), () => {return propObj[key][1];});
 											});
 										}
 									});
