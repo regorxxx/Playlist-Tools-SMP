@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//30/10/22
 
 // Pools
 {
@@ -159,11 +159,12 @@
 					}
 				},
 			};
-			const processPool = (pool, properties) => {
+			const processPool = async (pool, properties) => {
 				if (defaultArgs.bProfile) {var profiler = new FbProfiler('processPool');}
 				let handleListTo = new FbMetadbHandleList();
 				let bAbort = false;
-				Object.keys(pool.fromPls).forEach((plsName, n) => {
+				let n = 0;
+				for await (const plsName of Object.keys(pool.fromPls)) {
 					if (bAbort) {return;}
 					let handleListFrom;
 					// Select source
@@ -234,7 +235,7 @@
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, recipe});
+								const [selectedHandlesArray, ...rest] = await do_searchby_distance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by GRAPH');
 							} else {
@@ -268,7 +269,7 @@
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, recipe});
+								const [selectedHandlesArray, ...rest] = await do_searchby_distance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by WEIGHT');
 							} else {
@@ -302,7 +303,7 @@
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = do_searchby_distance({properties, theme, recipe});
+								const [selectedHandlesArray, ...rest] = await do_searchby_distance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by DYNGENRE');
 							} else {
@@ -387,7 +388,8 @@
 					if (pool.hasOwnProperty('insertMethod')) {
 						insertMethods[pool.insertMethod](handleListFrom, handleListTo, n)
 					} else {insertMethods['standard'](handleListFrom, handleListTo)}
-				});
+					n++;
+				}
 				if (bAbort) {fb.ShowPopupMessage('Check console. Pools failed with major errors.', scriptName); return;}
 				const idxTo = plman.FindOrCreatePlaylist(pool.toPls, true);
 				if (addLock(idxTo) || removeLock(idxTo)) {Console.log('Output playlist is locked for adding\\removing items: ' + pool.toPls); return;}
