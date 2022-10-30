@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/10/22
+//30/10/22
 
 /*
 	Search by Distance
@@ -109,7 +109,6 @@ const SearchByDistance_properties = {
 	progressiveListCreationN:	['Steps when using recursive playlist creation (>1 and <100)', 4, {range: [[2,99]], func: isInt}, 4],
 	playlistName			:	['Playlist name (TF allowed)', 'Search...'],
 	bAscii					:	['Asciify string values internally?', true],
-	bTagsCache				:	['Read tags from cache instead of files?', isCompatible('2.0', 'fb')],
 	bAdvTitle				:	['Duplicates advanced RegExp title matching?', true],
 	checkDuplicatesBy		:	['Remove duplicates by', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
 	bSmartShuffle			:	['Smart Shuffle by Artist', false],
@@ -144,7 +143,8 @@ const SearchByDistance_panelProperties = {
 	descriptorCRC			:	['Graph Descriptors CRC', -1], // Calculated later on first time
 	bAllMusicDescriptors	:	['Load All Music descriptors?', false],
 	bLastfmDescriptors		:	['Load Last.fm descriptors?', false],
-	bStartLogging 			:	['Startup logging', false]
+	bStartLogging 			:	['Startup logging', false],
+	bTagsCache				:	['Read tags from cache instead of files?', isCompatible('2.0', 'fb')]
 };
 // Checks
 Object.keys(SearchByDistance_panelProperties).forEach( (key) => { // Checks
@@ -161,12 +161,27 @@ if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') 
 } else { // With buttons, set these properties only once per panel
 	setProperties(SearchByDistance_panelProperties, sbd_prefix);
 }
-const panelProperties = (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') ? getPropertiesPairs(SearchByDistance_properties, sbd_prefix) : getPropertiesPairs(SearchByDistance_panelProperties, sbd_prefix);
+
+/* 
+	Initialize maps/graphs at start. Global variables
+*/
+
+const sbd = {
+	allMusicGraph: musicGraph(),
+	kMoodNumber: 6,  // Used for query filtering, combinations of K moods for queries. Greater values will pre-filter better the library...
+	influenceMethod: 'adjacentNodes', // direct, zeroNodes, adjacentNodes, fullPath
+	genreMap: [],
+	styleMap: [],
+	genreStyleMap: [],
+	isCalculatingCache: false,
+	panelProperties: (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') ? getPropertiesPairs(SearchByDistance_properties, sbd_prefix) : getPropertiesPairs(SearchByDistance_panelProperties, sbd_prefix),
+};
+[sbd.genreMap , sbd.styleMap, sbd.genreStyleMap] = dyngenreMap();
 
 // Info Popup
-if (!panelProperties.firstPopup[1]) {
-	panelProperties.firstPopup[1] = true;
-	overwriteProperties(panelProperties); // Updates panel
+if (!sbd.panelProperties.firstPopup[1]) {
+	sbd.panelProperties.firstPopup[1] = true;
+	overwriteProperties(sbd.panelProperties); // Updates panel
 	const readmeKeys = [{name: 'search_bydistance', title: 'Search by Distance'}, {name: 'tags_structure', title: 'Tagging requisites'}]; // Must read files on first execution
 	readmeKeys.forEach((objRead) => {
 		const readmePath = folders.xxx + 'helpers\\readme\\' + objRead.name + '.txt';
@@ -182,55 +197,53 @@ if (!panelProperties.firstPopup[1]) {
 	{name: 'All Music', file: 'helpers\\music_graph_descriptors_xxx_allmusic.js', prop: 'bAllMusicDescriptors'},
 	{name: 'Last.fm', file: 'helpers\\music_graph_descriptors_xxx_lastfm.js', prop: 'bLastfmDescriptors'}
 ].forEach((descr) => {
-	if (panelProperties[descr.prop][1]) {
+	if (sbd.panelProperties[descr.prop][1]) {
 		if (_isFile(folders.xxx + descr.file)) {
-			if (panelProperties.bStartLogging[1]) {console.log(descr.name + '\'s music_graph_descriptors - File loaded: ' + folders.xxx + descr.file);}
+			if (sbd.panelProperties.bStartLogging[1]) {console.log(descr.name + '\'s music_graph_descriptors - File loaded: ' + folders.xxx + descr.file);}
 			include('..\\' + descr.file);
 		}
 	}
 });
 
 /* 
-	Initialize maps/graphs at start. Global variables
+	Load additional descriptors: All Music, Last.fm, ...
 */
-const sbd = {
-	allMusicGraph: musicGraph(),
-	kMoodNumber: 6,  // Used for query filtering, combinations of K moods for queries. Greater values will pre-filter better the library...
-	influenceMethod: 'adjacentNodes', // direct, zeroNodes, adjacentNodes, fullPath
-	genreMap: [],
-	styleMap: [],
-	genreStyleMap: [],
-	isCalculatingCache: false
-};
-[sbd.genreMap , sbd.styleMap, sbd.genreStyleMap] = dyngenreMap();
+if (sbd.panelProperties.bTagsCache[1]) {
+	if (typeof tagsCache === 'undefined') {
+		include('..\\helpers\\helpers_xxx_tags_cache.js');
+	}
+	doOnce('Load tags cache', debounce(() => {
+		tagsCache.load();
+	}, 5000))();
+}
 
 /* 
 	Reuse cache on the same session, from other panels and from json file
 */
 // Only use file cache related to current descriptors, otherwise delete it
-if (panelProperties.bProfile[1]) {var profiler = new FbProfiler('descriptorCRC');}
+if (sbd.panelProperties.bProfile[1]) {var profiler = new FbProfiler('descriptorCRC');}
 const descriptorCRC = crc32(JSON.stringify(music_graph_descriptors) + musicGraph.toString() + calcGraphDistance.toString() + calcMeanDistance.toString() + sbd.influenceMethod + 'v1.1.0');
-const bMissmatchCRC = panelProperties.descriptorCRC[1] !== descriptorCRC;
+const bMissmatchCRC = sbd.panelProperties.descriptorCRC[1] !== descriptorCRC;
 if (bMissmatchCRC) {
 	console.log('SearchByDistance: CRC mistmatch. Deleting old json cache.');
 	_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
 	_deleteFile(folders.data + 'searchByDistance_cacheLinkSet.json');
-	panelProperties.descriptorCRC[1] = descriptorCRC;
-	overwriteProperties(panelProperties); // Updates panel
+	sbd.panelProperties.descriptorCRC[1] = descriptorCRC;
+	overwriteProperties(sbd.panelProperties); // Updates panel
 }
-if (panelProperties.bProfile[1]) {profiler.Print();}
+if (sbd.panelProperties.bProfile[1]) {profiler.Print();}
 // Start cache
 var cacheLinkSet;
 if (_isFile(folders.data + 'searchByDistance_cacheLink.json')) {
 	const data = loadCache(folders.data + 'searchByDistance_cacheLink.json');
-	if (data.size) {cacheLink = data; if (panelProperties.bStartLogging[1]) {console.log('SearchByDistance: Used Cache - cacheLink from file.');}}
+	if (data.size) {cacheLink = data; if (sbd.panelProperties.bStartLogging[1]) {console.log('SearchByDistance: Used Cache - cacheLink from file.');}}
 }
 if (_isFile(folders.data + 'searchByDistance_cacheLinkSet.json')) {
 	const data = loadCache(folders.data + 'searchByDistance_cacheLinkSet.json');
-	if (data.size) {cacheLinkSet = data; if (panelProperties.bStartLogging[1]) {console.log('SearchByDistance: Used Cache - cacheLinkSet from file.');}}
+	if (data.size) {cacheLinkSet = data; if (sbd.panelProperties.bStartLogging[1]) {console.log('SearchByDistance: Used Cache - cacheLinkSet from file.');}}
 }
 // Delays cache update after startup (must be called by the button file if it's not done here)
-if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') {debounce(updateCache, 3000)({properties: panelProperties});}
+if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') {debounce(updateCache, 3000)({properties: sbd.panelProperties});}
 // Ask others instances to share cache on startup
 if (typeof cacheLink === 'undefined') {
 	window.NotifyOthers('SearchByDistance: requires cacheLink map', true);
@@ -240,8 +253,8 @@ if (typeof cacheLinkSet === 'undefined') {
 }
 async function updateCache({newCacheLink, newCacheLinkSet, bForce = false, properties = null} = {}) {
 	if (typeof cacheLink === 'undefined' && !newCacheLink) { // only required if on_notify_data did not fire before
-		if (panelProperties.bProfile[1]) {var profiler = new FbProfiler('updateCache');}
-		if (panelProperties.bCacheOnStartup[1] || bForce) {
+		if (sbd.panelProperties.bProfile[1]) {var profiler = new FbProfiler('updateCache');}
+		if (sbd.panelProperties.bCacheOnStartup[1] || bForce) {
 			if (sbd.isCalculatingCache) {return;}
 			sbd.isCalculatingCache = true;
 			if (typeof buttonsBar !== 'undefined') {
@@ -293,7 +306,7 @@ async function updateCache({newCacheLink, newCacheLinkSet, bForce = false, prope
 			cacheLink = new Map();
 		}
 		saveCache(cacheLink, folders.data + 'searchByDistance_cacheLink.json');
-		if (panelProperties.bProfile[1]) {profiler.Print();}
+		if (sbd.panelProperties.bProfile[1]) {profiler.Print();}
 		console.log('SearchByDistance: New Cache - cacheLink');
 		window.NotifyOthers(window.Name + ' SearchByDistance: cacheLink map', cacheLink);
 	} else if (newCacheLink) {
@@ -307,7 +320,7 @@ async function updateCache({newCacheLink, newCacheLinkSet, bForce = false, prope
 		cacheLinkSet = newCacheLinkSet;
 	}
 	// Multiple Graph testing and logging of results using the existing cache
-	if (panelProperties.bSearchDebug[1]) {
+	if (sbd.panelProperties.bSearchDebug[1]) {
 		doOnce('Test 1',testGraph)(sbd.allMusicGraph);
 		doOnce('Test 2',testGraphV2)(sbd.allMusicGraph);
 	}
@@ -339,7 +352,7 @@ addEventListener('on_notify_data', (name, info) => {
 });
 
 addEventListener('on_script_unload', () => {
-	if (panelProperties.bStartLogging[1]) {console.log('SearchByDistance: Saving Cache.');}
+	if (sbd.panelProperties.bStartLogging[1]) {console.log('SearchByDistance: Saving Cache.');}
 	if (cacheLink) {saveCache(cacheLink, folders.data + 'searchByDistance_cacheLink.json');}
 	if (cacheLinkSet) {saveCache(cacheLinkSet, folders.data + 'searchByDistance_cacheLinkSet.json');}
 });
@@ -347,10 +360,10 @@ addEventListener('on_script_unload', () => {
 /* 
 	Warnings about links/nodes set wrong
 */
-if (panelProperties.bGraphDebug[1]) {
-	if (panelProperties.bProfile[1]) {var profiler = new FbProfiler('graphDebug');}
+if (sbd.panelProperties.bGraphDebug[1]) {
+	if (sbd.panelProperties.bProfile[1]) {var profiler = new FbProfiler('graphDebug');}
 	graphDebug(sbd.allMusicGraph);
-	if (panelProperties.bProfile[1]) {profiler.Print();}
+	if (sbd.panelProperties.bProfile[1]) {profiler.Print();}
 }
 
 /* 
@@ -378,7 +391,7 @@ if (!_isFile(folders.xxx + 'presets\\Search by\\recipes\\allowedKeys.txt') || bM
 		}
 		return [key, descr];
 	});
-	if (panelProperties.bStartLogging[1]) {console.log('Updating recipes documentation at: ' + folders.xxx + 'presets\\Search by\\recipes\\allowedKeys.txt');}
+	if (sbd.panelProperties.bStartLogging[1]) {console.log('Updating recipes documentation at: ' + folders.xxx + 'presets\\Search by\\recipes\\allowedKeys.txt');}
 	_save(folders.xxx + 'presets\\Search by\\recipes\\allowedKeys.txt', JSON.stringify(Object.fromEntries(data), null, '\t'));
 }
 
@@ -393,7 +406,7 @@ async function do_searchby_distance({
 								recipe 					= {}, // May be a file path or object with Arr of arguments {genreWeight, styleWeight, ...}
 								// --->Args modifiers
 								bAscii					= properties.hasOwnProperty('bAscii') ? properties.bAscii[1] : true, // Sanitize all tag values with ASCII equivalent chars
-								bTagsCache				= properties.hasOwnProperty('bTagsCache') ? properties.bTagsCache[1] : false, // Read from cache
+								bTagsCache				= panelProperties.hasOwnProperty('bTagsCache') ? panelProperties.bTagsCache[1] : false, // Read from cache
 								bAdvTitle 				= properties.hasOwnProperty('bAdvTitle') ? properties.bAdvTitle[1] : true, // RegExp duplicate matching,
 								checkDuplicatesBy 		= properties.hasOwnProperty('checkDuplicatesBy') ? JSON.parse(properties.checkDuplicatesBy[1]) : globTags.remDupl,
 								// --->Weights
@@ -574,7 +587,7 @@ async function do_searchby_distance({
 		}
 		// Method check
 		if (!checkMethod(method)) {console.popup('Method not recognized: ' + method +'\nOnly allowed GRAPH, DYNGENRE or WEIGHT.', 'Search by distance'); return;}
-		
+	
 		// Start calcs
 		if (bProfile) {var test = new FbProfiler('do_searchby_distance');}
 		// May be more than one tag so we use split(). Use filter() to remove '' values. For ex:
@@ -590,6 +603,8 @@ async function do_searchby_distance({
 		const customStrTag = (customStrWeight !== 0) ? (recipeProperties.customStrTag || properties.customStrTag[1]).split(',').filter(Boolean) : [];
 		const customNumTag = (customNumWeight !== 0) ? (recipeProperties.customNumTag || properties.customNumTag[1]).split(',').filter(Boolean) : []; // This one only allows 1 value, but we put it into an array
 		const smartShuffleTag = recipeProperties.smartShuffleTag || properties.smartShuffleTag[1];
+		const genreStyleTag = [...new Set(genreTag.concat(styleTag))].map((tag) => {return (tag.indexOf('$') === -1 ? _t(tag) : tag);});
+		const genreStyleTagQuery = genreStyleTag.map((tag) => {return (tag.indexOf('$') === -1 ? tag : _q(tag));});
 		
 		// Check input
 		playlistLength = (playlistLength >= 0) ? playlistLength : 0;
@@ -878,9 +893,8 @@ async function do_searchby_distance({
 				// Even if the argument is known to be a genre or style, the output values may be both, genre and styles.. so we use both for the query
 				if (influences.length) {
 					influences = [...new Set(influences)];
-					const tagNameTF = [...new Set(genreTag.concat(styleTag))].map((tag) => {return ((tag.indexOf('$') === -1) ? tag : _q(tag));}); // May be a tag or a function...
-					const match = tagNameTF.some((tag) => {return tag.indexOf('$') !== -1}) ? 'HAS' : 'IS'; // Allow partial matches when using funcs
-					let temp = query_combinations(influences, tagNameTF, 'OR', void(0), match); // min. array with 2 values or more if tags are remapped
+					const match = genreStyleTagQuery.some((tag) => {return tag.indexOf('$') !== -1}) ? 'HAS' : 'IS'; // Allow partial matches when using funcs
+					let temp = query_combinations(influences, genreStyleTagQuery, 'OR', void(0), match); // min. array with 2 values or more if tags are remapped
 					temp = 'NOT (' + query_join(temp, 'OR') + ')'; // flattens the array
 					influencesQuery.push(temp);
 				}
@@ -894,9 +908,8 @@ async function do_searchby_distance({
 				// Even if the argument is known to be a genre or style, the output values may be both, genre and styles.. so we use both for the query
 				if (influences.length) {
 					influences = [...new Set(influences)];
-					const tagNameTF = [...new Set(genreTag.concat(styleTag))].map((tag) => {return ((tag.indexOf('$') === -1) ? tag : _q(tag));}); // May be a tag or a function...
-					const match = tagNameTF.some((tag) => {return tag.indexOf('$') !== -1}) ? 'HAS' : 'IS'; // Allow partial matches when using funcs
-					let temp = query_combinations(influences, tagNameTF, 'OR', void(0), match); // min. array with 2 values or more if tags are remapped
+					const match = genreStyleTagQuery.some((tag) => {return tag.indexOf('$') !== -1}) ? 'HAS' : 'IS'; // Allow partial matches when using funcs
+					let temp = query_combinations(influences, genreStyleTagQuery, 'OR', void(0), match); // min. array with 2 values or more if tags are remapped
 					temp = _p(query_join(temp, 'OR')); // flattens the array. Here changes the 'not' part
 					influencesQuery.push(temp);
 				}
@@ -957,6 +970,7 @@ async function do_searchby_distance({
 			if (missingOnCache.length) {
 				console.log('Caching missing tags...');
 				await tagsCache.cacheTags(missingOnCache, 100, 50, libraryItems.Convert(), true);
+				tagsCache.save();
 			}
 		}
 		
@@ -981,7 +995,7 @@ async function do_searchby_distance({
         let scoreData = [];
 		
 		if (method === 'GRAPH') { // Sort by the things we will look for at the graph! -> Cache speedup
-			let tfo = fb.TitleFormat([...new Set(genreTag.concat(styleTag))].join('|'));
+			let tfo = fb.TitleFormat(genreStyleTag.join('|'));
 			handleList.OrderByFormat(tfo, 1);
 		}
 		if (bProfile) {test.Print('Task #3: Remove Duplicates and sorting', false);}
@@ -991,17 +1005,17 @@ async function do_searchby_distance({
 		// Using only boolean filter it's 3x faster than filtering by set, here bTagFilter becomes useful since we may skip +40K evaluations 
 		let tagsArr = [];
 		let z = 0;
-		if (genreTag.length && (genreWeight !== 0 || dyngenreWeight !== 0 || method === 'GRAPH')) {tagsArr.push(genreTag.join(', '));}
-		if (styleTag.length && (styleWeight !== 0 || dyngenreWeight !== 0 || method === 'GRAPH')) {tagsArr.push(styleTag.join(', '));}
-		if (moodWeight !== 0) {tagsArr.push(moodTag.join(', '));}
-		if (composerWeight !== 0) {tagsArr.push(composerTag.join(', '));}
-		if (customStrWeight !== 0) {tagsArr.push(customStrTag.join(', '));}
-		tagsArr.push('TITLE');
-		tagsArr.push(...restTagNames);
+		if (genreTag.length && (genreWeight !== 0 || dyngenreWeight !== 0 || method === 'GRAPH')) {tagsArr.push(genreTag);}
+		if (styleTag.length && (styleWeight !== 0 || dyngenreWeight !== 0 || method === 'GRAPH')) {tagsArr.push(styleTag);}
+		if (moodWeight !== 0) {tagsArr.push(moodTag);}
+		if (composerWeight !== 0) {tagsArr.push(composerTag);}
+		if (customStrWeight !== 0) {tagsArr.push(customStrTag);}
+		tagsArr.push(['TITLE']);
+		tagsArr.push(...restTagNames.map((t) => {return [t];}));
+		tagsArr = tagsArr.map((arr) => {return arr.map((tag) => {return (tag.indexOf('$') === -1 && tag !== 'skip' ? _t(tag) : tag);}).join(', ');});
 		const tagsValByKey = [];
 		let tagsVal = [];
 		if (bTagsCache) {
-			tagsArr = tagsArr.map((tagName) => {return (tagName.indexOf('$') === -1 && tagName.toLowerCase() !== 'skip' ? '%' + tagName + '%' : tagName);});
 			tagsVal = tagsCache.getTags(tagsArr, handleList.Convert());
 			tagsArr.forEach((tag, i) => {tagsValByKey[i] = tagsVal[tag];});
 		} else {
@@ -1284,7 +1298,7 @@ async function do_searchby_distance({
 			while (i--) {handlePoolArray.push(handleList[scoreData[i].index]);}
 			let handlePool = new FbMetadbHandleList(handlePoolArray);
 			handlePool = removeDuplicates({handleList: handlePool, checkKeys: poolFilteringTag, nAllowed: poolFilteringN}); // n + 1
-			const [titleHandlePool] = getTagsValuesV4(handlePool, ['title'], void(0), void(0), null);
+			const [titleHandlePool] = getTagsValuesV4(handlePool, ['TITLE'], void(0), void(0), null);
 			let filteredScoreData = [];
 			i = 0;
 			while (i < handlePool.Count) {

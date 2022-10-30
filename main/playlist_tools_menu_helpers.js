@@ -74,7 +74,9 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 		if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: creating default settings...');}
 	})();
 	doOnce('Load tags cache', debounce(() => {
-		if (menu_properties.bTagsCache[1] && typeof tagsCache !== 'undefined') {tagsCache.load();}
+		if (menu_properties.bTagsCache && menu_properties.bTagsCache[1]) {
+			if (typeof tagsCache !== 'undefined') {tagsCache.load();}
+		}
 	}, 5000))();
 	// Store for internal use
 	if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: updating settings...');}
