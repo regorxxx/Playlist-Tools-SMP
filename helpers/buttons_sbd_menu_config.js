@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/10/22
+//30/10/22
 
 include('menu_xxx.js');
 include('helpers_xxx.js');
@@ -437,17 +437,18 @@ function createConfigMenu(parent) {
 		{	// Cache
 			const options = ['bAscii', 'bTagsCache'];
 			options.forEach((key, i) => {
-				const entryText = properties[key][0].substr(properties[key][0].indexOf('.') + 1) + (recipe.hasOwnProperty(key) ? '\t(forced by recipe)' : '') + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '');
+				const propObj = key === 'bTagsCache' ? sbd.panelProperties : properties;
+				const entryText = propObj[key][0].substr(propObj[key][0].indexOf('.') + 1) + (recipe.hasOwnProperty(key) ? '\t(forced by recipe)' : '') + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '');
 				menu.newEntry({menuName, entryText, func: () => {
-					properties[key][1] = !properties[key][1];
-					overwriteProperties(properties); // Updates panel
+					propObj[key][1] = !propObj[key][1];
+					overwriteProperties(propObj); // Updates panel
 					if (key === 'bAscii') {
 						const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, 'Search by distance', popup.question + popup.yes_no);
 						if (answer === popup.yes) {
 							menu.btn_up(void(0), void(0), void(0), 'Debug and testing\\Reset link cache');
 						}
 					} else if (key === 'bTagsCache') {
-						if (properties.bTagsCache[1]) {
+						if (propObj.bTagsCache[1]) {
 							fb.ShowPopupMessage('This feature should only be enabled on Foobar2000 versions >= 2.0.\nPrevious versions already cached tags values, thus not requiring it.', 'Tags cache');
 							const answer = WshShell.Popup('Reset tags cache now?\nOtherwise do it manually after all tag changes.', 0, 'Search by distance', popup.question + popup.yes_no);
 							if (answer === popup.yes) {
@@ -460,7 +461,7 @@ function createConfigMenu(parent) {
 						}
 					}
 				}, flags: recipe.hasOwnProperty(key) || (key === 'bTagsCache' && !isCompatible('2.0', 'fb')) ? MF_GRAYED : MF_STRING});
-				menu.newCheckMenu(menuName, entryText, void(0), () => {return (recipe.hasOwnProperty(key) ? recipe[key] : properties[key][1]);});
+				menu.newCheckMenu(menuName, entryText, void(0), () => {return (recipe.hasOwnProperty(key) ? recipe[key] : propObj[key][1]);});
 			});
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
@@ -487,17 +488,18 @@ function createConfigMenu(parent) {
 			const iNum = 10;
 			const tagName = 'SIMILAR ARTISTS SEARCHBYDISTANCE';
 			include('..\\main\\search_bydistance_extra.js');
-			menu.newEntry({menuName: submenu, entryText: 'Calculate similar artists tags', func: () => {
+			menu.newEntry({menuName: submenu, entryText: 'Calculate similar artists tags', func: async () => {
 				const items = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 				const handleList = removeDuplicatesV2({handleList: items, sortOutput: '%ARTIST%', checkKeys: ['%ARTIST%']});
 				const time = secondsToTime(Math.round(handleList.Count * 30 * fb.GetLibraryItems().Count / 70000));
 				if (WshShell.Popup('Process [diferent] artists from currently selected items and calculate their most similar artists?\nResults are output to console and saved to JSON:\n' + file + '\n\nEstimated time: <= ' + time, 0, window.Name, popup.question + popup.yes_no) === popup.no) {return;}
 				let profiler = new FbProfiler('Calculate similar artists');
 				const newData = [];
-				handleList.Convert().forEach((selHandle) => {
-					const output = calculateSimilarArtists({properties, selHandle});
+				const handleArr = handleList.Convert();
+				for await (const selHandle of handleArr) {
+					const output = await calculateSimilarArtists({properties, selHandle});
 					if (output.val.length) {newData.push(output);}
-				});
+				};
 				if (!newData.length) {console.log('Nothing found.'); return;}
 				if (!_isFile(file)) {
 					newData.forEach((obj) => {console.log(obj.artist + ' --> ' + JSON.stringify(obj.val.slice(0, iNum)));});
@@ -616,16 +618,16 @@ function createConfigMenu(parent) {
 				updateCache({bForce: true, properties}); // Creates new one and also notifies other panels to discard their cache
 			}, flags: !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED});
 			// Tags cache reset Async
-			menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (properties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
+			menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (sbd.panelProperties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
 				const keys = ['genreTag', 'styleTag', 'moodTag', 'dateTag', 'keyTag', 'bpmTag', 'composerTag', 'customStrTag', 'customNumTag'].map((key) => {return properties[key][1].split(',').filter(Boolean);});
-				const tags = keys.concat([['TITLE']])
+				const tags = keys.concat([['TITLE'], [globTags.title]])
 					.map((tagName) => {return tagName.map((subTagName) => {return (subTagName.indexOf('$') === -1 ? '%' + subTagName + '%' : subTagName);});})
 					.map((tagName) => {return tagName.join(', ');}).filter(Boolean)
-					.filter((tagName) => {return !tagsCache.cache.has(tagName);});
+					.filter((tagName) => {return tagsCache.cache.has(tagName);});
 				tagsCache.clear(tags);
 				tagsCache.save();
-				tagsCache.cacheTags(tags, iStepsLibrary, iDelayLibrary, fb.GetLibraryItems().Convert(), true);
-			}, flags: properties.bTagsCache[1] ? MF_STRING : MF_GRAYED});
+				tagsCache.cacheTags(tags, iStepsLibrary, iDelayLibrary, fb.GetLibraryItems().Convert(), true).then(() => {tagsCache.save();});
+			}, flags: sbd.panelProperties.bTagsCache[1] ? MF_STRING : MF_GRAYED});
 		}
 		menu.newEntry({menuName: submenu, entryText: 'sep'});
 		{
@@ -705,7 +707,7 @@ function createConfigMenu(parent) {
 			'Similar Artists': folders.xxx + 'helpers\\readme\\search_bydistance_similar_artists.txt',
 			'User descriptors': folders.xxx + 'helpers\\readme\\search_bydistance_user_descriptors.txt',
 			sep3: 'sep',
-			'Tagging requisites': folders.xxx + 'helpers\\readme\\search_bydistance_recipes_themes.txt',
+			'Tagging requisites': folders.xxx + 'helpers\\readme\\tags_structure.txt',
 			'Tags sources': folders.xxx + 'helpers\\readme\\tags_sources.txt',
 			'Other tags notes': folders.xxx + 'helpers\\readme\\tags_notes.txt'
 		};
