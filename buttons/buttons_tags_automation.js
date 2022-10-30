@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/09/22
+//30/10/22
 
 /* 
 	Automatic tagging...
@@ -16,7 +16,7 @@ include('..\\main\\tags_automation.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'ta';
 
-try {window.DefinePanel('Automate Tags', {author:'xxx'});} catch (e) {console.log('Automate Tags Button loaded.');} //May be loaded along other buttons
+try {window.DefinePanel('Automate Tags', {author:'xxx'});} catch (e) {/* console.log('Automate Tags Button loaded.'); */} //May be loaded along other buttons
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
