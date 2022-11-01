@@ -200,9 +200,9 @@
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\shuffle_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					let shuffle = [
-						{name: 'Shuffle by artist'	,	args: {tagName: globTags.artist}},
-						{name: 'Shuffle by genre'	,	args: {tagName: globTags.genre}},
-						{name: 'Shuffle by style'	,	args: {tagName: globTags.style}}
+						{name: 'Shuffle by artist'	,	args: {tagName: [globTags.artist]}},
+						{name: 'Shuffle by genre'	,	args: {tagName: [globTags.genre]}},
+						{name: 'Shuffle by style'	,	args: {tagName: [globTags.style]}}
 					];
 					let selArg = {name: 'Custom', args: shuffle[0].args};
 					const shuffleDefaults = [...shuffle];
