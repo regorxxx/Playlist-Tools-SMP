@@ -105,6 +105,9 @@
 - Search by Distance: customizable button now doesn't allow setting playlist sorting when using harmonic mixing. Submenu is greyed out.
 - Search by Distance: the buttons now ask to check for missing genre/styles on the Graph on first initialization.
 - Search by Distance: shift modifier now opens configuration menu on customizable button, and Shift + Ctrl now sets the theme. This is done to follow the same behavior than other buttons having the configuration menu on Shift.
+- Search by Distance: new option to set scoring method, with a new one named 'LOGARITHMIC'. Default behavior is 'LINEAR' (working the same as before). 'LOGARITHMIC' scoring method takes into account that some tracks having a lot of genre/style tags don't return so many matches because it's almost impossible to match all of them. Therefore it applies a logarithmic curve, giving an extra weight for lower matches, specially for high tag values counts. For ex. when 50% of the tags are matched, that equals to 50% weight applied on 'LINEAR' method but ~70% weight for 'LOGARITHMIC' method. Only applies to genre and style weighting.
+- Search by Distance: similar artists feature now shows a popup with the report of similar artists found along their similarity scoring. Previously this info was only logged to console.
+- Search by Distance: similar artists feature now uses 'LOGARITHMIC' scoring method by default (set on preset file, can still be manually changed there).
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
 - Helpers: updated helpers.
