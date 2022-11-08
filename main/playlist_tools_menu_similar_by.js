@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/10/22
+//08/11/22
 
 // Similar by...Graph\Dyngenre\Weight
 {
@@ -38,6 +38,14 @@
 					toMerge[key][0] = '\'Search similar\' ' + toMerge[key][0];
 				}
 			});
+			// Run once at startup
+			deferFunc.push({name: 'Searc by Distance initialization', func: () => {
+				// Update cache with user set tags and genre/style check
+				doOnce('Update SBD cache', debounce(updateCache, 3000))({properties: menu_properties});
+				if (!sbd.panelProperties.firstPopup[1]) {
+					doOnce('findStyleGenresMissingGraphCheck', debounce(findStyleGenresMissingGraphCheck, 500))(menu_properties);
+				}
+			}});
 			// And merge
 			menu_properties = {...menu_properties, ...toMerge};
 			menu_properties['similarBy'] = ['Search similar by Graph\\Dyngenre\\Weight... args', JSON.stringify(similarBy)];
@@ -197,7 +205,7 @@
 								updateCache({bForce: true, properties: menu_properties}); // Creates new one and also notifies other panels to discard their cache
 							}, flags: () => !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED});
 							// Tags cache reset Async
-							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : (sbd.panelProperties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
+							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isFoobarV2 ? '\t-only Fb >= 2.0-' : (sbd.panelProperties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
 								const keys = ['genreTag', 'styleTag', 'moodTag', 'dateTag', 'keyTag', 'bpmTag', 'composerTag', 'customStrTag', 'customNumTag'].map((key) => {return JSON.pasrse(menu_properties[key][1]).filter(Boolean);});
 								const tags = keys.concat([['TITLE']])
 									.map((tagName) => {return tagName.map((subTagName) => {return (subTagName.indexOf('$') === -1 ? '%' + subTagName + '%' : subTagName);});})
@@ -254,7 +262,7 @@
 											options.forEach((key, i) => {
 												const propObj = key === 'bTagsCache' ? sbd.panelProperties : menu_properties;
 												const keyText = propObj[key][0];
-												const entryText = (keyText.substr(keyText.indexOf('.') + 1) + (key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ','');
+												const entryText = (keyText.substr(keyText.indexOf('.') + 1) + (key === 'bTagsCache' && !isFoobarV2 ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ','');
 												menu.newEntry({menuName: sm, entryText, func: () => {
 													propObj[key][1] = !propObj[key][1];
 													overwriteMenuProperties(); // Updates panel
@@ -275,14 +283,14 @@
 															tagsCache.unload();
 														}
 													}
-												}, flags: key === 'bTagsCache' && !isCompatible('2.0', 'fb') ? MF_GRAYED : MF_STRING});
+												}, flags: key === 'bTagsCache' && !isFoobarV2 ? MF_GRAYED : MF_STRING});
 												menu.newCheckMenu(sm, entryText, void(0), () => {return propObj[key][1];});
 											});
 										}
 									});
 									[configSubmenu, submenuTwo].forEach((sm) => {
 										menu.newEntry({menuName: sm, entryText: 'sep'});
-										menu.newEntry({menuName: sm, entryText: 'Reset to default...', func: () => {
+										menu.newEntry({menuName: sm, entryText: 'Restore defaults...', func: () => {
 											options.forEach((key) => {
 												const tagName = key + 'Tag';
 												if (menu_properties.hasOwnProperty(tagName) && menu_propertiesBack.hasOwnProperty(tagName)) {
