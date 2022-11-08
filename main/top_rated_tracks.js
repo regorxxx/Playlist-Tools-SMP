@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//08/11/22
 
 /* 
 	Top Rated Tracks
@@ -10,7 +10,7 @@
 
 include('..\\helpers\\helpers_xxx_playlists.js');
 include('remove_duplicates.js');
-if (!(isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) ) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
+if (!(isFoobarV2 || utils.CheckComponent('foo_playcount')) ) {fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed. Script can not work without it.');}
 
 // Top n Rated Tracks
 function topRatedTracks({
