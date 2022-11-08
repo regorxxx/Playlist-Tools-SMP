@@ -171,7 +171,7 @@
 						{ 	// Find genre/styles not on graph
 							menu.newEntry({menuName: submenu, entryText: 'Find genres/styles not on Graph', func: () => {
 								findStyleGenresMissingGraph({
-									genreStyleFilterTag: JSON.parse(menu_properties.genreStyleFilterTag[1]).filter(Boolean),
+									genreStyleFilter: JSON.parse(menu_properties.genreStyleFilterTag[1]).filter(Boolean),
 									genretag: JSON.parse(menu_properties.genreTag[1]),
 									styleTag: JSON.parse(menu_properties.styleTag[1]), 
 									bAscii: menu_properties.bAscii[1],
@@ -297,6 +297,7 @@
 													menu_properties[tagName][1] = menu_propertiesBack[tagName][1];
 												}
 											});
+											menu_properties.genreStyleFilterTag[1] = menu_propertiesBack.genreStyleFilterTag[1];
 											overwriteMenuProperties(); // Force overwriting
 											const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 											if (answer === popup.yes) {
