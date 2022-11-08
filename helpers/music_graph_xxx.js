@@ -12,8 +12,8 @@ if (typeof include !== 'undefined') { // On foobar
 	let userDescriptor = folders.userHelpers + 'music_graph_descriptors_xxx_user.js';
 	if (utils.IsFile(userDescriptor)) {
 		try {
-			// console.log('User\'s music_graph_descriptors - File loaded: ' + userDescriptor);
 			include(userDescriptor);
+			console.log('User\'s music_graph_descriptors - File loaded: ' + userDescriptor);
 		} catch (e) { 
 			console.log('Error loading user\'s music_graph_descriptors. Using default file instead.');
 		}
@@ -709,9 +709,11 @@ function histogram(data, size) {
 	let max = -Infinity;
 	for (const item of data) {
 		if (item < min) {min = item;}
-		else if (item > max) {max = item;}
+		if (item > max) {max = item;}
 	}
-	const bins = Math.ceil((max - min + 1) / size);
+	if (min === Infinity) {min = 0;}
+	if (max === -Infinity) {max = 0;}
+	let bins = Math.ceil((max - min + 1) / size);
 	const histogram = new Array(bins).fill(0);
 	for (const item of data) {
 		histogram[Math.floor((item - min) / size)]++;
