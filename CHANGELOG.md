@@ -36,11 +36,11 @@
 
 ## [3.0.0-beta.16] - 2022-09-15
 ### Added
+- Configuration: added user configurable files at '[FOOBAR PROFILE FOLDER]\js_data\presets\global' to edit default queries and tags for multiple tools. Usually used internally or on properties panel. Don't forget to reload the panels/restart foobar and restore defaults on all relevant buttons and menus to use the new values. It's recommended to do it upon installation of this update.
 - Playlist locks: new menu entries at Playlist manipulation to switch playlists locked status. It's meant to be used via Dynamic menus in a button, allowing to lock/unlock specific playlists with the same button.
 - Selection manipulation\Shuffle: shuffles tracks according to tags (for ex. artist) in a semi-random pattern, ensuring no 2 consecutive tracks have the same tag. Follows [Spotify design](https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/). Differs from 'Scatter by tags' (intercalate) in the way tracks are ordered (without strict alternation), i.e. it doesn't follow a pattern ABCABAA when it's possible to ensure no A tracks are together (ABACABA). Note contrary to [Spotify's preferences to recently played/loved tracks](https://thetab.com/uk/2021/11/17/spotify-shuffle-explained-228639), this algorithm is truly "random" in the sense that there is no preference for any track, it just ensures artists are distributed evenly with some randomness.
 - Pools: new 'Top recently played tracks' and 'Top recently added tracks' pools entries.
 - Pools: pools now also allow harmonic mixing. Key tag used follows tag remapping of the button. Check '50_random_artists_harmonic.json' for a preset example and 'Top tracks mix (harmonic)' within pools menu.
-- Presets: added user configurable files at '[FOOBAR PROFILE FOLDER]\js_data\presets\global' to edit default queries and tags for multiple tools. Usually used internally or on properties panel. Don't forget to reload the panels/restart foobar and restore defaults on all relevant buttons and menus to use the new values. It's recommended to do it upon installation of this update.
 - Presets: new presets 'Classic Pools (20 random albums)' and 'Classic Pools (20 random tracks)' for pools. Meant to solve situations like [this](https://hydrogenaud.io/index.php/topic,77460.msg1014047.html#msg1014047) or [this](https://hydrogenaud.io/index.php/topic,77460..html#msg1013926).
 - Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
@@ -62,7 +62,9 @@
 - Pools: improved and expanded console logging.
 - Pools: minor change to default pool entries to ensure final playlist length matches the global playlist length set at button. There were some rounding errors before with even track numbers.
 - Remove duplicates: Ctrl + L. Click on button will show duplicates instead of removing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
+- Remove duplicates: all uses of function changed to make use of '$year(%DATE%)' and '$ascii($lower($trim(%TITLE%))' instead of 'DATE' and 'TITLE'. This is a changed ported from Search by Distance, to ensure the most matches possible.
 - Remove duplicates: advanced RegEx title matching option. For example, tracks like these would be considered to be duplicates: 'My track (live)', 'My track (acoustic)', 'My track (2022 remix)', ' My track [take 3]', ... but not those with keywrods like 'part', 'pt.', 'act' or Roman numerals.
+- Remove duplicates: advanced RegEx title matching option. Words with "-in'" and a list of verbs ending in "-in" are matched against "-ing" verbs to further refine the search. For ex. "walkin", "walkin'" and "walking" are all considered equivalent.
 - Show duplicates: Ctrl + L. Click on button will remove duplicates instead of showing them (i.e. the inverse function). This allows to use both functionalities without having to use multiple buttons.
 - Show duplicates: advanced RegEx title matching option. See above.
 - Playlist filter: advanced RegEx title matching option. See above.
@@ -88,8 +90,10 @@
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: duplicates advanced RegEx title matching option. See above.
 - Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
+- Search by Distance: shift modifier now opens configuration menu on customizable button, and Shift + Ctrl now sets the theme. This is done to follow the same behavior than other buttons having the configuration menu on Shift.
 - Search by Distance: changed style cluster distance. Presets have been reworked to account for that.
 - Search by Distance: updated descriptors with multiple additions.
+- Search by Distance: updated and improved descriptors documentation (present on .js files).
 - Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
 - Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
 - Search by Distance: reverted default string tags to raw tags instead of using '$ascii(%TAG%)' in favor of internally converting values to ASCII. Works better for multi-value tags in queries. It's recommended to reset tag remapping to default for most users (or manually removing the TF functions if using other tags).
@@ -99,9 +103,10 @@
 - Search by Distance: improved graph links cache asynchronous calculation.
 - Search by Distance: buttons are animated while graph links cache or graph statistics are being calculated.
 - Search by Distance: customizable button now doesn't allow setting playlist sorting when using harmonic mixing. Submenu is greyed out.
+- Search by Distance: the buttons now ask to check for missing genre/styles on the Graph on first initialization.
+- Search by Distance: shift modifier now opens configuration menu on customizable button, and Shift + Ctrl now sets the theme. This is done to follow the same behavior than other buttons having the configuration menu on Shift.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
-- Removed Duplicates: all uses of function changed to make use of '$year(%DATE%)' and '$ascii($lower($trim(%TITLE%))' instead of 'DATE' and 'TITLE'. This is a changed ported from Search by Distance, to ensure the most matches possible.
 - Helpers: updated helpers.
 - Helpers: rewritten [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation) helper.
 - Properties: additional checks to properties. In case a previous property is not valid, reset to default using menus where applicable.
