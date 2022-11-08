@@ -108,6 +108,7 @@
 - Search by Distance: new option to set scoring method, with a new one named 'LOGARITHMIC'. Default behavior is 'LINEAR' (working the same as before). 'LOGARITHMIC' scoring method takes into account that some tracks having a lot of genre/style tags don't return so many matches because it's almost impossible to match all of them. Therefore it applies a logarithmic curve, giving an extra weight for lower matches, specially for high tag values counts. For ex. when 50% of the tags are matched, that equals to 50% weight applied on 'LINEAR' method but ~70% weight for 'LOGARITHMIC' method. Only applies to genre and style weighting.
 - Search by Distance: similar artists feature now shows a popup with the report of similar artists found along their similarity scoring. Previously this info was only logged to console.
 - Search by Distance: similar artists feature now uses 'LOGARITHMIC' scoring method by default (set on preset file, can still be manually changed there).
+- Search by Distance: reworked pre-defined filters switching, using RegExp, which should hopefully work in almost any case no matter their order or position on the forced query.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
 - Helpers: updated helpers.
