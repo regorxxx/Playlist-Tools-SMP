@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//08/11/22
 
 include('menu_xxx.js');
 include('helpers_xxx_properties.js')
@@ -62,7 +62,7 @@ function settingsMenu(parent, bShowValues = false, readmeFiles = [], popups = {}
 		});
 	}
 	menu.newEntry({entryText: 'sep'});
-	menu.newEntry({entryText: 'Restore defaults', func: () => {
+	menu.newEntry({entryText: 'Restore defaults...', func: () => {
 		const options = Object.keys(properties);
 		options.forEach((key) => {properties[key][1] = properties[key][3];});
 		overwriteProperties(properties); // Updates panel
