@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//08/11/22
 
 // Most played tracks from year
 {
@@ -49,7 +49,7 @@
 			}
 			menu.newEntry({entryText: 'sep'});
 		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
-	} else if ((isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) && _isFile(scriptPathElse)) {
+	} else if ((isFoobarV2 || utils.CheckComponent('foo_playcount')) && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
@@ -64,7 +64,7 @@
 // Top rated Tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\top_rated_tracks.js';
-	if ((isCompatible('2.0', 'fb') || utils.CheckComponent('foo_playcount')) && _isFile(scriptPath)) {
+	if ((isFoobarV2 || utils.CheckComponent('foo_playcount')) && _isFile(scriptPath)) {
 		const name = 'Top rated Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath);

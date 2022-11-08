@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//08/11/22
 
 /*
 	Helpers
@@ -200,7 +200,8 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName:, de
 			importPreset(options.defaultPreset);
 		}});
 	}
-	menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
+	menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+	menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults...', func: () => {
 		options.list = [...options.defaults];
 		menu_properties[options.propName][1] = JSON.stringify(options.list);
 		// Presets

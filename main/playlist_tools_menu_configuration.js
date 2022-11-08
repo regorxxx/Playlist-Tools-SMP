@@ -176,7 +176,7 @@
 					}});
 				});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-				menu.newEntry({menuName: subMenuName, entryText: 'Reset to default...', func: () => {
+				menu.newEntry({menuName: subMenuName, entryText: 'Restore defaults...', func: () => {
 					options.forEach((key) => {
 						const tagName = key + 'Tag';
 						if (menu_properties.hasOwnProperty(tagName) && menu_propertiesBack.hasOwnProperty(tagName)) {
