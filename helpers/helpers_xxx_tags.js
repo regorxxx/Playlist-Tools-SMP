@@ -54,7 +54,7 @@ function sanitizeTagTfo(tag) {
 // Use try/catch to test validity of the query output
 function queryReplaceWithCurrent(query, handle) {
 	if (!query.length) {console.log('queryReplaceWithCurrent(): query is empty'); return;}
-	if (query.indexOf('#') !== -1 && !handle) {console.log('queryReplaceWithCurrent(): handle is null'); return;}
+	else if (!handle) {console.log('queryReplaceWithCurrent(): handle is null'); return;}
 	if (query.indexOf('#') !== -1) {
 		let idx = [query.indexOf('#')];
 		let curr = idx[idx.length - 1];
