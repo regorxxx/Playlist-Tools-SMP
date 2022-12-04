@@ -44,6 +44,7 @@
 - Presets: new presets 'Classic Pools (20 random albums)' and 'Classic Pools (20 random tracks)' for pools. Meant to solve situations like [this](https://hydrogenaud.io/index.php/topic,77460.msg1014047.html#msg1014047) or [this](https://hydrogenaud.io/index.php/topic,77460..html#msg1013926).
 - Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
+- Buttons: added 'quicksearch' button which is a shortcut to the "dynamic queries" functionality, more in line with [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu).
 - Advanced sort: decremental sort by DynGenre entry added.
 - Search by Distance: tags cache for Foobar2000 2.0, enabled by default. Disabled on lower versions (since it brings no improvement on processing time). After proper setup and caching of all library tags associated to remapped tags, processing time should be similar to Foobar2000 1.6+ versions.
 - Search by Distance: smart shuffle option. See above.
@@ -56,7 +57,8 @@
 - Other tools\Playlist revive: 'ACOUSTID_ID' and 'MUSICBRAINZ_TRACKID' are now checked to find exact matches, if MD5 and all other exact match rules fail.
 - Other tools\Check Tags: added 'TITLE' to the list of default tags to be checked. Added special conditions to title tags.
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
-- Script Integration\Add SKIP tag at current playback: pressing Shift while calling the menu now adds a skip tag to the existing ones, instead of replacing.
+- Script Integration\Add SKIP tag at current playback: pressing Shift while calling the menu now adds a skip tag to the existing ones, instead of replacing. 
+- Script Integration\Add SKIP tag at current playback: will now change playback to next track after tagging, instead of waiting for the component foo_skip to do it, resulting in smoother tagging process.
 - Online controllers integration: reworked and updated all code for full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx) now using dynamic menus.
 - Pools: duplicates are now removed, per group, in Classic Pools mode (when using _GROUP_# as source). That should bring the best of both worlds, mimicking foo_random_pools behavior while not duplicating tracks when there are multiple versions of them (for ex. original and remastered album, etc.).
 - Pools: improved and expanded console logging.
