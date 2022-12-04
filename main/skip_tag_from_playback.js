@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/08/22
+//16/11/22
 
 /* 
 	Add Skip Tag From Playback
@@ -40,5 +40,6 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 	SKIP.push((bEnd ? '' : '-') + time);
 	selItem.UpdateFileInfoFromJSON(JSON.stringify([{SKIP}]));
 	console.log((bAppend ? 'Adding' : 'Setting') + ' SKIP tag on current track: ' + time + (bEnd ? ' (skips end)' : ' (skips start)'));
+	if (bEnd) {fb.Next();}
 	return time;
 }
