@@ -25,6 +25,7 @@
 	"buttons_search_by_tags_queries.js": "search_same_by_tags_queries.txt",
 	"buttons_search_top_tracks.js": "top_tracks.txt",
 	"buttons_search_top_tracks_from_date.js": "top_tracks_from_date.txt",
+	"buttons_search_quicksearch.js": "dynamic_query.txt",
 	"buttons_tags_automation.js": "tags_automation.txt",
 	"buttons_tags_save_tags.js": "save_tags.txt",
 	"buttons_listenbrainz_tools.js": "listenbrainz_tools.txt"
