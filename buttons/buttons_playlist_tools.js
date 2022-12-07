@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//05/12/22
 
 /* 
 	Playlist Tools Menu
@@ -34,12 +34,14 @@ var newButtonsProperties = {
 };
 
 setProperties(newButtonsProperties, prefix, 0); // This sets all the panel properties at once
-{
-	const properties = getPropertiesPairs(newButtonsProperties, prefix, 0);
-	updateMenuProperties(properties); // Update manually the default args
-	buttonsBar.list.push({...properties, ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
-	// Update cache with user set tags
-	doOnce('Update SBD cache', debounce(updateCache, 3000))({properties});
+if (newButtonsProperties) {
+		const properties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+		updateMenuProperties(properties); // Update manually the default args
+		buttonsBar.list.push({...properties, ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
+	if (typeof updateCache !== 'undefined') {
+		// Update cache with user set tags
+		doOnce('Update SBD cache', debounce(updateCache, 3000))({properties});
+	}
 }
 
 addButton({
