@@ -89,6 +89,7 @@
 - UI: exposed the TF/tag expression to match duplicates along the advanced RegEx title matching option. See above. Used on all tools within Playlist Tools menu.
 - UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
 - UI: reworked 'Remove duplicates' and 'Show duplicates' buttons tooltip.
+- UI: playlist revive tools now set back the focus to the latest selected track (instead of the start of the playlist).
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Search by Distance: duplicates advanced RegEx title matching option. See above.
 - Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
@@ -118,6 +119,7 @@
 - Properties: additional checks to properties. In case a previous property is not valid, reset to default using menus where applicable.
 - Properties: remapped tags properties have been rewritten, previous config will be lost. Tags now follow a JSON format, which will be more compatible with TF functions in any field.
 ### Removed
+- Search by Distance: removed the 3 submenus on Playlist Tools button, to minimize redundancy. Only left the Special playlist entries, for any other Search by Distance usage, use directly their dedicated buttons.
 - Buttons: 'search_same_by' button. See warning above for replacement.
 - Buttons: 'search_same_style' button. See warning above for replacement.
 - Buttons: 'search_same_style_moods' button. See warning above for replacement.
@@ -144,11 +146,13 @@
 - Search by Distance: crash on similar artists when date tag was not set (now uses tracks from any date in such case).
 - Search by Distance: graph links cache re-calculation is now blocked when there is already an on-going calculation. User is asked to manually re-run it afterwards via popups now.
 - Search by Distance: multiple crashes due to wrong variable name when opening popups.
+- Search by Distance: recipes where not properly numbered when they had duplicates names.
 - Top rated tracks from: is now invariant to date order. i.e. 2012,2013 will output the same than 2013,2012 (previously empty output).
 - Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
 - Buttons: no background on buttons configuration for toolbar was not properly set on script init/reloading.
 - Readmes: separators not being properly identified on readme files checking.
 - Rating related scripts not compatible with foobar2000 2.0+.
+- Some fixes to queries containing parentheses on the values, which should have been quoted.
 
 ## [3.0.0-beta.15] - 2022-08-22
 ### Added
