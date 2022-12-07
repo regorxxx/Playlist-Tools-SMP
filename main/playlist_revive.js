@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/09/22
+//07/12/22
 
 /*
 	Playlist Revive
@@ -250,6 +250,7 @@ function playlistRevive({
 				plman.ClearPlaylist(playlist);
 				plman.InsertPlaylistItems(playlist, 0, listItems);
 				plman.SetPlaylistSelection(playlist, selectedIdx, true);
+				plman.SetPlaylistFocusItem(plman.ActivePlaylist, selectedIdx[selectedIdx.length - 1]);
 			} else { 	// Just replace entire playlist
 				plman.ClearPlaylist(playlist);
 				plman.InsertPlaylistItems(playlist, 0, selItems);
