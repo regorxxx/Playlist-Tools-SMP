@@ -1,0 +1,9 @@
+﻿Shuffles tracks according to tags (for ex. artist) in a semi-random
+pattern, ensuring no 2 consecutive tracks have the same tag. 
+
+Differs from 'Scatter by tags' (intercalate) in the way tracks are
+ordered (without strict alternation), i.e. it doesn't follow a pattern
+(ABCABAA) when it's possible to ensure no A tracks are together (ABACABA).
+ 
+Follows [Spotify design]
+(https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/). 
