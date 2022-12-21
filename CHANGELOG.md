@@ -46,11 +46,18 @@
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
 - Buttons: added 'quicksearch' button which is a shortcut to the "dynamic queries" functionality, more in line with [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu).
 - Advanced sort: decremental sort by DynGenre entry added.
-- Search by Distance: tags cache for Foobar2000 2.0, enabled by default. Disabled on lower versions (since it brings no improvement on processing time). After proper setup and caching of all library tags associated to remapped tags, processing time should be similar to Foobar2000 1.6+ versions.
-- Search by Distance: smart shuffle option. See above.
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
+- Fingerprinting: added compare selection entry by FooId (previously only ChromaPrint was available).
+- Fingerprinting: added setting to enable back ChromaPrint tools (at your own responsibility). Check [Foobar2000 and SMP engine](https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036). There should be no problems on x64 systems.
+- Fingerprinting: added setting to read directly from files the ChromaPrint tag using [ffprobe](https://ffmpeg.org/ffprobe.html) instead of using Foobar2000 tag database. This bypasses the tag limitations due to big tag files, not requiring to edit the 'LargeFieldsConfig.txt\' file (at profile folder) on foobar v1.6.X. In foobar2000 v2+, there is no such limitation.
+- Fingerprinting: added setting for the max selection allowed when running the tools.
 ### Changed
+- Fingerprinting: multiple improvements on comparison report formatting.
+- Fingerprinting: performance improvements when comparing selection (uses binary search now).
+- Fingerprinting: tool warns when the fingerprint tag is not readable (see limitations above) or selection/library has no such tags.
+- Playlist locks: menu entry to lock playlists also blocks playlist removal now (not only its items).
+- Playlist locks: lock types applied are now shown on the header of the submenu.
 - Top Rated Tracks from...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
 - Most played Tracks...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
 - Most Played Tracks from...: now also includes scrobbles from Last.Fm. So in case tracks have been played at Spotify or other players, as long as scrobbles as synced by 'Enhanced playback statistics' plugin, those tracks are considered eligible the same than any track played within Foobar2000.
@@ -77,54 +84,48 @@
 - Top rated tracks from: is now automatically built by decades from 1950 onwards, up to 20 entries.
 - Top rated tracks from: a new entry is added to include all tracks before the lowest date.
 - Top rated tracks from: a new entry is added to include all tracks between the current date and last 2 decades.
+- Buttons: default method of installation requires now to load the toolbar (no more single buttons support), from there, any button can be loaded as desired.
+- Buttons: the buttons bar now shows a message when no buttons have been added, left clicking shows a popup with available buttons presets. Right clicking opens the menu to configure the toolbar or add buttons manually.
+- Buttons: added new categories at the 'Add buttons' sub-menu, for Search by Distance tools, output devices, etc. and reordered items acordingly. Cosmetic change.
 - Buttons: 'search_same_by' has been renamed to 'search_by_tags_combinations'. Console will warn about it when loading the toolbar. Replace it as needed.
 - Buttons: 'search_same_style' has been replaced with'search_by_tags_queries' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use it only style tag to mimic its behavior.
 - Buttons: 'search_same_style_moods' has been replaced with 'search_by_tags_combinations' (generic version). Console will warn about it when loading the toolbar. Remove the old button on the toolbar and add the new version, then set it to use {"STYLE":2,"MOOD":6} to mimic its behavior.
 - Buttons: 'search_by_tags_queries' and 'search_by_tags_combinations' can now be renamed.
 - Buttons: internal changes to also allow images as icons on buttons. Previously only chars were allowed.
-- Buttons: reworked buttons configuration menu to show when a 'true/fals'e option is checked. Some options now output a popup giving a description or tip. Also, a popup is thrown when an input value is non valid.
+- Buttons: reworked buttons configuration menu to show when a 'true/falsse' option is checked. Some options now output a popup giving a description or tip. Also, a popup is thrown when an input value is non valid.
 - Buttons: improved 'no background mode' on buttons toolbar with colors and shades adapted to the toolbar background color and following the design of native Foobar2000 buttons for a seamless integration.
 - Buttons: improved 'no background mode' on buttons toolbar with proper animations (no longer a bad looking rectangle gradient).
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - UI: exposed the TF/tag expression to match duplicates along the advanced RegEx title matching option. See above. Used on all tools within Playlist Tools menu.
 - UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.
+- UI: all menus involving playlists name now also have a radio check at the left for the current playlist.
 - UI: reworked 'Remove duplicates' and 'Show duplicates' buttons tooltip.
 - UI: playlist revive tools now set back the focus to the latest selected track (instead of the start of the playlist).
+- UI: buttons now show info about background processing if any is being done (usually also animated).
+- Macros: buttons is now animated while recording a macro. The 'start recording entry' also shows a warning about it.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
-- Search by Distance: duplicates advanced RegEx title matching option. See above.
-- Search by Distance: changed distance logic to be invariant to inversion (A->BC = BC -> A) and equivalent tag values (A->B1B2B3 = A-> B1B2) addition; both were lowering the total distance 'for free' in some cases. This will provide better results for tracks with lower tag counts, not so heavily weighted by the number of genre/style values. Distance values have changed for many use-cases so presets have been reworked to account for that.
-- Search by Distance: shift modifier now opens configuration menu on customizable button, and Shift + Ctrl now sets the theme. This is done to follow the same behavior than other buttons having the configuration menu on Shift.
-- Search by Distance: changed style cluster distance. Presets have been reworked to account for that.
-- Search by Distance: updated descriptors with multiple additions.
-- Search by Distance: updated and improved descriptors documentation (present on .js files).
-- Search by Distance: all remapped tags now also allow TF functions instead of just tag names. Behavior previously available only on date and custom num tags.
-- Search by Distance: estimated time for similar artist calculation is now formatted into hours, min and seconds.
-- Search by Distance: reverted default string tags to raw tags instead of using '$ascii(%TAG%)' in favor of internally converting values to ASCII. Works better for multi-value tags in queries. It's recommended to reset tag remapping to default for most users (or manually removing the TF functions if using other tags).
-- Search by Distance: when using TF functions on tags, queries now use 'HAS' instead of 'IS' to ensure multi-value tags are taken into consideration (otherwise only single-value tags match). Note this has the side-effect of partial matching being allowed (i.e. 'Rock' matches 'Progressive Rock' too, but not the opposite).
-- Search by Distance: TF/tag expression to match duplicates along the advanced RegEx title matching option can be configured on the customizable button.
-- Search by Distance: queries involving key tags now use all possibles equivalences in different notations (standard, Open keys, Camelot keys). For ex: '((KEY IS A) OR (KEY IS 4d) OR (KEY IS 11B))'.
-- Search by Distance: improved graph links cache asynchronous calculation.
-- Search by Distance: buttons are animated while graph links cache or graph statistics are being calculated.
-- Search by Distance: customizable button now doesn't allow setting playlist sorting when using harmonic mixing. Submenu is greyed out.
-- Search by Distance: the buttons now ask to check for missing genre/styles on the Graph on first initialization.
-- Search by Distance: shift modifier now opens configuration menu on customizable button, and Shift + Ctrl now sets the theme. This is done to follow the same behavior than other buttons having the configuration menu on Shift.
-- Search by Distance: new options to set scoring method ('LOGARITHMIC', 'LOGISTIC', 'LINEAR'). Default behavior is 'LINEAR' (working the same as before). 'LOGARITHMIC' and 'LOGISTIC' scoring methods take into account that some tracks having a lot of genre/style tags don't return so many matches because it's almost impossible to match all of them. Therefore it applies a logarithmic curve, giving an extra weight to lower matches, specially for high tag values counts (n). For ex. when 50% of the tags are matched, that equals to 50% weight applied on 'LINEAR' method but ~70% weight for 'LOGARITHMIC' method and 64%(n<=1) to 85%(n=3) for 'LOGISTIC' method. 'LOGISTIC' method is much more sensitive to the tag value count (n). Only applies to genre and style weighting. Added related readmes to this feature along a chart comparison.
-- Search by Distance: similar artists feature now shows a popup with the report of similar artists found along their similarity scoring. Previously this info was only logged to console.
-- Search by Distance: similar artists feature now uses 'LOGARITHMIC' scoring method by default (set on preset file, can still be manually changed there).
-- Search by Distance: reworked pre-defined filters switching, using RegExp, which should hopefully work in almost any case no matter their order or position on the forced query.
+- Presets: updated all Picard scripts with comments, setting examples, new scripts (for folksonomy tags, performers, ...), code improvements, etc.
+- Other Tools\Write tags: changed default tools on first init.
 - Readmes: updated pools readme.
 - Readmes: readme is now available in config menus for individual buttons too (and not only the toolbar).
 - Helpers: updated helpers.
 - Helpers: rewritten [Camelot-Wheel-Notation](https://github.com/regorxxx/Camelot-Wheel-Notation) helper.
 - Properties: additional checks to properties. In case a previous property is not valid, reset to default using menus where applicable.
 - Properties: remapped tags properties have been rewritten, previous config will be lost. Tags now follow a JSON format, which will be more compatible with TF functions in any field.
+- Minor performance improvement (usually on subsequent calls) caching all TitleFormat expressions.
 ### Removed
-- Search by Distance: removed the 3 submenus on Playlist Tools button, to minimize redundancy. Only left the Special playlist entries, for any other Search by Distance usage, use directly their dedicated buttons.
+- Search by Distance: removed the 3 submenus on Playlist Tools button, to minimize redundancy. Only left the 'Special playlist 'entries, for any other Search by Distance usage, use directly their dedicated buttons. The 'Special playlist' entries are only available in case 'Search by distance' scripts are [installed](https://github.com/regorxxx/Search-by-Distance-SMP).
+- Buttons: removed all 'Search by Distance' buttons. Install scripts from its [repository](https://github.com/regorxxx/Search-by-Distance-SMP) to make them available (no longer releasing all mixed here).
 - Buttons: 'search_same_by' button. See warning above for replacement.
 - Buttons: 'search_same_style' button. See warning above for replacement.
 - Buttons: 'search_same_style_moods' button. See warning above for replacement.
 - Script Integration\SMP Main menu: all functionality removed. Replace it as needed with custom Dynamic menus.
 ### Fixed
+- Macros: no longer allows to save a macro without any action. A popup is shown in such case.
+- Macros: 'start recording' entry is now disabled while it is already recording a macro.
+- Macros: 'stop recording' entry is now disabled in case it is not recording.
+- Fingerprinting: when comparing a list of tracks against itself (for ex. 'compare selection' tool), the analysis no longer checks every track against itself but only against the other tracks. Previously it always reported a 100% similarity against the original track, which is obvious. Note this doesn't apply when checking a list of tracks against the library, if a track is compared against itself, the result is considered valid (a match was found).
+- Playlist locks: SMP locked playlists were not properly identified (and thus not shown on the locked menu list).
 - Advanced sort: sort by key now properly differentiates between major (A) an minor keys (B), putting firt the major key and then the minor one when sorting (instead of mixing them when having the same number).
 - Advanced sort: sort by DynGenre now properly creates an undo backup point on the modified playlist before being applied, allowing to restore the previous state with Ctrl + Z. It should have worked that way, the same than any other tool, from the beginning.
 - Dynamic queries: duplicated queries are removed before joining them with 'OR'. i.e. selecting 10 tracks by 'Mdou Moctar' for a query 'ARTIST IS #ARTIST#' will not output 10 time the same query, but only once. While functionality and final results don't change at all, it seems processing time greatly speeds up with shorter queries.
@@ -134,19 +135,7 @@
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
 - Pools: some additional checks to ensure non ASCII chars, casing or numbers are correctly identified as equivalent. For ex. 'Classic Pools (3 tracks per artist letter)' would output an artist starting with A and another with a as 2 different letters. Same applies to ASCII equivalences, etc. Now all the values are reduced to an ASCII lowercase string.
 - Pools: 'Current genre/style and instrumentals' query had a typo.
-- Search by Distance: tracks with a key difference greater than 6 were not properly evaluated, since they are nearer on the key wheel. Being the real distance (6 - difference). i.e. a track with key 12A would be considered at a distance 11 from a track 1A, instead of a distance 1. This happened at the scoring stage (it was properly evaluated at other places), resulting in less tracks being output as similar tracks in most cases (where KEY was used for weighting).
-- Search by Distance: after renaming custom button, button width was not properly adjusted. Width on panel reload and after renaming did not match.
-- Search by Distance: estimated time for similar artist calculation was not properly computed when having multiple tracks by same artist(s) on selection
-- Search by Distance: remapped key tag was not being used on queries (used 'KEY' in any case). It only affected queries, tags were being retrieved using the right name though.
-- Search by Distance: remapped key and BPM tags were not being used on theme creation.
-- Search by Distance: remapped genre/style tags were not being properly used on similar artist calculation filtering step.
-- Search by Distance: remapped genre/style tags were not working as expected with TF functions (which are now the default behavior for ASCII handling) on similar artist calculation.
-- Search by Distance: calculation did not have into consideration tracks with same genre/style values on similar artist calculation filtering step.
-- Search by Distance: in some cases similar artists were duplicated.
-- Search by Distance: crash on similar artists when date tag was not set (now uses tracks from any date in such case).
-- Search by Distance: graph links cache re-calculation is now blocked when there is already an on-going calculation. User is asked to manually re-run it afterwards via popups now.
-- Search by Distance: multiple crashes due to wrong variable name when opening popups.
-- Search by Distance: recipes where not properly numbered when they had duplicates names.
+- Script Integration\SMP Dynamic menu: crash when 'Script integration' sub-menu was disabled but the option was enabled. The entire feature is now disabled as consequence, as it should be.
 - Top rated tracks from: is now invariant to date order. i.e. 2012,2013 will output the same than 2013,2012 (previously empty output).
 - Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
 - Buttons: no background on buttons configuration for toolbar was not properly set on script init/reloading.
