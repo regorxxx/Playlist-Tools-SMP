@@ -1,10 +1,10 @@
 ﻿'use strict';
-//19/04/22
+//19/12/22
 
-include('..\\helpers\\helpers_xxx.js');
-include('..\\helpers\\helpers_xxx_tags.js');
-include('..\\helpers\\helpers_xxx_file.js');
-include('..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\..\\helpers\\helpers_xxx.js');
+include('..\\..\\helpers\\helpers_xxx_tags.js');
+include('..\\..\\helpers\\helpers_xxx_file.js');
+include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 
 const ffmpeg = {};
 
@@ -53,7 +53,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 				const tags = LRA.map((value) => {return {[tagName]: value};});
 				if (itemsLength === tags.length) {
 					new FbMetadbHandleList(items).UpdateFileInfoFromJSON(JSON.stringify(tags));
-					if (maxCount > 1) {console.log(itemsLength,'items tagged.');} // Don't repeat this line when all is done in 1 step. Will be printed also later
+					if (maxCount > 1) {console.log(itemsLength, 'items tagged.');} // Don't repeat this line when all is done in 1 step. Will be printed also later
 					bDone = bDone;
 				} else {bDone = false; console.log('Tagging failed: unknown error.');}
 			}
