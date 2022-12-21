@@ -33,15 +33,18 @@ EmptyObject.prototype.concat = function concat(fastmap) {Object.entries(fastmap)
 
 function fastmap() {
 	var map = new EmptyObject();
-
-	for (var _len = arguments.length, props = new Array(_len), _key = 0; _key < _len; _key++) {
-		props[_key] = arguments[_key];
+	const argsLen = arguments.length;
+	if (arguments.length > 1) {throw new error('Constructor only accepts a single iterable or array [[key, value], ...]');}
+	else if (argsLen === 1) {
+		const iterator = arguments[0];
+		for (var _len = iterator.length, props = new Array(_len), _key = 0; _key < _len; _key++) {
+			props[_key] = {[iterator[_key][0]]: iterator[_key][1]};
+		}
+		
+		if (props.length) {
+			Object.assign.apply(Object, [map].concat(props));
+		}
 	}
-
-	if (props.length) {
-		Object.assign.apply(Object, [map].concat(props));
-	}
-
 	return map;
 }
 
