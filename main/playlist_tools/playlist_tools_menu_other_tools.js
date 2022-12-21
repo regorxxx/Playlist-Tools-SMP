@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//19/12/22
 
 // Other tools
 {
@@ -8,11 +8,11 @@
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Check tags
-			const scriptPath = folders.xxx + 'main\\check_library_tags.js';
+			const scriptPath = folders.xxx + 'main\\tags\\check_library_tags.js';
 			if (_isFile(scriptPath)){
 				const name = 'Check tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\check_library_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					// Delete unused properties
@@ -135,11 +135,11 @@
 			}
 		}
 		{	// Automate tags
-			const scriptPath = folders.xxx + 'main\\tags_automation.js';
+			const scriptPath = folders.xxx + 'main\\tags\\tags_automation.js';
 			if (_isFile(scriptPath)){
 				const name = 'Write tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tags_automation.txt';
 					const tAut = new tagAutomation();
 					menu_properties['toolsByKey'] = ['\'Other tools\\Write tags\' tools enabled', JSON.stringify(tAut.toolsByKey)];
@@ -150,7 +150,8 @@
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Add tags on batch to selected tracks' + (tAut.isRunning() ? ' (running)' : '');}, func: () => {
 						tAut.run();
-						if (defaultArgs.parent) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, () => {return !tAut.isRunning();});} // Apply animation on registered parent button...
+						// Apply animation on registered parent button...
+						if (defaultArgs.parent) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, () => {return !tAut.isRunning();});}
 					}, flags: allFlags});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: () => {return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)');}, func: tAut.nextStepTag, flags: firedFlags});
@@ -212,11 +213,11 @@
 			}
 		}
 		{	// Playlist revive
-			const scriptPath = folders.xxx + 'main\\playlist_revive.js';
+			const scriptPath = folders.xxx + 'main\\playlists\\playlist_revive.js';
 			if (_isFile(scriptPath)){
 				const name = 'Playlist Revive';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\playlist_revive.txt';
 					{	// Submenu
 						const subMenuName = menu.newMenu(name, menuName);
@@ -273,11 +274,11 @@
 			}
 		}
 		{	// Import track list
-			const scriptPath = folders.xxx + 'main\\import_text_playlist.js';
+			const scriptPath = folders.xxx + 'main\\playlists\\import_text_playlist.js';
 			if (_isFile(scriptPath)){
 				const name = 'Import track list';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\import_text_playlist.txt';
 					{	// Submenu
 						const subMenuName = menu.newMenu(name, menuName);
@@ -351,7 +352,7 @@
 			if (_isFile(scriptPath)){
 				const name = 'Playlist History';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});

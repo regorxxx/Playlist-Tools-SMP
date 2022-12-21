@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//19/12/22
 
 // Script integration
 {
@@ -8,11 +8,11 @@
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Dynamic menus
-			const scriptPath = folders.xxx + 'main\\main_menu_custom.js';
+			const scriptPath = folders.xxx + 'main\\main_menu\\main_menu_custom.js';
 			if (_isFile(scriptPath)){
 				const name = 'SMP Dynamic menu';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					include(folders.xxx + 'helpers\\helpers_xxx_controller.js');
 					include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
@@ -82,19 +82,6 @@
 					// Start
 					deferFunc.push({name, func: (properties) => {
 						mainMenuSMP = JSON.parse(properties['mainMenuSMP'][1]);
-						mainMenuSMP.forEach((entry, index) => {
-							if (entry) {
-								onMainMenuEntries[index + 1] = entry;
-								if (!menu_panelProperties.bDynamicMenus[1]) {
-									fb.RegisterMainMenuCommand(index, entry.name, entry.name);
-									onMainMenuDynamicEntries.push({...entry, onMainMenuEntries: true});
-								}
-								if (entry.hasOwnProperty('path') && entry.path.length) {
-									try {include(entry.path);}
-									catch (e) {console.log(e);}
-								}
-							}
-						});
 						if (folders.ajqueryCheck()) {
 							if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.')}
 							if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.')}
@@ -173,7 +160,7 @@
 								{name: 'sep'},
 								{name: mainMenuSMPDefaults[0].name, func: (idx = onMainMenuEntries.length) => {
 									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\n\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\n	- Pressing shift while calling the action will append tag to existing SKIP tags (instead of replacing them). Meant to add skipped parts at multiple points for ex.\n\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.\n\nMost common usage would be adding a button to a native buttons toolbar and assigning it this action via main menus (File\Spider Monkey Panel\Script commands\....)', scriptName + ': ' + name);
-									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
+									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
 								{name: mainMenuSMPDefaults[1].name, func: (idx = onMainMenuEntries.length) => {
 									const ajQueryFile = folders.ajquerySMP + 'toexecute.json';

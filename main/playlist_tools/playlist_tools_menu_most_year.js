@@ -1,14 +1,14 @@
 ﻿'use strict';
-//08/11/22
+//19/12/22
 
 // Most played tracks from year
 {
-	const scriptPath = folders.xxx + 'main\\top_tracks_from_date.js';
-	const scriptPathElse = folders.xxx + 'main\\top_tracks.js';
+	const scriptPath = folders.xxx + 'main\\search\\top_tracks_from_date.js';
+	const scriptPathElse = folders.xxx + 'main\\search\\top_tracks.js';
 	if (utils.CheckComponent('foo_enhanced_playcount') && _isFile(scriptPath)) {
 		const name = 'Most played Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-			include(scriptPath);
+			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks_from_date.txt';
 			const menuName = menu.newMenu(name);
 			menu.newEntry({menuName, entryText: 'Based on play counts within a period:', func: null, flags: MF_GRAYED});
@@ -63,11 +63,11 @@
 
 // Top rated Tracks from year
 {
-	const scriptPath = folders.xxx + 'main\\top_rated_tracks.js';
+	const scriptPath = folders.xxx + 'main\\search\\top_rated_tracks.js';
 	if ((isFoobarV2 || utils.CheckComponent('foo_playcount')) && _isFile(scriptPath)) {
 		const name = 'Top rated Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-			include(scriptPath);
+			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_rated_tracks.txt';
 			const menuName = menu.newMenu(name);
 			menu.newEntry({menuName, entryText: 'Based on ratings (' + defaultArgs.ratingLimits.join(' to ') + '):', func: null, flags: MF_GRAYED});

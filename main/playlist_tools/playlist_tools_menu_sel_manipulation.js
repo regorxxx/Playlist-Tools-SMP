@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/10/22
+//19/12/22
 
 // Selection manipulation...
 {
@@ -119,9 +119,9 @@
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				const selArgs = [];
 				{	// Sort by key
-					const scriptPath = folders.xxx + 'main\\sort_by_key.js';
+					const scriptPath = folders.xxx + 'main\\sort\\sort_by_key.js';
 					if (_isFile(scriptPath)){
-						include(scriptPath);
+						include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 						readmes[name + '\\' + 'Sort by Key'] = folders.xxx + 'helpers\\readme\\sort_by_key.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
@@ -131,9 +131,9 @@
 					}
 				}
 				{	// Sort by DynGenre
-					const scriptPath = folders.xxx + 'main\\sort_by_dyngenre.js';
+					const scriptPath = folders.xxx + 'main\\sort\\sort_by_dyngenre.js';
 					if (_isFile(scriptPath)){
-						include(scriptPath);
+						include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 						readmes[name + '\\' + 'Sort by DynGenre'] = folders.xxx + 'helpers\\readme\\sort_by_dyngenre.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						[
@@ -154,11 +154,11 @@
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 		}
 		{	// Scatter
-			const scriptPath = folders.xxx + 'main\\scatter_by_tags.js';
+			const scriptPath = folders.xxx + 'main\\sort\\scatter_by_tags.js';
 			if (_isFile(scriptPath)){
 				const name = 'Scatter by tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
@@ -192,11 +192,11 @@
 			}
 		}
 		{	// Shuffle
-			const scriptPath = folders.xxx + 'main\\scatter_by_tags.js';
+			const scriptPath = folders.xxx + 'main\\sort\\scatter_by_tags.js';
 			if (_isFile(scriptPath)){
 				const name = 'Shuffle by tags';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\shuffle_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					let shuffle = [
@@ -275,13 +275,13 @@
 			}
 		}
 		{	// Remove and find in playlists
-			const scriptPath = folders.xxx + 'main\\find_remove_from_playlists.js';
+			const scriptPath = folders.xxx + 'main\\playlists\\find_remove_from_playlists.js';
 			if (_isFile(scriptPath)){
 				const nameNowFind = 'Find now playing track in...';
 				const nameFind = 'Find track(s) in...';
 				const nameRemove = 'Remove track(s) from...';
 				if (!menusEnabled.hasOwnProperty(nameNowFind) || !menusEnabled.hasOwnProperty(nameFind) || !menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameNowFind] === true || menusEnabled[nameFind] === true || menusEnabled[nameRemove] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + 'Find in and Remove from'] = folders.xxx + 'helpers\\readme\\find_remove_from_playlists.txt';
 					// Add properties
 					menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in...\' show current playlist?', true];
@@ -324,12 +324,18 @@
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+												const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '');
+												menu.newEntry({menuName: subMenu_i, entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+												// Add radio check on current playlist
+												if (playlist.index === ap) {menu.newCheckMenu(subMenu_i, entryText, entryText, () => 0);}
 											}
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											menu.newEntry({menuName: subMenuName,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+											const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '');
+											menu.newEntry({menuName: subMenuName,  entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+											// Add radio check on current playlist
+											if (playlist.index === ap) {menu.newCheckMenu(subMenuName, entryText, entryText, () => 0);}
 										}
 									}
 								} else {
@@ -369,12 +375,18 @@
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												menu.newEntry({menuName: subMenu_i, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+												const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '');
+												menu.newEntry({menuName: subMenu_i, entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+												// Add radio check on current playlist
+												if (playlist.index === ap) {menu.newCheckMenu(subMenu_i, entryText, entryText, () => 0);}
 											}
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											menu.newEntry({menuName: subMenuName, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : ''), func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+											const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '');
+											menu.newEntry({menuName: subMenuName, entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+											// Add radio check on current playlist
+											if (playlist.index === ap) {menu.newCheckMenu(subMenuName, entryText, entryText, () => 0);}
 										}
 									}
 								} else {
@@ -414,14 +426,18 @@
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
-												menu.newEntry({menuName: subMenu_i, entryText: playlistName, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+												const entryText =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
+												menu.newEntry({menuName: subMenu_i, entryText, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+												// Add radio check on current playlist
+												if (playlist.index === ap) {menu.newCheckMenu(subMenu_i, entryText, entryText, () => 0);}
 											}
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											const playlistName =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
-											menu.newEntry({menuName: subMenuName, entryText: playlistName, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+											const entryText =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
+											menu.newEntry({menuName: subMenuName, entryText, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
+											// Add radio check on current playlist
+											if (playlist.index === ap) {menu.newCheckMenu(subMenuName, entryText, entryText, () => 0);}
 										}
 									}
 								} else {
@@ -560,7 +576,7 @@
 				menu.newCondEntry({entryText: 'Send selection to...', condFunc: () => {
 					if (defaultArgs.bProfile) {var profiler = new FbProfiler('Send selection to...');}
 					const playlistsNum = plman.PlaylistCount;
-					const playlistsNumNotLocked = playlistCountNoLocked();
+					const playlistsNumNotLocked = playlistsNum - playlistCountLocked(['AddItems']);
 					const ap = plman.ActivePlaylist;
 					const handleList = plman.GetPlaylistSelectedItems(ap);
 					if (playlistsNum && playlistsNumNotLocked && handleList.Count) {
@@ -578,13 +594,16 @@
 								// Send
 								const idxSend = '(Send sel. to) Playlists ' + bottomIdx + ' - ' + topIdx;
 								const subMenu_i_send = menu.newMenu(idxSend, subMenuNameSend);
-								for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
+								for (let j = bottomIdx + skipped; j <= topIdx + skipped && j < playlistsNum; j++) {
 									if (!addLock(j)) {
 										const playlist = {name: plman.GetPlaylistName(j), index : j};
-										menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '');
+										menu.newEntry({menuName: subMenu_i_send, entryText, func: () => {
 											plman.UndoBackup(playlist.index);
 											plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+										// Add radio check on current playlist
+										if (playlist.index === ap) {menu.newCheckMenu(subMenu_i_send, entryText, entryText, () => 0);}
 									} else {skipped++}
 								}
 							}
@@ -592,9 +611,12 @@
 							for (let i = 0; i < playlistsNum; i++) {
 								if (!addLock(i)) {
 									const playlist = {name: plman.GetPlaylistName(i), index : i};
-									menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
+									menu.newEntry({menuName: subMenuNameSend, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
 										plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+									// Add radio check on current playlist
+									if (playlist.index === ap) {menu.newCheckMenu(subMenuNameSend, entryText, entryText, () => 0);}
 								}
 							}
 						}

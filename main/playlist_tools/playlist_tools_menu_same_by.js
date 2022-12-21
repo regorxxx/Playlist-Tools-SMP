@@ -1,13 +1,13 @@
 ﻿'use strict';
-//16/10/22
+//19/12/22
 
 // Same by...
 {
-	const scriptPath = folders.xxx + 'main\\search_same_by.js';
+	const scriptPath = folders.xxx + 'main\\search\\search_same_by.js';
 	if (_isFile(scriptPath)){
 		const name = 'Search same by tags...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-			include(scriptPath);
+			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\search_same_by_tags_combinations.txt';
 			forcedQueryMenusEnabled[name] = true;

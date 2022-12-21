@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//19/12/22
 
 // Playlist manipulation...
 {
@@ -8,11 +8,11 @@
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Remove Duplicates / Show Duplicates
-			const scriptPath = folders.xxx + 'main\\remove_duplicates.js';
+			const scriptPath = folders.xxx + 'main\\filter_and_query\\remove_duplicates.js';
 			if (_isFile(scriptPath)){
 				const name = 'Duplicates and tag filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\remove_duplicates.txt';
 					let subMenuName = menu.newMenu(name, menuName);
 					let sortInputDuplic = globTags.remDupl;
@@ -87,11 +87,11 @@
 			}
 		}
 		{	// Filter by Query
-			const scriptPath = folders.xxx + 'main\\filter_by_query.js';
+			const scriptPath = folders.xxx + 'main\\filter_and_query\\filter_by_query.js';
 			if (_isFile(scriptPath)){
 				const name = 'Query filtering';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\filter_by_query.txt';
 					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
@@ -126,7 +126,7 @@
 							catch (e) {return;}
 							if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
 								try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
-								catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
+								catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return;}
 							}
 							return {query};
 						};
@@ -219,11 +219,11 @@
 			}
 		}
 		{	// Create harmonic mix from playlist
-			const scriptPath = folders.xxx + 'main\\harmonic_mixing.js';
+			const scriptPath = folders.xxx + 'main\\filter_and_query\\harmonic_mixing.js';
 			if (_isFile(scriptPath)){
 				const name = 'Harmonic mix';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-					include(scriptPath);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\harmonic_mixing.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
@@ -384,8 +384,9 @@
 								const subMenu_i_diff = bDiff ? menu.newMenu(idxDiff, subMenuNameDiff) : null;
 								for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
 									const playlist = {name: plman.GetPlaylistName(j), index : j};
+									const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
 									if (bMerge && !bAddLock) {
-										menu.newEntry({menuName: subMenu_i_merge, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										menu.newEntry({menuName: subMenu_i_merge, entryText, func: () => {
 											plman.UndoBackup(ap);
 											const handleListA = plman.GetPlaylistItems(ap);
 											const handleListB = plman.GetPlaylistItems(playlist.index).Convert();
@@ -397,9 +398,11 @@
 												console.log('Added ' + toAdd.Count + ' items.');
 											} else {console.log('No items were added.');}
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+										// Add radio check on current playlist
+										if (playlist.index === ap) {menu.newCheckMenu(subMenu_i_merge, entryText, entryText, () => 0);}
 									}
 									if (bInter && !bAddRemLock) {
-										menu.newEntry({menuName: subMenu_i_inter, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										menu.newEntry({menuName: subMenu_i_inter, entryText, func: () => {
 											plman.UndoBackup(ap);
 											const handleListA = plman.GetPlaylistItems(ap);
 											const handleListAOri = handleListA.Clone().Convert();
@@ -416,9 +419,11 @@
 											if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
 											if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+										// Add radio check on current playlist
+										if (playlist.index === ap) {menu.newCheckMenu(subMenu_i_inter, entryText, entryText, () => 0);}
 									}
 									if (bDiff && !bAddRemLock) {
-										menu.newEntry({menuName: subMenu_i_diff, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+										menu.newEntry({menuName: subMenu_i_diff, entryText, func: () => {
 											plman.UndoBackup(ap);
 											const handleListA = plman.GetPlaylistItems(ap)
 											const handleListAOri = handleListA.Clone().Convert();
@@ -435,14 +440,17 @@
 											if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
 											if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+										// Add radio check on current playlist
+										if (playlist.index === ap) {menu.newCheckMenu(subMenu_i_diff, entryText, entryText, () => 0);}
 									}
 								}
 							}
 						} else { // Or just show all
 							for (let i = 0; i < playlistsNum; i++) {
 								const playlist = {name: plman.GetPlaylistName(i), index : i};
+								const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
 								if (bMerge && !bAddLock) {
-									menu.newEntry({menuName: subMenuNameMerge,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									menu.newEntry({menuName: subMenuNameMerge,  entryText, func: () => {
 										plman.UndoBackup(ap);
 										const handleListA = plman.GetPlaylistItems(ap);
 										const handleListB = plman.GetPlaylistItems(playlist.index).Convert();
@@ -454,9 +462,11 @@
 											console.log('Added ' + toAdd.Count + ' items.');
 										} else {console.log('No items were added.');}
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+									// Add radio check on current playlist
+									if (playlist.index === ap) {menu.newCheckMenu(subMenuNameMerge, entryText, entryText, () => 0);}
 								}
 								if (bInter && !bAddRemLock) {
-									menu.newEntry({menuName: subMenuNameInter, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									menu.newEntry({menuName: subMenuNameInter, entryText, func: () => {
 										plman.UndoBackup(ap);
 										const handleListA = plman.GetPlaylistItems(ap);
 										const handleListAOri = handleListA.Clone().Convert();
@@ -473,9 +483,11 @@
 										if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
 										if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+									// Add radio check on current playlist
+									if (playlist.index === ap) {menu.newCheckMenu(subMenuNameInter, entryText, entryText, () => 0);}
 								}
 								if (bDiff && !bAddRemLock) {
-									menu.newEntry({menuName: subMenuNameDiff, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									menu.newEntry({menuName: subMenuNameDiff, entryText, func: () => {
 										plman.UndoBackup(ap);
 										const handleListA = plman.GetPlaylistItems(ap)
 										const handleListAOri = handleListA.Clone().Convert();
@@ -492,6 +504,8 @@
 										if (toAddCount) {plman.InsertPlaylistItems(ap, 0, toAdd);}
 										if (remCount) {console.log('Removed ' + remCount + ' items.');} else {console.log('No items were removed.');}
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+									// Add radio check on current playlist
+									if (playlist.index === ap) {menu.newCheckMenu(subMenuNameDiff, entryText, entryText, () => 0);}
 								}
 							}
 						}
@@ -547,73 +561,71 @@
 					const playlistsNum = plman.PlaylistCount;
 					const ap = plman.ActivePlaylist;
 					if (playlistsNum && ap !== -1) {
-						const playlistsNumNotLocked = playlistCountNoLocked();
 						const bTracks = plman.PlaylistItemCount(ap) !== 0;
 						// Split entries in sub-menus if there are too many playlists...
 						let ss = menu_properties['playlistSplitSize'][1];
-						const splitBy =  bSend ? playlistsNumNotLocked < ss * 5 ? ss : ss * 2 : playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
-						if (playlistsNum > splitBy) {
-							const subMenusCount = bSend ? Math.ceil(playlistsNumNotLocked / splitBy) : Math.ceil(playlistsNum / splitBy);
-							let skipped = 0; // Only used on bSend, to account for locked playlists
-							for (let i = 0; i < subMenusCount; i++) {
-								const bottomIdx =  i * splitBy;
-								const topIdx = (i + 1) * splitBy - 1;
-								// Prefix ID is required to avoid collisions with same sub menu names
-								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
-								// Send
-								const idxSend = bSend ? '(Send all to) Playlists ' + bottomIdx + ' - ' + topIdx : null;
-								const subMenu_i_send = bSend ? menu.newMenu(idxSend, subMenuNameSend) : null;
-								// Go to
-								const idxGo = bGo ? '(Go to) Playlists ' + bottomIdx + ' - ' + topIdx : null;
-								const subMenu_i_go = bGo ? menu.newMenu(idxGo, subMenuNameGo) : null;
-								// Close
-								const idxClose = bClose ? '(Close) Playlists ' + bottomIdx + ' - ' + topIdx : null;
-								const subMenu_i_close = bClose ? menu.newMenu(idxClose, subMenuNameClose) : null;
-								for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
-									const playlist = {name: plman.GetPlaylistName(j), index : j};
-									if (bSend && bTracks) {
-										if (!addLock(j)) {
-											menu.newEntry({menuName: subMenu_i_send, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-												plman.UndoBackup(playlist.index);
-												plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(ap));
-											}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
-										} else {skipped++}
+						const sendGoCloseMenu = (index, menuName, obj) => {
+							const playlist = {name: plman.GetPlaylistName(index), index};
+							const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
+							if (obj.action === 'send' && !addLock(index)){
+								menu.newEntry({menuName, entryText, func: () => {
+									plman.UndoBackup(playlist.index);
+									plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(ap));
+								}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+							} else if (obj.action === 'go'){
+								menu.newEntry({menuName, entryText, func: () => {
+									plman.ActivePlaylist = playlist.index;
+								}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
+							} else if (obj.action === 'close' && !closeLock(index)) { 
+								menu.newEntry({menuName, entryText, func: () => {
+									plman.RemovePlaylist(playlist.index);
+									if (plman.ActivePlaylist === -1 && plman.PlaylistCount !== 0) {plman.ActivePlaylist = plman.PlaylistCount - 1;}
+								}});
+							} else {return false;}
+							// Add radio check on current playlist
+							if (index === plman.ActivePlaylist) {menu.newCheckMenu(menuName, entryText, entryText, () => 0);}
+							return true;
+						};
+						[
+							{action: 'send', playlistsNum: playlistsNum - playlistCountLocked(['AddItems']), subMenuName: subMenuNameSend, bEnabled: bSend},
+							{action: 'go', playlistsNum, subMenuName: subMenuNameGo, bEnabled: bGo},
+							{action: 'close', playlistsNum: playlistsNum - playlistCountLocked(['RemovePlaylist']), subMenuName: subMenuNameClose, bEnabled: bClose}
+						].forEach((obj) => {
+							if (!obj.bEnabled) {return;}
+							if (obj.playlistsNum === 0) {
+								menu.newEntry({menuName: obj.subMenuName, entryText: 'No items.', func: null, flags: MF_GRAYED});
+								return;
+							}
+							if (obj.action === 'send' && !bTracks) {
+								menu.newEntry({menuName: obj.subMenuName, entryText: 'No tracks.', func: null, flags: MF_GRAYED});
+								return;
+							}
+							const splitBy = obj.playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
+							if (obj.playlistsNum > splitBy) {
+								const subMenusCount = Math.ceil(obj.playlistsNum / splitBy);
+								let skipped = 0;
+								for (let i = 0; i < subMenusCount; i++) {
+									const bottomIdx =  i * splitBy;
+									const topIdx = (i + 1) * splitBy - 1;
+									// Prefix ID is required to avoid collisions with same sub menu names
+									// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+									const idx = (obj.action === 'send' 
+										? '(Send all to)' 
+										: obj.action === 'go'
+											? '(Go to)'
+											: '(Close)'
+									) + ' Playlists ' + bottomIdx + ' - ' + topIdx;
+									const subMenu_i = menu.newMenu(idx, obj.subMenuName);
+									for (let j = bottomIdx + skipped; j <= topIdx + skipped && j < playlistsNum; j++) {
+										if (!sendGoCloseMenu(j, subMenu_i, obj)) {skipped++}
 									}
-									if (bGo) {
-										menu.newEntry({menuName: subMenu_i_go, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											ap = playlist.index;
-										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
-									}
-									if (bClose) {
-										menu.newEntry({menuName: subMenu_i_close, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.RemovePlaylist(playlist.index);
-										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
-									}
+								}
+							} else { // Or just show all
+								for (let i = 0; i < playlistsNum; i++) {
+									sendGoCloseMenu(i, obj.subMenuName, obj);
 								}
 							}
-						} else { // Or just show all
-							for (let i = 0; i < playlistsNum; i++) {
-								const playlist = {name: plman.GetPlaylistName(i), index : i};
-								if (bSend && bTracks) {
-									if (!addLock(i)) {
-										menu.newEntry({menuName: subMenuNameSend,  entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-											plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), plman.GetPlaylistItems(ap));
-										}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
-									}
-								}
-								if (bGo) {
-									menu.newEntry({menuName: subMenuNameGo, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-										ap = playlist.index;
-									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
-								}
-								if (bClose) {
-									menu.newEntry({menuName: subMenuNameClose, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
-										plman.RemovePlaylist(playlist.index);
-									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
-								}
-							}
-						}
-						if (!bTracks && bSend) {menu.newEntry({menuName: subMenuNameSend, entryText: 'No tracks.', func: null, flags: MF_GRAYED});}
+						});
 					} else {
 						if (bSend) {menu.newEntry({menuName: subMenuNameSend, entryText: 'No items.', func: null, flags: MF_GRAYED});}
 						if (bGo) {menu.newEntry({menuName: subMenuNameGo, entryText: 'No items.', func: null, flags: MF_GRAYED});}
@@ -650,7 +662,13 @@
 				const subMenuNameSwitch = bSwitch ? menu.newMenu(nameSwitch, menuName) : null;
 				if (!bSwitch) {menuDisabled.push({menuName: nameSwitch, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 				if (bLock) {
-					menu.newEntry({menuName: subMenuNameLock, entryText: 'Lock playlist: add, remove, replace and reorder', func: null, flags: MF_GRAYED});
+					// menu.newEntry({menuName: subMenuNameLock, entryText: ' add, remove, replace and reorder', func: null, flags: MF_GRAYED});
+					const lockTypesMenu = menu.newMenu('Lock playlist (by SMP):', subMenuNameLock);
+					menu.newEntry({menuName: lockTypesMenu, entryText: 'With these locks:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: lockTypesMenu, entryText: 'sep'});
+					['AddItems', 'RemoveItems', 'ReplaceItems', 'ReorderItems', 'RemovePlaylist'].forEach((lock) => {
+						menu.newEntry({menuName: lockTypesMenu, entryText: lock.split(/(\B[A-Z]\w*)/g).join(' '), func: null, flags: MF_GRAYED | MF_CHECKED});
+					});
 					menu.newEntry({menuName: subMenuNameLock, entryText: 'sep'});
 				}
 				if (bUnlock) {
@@ -664,11 +682,11 @@
 				// Build submenus
 				menu.newCondEntry({entryText: 'Lock/Unlock/Switch lock Playlists...', condFunc: () => {
 					if (defaultArgs.bProfile) {var profiler = new FbProfiler('Lock/Unlock/Switch lock  Playlists...');}
-					const lockTypes = ['AddItems', 'RemoveItems', 'ReplaceItems', 'ReorderItems'];
+					const lockTypes = ['AddItems', 'RemoveItems', 'ReplaceItems', 'ReorderItems', 'RemovePlaylist'];
 					const playlistsNum = plman.PlaylistCount;
 					if (playlistsNum) {
-						const nonLockedPlaylists = playlistCountNoLocked();
-						const lockedPlaylists = playlistsNum - nonLockedPlaylists;
+						const lockedPlaylists = playlistCountLocked();
+						const nonLockedPlaylists = playlistsNum - lockedPlaylists;
 						// Split entries in sub-menus if there are too many playlists...
 						let ss = menu_properties['playlistSplitSize'][1];
 						const lockUnlockMenu = (index, menuName, obj) => {
@@ -678,20 +696,26 @@
 							const bSMPLock = lockName === 'foo_spider_monkey_panel' || !lockName;
 							const bLocked = !bSMPLock || playlistLockTypes.isSuperset(new Set(lockTypes));
 							const flags = bSMPLock ? MF_STRING: MF_GRAYED;
-							const entryText = playlist.name + (!bSMPLock ? ' ' + _p(lockName) : '');
+							const entryText = playlist.name + (!bSMPLock 
+								? ' ' + _p(lockName) 
+								: playlistLockTypes.size !== 0 
+									? ' (partially locked)'
+									: ''
+							);
 							if ((obj.action === 'lock' || obj.action === 'switch') && !bLocked){
 								menu.newEntry({menuName, entryText, func: () => {
+									const newLock = [...playlistLockTypes.union(new Set(lockTypes))];
 									plman.SetPlaylistLockedActions(index, lockTypes);
 								}, flags});
-								return true;
 							} else if ((obj.action === 'unlock' || obj.action === 'switch') && bLocked){
 								menu.newEntry({menuName, entryText, func: () => {
 									const newLock = [...playlistLockTypes.difference(new Set(lockTypes))];
 									plman.SetPlaylistLockedActions(index, newLock);
 								}, flags});
-								return true;
-							}
-							return false;
+							} else {return false;}
+							// Add radio check on current playlist
+							if (index === plman.ActivePlaylist) {menu.newCheckMenu(menuName, entryText, entryText, () => 0);}
+							return true;
 						};
 						[
 							{action: 'lock', playlistsNum: nonLockedPlaylists, subMenuName: subMenuNameLock, bEnabled: bLock},
@@ -703,40 +727,55 @@
 								menu.newEntry({menuName: obj.subMenuName, entryText: 'No items.', func: null, flags: MF_GRAYED});
 								return;
 							}
+							let bSomeEntry = false;
 							const splitBy = obj.playlistsNum < ss * 5 ? ss : ss * 2; // Double split size when total exceeds 5 times the value (good enough for really high # of playlists)
 							if (obj.playlistsNum > splitBy) {
 								const subMenusCount = Math.ceil(obj.playlistsNum / splitBy);
+								let skipped = 0;
 								for (let i = 0; i < subMenusCount; i++) {
 									const bottomIdx =  i * splitBy;
 									const topIdx = (i + 1) * splitBy - 1;
 									// Prefix ID is required to avoid collisions with same sub menu names
 									// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
-									const idx = (obj.action === 'lock' ? '(Lock)' : '(Unlock)') + ' Playlists ' + bottomIdx + ' - ' + topIdx;
+									const idx = (obj.action === 'lock' 
+										? '(Lock)' 
+										: obj.action === 'switch'
+											? '(Switch)'
+											: '(Unlock)'
+									) + ' Playlists ' + bottomIdx + ' - ' + topIdx;
 									const subMenu_i = menu.newMenu(idx, obj.subMenuName);
-									let skipped = 0;
-									for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
+									for (let j = bottomIdx + skipped; j <= topIdx + skipped && j < playlistsNum; j++) {
 										if (!lockUnlockMenu(j, subMenu_i, obj)) {skipped++}
+										else {bSomeEntry = true;}
 									}
 								}
 							} else { // Or just show all
-								for (let i = 0; i < playlistsNum; i++) {lockUnlockMenu(i, obj.subMenuName, obj);}
+								for (let i = 0; i < playlistsNum; i++) {
+									if (lockUnlockMenu(i, obj.subMenuName, obj)) {bSomeEntry = true;}
+								}
 							}
-							menu.newEntry({menuName: obj.subMenuName, entryText: 'sep'});
-							const flags = plman.ActivePlaylist !== -1 ? MF_STRING: MF_GRAYED;
-							menu.newEntry({menuName: obj.subMenuName, entryText: 'Active playlist', func: () => {
-								const ap = plman.ActivePlaylist;
-								if (ap === -1) {return;}
-								const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(ap));
-								const lockName = plman.GetPlaylistLockName(ap);
+							if (bSomeEntry) {menu.newEntry({menuName: obj.subMenuName, entryText: 'sep'});}
+							{
+								const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(plman.ActivePlaylist));
+								const lockName = plman.GetPlaylistLockName(plman.ActivePlaylist);
 								const bSMPLock = lockName === 'foo_spider_monkey_panel' || !lockName;
 								const bLocked = !bSMPLock || playlistLockTypes.isSuperset(new Set(lockTypes));
-								if ((obj.action === 'lock' || obj.action === 'switch') && !bLocked){
-										plman.SetPlaylistLockedActions(ap, lockTypes);
-								} else if ((obj.action === 'unlock' || obj.action === 'switch') && bLocked){
-										const newLock = [...playlistLockTypes.difference(new Set(lockTypes))];
-										plman.SetPlaylistLockedActions(ap, newLock);
-								}
-							}, flags});
+								const flags = obj.action === 'lock' && bLocked
+									? MF_GRAYED
+									: obj.action === 'unlock' && !bLocked
+										? MF_GRAYED
+										: MF_STRING;
+								menu.newEntry({menuName: obj.subMenuName, entryText: 'Active playlist', func: () => {
+									const ap = plman.ActivePlaylist;
+									if (ap === -1) {return;}
+									if ((obj.action === 'lock' || obj.action === 'switch') && !bLocked){
+											plman.SetPlaylistLockedActions(ap, lockTypes);
+									} else if ((obj.action === 'unlock' || obj.action === 'switch') && bLocked){
+											const newLock = [...playlistLockTypes.difference(new Set(lockTypes))];
+											plman.SetPlaylistLockedActions(ap, newLock);
+									}
+								}, flags});
+							}
 						});
 					} else {
 						if (bLock) {menu.newEntry({menuName: subMenuNameLock, entryText: 'No items.', func: null, flags: MF_GRAYED});}

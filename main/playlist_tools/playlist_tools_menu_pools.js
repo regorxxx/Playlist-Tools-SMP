@@ -1,16 +1,16 @@
 ﻿'use strict';
-//30/10/22
+//19/12/22
 
 // Pools
 {
 	const name = 'Pools';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-		include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
-		include(folders.xxx + 'helpers\\helpers_xxx_playlists_files.js');
-		const plsManHelper = folders.xxx + 'helpers\\playlist_manager_helpers.js';
+		include('..\\..\\helpers\\helpers_xxx_playlists.js');
+		include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
+		const plsManHelper = folders.xxx + 'main\\playlist_manager\\playlist_manager_helpers.js';
 		let isPlsMan = false;
 		if (_isFile(plsManHelper)) {
-			include(plsManHelper);
+			include(plsManHelper.replace(folders.xxx + 'main\\', '..\\'));
 			isPlsMan = true;
 		}
 		readmes[newReadmeSep()] = 'sep';
@@ -199,7 +199,9 @@
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
 								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
 								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
-								handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
+								if (defaultArgs.checkDuplicatesBy.length) {
+									handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
+								}
 							}
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
@@ -212,18 +214,18 @@
 							const nameDynGenre = 'Search similar by DynGenre...';
 							const nameWeight = 'Search similar by Weight...';
 							const bScriptLoaded = !menusEnabled.hasOwnProperty(nameGraph) || !menusEnabled.hasOwnProperty(nameDynGenre) || !menusEnabled.hasOwnProperty(nameWeight) || !menusEnabled.hasOwnProperty(specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
-							if (typeof do_searchby_distance !== 'undefined' && bScriptLoaded) {
+							if (typeof searchByDistance !== 'undefined' && bScriptLoaded) {
 								// Get arguments
 								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
 								// Check
 								if (!recipe) {bAbort = true; return;}
 								// Get reference (instead of selection)
 								const theme = recipe.hasOwnProperty('theme') ? '' : pool.theme[plsName];
-								const checks = ['sbd_max_graph_distance'];
+								const checks = ['graphDistance'];
 								let bDone = true;
 								checks.forEach((key) => {
 									if (!recipe.hasOwnProperty(key)) {
-										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_bydistance.js' + ')');
+										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 										bDone = false;
 									}
 								});
@@ -235,18 +237,18 @@
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = await do_searchby_distance({properties, theme, recipe});
+								const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by GRAPH');
 							} else {
-								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_bydistance.js' + ')');
+								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 								bAbort = true;
 								return;
 							}
 							break;
 						}
 						case plsName.startsWith('_SEARCHBYWEIGHT_'): { // Search by WEIGHT
-							if (typeof do_searchby_distance !== 'undefined') {
+							if (typeof searchByDistance !== 'undefined') {
 								// Get arguments
 								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
 								// Check
@@ -257,7 +259,7 @@
 								let bDone = true;
 								checks.forEach((key) => {
 									if (!recipe.hasOwnProperty(key)) {
-										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_bydistance.js' + ')');
+										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 										bDone = false;
 									}
 								});
@@ -269,18 +271,18 @@
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = await do_searchby_distance({properties, theme, recipe});
+								const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by WEIGHT');
 							} else {
-								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_bydistance.js' + ')');
+								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 								bAbort = true;
 								return;
 							}
 							break;
 						}
 						case plsName.startsWith('_SEARCHBYDYNGENRE_'): { // Search by DYNGENRE
-							if (typeof do_searchby_distance !== 'undefined') {
+							if (typeof searchByDistance !== 'undefined') {
 								// Get arguments
 								const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
 								// Check
@@ -291,7 +293,7 @@
 								let bDone = true;
 								checks.forEach((key) => {
 									if (!recipe.hasOwnProperty(key)) {
-										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_bydistance.js' + ')');
+										console.log('Playlist tools Pools: source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 										bDone = false;
 									}
 								});
@@ -303,11 +305,11 @@
 								recipe.bShowFinalSelection = false;
 								recipe.bBasicLogging = false;
 								// Apply
-								const [selectedHandlesArray, ...rest] = await do_searchby_distance({properties, theme, recipe});
+								const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 								handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
 								console.log('Playlist tools Pools: source -> Search by DYNGENRE');
 							} else {
-								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_bydistance.js' + ')');
+								console.log('Playlist tools Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 								bAbort = true;
 								return;
 							}
@@ -371,7 +373,9 @@
 							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 						}
 						// Remove duplicates
-						handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
+						if (defaultArgs.checkDuplicatesBy.length) {
+							handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
+						}
 					}
 					// Remove tracks on destination list
 					handleListTo.Clone().Convert().forEach((handle) => {handleListFrom.Remove(handle)});

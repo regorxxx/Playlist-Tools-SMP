@@ -1,13 +1,13 @@
 ﻿'use strict';
-//16/10/22
+//19/12/22
 
 // Standard Queries...
 {
-	const scriptPath = folders.xxx + 'main\\dynamic_query.js';
+	const scriptPath = folders.xxx + 'main\\filter_and_query\\dynamic_query.js';
 	if (_isFile(scriptPath)){
 		const name = 'Standard Queries...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-			include(scriptPath);
+			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\dynamic_query.txt';
 			forcedQueryMenusEnabled[name] = true;

@@ -1,14 +1,14 @@
 ﻿'use strict';
-//16/10/22
+//19/12/22
 
 // Macros
 {
 	const name = 'Macros';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		let menuName = menu.newMenu(name);
-		const scriptPath = folders.xxx + 'helpers\\playlist_tools_menu_macros.js';
+		const scriptPath = folders.xxx + 'helpers\\menu_xxx_macros.js';
 		if (_isFile(scriptPath)){
-			include(scriptPath);
+			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_macros.txt';
 			// Create new properties
@@ -92,7 +92,7 @@
 				if (!propMacros.length) {menu.newEntry({menuName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 				menu.newEntry({menuName, entryText: 'sep'});
 				// Save
-				menu.newEntry({menuName, entryText: 'Start recording a macro', func: () => {
+				menu.newEntry({menuName, entryText: 'Start recording a macro' + (currListener !== null ? '\t[recording]' : ''), func: () => {
 					const macro = initMacro(menu);
 					if (macro && macro.name === 'sep') { // Just add a separator
 						saveMacro();
@@ -102,17 +102,24 @@
 						presets.macros.push(macro);
 						menu_properties['presets'][1] = JSON.stringify(presets);
 						overwriteProperties(menu_properties); // Updates panel
+					} else if (defaultArgs.parent) { // Apply animation on registered parent button...
+						defaultArgs.parent.switchAnimation(menuName + '\\Recording...', true, () => {return currListener === null;});
 					}
-				}});
+				}, flags: currListener === null ? MF_STRING : MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: () => {
 					const macro = saveMacro();
+					if (!macro.entry.length) {
+						console.popup('No actions recorded. Macro will not be saved.', scriptName + ': ' + name);
+						macros.pop();
+						return;
+					}
 					menu_properties['macros'][1] = JSON.stringify(macros);
 					// Presets
 					if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
 					presets.macros.push(macro);
 					menu_properties['presets'][1] = JSON.stringify(presets);
 					overwriteProperties(menu_properties); // Updates panel
-				}});
+				}, flags: currListener !== null ? MF_STRING : MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
 				{	// Add / Remove
 					createSubMenuEditEntries(menuName, {
