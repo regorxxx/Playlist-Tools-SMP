@@ -18,7 +18,7 @@
 			"bpmRange": 40,
 			"probPick": 100,
 			"scoreFilter": 70,
-			"sbd_max_graph_distance": 100
+			"graphDistance": 100
 		}
 	},
 	{
@@ -35,7 +35,7 @@
 			"bpmRange": 40,
 			"probPick": 100,
 			"scoreFilter": 70,
-			"sbd_max_graph_distance": 300
+			"graphDistance": 300
 		}
 	}]
 }

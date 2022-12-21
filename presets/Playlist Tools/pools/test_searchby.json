@@ -26,7 +26,7 @@
 					"dateRange": 15, 
 					"bpmRange": 25,
 					"scoreFilter": 70,
-					"sbd_max_graph_distance": 100
+					"graphDistance": 100
 				},
 				"_SEARCHBYWEIGHT_0": {
 					"genreWeight": 15,
