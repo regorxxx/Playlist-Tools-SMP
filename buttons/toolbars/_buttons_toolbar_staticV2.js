@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/08/22
+//15/12/22
 
 /*
 	This is an example of how merging buttons works. Just include them...
@@ -40,10 +40,10 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 	let buttonsPath = [	 // Add here your buttons path
 						folders.xxx + 'buttons\\buttons_search_by_tags_combinations.js',
 						folders.xxx + 'buttons\\buttons_playlist_remove_duplicates.js',
-						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
-						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
-						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
-						folders.xxx + 'buttons\\buttons_search_bydistance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_by_distance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_by_distance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_by_distance_customizable.js',
+						folders.xxx + 'buttons\\buttons_search_by_distance_customizable.js',
 						folders.xxx + 'buttons\\buttons_tags_automation.js',
 						folders.xxx + 'buttons\\buttons_playlist_tools.js',
 						];
