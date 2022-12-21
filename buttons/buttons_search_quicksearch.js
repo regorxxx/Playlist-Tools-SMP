@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/12/22
+//19/12/22
 
 /* 
 	Quicksearch for same....
@@ -10,7 +10,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
-include('..\\main\\dynamic_query.js');
+include('..\\main\\filter_and_query\\dynamic_query.js');
 var prefix = 'qs';
 
 try {window.DefinePanel('Quicksearch button', {author:'xxx'});} catch (e) {/* console.log('Quicksearch Button loaded.'); */} //May be loaded along other buttons

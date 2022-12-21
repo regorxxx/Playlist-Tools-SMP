@@ -1,12 +1,12 @@
 ﻿'use strict';
-//12/08/22
+//19/12/22
 
 /* 
 	-> EDIT
  */
  
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\save_tags.js');
+include('..\\main\\tags\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
  
 try {window.DefinePanel('Save tags button', {author:'xxx'});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons

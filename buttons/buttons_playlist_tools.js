@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/12/22
+//19/12/22
 
 /* 
 	Playlist Tools Menu
@@ -18,7 +18,7 @@ try {window.DefinePanel('Playlist Tools: Button', {author:'XXX', version: '3.0.0
 	const dependencies = [
 		'helpers\\helpers_xxx_properties.js',
 		'helpers\\helpers_xxx_clipboard.js',
-		'main\\playlist_tools_menu.js'];
+		'main\\playlist_tools\\playlist_tools_menu.js'];
 	let bIncludeRel = true;
 	try {include('..\\helpers\\helpers_xxx_dummy.js');} catch(e) {bIncludeRel = false;}
 	if (bIncludeRel) {dependencies.forEach((file) => {include('..\\' + file);});}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/10/22
+//19/12/22
 
 /* 
 	Top Tracks
@@ -8,8 +8,9 @@
  */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\top_tracks_from_date.js');
+include('..\\main\\search\\top_tracks_from_date.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ttd';
 

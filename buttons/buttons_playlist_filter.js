@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//19/12/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -16,7 +16,7 @@
 */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\remove_duplicates.js');
+include('..\\main\\filter_and_query\\remove_duplicates.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'fpl';
@@ -25,9 +25,9 @@ try {window.DefinePanel('Filter Playlist Button', {author:'xxx'});} catch (e) {/
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	checkInputA:	['Tag or titleformat expression to check (1)', globTags.title, {func: isStringWeak}, globTags.title],
-	checkInputB:	['Tag or titleformat expression to check (2)', globTags.artist, {func: isStringWeak}, globTags.artist],
-	checkInputC:	['Tag or titleformat expression to check (3)', globTags.date, {func: isStringWeak}, globTags.date],
+	checkInputA:	['Tag or TitleFormat expression to check (1)', globTags.title, {func: isStringWeak}, globTags.title],
+	checkInputB:	['Tag or TitleFormat expression to check (2)', globTags.artist, {func: isStringWeak}, globTags.artist],
+	checkInputC:	['Tag or TitleFormat expression to check (3)', globTags.date, {func: isStringWeak}, globTags.date],
 	nAllowed:		['Number of duplicates allowed (n + 1)'		 , 1, {greaterEq: 0, func: isInt}, 1],
 	bAdvTitle:		['Advanced RegEx title matching?', true, {func: isBoolean}, true]
 };

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/09/22
+//10/12/22
 
 /* 
 	Playlist Tools Macro custom
@@ -9,6 +9,7 @@
 
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\menu_xxx.js');
 try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {/*console.log('Playlist Tools Macros (CUSTOM) Button loaded.'); */} //May be loaded along other buttons
 
 var prefix = 'mac_';

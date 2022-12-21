@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/10/22
+//19/12/22
 
 /* 
 	Top Tracks
@@ -8,8 +8,9 @@
  */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\top_tracks.js');
+include('..\\main\\search\\top_tracks.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'tt';
 
@@ -29,7 +30,7 @@ addButton({
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true, ['buttons_search_top_tracks.js']).btn_up(this.currX, this.currY + this.currH);
 		} else {
-			do_top_tracks({playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1]});
+			topTracks({playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1]});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);

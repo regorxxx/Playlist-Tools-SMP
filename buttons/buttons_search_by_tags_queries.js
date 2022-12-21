@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//19/12/22
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -7,7 +7,7 @@
  */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\search_same_by.js');
+include('..\\main\\search\\search_same_by.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');

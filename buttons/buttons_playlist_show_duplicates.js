@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//19/12/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -13,7 +13,7 @@
 */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\remove_duplicates.js');
+include('..\\main\\filter_and_query\\remove_duplicates.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'sd';
@@ -22,9 +22,9 @@ try {window.DefinePanel('Show Duplicates Button', {author:'xxx'});} catch (e) {/
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	checkInputA:	['Tag or titleformat expression to check (1)', globTags.artist, {func: isStringWeak}, globTags.artist],
-	checkInputB:	['Tag or titleformat expression to check (2)', globTags.date, {func: isStringWeak}, globTags.date],
-	checkInputC:	['Tag or titleformat expression to check (3)', globTags.title, {func: isStringWeak}, globTags.title],
+	checkInputA:	['Tag or TitleFormat expression to check (1)', globTags.artist, {func: isStringWeak}, globTags.artist],
+	checkInputB:	['Tag or TitleFormat expression to check (2)', globTags.date, {func: isStringWeak}, globTags.date],
+	checkInputC:	['Tag or TitleFormat expression to check (3)', globTags.title, {func: isStringWeak}, globTags.title],
 	bAdvTitle:		['Advanced RegExp title matching?', true, {func: isBoolean}, true]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/10/22
+//19/12/22
 
 /* 
 	Automatic tagging...
@@ -12,7 +12,8 @@
  */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\tags_automation.js');
+include('..\\helpers\\menu_xxx.js');
+include('..\\main\\tags\\tags_automation.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'ta';
 
@@ -21,7 +22,7 @@ try {window.DefinePanel('Automate Tags', {author:'xxx'});} catch (e) {/* console
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = {	//You can simply add new properties here
-	toolsByKey: ['Tools enabled', JSON.stringify(new tagAutomation(void(0), true))]
+	toolsByKey: ['Tools enabled', JSON.stringify(new tagAutomation(void(0), false, true))]
 };
 newButtonsProperties['toolsByKey'].push({func: isJSON}, newButtonsProperties['toolsByKey'][1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
@@ -84,7 +85,7 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 				['Enable all', 'Disable all'].forEach((entryText, i) => {
 					menu.newEntry({menuName: subMenuTools, entryText, func: () => {
-						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable ? true : false;});
+						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault ? true : false;});
 						this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
 						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 						overwriteProperties(this.buttonsProperties); // Force overwriting

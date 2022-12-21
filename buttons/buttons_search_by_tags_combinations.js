@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/10/22
+//19/12/22
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -63,7 +63,7 @@
  */
 
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\search_same_by.js');
+include('..\\main\\search\\search_same_by.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
