@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/12/22
+//22/12/22
 
 /* 
 	Playlist Tools Pools
@@ -9,7 +9,6 @@
 
 include('..\\helpers\\buttons_xxx.js'); 
 include('..\\helpers\\menu_xxx.js');
-try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {/* console.log('Playlist Tools Pools Button loaded.'); */} //May be loaded along other buttons
 
 buttonsBar.list.push({});
 

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/08/22
+//22/12/22
 
 /* 
 	Playlist History
@@ -8,7 +8,7 @@
  */
 
 include('..\\helpers\\buttons_xxx.js'); 
-try {window.DefinePanel('Playlist Tools History', {author:'xxx'});} catch (e) {/* console.log('Playlist Tools History Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Playlist Tools History', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools History Button loaded.'); */} //May be loaded along other buttons
 include('..\\helpers\\playlist_history.js');
 
 buttonsBar.list.push({});

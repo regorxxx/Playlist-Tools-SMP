@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//22/12/22
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -69,7 +69,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ssbytc';
  
-try {window.DefinePanel('Search Same By Tags (Combinations) Button', {author:'xxx'});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Search Same By Tags (Combinations) Button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/12/22
+//22/12/22
 
 /* 
 	Playlist Tools Submenu Custom
@@ -10,7 +10,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\menu_xxx.js');
-try {window.DefinePanel('Playlist Tools Macros', {author:'xxx'});} catch (e) {console.log('Playlist Tools SubMenu (CUSTOM) Button loaded.');} //May be loaded along other buttons
+try {window.DefineScript('Playlist Tools Macros', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {console.log('Playlist Tools SubMenu (CUSTOM) Button loaded.');} //May be loaded along other buttons
 
 var prefix = 'ptc_';
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'

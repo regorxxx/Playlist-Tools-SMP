@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//22/12/22
 
 /* 
 	-> EDIT
@@ -9,7 +9,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\tags\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
  
-try {window.DefinePanel('Save tags button', {author:'xxx'});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Save tags button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
 
 buttonsBar.list.push({});
 

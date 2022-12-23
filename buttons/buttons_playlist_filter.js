@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//22/12/22
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -21,7 +21,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'fpl';
 
-try {window.DefinePanel('Filter Playlist Button', {author:'xxx'});} catch (e) {/* console.log('Filter Playlist Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Filter Playlist Button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Filter Playlist Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here

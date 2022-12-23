@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//22/12/22
 
 /* 
 	Top Tracks
@@ -14,7 +14,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ttd';
 
-try {window.DefinePanel('Top Tracks Button', {author:'xxx'});} catch (e) {/* console.log('Top Tracks from Date Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Top Tracks Button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Top Tracks from Date Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
