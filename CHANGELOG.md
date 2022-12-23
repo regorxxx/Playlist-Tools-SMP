@@ -64,6 +64,7 @@
 - Other tools\Playlist revive: 'ACOUSTID_ID' and 'MUSICBRAINZ_TRACKID' are now checked to find exact matches, if MD5 and all other exact match rules fail.
 - Other tools\Check Tags: added 'TITLE' to the list of default tags to be checked. Added special conditions to title tags.
 - Script Integration\SMP Dynamic menu: now replaces all functionality previously found at Script Integration\SMP Main menu. Custom menus and functions may still be added, and device/DSP selector is no longer required (since it requires CMD and therefore can also be changed directly with it).
+- Script Integration\SMP Dynamic menu: the panel warns about other panels having the same name if the feature is enabled at startup or when enabling it. Panel flashes for some seconds while the popup is shown.
 - Script Integration\Add SKIP tag at current playback: pressing Shift while calling the menu now adds a skip tag to the existing ones, instead of replacing. 
 - Script Integration\Add SKIP tag at current playback: will now change playback to next track after tagging, instead of waiting for the component foo_skip to do it, resulting in smoother tagging process.
 - Online controllers integration: reworked and updated all code for full integration with [foo_httpcontrol](https://hydrogenaud.io/index.php/topic,62218.0.html) has been added when using the preset [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx) now using dynamic menus.
