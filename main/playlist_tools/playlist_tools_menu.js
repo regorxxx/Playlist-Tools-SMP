@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//23/12/22
 
 /* 
 	Playlist Tools Menu
@@ -148,7 +148,8 @@ var shortcuts = {
 // Callbacks: append to any previously existing callback
 const plmPromises = [];
 addEventListener('on_notify_data', (name, info) => {
-	if (name === 'bio_imgChange') {return;}
+	if (name === 'bio_imgChange' || name === 'biographyTags' || name === 'bio_chkTrackRev') {return;}
+	if (!name.startsWith('Playlist manager') && !name.startsWith('Playlist Tools')) {return;}
 	switch (name) {
 		case 'Playlist manager: playlistPath': {
 			if (info && info.length) {
@@ -444,73 +445,76 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Ru
 	Dynamic menus
 */
 function createMainMenuDynamic() {
-	deleteMainMenuDynamic();
-	if (!menu_panelProperties.bDynamicMenus[1]) {return false;}
+	deleteMainMenuDynamic(scriptName);
 	try {
 		if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: registering dynamic menus...');}
-		// List menus
-		const mainMenu = menu.getMainMenuName();
-		const tree = {};
-		const dynamicTree = {};
-		let menuList = [];
 		let dynamicMenuList = [];
-		mainMenuSMP.forEach((entry) => {
-			if (entry) {
-				dynamicMenuList.push({...entry, onMainMenuEntries: true});
-				if (entry.hasOwnProperty('path') && entry.path.length) {
-					try {include(entry.path.replace(folders.xxx  + 'main\\', '..\\'));}
-					catch (e) {console.popup(e.message.split('\n').join('\n'), scriptName + ': SMP Dynamic menu');}
+		let menuList = [];
+		if (typeof mainMenuSMP !== 'undefined') {
+			mainMenuSMP.forEach((entry) => {
+				if (entry) {
+					dynamicMenuList.push({...entry, onMainMenuEntries: true});
+					if (entry.hasOwnProperty('path') && entry.path.length) {
+						try {include(entry.path.replace(folders.xxx  + 'main\\', '..\\'));}
+						catch (e) {console.popup(e.message.split('\n').join('\n'), scriptName + ': SMP Dynamic menu');}
+					}
 				}
-			}
-		});
-		const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...','Additional pre-defined filters...','Set menus...','Move entry...','Remove entry','Edit entry...','Duplicates handling...']);
-		const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length','Tag remapping...','Search by Distance...','(Merge with)', '(Difference with)', '(Intersect with)','Edit entries from list...','------(separator)------'];
-		const toRegEx = [/(Switch lock playlist\.\.\.\\)(?!Active playlist$)/, /(Lock playlist\.\.\.\\)(?!Active playlist$)/, /(Unlock playlist\.\.\.\\)(?!Active playlist$)/];
-		const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...','By... (tags)','By... (expression)','Find or create playlist...','To specified position','Select next tracks...']);
-		const toSkipDynamic = new Set([]);
-		const invRe = getIdRegEx('invisible', false);
-		allEntries.filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
-			const entryText = (isFunction(entry.entryText) ? entry.entryText() : entry.entryText).replace(/\t.*/g,'').replace(invRe,'');
-			const menuName = entry.menuName.replace(invRe,'');
-			// Skip
-			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
-			if (toSkipStarts.some((title) => {return entryText.startsWith(title);}) || toSkipStarts.some((title) => {return menuName.startsWith(title);})) {return;}
-			if (toRegEx.some((regex) => {return (regex.test(menuName + '\\' + entryText));})) {return;}
-			// Save
-			if (!toSkipExport.has(entryText) && !toSkipExport.has(menuName)) {
-				if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
-				tree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText), flags: isFinite(entry.flags) ? entry.flags : 0});
-				if (menuName !== mainMenu && entryText !== (menuName + '\\sep') && entry.flags === MF_GRAYED) {
-					menuList.push({name: menuName + '\\sep', flags: 1});
+			});
+		}
+		// List menus
+		if (menu_panelProperties.bDynamicMenus[1]) {
+			const mainMenu = menu.getMainMenuName();
+			const tree = {};
+			const dynamicTree = {};
+			const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'Configuration', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance','Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...','Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds' , 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing','SMP Dynamic menu','Report all from...','Check only...','Difference with playlist...','Intersect with playlist...','Merge with playlist...','Tags...', 'Available tools','Enable double pass to match more tracks','Available tools...','Harmonic mixing','Dynamic queries evaluation','Global Forced Query','Configure filters...','Additional pre-defined filters...','Set menus...','Move entry...','Remove entry','Edit entry...','Duplicates handling...']);
+			const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length','Tag remapping...','Search by Distance...','(Merge with)', '(Difference with)', '(Intersect with)','Edit entries from list...','------(separator)------'];
+			const toRegEx = [/(Switch lock playlist\.\.\.\\)(?!Active playlist$)/, /(Lock playlist\.\.\.\\)(?!Active playlist$)/, /(Unlock playlist\.\.\.\\)(?!Active playlist$)/];
+			const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...','By... (tags)','By... (expression)','Find or create playlist...','To specified position','Select next tracks...']);
+			const toSkipDynamic = new Set([]);
+			const invRe = getIdRegEx('invisible', false);
+			allEntries.filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
+				const entryText = (isFunction(entry.entryText) ? entry.entryText() : entry.entryText).replace(/\t.*/g,'').replace(invRe,'');
+				const menuName = entry.menuName.replace(invRe,'');
+				// Skip
+				if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
+				if (toSkipStarts.some((title) => {return entryText.startsWith(title);}) || toSkipStarts.some((title) => {return menuName.startsWith(title);})) {return;}
+				if (toRegEx.some((regex) => {return (regex.test(menuName + '\\' + entryText));})) {return;}
+				// Save
+				if (!toSkipExport.has(entryText) && !toSkipExport.has(menuName)) {
+					if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
+					tree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText), flags: isFinite(entry.flags) ? entry.flags : 0});
+					if (menuName !== mainMenu && entryText !== (menuName + '\\sep') && entry.flags === MF_GRAYED) {
+						menuList.push({name: menuName + '\\sep', flags: 1});
+					}
+					if (!new Set(menuList).has(menuName)) {menuList.push(menuName);}
+					if (menuName === mainMenu && entryText === 'sep') {menuList.push({name: entryText, flags: 1});}
 				}
-				if (!new Set(menuList).has(menuName)) {menuList.push(menuName);}
-				if (menuName === mainMenu && entryText === 'sep') {menuList.push({name: entryText, flags: 1});}
-			}
-			if (!toSkipDynamic.has(entryText) && !toSkipDynamic.has(menuName)) {
-				if (!dynamicTree.hasOwnProperty(menuName)) {dynamicTree[menuName] = [];}
-				if (entry.flags !== MF_GRAYED && entryText !== 'sep') {
-					dynamicTree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText)});
-					if (!new Set(dynamicMenuList).has(menuName)) {dynamicMenuList.push(menuName);}
+				if (!toSkipDynamic.has(entryText) && !toSkipDynamic.has(menuName)) {
+					if (!dynamicTree.hasOwnProperty(menuName)) {dynamicTree[menuName] = [];}
+					if (entry.flags !== MF_GRAYED && entryText !== 'sep') {
+						dynamicTree[menuName].push({name: (menuName !==  mainMenu ? menuName + '\\' + entryText : entryText)});
+						if (!new Set(dynamicMenuList).has(menuName)) {dynamicMenuList.push(menuName);}
+					}
 				}
-			}
-		});
-		Object.keys(tree).forEach((menuKey) => {
-			const idx = menuList.indexOf(menuKey);
-			if (idx !== -1) {menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)];}
-		});
-		Object.keys(dynamicTree).forEach((menuKey) => {
-			const idx = dynamicMenuList.indexOf(menuKey);
-			if (idx !== -1) {dynamicMenuList = [...dynamicMenuList.slice(0, idx), ...dynamicTree[menuKey], ...dynamicMenuList.slice(idx + 1)];}
-		});
-		// Filter consecutive separators
-		menuList = menuList.filter((item, idx, arr) => {return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx -1].name !== 'sep') && !arr[idx -1].name.endsWith('\\sep'));});
+			});
+			Object.keys(tree).forEach((menuKey) => {
+				const idx = menuList.indexOf(menuKey);
+				if (idx !== -1) {menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)];}
+			});
+			Object.keys(dynamicTree).forEach((menuKey) => {
+				const idx = dynamicMenuList.indexOf(menuKey);
+				if (idx !== -1) {dynamicMenuList = [...dynamicMenuList.slice(0, idx), ...dynamicTree[menuKey], ...dynamicMenuList.slice(idx + 1)];}
+			});
+			// Filter consecutive separators
+			menuList = menuList.filter((item, idx, arr) => {return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx -1].name !== 'sep') && !arr[idx -1].name.endsWith('\\sep'));});
+		}
 		// Create dynamic menus
 		dynamicMenuList.forEach((menu, i) => {
 			fb.RegisterMainMenuCommand(i, menu.name, menu.name);
-			onMainMenuDynamicEntries.push(menu);
+			onMainMenuDynamicEntries.push({...menu, parent: scriptName});
 		});
 		// Export if needed
-		return exportMainMenuDynamic({menuList});
+		return menu_panelProperties.bDynamicMenus[1] ? exportMainMenuDynamic({menuList}) : false;
 	} catch (e) {console.log('createMainMenuDynamic: unknown error'); console.log(e.message);}
 	return false;
 }
@@ -527,7 +531,7 @@ function exportMainMenuDynamic({file = folders.ajquerySMP + 'playlisttoolsentrie
 }
 // Run once at startup
 deferFunc.push({name: 'createMainMenuDynamic', func: () => {
-	if (menu_panelProperties.bDynamicMenus[1] && typeof mainMenuSMP !== 'undefined') {createMainMenuDynamic();}
+	if (menu_panelProperties.bDynamicMenus[1] || typeof mainMenuSMP !== 'undefined') {callbacksListener.listenNames = true; createMainMenuDynamic(); callbacksListener.checkPanelNamesAsync();}
 }});
 
 /* 

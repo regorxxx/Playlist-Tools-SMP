@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//22/12/22
 
 // Script integration
 {
@@ -18,8 +18,11 @@
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
 					readmes[menuName + '\\' + name + ' custom'] = folders.xxx + 'helpers\\readme\\main_menu_dynamic_custom.txt';
 					const subMenuName = menu.newMenu(name, menuName);
-					var mainMenuSMP = clone(onMainMenuEntries);
-					const mainMenuSMPDefaults = clone(onMainMenuEntries);
+					var mainMenuSMP = clone([
+						{name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
+						{name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'}
+					]);
+					const mainMenuSMPDefaults = clone(mainMenuSMP);
 					menu_properties['mainMenuSMP'] = [menuName + '\\' + name + ' entries', JSON.stringify(mainMenuSMP)]; // On main_menu_custom.js
 					menu_properties['mainMenuSMP'].push({func: isJSON}, menu_properties['mainMenuSMP'][1]);
 					const plsListener = 'pt:listener';
@@ -186,7 +189,7 @@
 										}
 										entry.func(idx);
 										fb.RegisterMainMenuCommand(onMainMenuDynamicEntries.length, onMainMenuEntries[idx].name, onMainMenuEntries[idx].name);
-										onMainMenuDynamicEntries.push({...onMainMenuEntries[idx], onMainMenuEntries: true});
+										onMainMenuDynamicEntries.push({...onMainMenuEntries[idx], onMainMenuEntries: true, parent: scriptName});
 										menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 										overwriteMenuProperties(); // Updates panel
 										if (folders.ajqueryCheck()) {
@@ -252,16 +255,17 @@
 							// And create / delete menus
 							if (menu_panelProperties.bDynamicMenus[1]) {
 								fb.ShowPopupMessage('Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)', window.Name);
-								createMainMenuDynamic(); 
+								createMainMenuDynamic();
+								callbacksListener.checkPanelNames();
 							} else {
-								deleteMainMenuDynamic();
+								deleteMainMenuDynamic(scriptName);
 								exportMainMenuDynamic();
 								mainMenuSMP.forEach((entry, index) => {
 									if (entry) {
 										onMainMenuEntries[index + 1] = entry;
 										if (!menu_panelProperties.bDynamicMenus[1]) {
 											fb.RegisterMainMenuCommand(index, entry.name, entry.name);
-											onMainMenuDynamicEntries.push(entry);
+											onMainMenuDynamicEntries.push({...entry, parent: scriptName});
 										}
 									}
 								});

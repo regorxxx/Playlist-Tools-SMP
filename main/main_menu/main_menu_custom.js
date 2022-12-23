@@ -5,15 +5,28 @@ include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\callbacks_xxx.js');
 
 const onMainMenuEntries = [
-	{name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
-	{name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'}
+	// {name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
+	// {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'}
 ];
 
 const onMainMenuDynamicEntries = [];
 
-function deleteMainMenuDynamic() {
-	onMainMenuDynamicEntries.forEach((_, i) => {fb.UnregisterMainMenuCommand(i)});
-	onMainMenuDynamicEntries.splice(0, onMainMenuDynamicEntries.length);
+function deleteMainMenuDynamic(parent) {
+	onMainMenuDynamicEntries.forEach((_, i) => {
+		if (typeof parent === 'undefined' || _.parent === parent) {
+			fb.UnregisterMainMenuCommand(i);
+		}
+	});
+	if (typeof parent === 'undefined') {onMainMenuDynamicEntries.splice(0, onMainMenuDynamicEntries.length);}
+	else {
+		const idx = [];
+		for (let i = 0; i < onMainMenuDynamicEntries.length; i++) {
+			if (onMainMenuDynamicEntries[i].parent === parent) {idx.push(i);}
+		}
+		if (idx.length) {
+			idx.reverse().forEach(i => onMainMenuDynamicEntries.splice(i, 1));
+		}
+	}
 }
 
 // Callback
