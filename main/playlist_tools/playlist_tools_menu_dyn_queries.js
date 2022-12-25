@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//25/12/22
 
 // Dynamic queries...
 {
@@ -22,6 +22,8 @@
 					{name: 'sep'},
 					{name: 'Same date (any track/artist)',
 						query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
+					{name: 'Same artist(s)',
+						query: globTags.artist + ' IS #' + globTags.artist + '#'},
 					{name: 'sep'},
 					{name: 'Acoustic versions of song', 
 						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + globTags.genre + ' IS acoustic OR ' + globTags.style + ' IS acoustic OR ' + globTags.mood + ' IS acoustic)'},

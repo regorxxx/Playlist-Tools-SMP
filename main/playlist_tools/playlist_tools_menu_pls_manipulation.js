@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//25/12/22
 
 // Playlist manipulation...
 {
@@ -105,6 +105,7 @@
 							{name: 'sep'},
 							{name: 'Same title than sel', query: globQuery.compareTitle},
 							{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artist + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
+							{name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artist + '#'},
 							{name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#'},
 							{name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#'},
 							{name: 'sep'},
