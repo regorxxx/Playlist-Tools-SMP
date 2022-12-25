@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/12/22
+//25/12/22
 
 /*
 	Dynamic Query
@@ -10,6 +10,7 @@ include('..\\..\\helpers\\helpers_xxx_playlists.js');
 
 function dynamicQuery({query = 'ARTIST IS #ARTIST#', sort = {tfo: null, direction: 1}, handle = fb.GetFocusItem(true), handleList = null, playlistName = 'Search...', bSendToPls = true} = {}) {
 	query = dynamicQueryProcess({query, handle, handleList});
+	if (!query) {return null;}
 	let outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query);
 	if (sort !== null && sort.tfo !== null) {outputHandleList.OrderByFormat(fb.TitleFormat(sort.tfo), sort.direction || 1)}
 	if (bSendToPls) {
