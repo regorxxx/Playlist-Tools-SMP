@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//25/12/22
 
 /* 
 	Quicksearch for same....
@@ -34,17 +34,17 @@ addButton({
 			let queryFilter = [
 				{name: 'Same Title', 
 					query: globQuery.compareTitle},
-				{name: 'Same Artist',
+				{name: 'Same Artist(s)',
 					query: globTags.artist + ' IS #' + globTags.artist + '#'},
 				{name: 'Same Date',
 					query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
 				{name: 'Same Album',
 					query: 'ALBUM IS #ALBUM#'},
-				{name: 'Same Genre',
+				{name: 'Same Genre(s)',
 					query: 'GENRE IS #GENRE#'},
-				{name: 'Same Title and Artist',
+				{name: 'Same Title and Artist(s)',
 					query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
-				{name: 'Same Title, Artist & Date', 
+				{name: 'Same Title, Artist(s) & Date', 
 					query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
 			];
 			// Globals
