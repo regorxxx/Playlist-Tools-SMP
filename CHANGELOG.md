@@ -132,7 +132,7 @@
 - Advanced sort: sort by key now properly differentiates between major (A) an minor keys (B), putting firt the major key and then the minor one when sorting (instead of mixing them when having the same number).
 - Advanced sort: sort by DynGenre now properly creates an undo backup point on the modified playlist before being applied, allowing to restore the previous state with Ctrl + Z. It should have worked that way, the same than any other tool, from the beginning.
 - Dynamic queries: duplicated queries are removed before joining them with 'OR'. i.e. selecting 10 tracks by 'Mdou Moctar' for a query 'ARTIST IS #ARTIST#' will not output 10 time the same query, but only once. While functionality and final results don't change at all, it seems processing time greatly speeds up with shorter queries.
-- Dynamic queries: parentheses and quotes on tag values not working on some instances.
+- Dynamic queries: parentheses, commas and quotes on tag values not working on some instances.
 - Dynamic queries: in case query was non-valid, tracks with 'null' string on standard tags (title, artist, ...) were output. This is a [SMP bug](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/196).
 - Script Integration\SMP Dynamic menu: excluded some entries which were not supposed to be exposed after changes on latest versions.
 - Script Integration: fixed some inconsistencies on ajquery-xxx export files.
