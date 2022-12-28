@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//28/12/22
 
 // Macros
 {
@@ -45,14 +45,15 @@
 					'Top rated Tracks from...\\From year...',
 					'Search same by tags...\\By... (pairs of tags)',
 					'Standard Queries...\\By... (query)',
+					'Select...\\Select random track',
 					'Dynamic Queries...\\By... (query)',
-					'Duplicates and tag filtering\\Filter playlist by... (tags)',
-					'Query filtering\\Filter playlist by... (query)',
-					'Select...\\Select All',
-					'Sort...\\By... (expression)',
-					'Playlist manipulation\\Find or create playlist...',
-					'Import track list\\Import from file \\ url...',
-					'Pools\\Custom pool...'
+					// 'Duplicates and tag filtering\\Filter playlist by... (tags)',
+					// 'Query filtering\\Filter playlist by... (query)',
+					// 'Select...\\Select All',
+					// 'Sort...\\By... (expression)',
+					// 'Playlist manipulation\\Find or create playlist...',
+					// 'Import track list\\Import from file \\ url...',
+					// 'Pools\\Custom pool...'
 				], bAsync: false},
 				{name: 'sep'},
 				{name: 'Report library tags errors', entry: [

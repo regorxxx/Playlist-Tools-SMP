@@ -42,7 +42,8 @@ function roughSizeOfObject(object) {
 }
 
 // Throw errors when trying to get length from objects
-Object.defineProperty(Object.prototype, 'length', {get() {throw 'No length property on objects. Probably a coding error.';} });
+// Forces using typeof recipe === 'string' and similar but leads to cleaner code and no errors
+Object.defineProperty(Object.prototype, 'length', {get() {throw new Error('No length property on objects. Probably a coding error.');}});
 
 /* 
 	Maps
