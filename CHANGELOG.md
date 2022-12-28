@@ -122,6 +122,8 @@
 - Buttons: 'search_same_style_moods' button. See warning above for replacement.
 - Script Integration\SMP Main menu: all functionality removed. Replace it as needed with custom Dynamic menus.
 ### Fixed
+- Other Tools\Write tags: audio formats without a MD5 info tag are now skipped when using the MD5 tag (not the AUDIOMD5 tag). Not requiring anymore to manually force next step.
+- Other Tools\Write tags: fixed bug introduced on [3.0.0-beta.9]. Tags not being deleted before writing the new ones in some cases due to a typo.
 - Macros: no longer allows to save a macro without any action. A popup is shown in such case.
 - Macros: 'start recording' entry is now disabled while it is already recording a macro.
 - Macros: 'stop recording' entry is now disabled in case it is not recording.
