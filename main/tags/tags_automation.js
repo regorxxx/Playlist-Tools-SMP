@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/12/22
+//02/01/23
 
 /* 
 	Automatic tagging...
@@ -343,7 +343,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					const idx = this.tools.findIndex((tool) => {return tool.key === key;});
 					const tag = this.tools[idx].tag;
 					const itemTags = getTagsValuesV3(handleList, tag, true).flat(Infinity).filter(Boolean);
-					console.log(itemTags);
 					if (i === 0 && itemTags.length) {return;} // Only at first step it checks for no tags!
 					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) {return;}
 				}
