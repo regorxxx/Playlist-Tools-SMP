@@ -52,6 +52,7 @@
 - Fingerprinting: added setting to enable back ChromaPrint tools (at your own responsibility). Check [Foobar2000 and SMP engine](https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036). There should be no problems on x64 systems.
 - Fingerprinting: added setting to read directly from files the ChromaPrint tag using [ffprobe](https://ffmpeg.org/ffprobe.html) instead of using Foobar2000 tag database. This bypasses the tag limitations due to big tag files, not requiring to edit the 'LargeFieldsConfig.txt\' file (at profile folder) on foobar v1.6.X. In foobar2000 v2+, there is no such limitation.
 - Fingerprinting: added setting for the max selection allowed when running the tools.
+- Last Action: added new entry at main menu to execute the last action used. Cleared out at startup.
 ### Changed
 - Fingerprinting: multiple improvements on comparison report formatting.
 - Fingerprinting: performance improvements when comparing selection (uses binary search now).
