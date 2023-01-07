@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/12/22
+//07/01/23
 
 /* 
 	Playlist Tools Menu
@@ -112,7 +112,7 @@ const menu = new _menu();
 
 // Enable/disable menu
 const menuAlt = new _menu();
-const menuAltAllowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration']);
+const menuAltAllowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration', 'Last action']);
 
 // For enable/disable menus
 const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
@@ -302,11 +302,23 @@ include('playlist_tools_menu_script_integration.js');
 // Configuration...
 include('playlist_tools_menu_configuration.js');
 
+// Last Action
+include('playlist_tools_menu_last_action.js');
+
 /*
 	Enable menu
 */
 {
-	const menuList = menu.getMenus().slice(1).filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);});
+	// const menuList = menu.getMenus().slice(1).filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);});
+	const menuList = menu.getEntries().slice(1).filter((entry) => {
+		return (entry.bIsMenu 
+			? menuAltAllowed.has(entry.subMenuFrom) // menu
+			: (entry.hasOwnProperty('condFunc')
+				? entry.condFunc !== null && menuAltAllowed.has(entry.entryText) // Conditional entry
+				: entry.entryText !== 'sep' && (entry.func !== null) && menuAltAllowed.has(entry.menuName) // Standard entry
+			)
+		);
+	});
 	menuDisabled.forEach((obj) => {obj.disabled = true;});
 	menuDisabled.forEach((obj) => {menuList.splice(obj.index, 0, obj);});
 	// Header
@@ -314,8 +326,8 @@ include('playlist_tools_menu_configuration.js');
 	menuAlt.newEntry({entryText: 'sep'});
 	// All entries
 	menuAlt.newEntry({entryText: 'Restore all', func: () => {
-		menuList.forEach( (menuEntry) => {
-			const menuName = menuEntry.menuName
+		menuList.forEach((menuEntry) => {
+			const menuName = menuEntry.bIsMenu ? menuEntry.menuName : menuEntry.entryText;
 			menusEnabled[menuName] = true;
 		});
 		Object.keys(menusEnabled).forEach((key) => {menusEnabled[key] = true;});
@@ -329,9 +341,13 @@ include('playlist_tools_menu_configuration.js');
 	let bLastSep = false;
 	const menuListLength = menuList.length;
 	const mainMenuName = menu.getMainMenuName();
-	menuList.forEach( (menuEntry, idx) => {
-		const menuName = menuEntry.menuName
-		const entryName = menuEntry.subMenuFrom === mainMenuName ? menuName : '--- ' + menuName;
+	menuList.forEach((menuEntry, idx) => {
+		const menuName = menuEntry.bIsMenu ? menuEntry.menuName : menuEntry.entryText;
+		const entryName = menuEntry.bIsMenu 
+			? menuEntry.subMenuFrom === mainMenuName ? menuName : '--- ' + menuName
+			: menuEntry.hasOwnProperty('condFunc')
+				? menuName
+				: menuEntry.menuName === mainMenuName ? menuName : '--- ' + menuName;
 		const bDisabled = menuEntry.hasOwnProperty('disabled') && menuEntry.disabled;
 		let flags = MF_STRING;
 		let bSep = false;
