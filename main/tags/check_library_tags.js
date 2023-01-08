@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//08/01/23
 
 /*
 	Check Library Tags
@@ -290,7 +290,7 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 	let countArrayThreshold = []; // i
 	tagsToCheck.forEach( (tag, index) => { // i
 		let maxFreq = 0;
-		countArray.push(Array.from(count[index]).sort(function(a, b) { // k
+		countArray.push([...count[index]].sort(function(a, b) { // k
 			maxFreq = Math.max(maxFreq, a[1]);
 			return a[1] - b[1];
 		}));
