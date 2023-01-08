@@ -125,6 +125,7 @@
 ### Fixed
 - Other Tools\Write tags: audio formats without a MD5 info tag are now skipped when using the MD5 tag (not the AUDIOMD5 tag). Not requiring anymore to manually force next step.
 - Other Tools\Write tags: fixed bug introduced on [3.0.0-beta.9]. Tags not being deleted before writing the new ones in some cases due to a typo.
+- Other Tools\Write tags: LRA tagging now uses [Sed](https://gnuwin32.sourceforge.net/packages/sed.htm) tool to extract the tag, which seems to give less problems with some tracks. This is due to a buggy behavior of ffmpeg which outputs a full tag report whenever the tool is used... binaries are already included on download. In case one desires to use the old FINDSTR command instead, just change useSed=TRUE to FALSE on the bat files at '.\helpers-external\ffmpeg'.
 - Macros: no longer allows to save a macro without any action. A popup is shown in such case.
 - Macros: 'start recording' entry is now disabled while it is already recording a macro.
 - Macros: 'stop recording' entry is now disabled in case it is not recording.
