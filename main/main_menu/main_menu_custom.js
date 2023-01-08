@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//09/01/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\callbacks_xxx.js');
@@ -34,7 +34,7 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 	if (idx < onMainMenuDynamicEntries.length) {
 		const entry = onMainMenuDynamicEntries[idx];
 		if (entry.onMainMenuEntries) {
-			console.log('SMP main menu ' + idx + ': ' + entry.name);
+			console.log('SMP main menu ' + (idx + 1) + ': ' + entry.name);
 			if (entry.hasOwnProperty('path')) {
 				if (entry.path.length) {
 					try {include(entry.path.replace(folders.xxx  + 'main\\', '..\\'));}

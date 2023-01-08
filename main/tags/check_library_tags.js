@@ -273,8 +273,8 @@ function checkTagsRetrieve(items, tagsToCheck, tags) {
 }
 
 function checkTagsCount(tagArray, count, i) {
-	tagArray.forEach( (tagValueArray) => { //j
-		tagValueArray.forEach( (tagValue) => { //k
+	tagArray.forEach((tagValueArray) => { //j
+		tagValueArray.forEach((tagValue) => { //k
 			if (count[i].has(tagValue)) {
 				count[i].set(tagValue, count[i].get(tagValue) + 1);
 			} else {

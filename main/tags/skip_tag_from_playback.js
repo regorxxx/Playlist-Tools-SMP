@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/11/22
+//08/01/23
 
 /* 
 	Add Skip Tag From Playback
@@ -39,7 +39,13 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 	}
 	SKIP.push((bEnd ? '' : '-') + time);
 	selItem.UpdateFileInfoFromJSON(JSON.stringify([{SKIP}]));
-	console.log((bAppend ? 'Adding' : 'Setting') + ' SKIP tag on current track: ' + time + (bEnd ? ' (skips end)' : ' (skips start)'));
+	console.log(
+		(bAppend ? 'Adding' : 'Setting') +
+		' SKIP tag on current track: ' + 
+		time + (bEnd ? ' (skips end)' : ' (skips start)') + 
+		' -> ' + 
+		selItem[0].Path.split('\\').pop() + (selItem[0].SubSong !== 0 ? ',' + selItem[0].SubSong : '')
+	);
 	if (bEnd) {fb.Next();}
 	return time;
 }
