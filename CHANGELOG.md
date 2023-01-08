@@ -149,6 +149,7 @@
 - Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
 - Buttons: no background on buttons configuration for toolbar was not properly set on script init/reloading.
 - Readmes: separators not being properly identified on readme files checking.
+- Presets: fixed variable typos on '.\presets\Playlist Tools\pools\intercalate_artists.json' file, now working as intended.
 - Rating related scripts not compatible with foobar2000 2.0+.
 - Some fixes to queries containing parentheses on the values, which should have been quoted.
 
