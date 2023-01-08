@@ -428,7 +428,11 @@ Typo.prototype = {
 		function addWord(word, rules) {
 			// Some dictionaries will list the same word multiple times with different rule sets.
 			if (!dictionaryTable.hasOwnProperty(word)) {
-				dictionaryTable[word] = null;
+				if (word === 'length') { // Fix for setting getter-only property "length"
+					Object.defineProperty(dictionaryTable, 'length', {configurable: true, enumerable: true, writable: true, value: null});
+				} else {
+					dictionaryTable[word] = null;
+				}
 			}
 			
 			if (rules.length > 0) {
