@@ -1,7 +1,7 @@
 ﻿'use strict';
-//19/12/22
+//08/01/23
 
-/*	
+/*
 	Sort by Dyngenre
 	-----------------------------------
 	Uses notation described at 'dyngenre_map' on dyngenre_map_xxx.js to sort selection by genre/style.
@@ -33,7 +33,7 @@ function sortByDyngenre({
 	const styleGenre = getTagsValuesV3(handleList, styleGenreTag, true);
 	let dyngenre = [[]];
 	for (let i = 0; i < count; i++) {
-		const styleGenre_i = Array.from(new Set((styleGenre[i] ? styleGenre[i].filter(Boolean) : [])));
+		const styleGenre_i = [...(new Set((styleGenre[i] ? styleGenre[i].filter(Boolean) : [])))];
 		const styleGenreLength = styleGenre_i.length;
 		let dyngenreNum = 0;
 		if (styleGenreLength) {
@@ -62,7 +62,7 @@ function sortByDyngenre({
 	// Therefore it would require a giant tfo comparing each value and then dividing by total number...
 	// Better to identify each track and assign a value to it.
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)
-	dyngenre.forEach ( (val, index) => {
+	dyngenre.forEach((val, index) => {
 		const sortVal = -(sortOrder === -1 ? 999999999 - dyngenre[index] : dyngenre[index]);
 		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g,'\',\'') + '),' + sortVal + ',';
 	});
