@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/01/23
+//08/01/23
 
 /* 
 	Automatic tagging...
@@ -46,6 +46,8 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 			title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true), bDefault: true},
 		{key: 'ffmpegLRA', tag: ['LRA'],
 			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe'), bDefault: true},
+		{key: 'folksonomy', tag: ['FOLKSONOMY'],
+			title: 'Folksonomy', bAvailable: false, bDefault: false},
 		{key: 'essentiaFastKey', tag: [globTags.key],
 			title: 'Key (essentia fast)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: false},
 		{key: 'essentiaKey', tag: [globTags.key],
@@ -55,7 +57,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		{key: 'essentiaDanceness', tag: ['DANCENESS'],
 			title: 'Danceness (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false},
 		{key: 'essentiaLRA', tag: ['LRA'],
-			title: 'EBUR 128 Scanner (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false},
+			title: 'EBUR 128 Scanner (essentia)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false}
 	];
 	this.toolsByKey = Object.fromEntries(this.tools.map((tool) => {return [tool.key, tool.bAvailable && tool.bDefault];}));
 	this.tagsByKey = Object.fromEntries(this.tools.map((tool) => {return [tool.key, tool.tag];}));
@@ -273,8 +275,17 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
 					
 				} else {bSucess = false;}
-				break;
 			case 6:
+				if (this.toolsByKey.folksonomy) {
+					if (this.check.subSong) {
+						if (this.selItemsByCheck.subSong.missing.Count) {
+							bSucess = folksonomyUtils.calculateFolksonomy({fromHandleList: this.selItemsByCheck.subSong.missing});
+						}
+					} else {bSucess = folksonomyUtils.calculateFolksonomy({fromHandleList: this.selItems});}
+					
+				} else {bSucess = false;}
+				break;
+			case 7:
 				if (this.toolsByKey.essentiaFastKey) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -284,7 +295,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					
 				} else {bSucess = false;}
 				break;
-			case 7:
+			case 8:
 				if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
 					const tagName = ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA'].map((key) => {return this.toolsByKey[key] ? this.tagsByKey[key][0] : null;}).filter(Boolean);
 					if (this.check.subSong) {
@@ -295,7 +306,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					
 				} else {bSucess = false;}
 				break;
-			case 8: // These require user input before saving, so they are read only operations and can be done at the same time
+			case 9: // These require user input before saving, so they are read only operations and can be done at the same time
 				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
@@ -327,26 +338,33 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		return;
 	};
 	
-	this.debouncedStep = debounce(this.stepTag, this.timers.debounce); // Only continues next step when last tag update was done >100ms ago
+	this.debouncedStep = debounce(this.stepTag, this.timers.debounce); // Only continues next step when last tag update was done > X ms ago
 	
 	this.checkHandleList = () => {
 		const i = this.iStep - 1;
-		const orderKeys = ['rgScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'LRA']
+		const orderKeys = ['rgScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'LRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 		if (i >= 0) {
 			const key = orderKeys[i];
 			const checkKeys = this.checkKeys.filter((checkKey) => this.check[checkKey]);
 			if (!checkKeys.length) {checkKeys.push('all');}
-			for (let checkKey of checkKeys) {
-				if (this.check[checkKey]) {this.setNotAllowedTools(checkKey);} else {this.setNotAllowedTools();}
+			// Compare tags
+			const check = (key, i) => {
+				if (isArrayStrings(key)) {return key.every((k) => check(k));} // Some steps have multiple tags...
 				const handleList = this.notAllowedTools.has(key) ? this.selItemsByCheck[checkKey].missing : this.selItems;
 				if (this.toolsByKey[key] && handleList.Count) {
 					const idx = this.tools.findIndex((tool) => {return tool.key === key;});
 					const tag = this.tools[idx].tag;
 					const itemTags = getTagsValuesV3(handleList, tag, true).flat(Infinity).filter(Boolean);
-					if (i === 0 && itemTags.length) {return;} // Only at first step it checks for no tags!
-					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) {return;}
+					if (i === 0 && itemTags.length) {return false;} // Only at first step it checks for no tags!
+					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) {return false;}
 				}
+				return true;
 			};
+			// Process all checks
+			for (let checkKey of checkKeys) {
+				if (this.check[checkKey]) {this.setNotAllowedTools(checkKey);} else {this.setNotAllowedTools();}
+				if (!check(key, i)) {return;}
+			}
 			this.nextStepTag();
 			return;
 		}
@@ -369,6 +387,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		if (this.toolsByKey.ffmpegLRA) {include('..\\tags\\ffmpeg-utils.js');}
 		if (this.toolsByKey.essentiaFastKey) {include('..\\tags\\essentia-utils.js');}
 		if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {include('..\\tags\\essentia-utils.js');}
+		if (this.toolsByKey.folksonomy) {include('..\\tags\\folksonomy-utils.js');}
 	};
 	
 	this.isRunning = () => {
