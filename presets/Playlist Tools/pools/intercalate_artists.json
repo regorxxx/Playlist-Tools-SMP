@@ -19,9 +19,9 @@
 			"toPls": "Intercalate mix",
 			"sort": "%playlist_index%",
 			"pickMethod": {
-				"Playlist A": "random",
-				"Playlist B": "random",
-				"Playlist C": "random"
+				"_LIBRARY_0": "random",
+				"_LIBRARY_1": "random",
+				"_LIBRARY_2": "random"
 			},
 			"insertMethod": "intercalate"
 		}
