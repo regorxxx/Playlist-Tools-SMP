@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/22
+//09/01/23
 
 /* 
 	Quicksearch for same....
@@ -41,7 +41,9 @@ addButton({
 				{name: 'Same Album',
 					query: 'ALBUM IS #ALBUM#'},
 				{name: 'Same Genre(s)',
-					query: 'GENRE IS #GENRE#'},
+					query: globTags.genre + ' IS #' + globTags.genre + '#'},
+				{name: 'Same Style(s)',
+					query: globTags.style + ' IS #' + globTags.style + '#'},
 				{name: 'Same Title and Artist(s)',
 					query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
 				{name: 'Same Title, Artist(s) & Date', 
@@ -125,6 +127,8 @@ addButton({
 			menu.newEntry({entryText: 'sep'});
 			{
 				const beginMenu = menu.newMenu('Begins with...');
+				menu.newEntry({menuName: beginMenu, entryText: 'Simulates \'%TAG% IS VALUE*\':', flags: MF_GRAYED});
+				menu.newEntry({menuName: beginMenu, entryText: 'sep'});
 				[{name: 'Same Title', query: 'TITLE IS #TITLE#'}].concat(queryFilter).forEach((queryObj) => {
 					// Add separators
 					if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
@@ -161,6 +165,63 @@ addButton({
 								}
 							}, flags: plman.ActivePlaylist !== -1 && plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count ? MF_STRING : MF_GRAYED});
 						}
+					}
+				});
+			}
+			{
+				const partialMenu = menu.newMenu('Partial match...');
+				menu.newEntry({menuName: partialMenu, entryText: 'Matches any value partially equal:', flags: MF_GRAYED});
+				menu.newEntry({menuName: partialMenu, entryText: 'sep'});
+				// Mutate original queries into partial matches
+				queryFilter.map((queryObj) => {
+					if (queryObj.query.count('#') === 2) {
+						const dynTF = queryObj.query.match(/#.*#/)[0];
+						if (dynTF && dynTF.length) {
+							const bIsFunc = dynTF.indexOf('$') !== -1;
+							const statTF = bIsFunc ? dynTF.replaceAll('#','') : '%' + dynTF.replaceAll('#','') + '%';
+							return {
+								name: queryObj.name.replace('Same', 'By'),
+								query: /DATE/i.test(queryObj.query) !== true
+									? '"$puts(val,' + dynTF + ')$puts(min,$min($len($get(val)),$len(' + statTF + ')))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
+									: '"$puts(val,' + dynTF + ')$puts(min,$sub($min($len($get(val)),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1' // Reduce length in 1 for dates, so it matches the same decade!
+							};
+						}
+					}
+					return void(0);
+				}).filter(Boolean).forEach((queryObj) => {
+					// Add separators
+					if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
+						let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
+						menu.newEntry({entryText: 'sep'});
+					} else { 
+						// Create names for all entries
+						queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
+						// Entries
+						menu.newEntry({menuName: partialMenu, entryText: queryObj.name, func: () => {
+							let query = queryObj.query;
+							if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quicksearch'); return;}
+							if (this.buttonsProperties.bEvalSel[1]) {
+								if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+									query = dynamicQueryProcess({query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist)});
+									if (query) {
+										if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
+										else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+									}
+								} else {
+									dynamicQuery({query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), playlistName});
+								}
+							} else {
+								if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+									query = dynamicQueryProcess({query});
+									if (query) {
+										if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
+										else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+									}
+								} else {
+									dynamicQuery({query, sort: queryObj.sort, playlistName});
+								}
+							}
+						}, flags: plman.ActivePlaylist !== -1 && plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count ? MF_STRING : MF_GRAYED});
 					}
 				});
 			}
