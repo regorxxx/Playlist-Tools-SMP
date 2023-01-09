@@ -44,7 +44,7 @@
 - Presets: new presets 'Classic Pools (20 random albums)' and 'Classic Pools (20 random tracks)' for pools. Meant to solve situations like [this](https://hydrogenaud.io/index.php/topic,77460.msg1014047.html#msg1014047) or [this](https://hydrogenaud.io/index.php/topic,77460..html#msg1013926).
 - Presets: new preset 'Similar artists (G)' to make use of Similar Artists analysis. Similar artists calculation is -obviously- required first.
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
-- Buttons: added 'quicksearch' button which is a shortcut to the "dynamic queries" functionality, more in line with [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu).
+- Buttons: added 'quicksearch' button which is a shortcut to the "dynamic queries" functionality, more in line with [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu). Allows searching for tracks with same tag values, beginning with them or by partial matching (i.e. adds a lot of more functionality than the original one). Results may be sent to a playlist, Autoplaylist or search window.
 - Advanced sort: decremental sort by DynGenre entry added.
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
