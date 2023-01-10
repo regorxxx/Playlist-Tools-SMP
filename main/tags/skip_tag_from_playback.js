@@ -22,7 +22,7 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 			return;
 		}
 	} else {return;}
-	const bAppend = utils.IsKeyPressed(0x10); // Append tag instead of replace when pressing shift
+	let bAppend = utils.IsKeyPressed(0x10); // Append tag instead of replace when pressing shift
 	const currentPlayback = fb.PlaybackTime * 1000;
 	const time = new Date(currentPlayback).toUTCString().substr(20,5) + '.00'; // doesn't care about ms
 	const bEnd = currentPlayback > selItem[0].Length * 1000 / 2 ? true : false; // skips from start or end
@@ -31,10 +31,14 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 		const fileInfo = selItem[0].GetFileInfo();
 		if (fileInfo) {
 			const idx = fileInfo.MetaFind('SKIP');
-			const count = fileInfo.MetaValueCount(idx);
-			for (let i = 0; i < count; i++) {
-				SKIP.push(fileInfo.MetaValue(idx, i));
-			}
+			if (idx !== -1) {
+				const count = fileInfo.MetaValueCount(idx);
+				if (count) {
+					for (let i = 0; i < count; i++) {
+						SKIP.push(fileInfo.MetaValue(idx, i));
+					}
+				} else {bAppend = false;}
+			} else {bAppend = false;}
 		}
 	}
 	SKIP.push((bEnd ? '' : '-') + time);
