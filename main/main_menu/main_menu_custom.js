@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/01/23
+//12/01/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\callbacks_xxx.js');
@@ -29,6 +29,28 @@ function deleteMainMenuDynamic(parent) {
 	}
 }
 
+function bindDynamicMenus({
+	menu,  /* createFpMenuLeft.bind({buttonsProperties: ppt, prefix: ''})*/
+	parentName = window.Name,
+	withFlag = true,
+	entryCallback = void(0), /* return entry name */
+	descrCallback = void(0) /* return entry description */
+} = {}) {
+	callbacksListener.checkPanelNames();
+	if (!menu) {throw 'No parentMenu';}
+	const menuSimul = menu(true);
+	const mainMenu = menuSimul.getMainMenuName();
+	menuSimul.getEntries().forEach((entry, index) => {
+		if (entry && (!withFlag || (entry.data && entry.data.bDynamicMenu))) {
+			let name = (entry.menuName === mainMenu ? '' : entry.menuName  + '\\') + entry.entryText.replace(/\t.*/, '');
+			const idx = onMainMenuDynamicEntries.push({name, parent: parentName, parentMenu: menu}) - 1;
+			name = entryCallback ? entryCallback(entry, index) : entry.entryText.replace(/\t.*/, '').replace(/&&/g, '&');
+			const descr = descrCallback ? descrCallback(entry, index) : entry.entryText.replace(/\t.*/, '').replace(/&&/g, '&');
+			fb.RegisterMainMenuCommand(idx, name, descr);
+		}
+	});
+}
+
 // Callback
 addEventListener('on_main_menu_dynamic', (idx) => {
 	if (idx < onMainMenuDynamicEntries.length) {
@@ -48,8 +70,13 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 				catch (e) {console.popup('Error evaluating: ' + entry.funcName + ' from menu (' + entry.menuName + ').', 'SMP Dynamic menu');}
 			}
 		} else {
-			try {menu.btn_up(void(0), void(0), void(0), entry.name);}
-			catch (e) {console.popup('Error evaluating: ' + entry.name + '.', 'SMP Dynamic menu');}
+			if (entry.hasOwnProperty('parentMenu') && entry.parentMenu) { // Other buttons
+				try {entry.parentMenu().btn_up(void(0), void(0), void(0), entry.name);}
+				catch (e) {console.popup('Error evaluating: ' + entry.name + '.', 'SMP Dynamic menu');}
+			} else { // Playlist Tools
+				try {menu.btn_up(void(0), void(0), void(0), entry.name);}
+				catch (e) {console.popup('Error evaluating: ' + entry.name + '.', 'SMP Dynamic menu');}
+			}
 		}
 	}
 });
