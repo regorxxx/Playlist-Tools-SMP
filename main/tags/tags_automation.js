@@ -262,7 +262,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 						if (this.selItemsByCheck.subSong.missing.Count) {
 							bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: this.selItemsByCheck.subSong.missing});
 						}
-
 					} else {bSucess = chromaPrintUtils.calculateFingerprints({fromHandleList: this.selItems});}
 				} else {bSucess = false;}
 				break;
@@ -273,7 +272,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 							bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItemsByCheck.subSong.missing});
 						}
 					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
-					
 				} else {bSucess = false;}
 			case 6:
 				if (this.toolsByKey.folksonomy) {
@@ -282,7 +280,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 							bSucess = folksonomyUtils.calculateFolksonomy({fromHandleList: this.selItemsByCheck.subSong.missing});
 						}
 					} else {bSucess = folksonomyUtils.calculateFolksonomy({fromHandleList: this.selItems});}
-					
 				} else {bSucess = false;}
 				break;
 			case 7:
@@ -292,7 +289,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 							bSucess = essentia.calculateKey({fromHandleList: this.selItemsByCheck.subSong.missing});
 						}
 					} else {bSucess = essentia.calculateKey({fromHandleList: this.selItems});}
-					
 				} else {bSucess = false;}
 				break;
 			case 8:
@@ -303,7 +299,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 							bSucess = essentia.calculateHighLevelTags({fromHandleList: this.selItemsByCheck.subSong.missing, tagName});
 						}
 					} else {bSucess = essentia.calculateHighLevelTags({fromHandleList: this.selItems, tagName});}
-					
 				} else {bSucess = false;}
 				break;
 			case 9: // These require user input before saving, so they are read only operations and can be done at the same time

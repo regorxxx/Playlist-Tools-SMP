@@ -48,7 +48,7 @@ const folksonomyUtils = {
 				if (itemsLength) {
 					const tags = FOLKSONOMY.map((value) => {return {[tagName]: value};});
 					if (itemsLength === tags.length) {
-						new FbMetadbHandleList(items).UpdateFileInfoFromJSON(JSON.stringify(tags));
+						// new FbMetadbHandleList(items).UpdateFileInfoFromJSON(JSON.stringify(tags));
 						if (maxCount > 1) {console.log(itemsLength,'items tagged.');} // Don't repeat this line when all is done in 1 step. Will be printed also later
 						bDone = bDone;
 					} else {bDone = false; console.log('Tagging failed: unknown error.');}
