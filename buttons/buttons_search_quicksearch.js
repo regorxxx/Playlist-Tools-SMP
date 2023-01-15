@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/01/23
+//15/01/23
 
 /* 
 	Quicksearch for same....
@@ -11,6 +11,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 include('..\\main\\filter_and_query\\dynamic_query.js');
+include('..\\main\\main_menu\\main_menu_custom.js');
 var prefix = 'qs';
 
 try {window.DefineScript('Quicksearch button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Quicksearch Button loaded.'); */} //May be loaded along other buttons
@@ -92,6 +93,7 @@ function quickSearchMenu(bSimulate = false) {
 		this.selItems = plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist) : null;
 		if (!this.selItems || !this.selItems.Count) {this.selItems = null; console.log('Quicksearch: No selected items.')}
 	}
+	const flags = this.selItems && this.selItems.Count ? MF_STRING : MF_GRAYED;
 	// Entry list
 	let queryFilter = [
 		{name: 'Same Title', 
@@ -114,7 +116,7 @@ function quickSearchMenu(bSimulate = false) {
 	// Globals
 	const playlistName = this.buttonsProperties.playlistName[1];
 	// Menu
-	const menu = new _menu();
+	const menu = new _menu({onBtnUp: () => this.selItems = null});
 	menu.newEntry({entryText: 'Shift to search / Ctrl for Autoplaylist:', flags: MF_GRAYED});
 	menu.newEntry({entryText: 'sep'});
 	{	// Same...
@@ -151,7 +153,7 @@ function quickSearchMenu(bSimulate = false) {
 							dynamicQuery({query, sort: queryObj.sort, playlistName});
 						}
 					}
-				}, flags: this.selItems.Count ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
+				}, flags, data: {bDynamicMenu: true}});
 			}
 		});
 	}
@@ -183,7 +185,7 @@ function quickSearchMenu(bSimulate = false) {
 			}
 			this.buttonsProperties.lastQuery[1] = query;
 			overwriteProperties(this.buttonsProperties);
-		}, flags: this.selItems.Count ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
+		}, flags, data: {bDynamicMenu: true}});
 	}
 	menu.newEntry({entryText: 'sep'});
 	{	// Begin with
@@ -224,7 +226,7 @@ function quickSearchMenu(bSimulate = false) {
 								dynamicQuery({query, sort: queryObj.sort, playlistName});
 							}
 						}
-					}, flags: this.selItems.Count ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
+					}, flags, data: {bDynamicMenu: true}});
 				}
 			}
 		});
@@ -282,7 +284,7 @@ function quickSearchMenu(bSimulate = false) {
 							dynamicQuery({query, sort: queryObj.sort, playlistName});
 						}
 					}
-				}, flags: this.selItems.Count ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
+				}, flags, data: {bDynamicMenu: true}});
 			}
 		});
 	}
