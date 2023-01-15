@@ -228,17 +228,21 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		this.debouncedStep(this.iStep);
 	};
 
+	const orderKeys = ['rgScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
+	if (orderKeys.flat(Infinity).some((k) => !this.toolsByKey.hasOwnProperty(k))) {throw new Error('Key not associated to any tool');}
 	this.stepTag = (i) => {
 		let bSucess = false;
 		this.iStep++;
 		switch (i) {
 			case 0: // Less than 100 ms / track?
-				if (this.toolsByKey.rgScan) {bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', this.selItems, 8);} // Replay gain info is not always removed
-				else {bSucess = false;}
+				if (this.toolsByKey.rgScan) { // Replay gain info is not always removed
+					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', this.selItems, 8);
+				} else {bSucess = false;}
 				break;
 			case 1:  // Takes 260 ms / track
-				if (this.toolsByKey.biometric) {bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', this.selItems, 8);}
-				else {bSucess = false;}
+				if (this.toolsByKey.biometric) {
+					bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', this.selItems, 8);
+				} else {bSucess = false;}
 				break;
 			case 2: // Less than 170 ms / track?
 				if (this.toolsByKey.massTag) {
@@ -253,7 +257,9 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				} else {bSucess = false;}
 				break;
 			case 3: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				if (this.toolsByKey.dynamicRange) {bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);}
+				if (this.toolsByKey.dynamicRange) {
+					bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);
+				}
 				else {bSucess = false;}
 				break;
 			case 4:
@@ -273,6 +279,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 						}
 					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
 				} else {bSucess = false;}
+				break;
 			case 6:
 				if (this.toolsByKey.folksonomy) {
 					if (this.check.subSong) {
@@ -337,7 +344,6 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	
 	this.checkHandleList = () => {
 		const i = this.iStep - 1;
-		const orderKeys = ['rgScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'LRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 		if (i >= 0) {
 			const key = orderKeys[i];
 			const checkKeys = this.checkKeys.filter((checkKey) => this.check[checkKey]);
