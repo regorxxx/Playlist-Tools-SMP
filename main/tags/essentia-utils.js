@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//15/01/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -60,7 +60,6 @@ essentia.calculateKey = function calculateKey({
 				if (itemsLength === tags.length) {
 					new FbMetadbHandleList(items).UpdateFileInfoFromJSON(JSON.stringify(tags));
 					if (maxCount > 1) {console.log(itemsLength,'items tagged.');} // Don't repeat this line when all is done in 1 step. Will be printed also later
-					bDone = bDone;
 				} else {bDone = false; console.log('Tagging failed: unknown error.');}
 			}
 	}
@@ -147,7 +146,6 @@ essentia.calculateHighLevelTags = function calculateHighLevelTags({
 				if (itemsLength === tags.length) {
 					new FbMetadbHandleList(items).UpdateFileInfoFromJSON(JSON.stringify(tags));
 					if (maxCount > 1) {console.log(itemsLength,'items tagged.');} // Don't repeat this line when all is done in 1 step. Will be printed also later
-					bDone = bDone;
 				} else {bDone = false; console.log('Tagging failed: unknown error.');}
 			}
 	}
