@@ -1,13 +1,13 @@
 ﻿'use strict';
-//28/12/22
+//18/01/23
 
 // Macros
 {
 	const name = 'Macros';
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
-		let menuName = menu.newMenu(name);
 		const scriptPath = folders.xxx + 'helpers\\menu_xxx_macros.js';
 		if (_isFile(scriptPath)){
+			let menuName = menu.newMenu(name);
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_macros.txt';
@@ -135,7 +135,7 @@
 					});
 				}
 			}});
+			menu.newEntry({entryText: 'sep'});
 		}
-		menu.newEntry({entryText: 'sep'});
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 }
