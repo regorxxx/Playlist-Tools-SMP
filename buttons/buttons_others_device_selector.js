@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/08/22
+//20/01/23
 
 /* 
 	Output device selector
@@ -42,5 +42,5 @@ addButton({
 		let info = 'Select output device:';
 		info += '\n' + currDeviceName.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '');
 		return info;
-	}, prefix, newButtonsProperties, chars.speaker),
+	}, void(0), void(0), chars.speaker),
 });
