@@ -140,6 +140,7 @@
 - Script Integration\SMP Dynamic menu: excluded some entries which were not supposed to be exposed after changes on latest versions.
 - Script Integration: fixed some inconsistencies on ajquery-xxx export files.
 - UI: custom macro button width is now adjusted to button's custom name (instead of being fixed, which was never intended).
+- UI: don't show tooltip during buttons drag n drop.
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
 - Pools: some additional checks to ensure non ASCII chars, casing or numbers are correctly identified as equivalent. For ex. 'Classic Pools (3 tracks per artist letter)' would output an artist starting with A and another with a as 2 different letters. Same applies to ASCII equivalences, etc. Now all the values are reduced to an ASCII lowercase string.
 - Pools: 'Current genre/style and instrumentals' query had a typo.
