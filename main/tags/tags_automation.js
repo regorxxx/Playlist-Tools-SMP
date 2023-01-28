@@ -138,7 +138,8 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				if (this.check.subSong) {
 					this.setNotAllowedTools('subSong');
 					const notAllowedTools = this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean);
-					if (notAllowedTools.length) {
+					this.check.subSong = this.check.subSong && notAllowedTools.length;
+					if (this.check.subSong) {
 						console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (%' + globTags.key + '%, %LRA%, %DACENESS%, %' + globTags.bpm + '%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 						// Remove old tags
 						{	// Update problematic tracks with safe tools
@@ -168,13 +169,14 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				if (this.check.md5) {
 					this.setNotAllowedTools('md5');
 					const notAllowedTools = this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean);
-					if (notAllowedTools.length) {
+					this.check.md5 = this.check.md5 && notAllowedTools.length;
+					if (this.check.md5) {
 						console.popup('Some of the selected tracks are encoded in a format with no MD5 support.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', '), 'Tags Automation');
 						// Remove old tags
 						{	// Update problematic tracks with safe tools
 							this.selItemsByCheck.md5.present = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return !md5TF.EvalWithMetadb(handle).length;}));
 							this.selItemsByCheck.md5.present.Sort();
-							if (this.check.subSong && this.selItemsByCheck.subSong.present) {
+							if (this.check.subSong && this.selItemsByCheck.subSong.num) {
 								this.selItemsByCheck.md5.present.MakeIntersection(this.selItemsByCheck.subSong.present);
 							}
 							let arr = [];
@@ -188,7 +190,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 						{	// And then other tracks with the rest
 							this.selItemsByCheck.md5.missing = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return md5TF.EvalWithMetadb(handle).length;}));
 							this.selItemsByCheck.md5.missing.Sort();
-							if (this.check.subSong && this.selItemsByCheck.subSong.missing) {
+							if (this.check.subSong && this.selItemsByCheck.subSong.missing && this.selItemsByCheck.subSong.missing.Count) {
 								this.selItemsByCheck.md5.missing.MakeIntersection(this.selItemsByCheck.subSong.missing);
 							}
 							let arr = [];
