@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//30/01/23
 
 // Selection manipulation...
 {
@@ -172,7 +172,8 @@
 						{name: 'sep'},
 						{name: 'Intercalate same artist tracks'		,	args: {tagName: globTags.artist, tagValue: null}},
 						{name: 'Intercalate same genre tracks'		,	args: {tagName: globTags.genre, tagValue: null}},
-						{name: 'Intercalate same style tracks'		,	args: {tagName: globTags.style, tagValue: null}}
+						{name: 'Intercalate same date tracks'		,	args: {tagName: globTags.date, tagValue: null}},
+						{name: 'Intercalate same album tracks'		,	args: {tagName: '%ALBUM%', tagValue: null}}
 
 					];
 					// Menus
