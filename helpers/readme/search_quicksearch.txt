@@ -1,0 +1,29 @@
+﻿Tool similar to foo_quicksearch, which allows searching for tracks with
+same tag values, beginning with them or by partial matching. Results may
+be sent to a playlist, Autoplaylist or search window using keyboard
+modifiers (shown on the tool).
+
+Buttons usage:
+	- Entries are hardcoded.
+	- By default sends results to a [configurable] playlist.
+	- Shift sends results to search window.
+	- Ctrl creates an Autoplaylist with the result.
+	- To add customized entries, use Playlist Tools\Dynamic queries.
+
+Original foo_quicksearch only allowed exact matches by queries, but
+this tool allows two additional modes:
+	- Begins with...: 
+		Will match any track starting with the original value. 
+		For ex. 'Begins with Genre' would allow 'Jazz' and 'Jazz Vocal' 
+		in results, when selecting a jazz track since all start with 
+		'Jazz' string on the genre tag. This method is pretty situational
+		and probably most used for Title tags.
+	
+	- Partial match...: 
+		Expands the previous method, allowing any result which matches
+		any portion of the string. For ex. 'Begins with Title', for a 
+		track named 'Yesterday' would output tracks named 'Yes', 'Y',
+		'Yesterday', 'Yesterdays', ...
+
+This tool uses Dynamic Queries under the hood. Readme may be found
+at 'Others\Dynamic queries' or at Playlist Tools button.

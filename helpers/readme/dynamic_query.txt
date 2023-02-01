@@ -28,13 +28,13 @@ The entire library would be filtered with tracks from that genre.
 
 For a rock and electronic track, 'GENRE IS #GENRE#' would translate into 
 '(GENRE IS Rock) AND (GENRE IS Electronic) '. Note multi-value tags are
-splitted and produce multiple query entries by default. (*)
+split and produce multiple query entries by default. (*)
 
 For a Dylan's track, 'COMPOSER IS #ARTIST#' would translate into 
 'COMPOSER IS Bob Dylan'. And the entire library would be filtered with 
 any track written by him.
 
-Merging standard and dynamic variables like 'GENRE IS #GENRE# AND NOT
+Merging standard and dynamic expressions like 'GENRE IS #GENRE# AND NOT
 (%rating% EQUAL 2 OR %rating% EQUAL 1)' would translate into
 '(GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock) AND NOT (%rating%
 EQUAL 2 OR %rating% EQUAL 1)'. Note the standard query expression is
@@ -47,12 +47,12 @@ Note how the parenthesis are used to limit dynamic expansion.
 
 Multiple dynamic queries like '((DATE IS #DATE#) OR (DATE IS 
 #$add(%DATE%,1)#))' translates into '((DATE IS 1969) OR (DATE IS
- 1970))'. So in fact the parenthesis are redundant.
+ 1970))'. So in fact the parenthesis are redundant in such case.
  
 Therefore '(DATE IS #DATE# OR DATE IS #$add(%DATE%,1)#) would translate 
 into '(DATE IS 1969 OR DATE IS 1970)' without problems. Note how single
-valued tags don't need extra parenthesis since dynamic 
-expansion does not apply.
+valued tags don't need extra parenthesis since dynamic expansion does
+not apply here.
 
 (*) Since '#TAG# IS VALUE' forces tag to be equal to value, muti-value 
 tags follow the same rationale. If you want to use another logic (OR,
