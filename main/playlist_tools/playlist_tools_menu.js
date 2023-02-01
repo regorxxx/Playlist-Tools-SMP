@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/01/23
+//01/02/23
 
 /* 
 	Playlist Tools Menu
@@ -101,6 +101,7 @@ var readmes = { // {scriptName: path} or {arbitraryKey: 'sep'}
 	'Tagging requisites': folders.xxx + 'helpers\\readme\\tags_structure.txt',
 	'Tags sources': folders.xxx + 'helpers\\readme\\tags_sources.txt',
 	'Other tags notes': folders.xxx + 'helpers\\readme\\tags_notes.txt',
+	'Global tag remapping': folders.xxx + 'helpers\\readme\\tags_global_remap.txt',
 	...newReadmeSep(true),
 };
 loadProperties();

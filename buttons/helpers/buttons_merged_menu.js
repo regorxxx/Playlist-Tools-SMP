@@ -280,6 +280,10 @@ function createButtonsMenu(name) {
 		}});
 		if (readmeList) {
 			// Add additional readmes
+			readmeList['Tagging requisites'] = 'tags_structure.txt';
+			readmeList['Tags sources'] = 'tags_sources.txt';
+			readmeList['Other tags notes'] = 'tags_notes.txt';
+			readmeList['Global tag remapping'] = 'tags_global_remap.txt';
 			if (readmeList.hasOwnProperty('buttons_search_quicksearch.js')) {readmeList['Dynamic queries'] = 'dynamic_query.txt';}
 			// Process
 			menu.newEntry({menuName: subMenu, entryText: 'sep'});
