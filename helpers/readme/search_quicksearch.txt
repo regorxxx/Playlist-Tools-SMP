@@ -14,16 +14,16 @@ Original foo_quicksearch only allowed exact matches by queries, but
 this tool allows two additional modes:
 	- Begins with...: 
 		Will match any track starting with the original value. 
-		For ex. 'Begins with Genre' would allow 'Jazz' and 'Jazz Vocal' 
-		in results, when selecting a jazz track since all start with 
-		'Jazz' string on the genre tag. This method is pretty situational
-		and probably most used for Title tags.
+		For ex. 'Begins with Genre' would allow 'Jazz' and 'Jazz
+		Vocal' in results, when selecting a jazz track since all 
+		start with 'Jazz' string on the genre tag. This method is
+		pretty situationaland probably most used for Title tags.
 	
 	- Partial match...: 
-		Expands the previous method, allowing any result which matches
-		any portion of the string. For ex. 'Begins with Title', for a 
-		track named 'Yesterday' would output tracks named 'Yes', 'Y',
-		'Yesterday', 'Yesterdays', ...
+		Expands the previous method, allowing any result which 
+		matches any portion of the string. For ex. 'Begins with
+		Title', for a track named 'Yesterday' would output tracks
+		named 'Yes', 'Y', 'Yesterday', 'Yesterdays', ...
 
 This tool uses Dynamic Queries under the hood. Readme may be found
 at 'Others\Dynamic queries' or at Playlist Tools button.
