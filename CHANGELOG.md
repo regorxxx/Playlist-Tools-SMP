@@ -54,6 +54,7 @@
 - Fingerprinting: added setting for the max selection allowed when running the tools.
 - Last Action: added new entry at main menu to execute the last action used. Cleared out at startup.
 - Other Tools\Write tags: added 'Folksonomy' tag calculation from multiple sources: genre, styles, locale, etc. Meant to be used along the Picard scripts found at presets.
+- UI: added icons-only mode for toolbar buttons at the toolbar configuration menu ('Other UI configuration'). Tooltip is adjusted to show the button's name there instead. Handy when creating a compact toolbar and icons are good enough to recognize the tools.
 ### Changed
 - Fingerprinting: multiple improvements on comparison report formatting.
 - Fingerprinting: performance improvements when comparing selection (uses binary search now).
@@ -141,6 +142,7 @@
 - Script Integration: fixed some inconsistencies on ajquery-xxx export files.
 - UI: custom macro button width is now adjusted to button's custom name (instead of being fixed, which was never intended).
 - UI: don't show tooltip during buttons drag n drop.
+- UI: background color mismatch when resizing windows and using custom background colors.
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
 - Pools: some additional checks to ensure non ASCII chars, casing or numbers are correctly identified as equivalent. For ex. 'Classic Pools (3 tracks per artist letter)' would output an artist starting with A and another with a as 2 different letters. Same applies to ASCII equivalences, etc. Now all the values are reduced to an ASCII lowercase string.
 - Pools: 'Current genre/style and instrumentals' query had a typo.
