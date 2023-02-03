@@ -10,14 +10,14 @@ IF "%PROCESSOR_ARCHITECTURE%" == "x86" (
 ) 
 IF "%arch%" == "x64" (
 	IF "%useSed%" == "TRUE" (
-		%ffPath% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 %sed% 1,/^\[Parsed_loudnorm/d
+		%ffPath% -hide_banner -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 %sed% 1,/^\[Parsed_loudnorm/d
 	) ELSE (
-		%ffPath% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 FINDSTR /BIR "{ .*\" }"
+		%ffPath% -hide_banner -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 FINDSTR /BIR "{ .*\" }"
 	)
 ) ELSE (
 	IF "%useSed%" == "TRUE" (
-		%ffPath:.exe=_32.exe% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 %sed% 1,/^\[Parsed_loudnorm/d
+		%ffPath:.exe=_32.exe% -hide_banner -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 %sed% 1,/^\[Parsed_loudnorm/d
 	) ELSE (
-		%ffPath:.exe=_32.exe% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 FINDSTR /BIR "{ .*\" }"
+		%ffPath:.exe=_32.exe% -hide_banner -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | > %2 FINDSTR /BIR "{ .*\" }"
 	)
 )

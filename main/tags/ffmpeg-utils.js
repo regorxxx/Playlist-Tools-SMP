@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/01/23
+//02/02/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -35,7 +35,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 			handleListArr.slice(count * numTracks, currMax).forEach((handle, i) => {
 				const path = handle.Path;
 				if (_isFile(path)) {
-					if (bDebug) {console.log(_q(ffmpegPath) + ' -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  2>&1 | > ' + _q(ffmpegJSON) + ' FINDSTR /BIR "{ .*\\" }"');}
+					if (bDebug) {console.log(_q(ffmpegPath) + ' -hide_banner -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  2>&1 | > ' + _q(ffmpegJSON) + '  sed 1,/^\\[Parsed_loudnorm/d');}
 					_runHidden(ffmpegPath.replace('.exe','.bat'), path, ffmpegJSON, ffmpegPath);
 					const data = _jsonParseFileCheck(ffmpegJSON);
 					if (data && data.hasOwnProperty('input_lra')) {
