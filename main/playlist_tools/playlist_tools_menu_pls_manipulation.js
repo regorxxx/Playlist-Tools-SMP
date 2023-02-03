@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/22
+//03/02/23
 
 // Playlist manipulation...
 {
@@ -220,7 +220,7 @@
 			}
 		}
 		{	// Create harmonic mix from playlist
-			const scriptPath = folders.xxx + 'main\\filter_and_query\\harmonic_mixing.js';
+			const scriptPath = folders.xxx + 'main\\sort\\harmonic_mixing.js';
 			if (_isFile(scriptPath)){
 				const name = 'Harmonic mix';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
