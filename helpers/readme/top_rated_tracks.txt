@@ -1,5 +1,9 @@
 ﻿Search n most rated tracks on library. Sorting is done by play
-count by default.
+count by default (requires foo_playcount plugin).
+
+In other words, 'Top rated from 2022' will display the tracks with
+highest rating with %DATE% equal to 2022 (not rated during 2022,
+since there is no way to know when the user added a rating!).
 
 Duplicates by title - artist - date are removed, so it doesn't
 output the same tracks multiple times like an auto-playlist does

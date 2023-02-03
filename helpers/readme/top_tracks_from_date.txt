@@ -1,5 +1,11 @@
 ﻿Search n most played tracks from a given period on library. Sorting 
-is done by play count by default.
+is done by play count by default (requires foo_playcount and
+foo_enhanced_playcount plugins).
+
+In other words, 'Most played from 2022' will display the most played
+tracks during 2022 (not with %DATE% equal to 2022!). This is similar
+to Spotify playlists showing you the most played tracks in last year
+but here extended to any date or desired period.
 
 Duplicates by title - artist - date are removed, so it doesn't 
 output the same tracks multiple times like an auto-playlist does

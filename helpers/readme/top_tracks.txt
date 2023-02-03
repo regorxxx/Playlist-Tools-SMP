@@ -1,5 +1,10 @@
 ﻿Search n most played tracks on library. Sorting is done by play
-count by default.
+count by default (requires foo_playcount plugin).
+
+To be able to filter played tracks by specific time periods, like
+most played tracks during 2019, foo_enhanced_playcount plugin is 
+needed. When such plugin is installed, such tool will be available
+to use. See 'Most played tracks from...' readme.
 
 Duplicates by title - artist - date are removed, so it doesn't
 output the same tracks multiple times like an auto-playlist does
