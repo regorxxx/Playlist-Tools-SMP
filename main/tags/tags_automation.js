@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/01/23
+//03/02/23
 
 /* 
 	Automatic tagging...
@@ -41,7 +41,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		{key: 'audioMd5', tag: ['MD5'],
 			title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true), bDefault: true},
 		{key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'],
-			title: 'ReplayGain', bAvailable: utils.CheckComponent('foo_rgscan', true), bDefault: true},
+			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true), bDefault: true},
 		{key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
 			title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true), bDefault: true},
 		{key: 'ffmpegLRA', tag: ['LRA'],

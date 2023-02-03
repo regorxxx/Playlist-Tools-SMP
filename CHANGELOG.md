@@ -155,6 +155,7 @@
 - Presets: fixed variable typos on '.\presets\Playlist Tools\pools\intercalate_artists.json' file, now working as intended.
 - Rating related scripts not compatible with foobar2000 2.0+.
 - Some fixes to queries containing parentheses on the values, which should have been quoted.
+- Multiple foobar2000 v2+ compatibility fixes.
 
 ## [3.0.0-beta.15] - 2022-08-22
 ### Added
