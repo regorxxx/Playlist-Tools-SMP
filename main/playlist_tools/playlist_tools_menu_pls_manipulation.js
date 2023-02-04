@@ -229,7 +229,7 @@
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
 						{name: 'Harmonic mix from playlist'	, args: {selItems: () => {return plman.GetPlaylistItems(plman.ActivePlaylist);}}, flags: playlistCountFlags},
-						{name: 'Harmonic mix from selection'	, args: {selItems: () => {return plman.GetPlaylistSelectedItems(plman.ActivePlaylist);}}, flags: multipleSelectedFlags},
+						{name: 'Harmonic mix from selection', args: {selItems: () => {return plman.GetPlaylistSelectedItems(plman.ActivePlaylist);}}, flags: multipleSelectedFlags},
 					];
 					if (!menu_properties.hasOwnProperty('bHarmonicMixDoublePass')) {menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true];}
 					// Menus
