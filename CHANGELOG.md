@@ -46,6 +46,7 @@
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
 - Buttons: added 'quicksearch' button which is a shortcut to the "dynamic queries" functionality, more in line with [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu). Allows searching for tracks with same tag values, beginning with them or by partial matching (i.e. adds a lot of more functionality than the original one). Results may be sent to a playlist, Autoplaylist or search window.
 - Advanced sort: decremental sort by DynGenre entry added.
+- Advanced sort: harmonic mix entry added (in place, not new playlist).
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 - Fingerprinting: added compare selection entry by FooId (previously only ChromaPrint was available).

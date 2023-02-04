@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/01/23
+//04/02/23
 
 // Selection manipulation...
 {
@@ -128,6 +128,57 @@
 							{name: 'Incremental key (Camelot Wheel)', 	func: sortByKey, args: {sortOrder: 1}},
 							{name: 'Decremental key (Camelot Wheel)',	func: sortByKey, args: {sortOrder: -1}},
 						].forEach((val) => {selArgs.push(val);});
+					}
+				}
+				{
+					const scriptPath = folders.xxx + 'main\\sort\\harmonic_mixing.js';
+					if (_isFile(scriptPath)){
+						if (!menu_properties.hasOwnProperty('bHarmonicMixDoublePass')) {menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true];}
+						include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
+						readmes[name + '\\' + 'Harmonic mix'] = folders.xxx + 'helpers\\readme\\harmonic_mixing.txt';
+						if (selArgs.length) {selArgs.push({name: 'sep'});}
+						selArgs.push({
+							name: 'Harmonic mix (Camelot Wheel)', 	func: (args) => {
+								const ap = plman.ActivePlaylist;
+								args.selItems = plman.GetPlaylistSelectedItems(ap);
+								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1];
+								args.bDebug = defaultArgs.bDebug;
+								// Apply harmonic mix on selection
+								if (defaultArgs.bProfile) {var profiler = new FbProfiler('harmonicMixing');}
+								const handleList = harmonicMixing(args);
+								if (!handleList) {return;}
+								// Find items which were not mixed
+								const plsList = plman.GetPlaylistItems(ap).Convert();
+								const total = plsList.length;
+								const restList = [];
+								args.selItems.Convert().forEach((handle) => {
+									if (handleList.Find(handle) === -1) {
+										restList.push(handle);
+									}
+								});
+								restList.shuffle(); // To avoid non-random clusters
+								// Insert back at selected indexes (in case it's not a contigous seletion)
+								let i = 0;
+								const selectionIdx = [];
+								(handleList.Convert().concat(restList)).forEach((handle) => {
+									while (i < total) {
+										if (plman.IsPlaylistItemSelected(ap, i)) {
+											selectionIdx.push(i);
+											plsList[i] = handle;
+											i++;
+											break;
+										}
+										i++;
+									}
+								});
+								// Rebuilt the entire playlist with the changes
+								plman.UndoBackup(ap);
+								plman.ClearPlaylist(ap);
+								plman.InsertPlaylistItems(ap, 0, new FbMetadbHandleList(plsList));
+								plman.SetPlaylistSelection(ap, selectionIdx, true);
+								if (defaultArgs.bProfile) {profiler.Print();}
+							}, args: {bSendToPls: false}
+						});
 					}
 				}
 				{	// Sort by DynGenre
