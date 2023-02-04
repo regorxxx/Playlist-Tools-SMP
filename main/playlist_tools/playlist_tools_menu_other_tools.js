@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//04/02/23
 
 // Other tools
 {
@@ -303,7 +303,10 @@
 							let path;
 							try {path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true);}
 							catch (e) {return;}
-							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {console.log('File does not exist.'); return ;}
+							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {
+								fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': '  + name); 
+								return;
+							}
 							let formatMask;
 							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%TITLE%\', \' - \', \'%ARTIST%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
@@ -325,8 +328,12 @@
 							menu_properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
 							overwriteMenuProperties(); // Updates panel
 						}});
-						menu.newEntry({menuName: subMenuName, entryText: 'Import from file (path at properties)', func: () => {
+						menu.newEntry({menuName: subMenuName, entryText: 'Import from custom path', func: () => {
 							const path = menu_properties.importPlaylistPath[1];
+							if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {
+								fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': '  + name);
+								return;
+							}
 							const formatMask = JSON.parse(menu_properties.importPlaylistMask[1]);
 							const queryFilters = JSON.parse(menu_properties.importPlaylistFilters[1]);
 							importTextPlaylist({path, formatMask, queryFilters})
@@ -334,12 +341,18 @@
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Configure filters...', func: () => {
 							let input;
-							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n [\'%CHANNELS% LESS 3\', \'%RATING% GREATER 2\']', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n[\'%CHANNELS% LESS 3\', \'%RATING% GREATER 2\']\n\nThe example would try to find matches with 2 or less channels, then filter those results with rating > 2. In case the later filter does not output at least a single track, then will be skipped and only the previous filter applied (channels)... and so on (for more filters).', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							if (!input.length) {input = '[]';}
 							try {JSON.parse(input);}
 							catch (e) {console.log('Playlist Tools: Invalid filter array'); return;}
 							if (input !== menu_properties.importPlaylistFilters[1]) {menu_properties.importPlaylistFilters[1] = input;}
+							overwriteMenuProperties(); // Updates panel	
+						}});
+						menu.newEntry({menuName: subMenuName, entryText: 'Set custom path...', func: () => {
+							const input = Input.string('string', menu_properties.importPlaylistPath[1], 'Enter file path:', window.Name + ': '  + name, menu_properties.importPlaylistPath[3], [(s) => path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1 || sanitizePath(s) === s], true);
+							if (input === null) {return;}
+							menu_properties.importPlaylistPath[1] = input;
 							overwriteMenuProperties(); // Updates panel	
 						}});
 					}

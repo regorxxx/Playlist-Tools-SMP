@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/02/23
+//04/02/23
 
 /* 
 	Playlist Tools Menu
@@ -32,6 +32,7 @@ include('..\\..\\helpers\\helpers_xxx_tags.js');
 include('..\\..\\helpers\\helpers_xxx_UI.js');
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\callbacks_xxx.js');
+include('..\\..\\helpers\\helpers_xxx_input.js');
 include('playlist_tools_menu_helpers.js');
 
 checkCompatible('1.6.1', 'smp');

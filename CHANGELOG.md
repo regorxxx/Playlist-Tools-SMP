@@ -89,6 +89,10 @@
 - Top rated tracks from: is now automatically built by decades from 1950 onwards, up to 20 entries.
 - Top rated tracks from: a new entry is added to include all tracks before the lowest date.
 - Top rated tracks from: a new entry is added to include all tracks between the current date and last 2 decades.
+- Import track list: improved popup descriptions for filters.
+- Import track list: custom path can now be directly configured using the appropriate menu entry (instead of using the properties panel). Path will be checked for validity.
+- Import track list: importing will now throw a popup when file is not found (instead of logging the error to console).
+- Import track list: custom path may also point to a web page.
 - Buttons: default method of installation requires now to load the toolbar (no more single buttons support), from there, any button can be loaded as desired.
 - Buttons: the buttons bar now shows a message when no buttons have been added, left clicking shows a popup with available buttons presets. Right clicking opens the menu to configure the toolbar or add buttons manually.
 - Buttons: added new categories at the 'Add buttons' sub-menu, for Search by Distance tools, output devices, etc. and reordered items acordingly. Cosmetic change.
