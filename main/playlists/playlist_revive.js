@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//05/02/23
 
 /*
 	Playlist Revive
@@ -53,8 +53,12 @@ function playlistRevive({
 	const tags = getTagsValuesV4(items, tagsToCheck.map((tag) => {return tag.replace(/^%|%$/g, '');}), void(0), void(0), null);
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) {return;}
 	let queryArr = [];
-	tagsToCheck.forEach( (tagName, index) => {
-		queryArr.push(query_combinations(tags[index].filter(String), tagName, 'OR'));
+	tagsToCheck.forEach((tagName, index) => {
+		const tagsArr = tags[index].filter(String);
+		queryArr.push(tagsArr.length // Don't report missing tags for items without tags...
+			? query_combinations(tags[index].filter(String), tagName, 'OR')
+			: ''
+		);
 	});
 	// instead of using this, which would combine the different tags too
 	// const query =  query_join(query_combinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');

@@ -91,10 +91,11 @@
 - Top rated tracks from: is now automatically built by decades from 1950 onwards, up to 20 entries.
 - Top rated tracks from: a new entry is added to include all tracks before the lowest date.
 - Top rated tracks from: a new entry is added to include all tracks between the current date and last 2 decades.
-- Import track list: improved popup descriptions for filters.
-- Import track list: custom path can now be directly configured using the appropriate menu entry (instead of using the properties panel). Path will be checked for validity.
-- Import track list: importing will now throw a popup when file is not found (instead of logging the error to console).
-- Import track list: custom path may also point to a web page.
+- Other tools\Import track list: improved popup descriptions for filters.
+- Other tools\Import track list: custom path can now be directly configured using the appropriate menu entry (instead of using the properties panel). Path will be checked for validity.
+- Other tools\Import track list: importing will now throw a popup when file is not found (instead of logging the error to console).
+- Other tools\Import track list: custom path may also point to a web page.
+- Other tools\Playlist Revive: cleaned up a bit the console logging when tags are missing for dead items (it doesn't give any useful info for the user).
 - Buttons: default method of installation requires now to load the toolbar (no more single buttons support), from there, any button can be loaded as desired.
 - Buttons: the buttons bar now shows a message when no buttons have been added, left clicking shows a popup with available buttons presets. Right clicking opens the menu to configure the toolbar or add buttons manually.
 - Buttons: added new categories at the 'Add buttons' sub-menu, for Search by Distance tools, output devices, etc. and reordered items acordingly. Cosmetic change.
@@ -315,7 +316,7 @@
 ### Fixed
 - Advanced sort...\Incremental genre/styles (DynGenre): tracks containing special chars (%, $, [, ], or ') on the path or title were not being correctly parsed.
 - Dynamic queries: fixed queries with values after evaluation containing %, $, [, ], or '. Now they are correctly escaped within TF expressions. For ex. "$stricmp($ascii(%TITLE%),$ascii(#TITLE#))" IS 1 AND ARTIST IS #ARTIST# evaluates to "$stricmp($ascii(%TITLE%),$ascii(Didn''t want to have to do it))" IS 1 AND ARTIST IS Lovin' Spoonful. Previously it would not work as expected due to the apostrophe on the parenthesis not being escaped. Note the apostrophe at the #ARTIST# statement is left untouched though.
-- Import track list: fixed queries with tag values containing ], now are correctly escaped.
+- Other tools\Import track list: fixed queries with tag values containing ], now are correctly escaped.
 - Search similar by...: crash in some cases when pool of selected tracks was empty.
 
 ## [3.0.0-beta.5] - 2022-04-13
@@ -338,7 +339,7 @@
 - Other tools\Write Tags: available tools can now be selectively enabled/disabled. 'tags_automation' button uses now its own config and multiple copies can be put on the bar (with different tools enabled).
 - Other tools\Write Tags: button is now animated while using the tool on background. Also applies to the independent tool button ('buttons_tags_automation.js').
 - Other tools\Check Tags: button is now animated while using the tool on background (on Async mode).
-- Import track list: improved title and artist detection consider also ASCII equivalences For ex. 'Lo que sobra de mí' will match values with and without accents.
+- Other tools\Import track list: improved title and artist detection consider also ASCII equivalences For ex. 'Lo que sobra de mí' will match values with and without accents.
 - Dynamic Queries: new preset 'Same title [...]' which outputs only tracks with same title than selection (no matter the date or artist). Restore defaults to load it.
 - Dynamic Queries: [old and new] presets which involved usage of %title% tag have been reworked to also consider ASCII equivalences.
 - Search same by tags: comparison of tags values which involve strings now also consider ASCII equivalences.
