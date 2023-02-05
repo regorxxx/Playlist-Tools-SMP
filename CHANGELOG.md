@@ -62,6 +62,8 @@
 - Fingerprinting: tool warns when the fingerprint tag is not readable (see limitations above) or selection/library has no such tags.
 - Playlist locks: menu entry to lock playlists also blocks playlist removal now (not only its items).
 - Playlist locks: lock types applied are now shown on the header of the submenu.
+- Selection manipulation\Scatter by tags: split the tool into intercalate (associated to matching any value) and scatter (for specif values) submenus.
+- Selection manipulation\Scatter by tags: now allow to customize and edit the menu entries.
 - Top Rated Tracks from...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
 - Most played Tracks...: now use the greater value between play count and Last.Fm play count for sorting to account for scrobbles. i.e. '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%)'.
 - Most Played Tracks from...: now also includes scrobbles from Last.Fm. So in case tracks have been played at Spotify or other players, as long as scrobbles as synced by 'Enhanced playback statistics' plugin, those tracks are considered eligible the same than any track played within Foobar2000.
@@ -138,8 +140,9 @@
 - Macros: 'stop recording' entry is now disabled in case it is not recording.
 - Fingerprinting: when comparing a list of tracks against itself (for ex. 'compare selection' tool), the analysis no longer checks every track against itself but only against the other tracks. Previously it always reported a 100% similarity against the original track, which is obvious. Note this doesn't apply when checking a list of tracks against the library, if a track is compared against itself, the result is considered valid (a match was found).
 - Playlist locks: SMP locked playlists were not properly identified (and thus not shown on the locked menu list).
-- Advanced sort: sort by key now properly differentiates between major (A) an minor keys (B), putting firt the major key and then the minor one when sorting (instead of mixing them when having the same number).
-- Advanced sort: sort by DynGenre now properly creates an undo backup point on the modified playlist before being applied, allowing to restore the previous state with Ctrl + Z. It should have worked that way, the same than any other tool, from the beginning.
+- Selection manipulation\Advanced sort: sort by key now properly differentiates between major (A) an minor keys (B), putting firt the major key and then the minor one when sorting (instead of mixing them when having the same number).
+- Selection manipulation\Advanced sort: sort by DynGenre now properly creates an undo backup point on the modified playlist before being applied, allowing to restore the previous state with Ctrl + Z. It should have worked that way, the same than any other tool, from the beginning.
+- Selection manipulation\Scatter by tags: skips reordering items when interval is smaller than 2 (previously due to a rounding error, values over 1.5 tried to reorder the selection, leaving untouched tracks at the end, contrary to the documentation).
 - Dynamic queries: duplicated queries are removed before joining them with 'OR'. i.e. selecting 10 tracks by 'Mdou Moctar' for a query 'ARTIST IS #ARTIST#' will not output 10 time the same query, but only once. While functionality and final results don't change at all, it seems processing time greatly speeds up with shorter queries.
 - Dynamic queries: parentheses, commas and quotes on tag values not working on some instances.
 - Dynamic queries: in case query was non-valid, tracks with 'null' string on standard tags (title, artist, ...) were output. This is a [SMP bug](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/196).

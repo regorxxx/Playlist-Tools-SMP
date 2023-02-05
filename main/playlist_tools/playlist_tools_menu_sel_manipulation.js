@@ -212,7 +212,7 @@
 					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
-					const selArgs = [
+					let scatter = [
 						{name: 'Scatter instrumental tracks'	, 	args: {tagName: [globTags.genre, globTags.style].join(','), tagValue: 'instrumental,jazz,instrumental rock'}},
 						{name: 'Scatter acoustic tracks'		, 	args: {tagName: [globTags.genre, globTags.style, globTags.mood].join(','), tagValue: 'acoustic'}},
 						{name: 'Scatter electronic tracks'		,	args: {tagName: [globTags.genre, globTags.style].join(','), tagValue: 'electronic'}},
@@ -220,26 +220,161 @@
 						{name: 'sep'},
 						{name: 'Scatter sad mood tracks'		,	args: {tagName: globTags.mood, tagValue: 'sad'}},
 						{name: 'Scatter aggressive mood tracks', 	args: {tagName: globTags.mood, tagValue: 'aggressive'}},
-						{name: 'sep'},
+
+					];
+					let selArg = {name: 'Custom', args: scatter[0].args};
+					const scatterDefaults = [...scatter];
+					// Create new properties with previous args
+					menu_properties['scatter'] = [menuName + '\\' + name + '  entries', JSON.stringify(scatter)];
+					menu_properties['scatterCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', JSON.stringify(selArg)];
+					// Check
+					menu_properties['scatter'].push({func: isJSON}, menu_properties['scatter'][1]);
+					menu_properties['scatterCustomArg'].push({func: isJSON}, menu_properties['scatterCustomArg'][1]);
+					// Helpers
+					const inputScatter = () => {
+						let tagName = '';
+						try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
+						catch (e) {return;}
+						if (!tagName.length) {return;}
+						let tagvalue = '';
+						try {tagvalue = utils.InputBox(window.ID, 'Enter tag values to match:\n(multiple values may be separated by \',\')', scriptName + ': ' + name, selArg.args.tagvalue, true);}
+						catch (e) {return;}
+						if (!tagvalue.length) {return;}
+						return {args: {tagName, tagValue}};
+					};
+					// Menus
+					menu.newEntry({menuName: subMenuName, entryText: 'Sort dispersing specific value(s):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newCondEntry({entryText: 'Scatter... (cond)', condFunc: () => {
+						// Entry list
+						scatter = JSON.parse(menu_properties['scatter'][1]);
+						scatter.forEach((obj) => {
+							// Add separators
+							if (obj.hasOwnProperty('name') && obj.name === 'sep') {
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+							} else { 
+								// Create names for all entries
+								let entryText = obj.name;
+								entryText = entryText.length > 40 ? entryText.substring(0,40) + ' ...' : entryText;
+								// Entries
+								menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...obj.args}) => {
+									if (args.tagValue !== null) {scatterByTags(args);} else {intercalateByTags(args);}
+								}, flags: multipleSelectedFlagsReorder});
+							}
+						});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						{	// Static menu: user configurable
+							menu.newEntry({menuName: subMenuName, entryText: 'By... (tag-value)', func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
+								// On first execution, must update from property
+								selArg.args.tagName = JSON.parse(menu_properties['scatterCustomArg'][1]).args.tagName;
+								// Input
+								const input = inputScatter();
+								if (!input) {return;}
+								// Execute
+								if (input.args.tagValue !== null) {scatterByTags(input.args);} else {intercalateByTags(input.args);}
+								// For internal use original object
+								selArg.args = input.args;
+								menu_properties['scatterCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+								overwriteMenuProperties(); // Updates panel
+							}, flags: multipleSelectedFlagsReorder});
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						}
+						{	// Add / Remove
+							createSubMenuEditEntries(subMenuName, {
+								name,
+								list: scatter, 
+								propName: 'scatter', 
+								defaults: scatterDefaults, 
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\scatter\\default.json',
+								input : inputScatter
+							});
+						}
+					}});
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			}
+		}
+		{	// Intercalate
+			const scriptPath = folders.xxx + 'main\\sort\\scatter_by_tags.js';
+			if (_isFile(scriptPath)){
+				const name = 'Intercalate by tags';
+				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\scatter_by_tags.txt';
+					const subMenuName = menu.newMenu(name, menuName);
+					let intercalate = [
 						{name: 'Intercalate same artist tracks'		,	args: {tagName: globTags.artist, tagValue: null}},
 						{name: 'Intercalate same genre tracks'		,	args: {tagName: globTags.genre, tagValue: null}},
 						{name: 'Intercalate same date tracks'		,	args: {tagName: globTags.date, tagValue: null}},
 						{name: 'Intercalate same album tracks'		,	args: {tagName: '%ALBUM%', tagValue: null}}
-
 					];
+					let selArg = {name: 'Custom', args: intercalate[0].args};
+					const intercalateDefaults = [...intercalate];
+					// Create new properties with previous args
+					menu_properties['intercalate'] = [menuName + '\\' + name + '  entries', JSON.stringify(intercalate)];
+					menu_properties['intercalateCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', JSON.stringify(selArg)];
+					// Check
+					menu_properties['intercalate'].push({func: isJSON}, menu_properties['intercalate'][1]);
+					menu_properties['intercalateCustomArg'].push({func: isJSON}, menu_properties['intercalateCustomArg'][1]);
+					// Helpers
+					const inputIntercalate = () => {
+						let tagName = '';
+						try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
+						catch (e) {return;}
+						if (!tagName.length) {return;}
+						return {args: {tagName, tagValue: null}};
+					};
 					// Menus
-					menu.newEntry({menuName: subMenuName, entryText: 'Sort avoiding repeating tags:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Sort without repeating same tag:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					selArgs.forEach( (selArg) => {
-						if (selArg.name === 'sep') {
-							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						} else {
-							let entryText = selArg.name;
-							menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {
-							if (args.tagValue !== null) {scatterByTags(args);} else {intercalateByTags(args);}
+					menu.newCondEntry({entryText: 'Intercalate... (cond)', condFunc: () => {
+						// Entry list
+						intercalate = JSON.parse(menu_properties['intercalate'][1]);
+						intercalate.forEach((obj) => {
+							// Add separators
+							if (obj.hasOwnProperty('name') && obj.name === 'sep') {
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+							} else { 
+								// Create names for all entries
+								let entryText = obj.name;
+								entryText = entryText.length > 40 ? entryText.substring(0,40) + ' ...' : entryText;
+								// Entries
+								menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...obj.args}) => {
+									if (args.tagValue !== null) {scatterByTags(args);} else {intercalateByTags(args);}
+								}, flags: multipleSelectedFlagsReorder});
+							}
+						});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						{	// Static menu: user configurable
+							menu.newEntry({menuName: subMenuName, entryText: 'By... (tag)', func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
+								// On first execution, must update from property
+								selArg.args.tagName = JSON.parse(menu_properties['intercalateCustomArg'][1]).args.tagName;
+								// Input
+								const input = inputIntercalate();
+								if (!input) {return;}
+								// Execute
+								if (input.args.tagValue !== null) {scatterByTags(input.args);} else {intercalateByTags(input.args);}
+								// For internal use original object
+								selArg.args = input.args;
+								menu_properties['intercalateCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+								overwriteMenuProperties(); // Updates panel
 							}, flags: multipleSelectedFlagsReorder});
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						}
-					});
+						{	// Add / Remove
+							createSubMenuEditEntries(subMenuName, {
+								name,
+								list: intercalate, 
+								propName: 'intercalate', 
+								defaults: intercalateDefaults, 
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\intercalate\\default.json',
+								input : inputIntercalate
+							});
+						}
+					}});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
@@ -317,7 +452,7 @@
 								list: shuffle, 
 								propName: 'shuffle', 
 								defaults: shuffleDefaults, 
-								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\shuffle\\themes.json',
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\shuffle\\default.json',
 								input : inputShuffle
 							});
 						}
