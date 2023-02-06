@@ -30,6 +30,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	unloadCall: 	['Call menus on unload options', JSON.stringify({enabled: false, disabled: false}), {func: isJSON}],
 	indicator: 		['Indicator options', JSON.stringify({init: true, enabled: false}), {func: isJSON}],
 	state: 	 		['Current state', false, {func: isBoolean}, false],
+	icon:			['Button icon', chars.cogs, {func: isString}, chars.cogs]
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 newButtonsProperties.unloadCall.push(newButtonsProperties.unloadCall[1]);
@@ -45,6 +46,7 @@ buttonsBar.list.push(newButtonsProperties);
 			const list = JSON.parse(this.buttonsProperties.entries[1]);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 			const indicator = JSON.parse(this.buttonsProperties.indicator[1]);
+			const specialKeys = ['PlaybackFollowCursor', 'CursorFollowPlayback', 'idx', 'timeout'];
 			if (mask === MK_SHIFT) {
 				const menu = new _menu({onBtnUp: () => {
 					this.buttonsProperties.entries[1] = JSON.stringify(list);
@@ -73,7 +75,11 @@ buttonsBar.list.push(newButtonsProperties);
 								{name: 'Playback Statistics', command: 'Library/Playback Statistics/Monitor playing tracks'},
 								{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'},
 								{name: 'Last.fm Statistics', command: 'Playback/Scrobble tracks'}
-							]
+							],
+							indicator: {init: true, enabled: true},
+							unloadCall: {enabled: false, disabled: true},
+							state: true,
+							icon: chars.music
 						},
 						{
 							entryText: 'Shuffle and play',
@@ -82,25 +88,54 @@ buttonsBar.list.push(newButtonsProperties);
 								{name: 'Shuffle', command: 'Edit/Sort/Randomize'},
 								{name: 'Playback order', command: 'Order/Default'},
 								{name: 'Play current pls', command: 'Playback/Play', idx: 0, PlaybackFollowCursor: true}
-							]
+							],
+							indicator: {init: false, enabled: false},
+							unloadCall: {enabled: false, disabled: false},
+							icon: chars.shuffle
 						},
 						{
 							entryText: 'Async clear test',
 							entries : [
 								{name: 'Clear', command: 'Edit/Clear'},
 								{name: 'Undo', command: 'Edit/Undo', timeout: 1000}
-							]
+							],
+							indicator: {init: false, enabled: false},
+							unloadCall: {enabled: false, disabled: false},
+							icon: chars.tasks
 						},
 					];
 					options.forEach((option) => {
 						menu.newEntry({menuName, entryText: option.entryText, func: () => {
+							// Entries
 							list.length = 0;
-							const specialKeys = ['PlaybackFollowCursor', 'CursorFollowPlayback', 'idx', 'timeout'];
 							clone(option.entries).forEach(e => list.push(e));
 							fb.ShowPopupMessage(list.reduce((total, curr, i) => {
 								const extra = specialKeys.map(k => {return curr.hasOwnProperty(k) ? k + ':' + curr[k] : null;}).filter(Boolean).join(', ');
 								return total + (total ? '\n' : '') + (i + 1) + '. ' + curr.name + ' -> ' + curr.command + (extra ? ' ' + _p(extra) : '');
 							}, ''), 'Main Menu Shortcut');
+							// Rename
+							this.icon = this.buttonsProperties.icon[1] = option.icon || this.buttonsProperties.icon[3];
+							this.text = this.buttonsProperties.customName[1] = option.entryText;
+							this.w = _gr.CalcTextWidth(option.entryText, _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30;
+							this.w *= buttonsBar.config.scale;
+							this.changeScale(buttonsBar.config.scale);
+							// Other config
+							if (option.hasOwnProperty('indicator')) {
+								for (let key in option.indicator) {
+									indicator[key] = option.indicator[key];
+								}
+								this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
+							}
+							if (option.hasOwnProperty('unloadCall')) {
+								for (let key in option.unloadCall) {
+									unloadCall[key] = option.unloadCall[key];
+								}
+								this.buttonsProperties.unloadCall[1] = JSON.stringify(unloadCall);
+							}
+							this.switchActive(option.state || false);
+							this.buttonsProperties.state[1] = this.active;
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+							window.Repaint();
 						}});
 					});
 				}
@@ -146,12 +181,17 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({entryText: 'Rename button...', func: () => {
 					const input = Input.string('string', this.buttonsProperties.customName[1], 'Enter button name:', window.Name + 'Main Menu Shortcut' , this.buttonsProperties.customName[3], void(0), false);
 					if (input === null) {return;}
-					this.buttonsProperties.customName[1] = input;
+					this.text = this.buttonsProperties.customName[1] = input;
 					overwriteProperties(this.buttonsProperties); // Force overwriting
-					this.text = input;
 					this.w = _gr.CalcTextWidth(input, _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30;
 					this.w *= buttonsBar.config.scale;
 					this.changeScale(buttonsBar.config.scale);
+					window.Repaint();
+				}});
+				menu.newEntry({entryText: 'Configure icon...', func: () => {
+					const input = Input.string('unicode', this.buttonsProperties.icon[1], 'Enter button\'s icon: (unicode)\n\nLook for values at:\nhttps://www.fontawesomecheatsheet.com', window.Name + 'Main Menu Shortcut' , this.buttonsProperties.icon[3], void(0), false);
+					if (input === null) {return;}
+					this.icon = this.buttonsProperties.icon[1] = input;
 					window.Repaint();
 				}});
 				menu.btn_up(this.currX, this.currY + this.currH);
@@ -160,7 +200,8 @@ buttonsBar.list.push(newButtonsProperties);
 					funcs.reduce((promise, func) =>
 						promise.then(result => func().then(Array.prototype.concat.bind(result))), Promise.resolve([]));
 				const step = (entry) => {
-					console.log(entry.name + ' -> ' + entry.command);
+					const extra = specialKeys.map(k => {return entry.hasOwnProperty(k) ? k + ':' + entry[k] : null;}).filter(Boolean).join(', ');
+					console.log(entry.name + ' -> ' + entry.command + (extra ? ' ' + _p(extra) : ''));
 					let cache = {};
 					if (entry.hasOwnProperty('PlaybackFollowCursor') && entry.PlaybackFollowCursor !== fb.PlaybackFollowCursor) {
 						cache.PlaybackFollowCursor = fb.PlaybackFollowCursor;
@@ -205,7 +246,7 @@ buttonsBar.list.push(newButtonsProperties);
 				info += '\n(Shift + L. Click to open config menu)';
 			}
 			return info;
-		}, void(0), newButtonsProperties, chars.music, void(0), void(0),
+		}, void(0), newButtonsProperties, newButtonsProperties.icon[1], void(0), void(0),
 		{
 			'on_script_unload': (parent) => {
 				const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);
