@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Playlist Tools Macro custom
@@ -73,7 +73,15 @@ addButton({
 				}
 			}
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
-	}, null, void(0), (parent) => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu assigned macros:\n' + (parent.buttonsProperties.macro[1] || '-None-') + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, newButtonsProperties, chars.hourglass),
+	}, null, void(0), (parent) => {
+		return (isPlaylistToolsLoaded() 
+			? 'Executes Playlist Tools Menu assigned macros:\nEntry:\t' + (parent.buttonsProperties.macro[1] || '-None-') + (
+				getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] 
+					? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)' 
+					: ''
+				) 
+			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
+	}, null, newButtonsProperties, chars.hourglass),
 });
 
 // Helpers

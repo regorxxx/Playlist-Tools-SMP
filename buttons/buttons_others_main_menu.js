@@ -237,7 +237,7 @@ buttonsBar.list.push(newButtonsProperties);
 		}, null, void(0), (parent) => {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
 			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-			let info = 'Main menu';
+			let info = 'Executes Main menu assigned entries:';
 			// Entries
 			const list = JSON.parse(parent.buttonsProperties.entries[1]);
 			info += '\nEntries:\t' + list.map(e => e.name).joinEvery(', ', 2, '\n\t');

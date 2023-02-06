@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/01/23
+//06/02/23
 
 /* 
 	Quicksearch for same....
@@ -77,7 +77,8 @@ addButton({
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		let info = 'Selected: ' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count : 0) + ' items.';
+		let info = 'Quicksearch using selection as reference:';
+		info += '\nSelected\t ' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count : 0) + ' items.';
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Shift + L. Click to open config menu)';

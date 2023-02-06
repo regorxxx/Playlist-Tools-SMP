@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Playlist Tools Macros
@@ -37,7 +37,15 @@ addButton({
 			}});
 			configMenu.btn_up(this.currX, this.currY + this.currH);
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
-	}, null, void(0), () => {return isPlaylistToolsLoaded() ? 'Executes Playlist Tools Menu macros' + (getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to show list)' : '') : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS';}, null, null, chars.hourglass),
+	}, null, void(0), () => {
+		return (isPlaylistToolsLoaded() 
+			? 'Executes Playlist Tools Menu macros' + (
+				getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] 
+					? '\n-----------------------------------------------------\n(L. Click to show list)' 
+					: ''
+				) 
+			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
+	}, null, null, chars.hourglass),
 });
 
 // Helpers

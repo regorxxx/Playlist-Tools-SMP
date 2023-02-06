@@ -108,6 +108,7 @@
 - Buttons: reworked buttons configuration menu to show when a 'true/falsse' option is checked. Some options now output a popup giving a description or tip. Also, a popup is thrown when an input value is non valid.
 - Buttons: improved 'no background mode' on buttons toolbar with colors and shades adapted to the toolbar background color and following the design of native Foobar2000 buttons for a seamless integration.
 - Buttons: improved 'no background mode' on buttons toolbar with proper animations (no longer a bad looking rectangle gradient).
+- UI: unified tooltip structure and available info on all buttons (short description + relevant settings + keyboard modifiers).
 - UI: custom playlist Tools menu renaming does not require a panel reload anymore to adjust the width.
 - UI: exposed the TF/tag expression to match duplicates along the advanced RegEx title matching option. See above. Used on all tools within Playlist Tools menu.
 - UI: menu entries for most tools may now be edited and moved too, instead of only added/removed. Making easier its customization. The edit entries submenu has been changed to include all options within the same submenu.

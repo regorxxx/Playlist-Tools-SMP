@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Top Tracks
@@ -35,7 +35,9 @@ addButton({
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		let info = 'Playlist with ' + parent.buttonsProperties.playlistLength[1] + ' Tracks most played (without duplicates).\nFiltered with: ' + parent.buttonsProperties.forcedQuery[1];
+		let info = 'Playlist with Tracks most played (without duplicates).';
+		info += '\nTracks:\t' + parent.buttonsProperties.playlistLength[1];
+		info += '\nFilter:\t' + parent.buttonsProperties.forcedQuery[1];
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Shift + L. Click to open config menu)';

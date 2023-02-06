@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Automatic tagging...
@@ -103,7 +103,8 @@ buttonsBar.list.push(newButtonsProperties);
 			}
 		}, null, void(0), (parent) => {
 			// Retrieve list of tools and wrap lines with smaller width
-			let info = 'Automatic tags on selected tracks:\n' + parent.tAut.description();
+			let info = 'Automatic tags on selected tracks:'
+			info += '\n' + parent.tAut.description();
 			const font = buttonsBar.tooltipButton.font;
 			info = _gr.EstimateLineWrap(info, _gdiFont(font.name, font.size), 400).filter(isString).join('\n');
 			// Modifiers

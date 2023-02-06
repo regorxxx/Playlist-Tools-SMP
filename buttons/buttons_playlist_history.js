@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Playlist History
@@ -21,6 +21,10 @@ addButton({
 			goPrevPls();
 		}
 	}, null, void(0), () => {
-		return 'Switch to previous playlist:\n' + getPrevPlsName() + (typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1] ? '\n-----------------------------------------------------\n(Shift + L. Click to see entire history)' : '');
+		return 'Switch to previous playlist:' + 
+			'\nPlaylist:\t' + getPrevPlsName() + 
+			(typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1] 
+				? '\n-----------------------------------------------------\n(Shift + L. Click to see entire history)' 
+				: '');
 	}, null, null, chars.history),
 });

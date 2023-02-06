@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Playlist Tools Submenu Custom
@@ -92,9 +92,14 @@ addButton({
 			}
 		} else {fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools');}
 	}, null, void(0), (parent) => {
-		return (isPlaylistToolsLoaded() ? (
-			parent.buttonsProperties.menu[1].length ? menuTooltip() : 'Executes Playlist Tools assigned sub-menu' + 
-				(getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] ? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)' : '')
+		return (isPlaylistToolsLoaded() 
+			? (	parent.buttonsProperties.menu[1].length 
+				? menuTooltip() 
+				: 'Executes Playlist Tools assigned sub-menu' + (
+					getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1] 
+						? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)' 
+						: ''
+					)
 			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
 	}, null, newButtonsProperties, chars.wrench),
 });

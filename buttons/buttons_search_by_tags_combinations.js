@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//06/02/23
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -98,7 +98,8 @@ addButton({
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		let info = 'Random playlist matching ' + parent.buttonsProperties.sameBy[1] +  '\nof the currently selected track';
+		let info = 'Random playlist matching from currently selected track:';
+		info += '\nTF (at least):\t' + parent.buttonsProperties.sameBy[1];
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Shift + L. Click to open config menu)';

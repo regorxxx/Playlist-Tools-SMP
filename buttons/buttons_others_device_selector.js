@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/01/23
+//06/02/23
 
 /* 
 	Output device selector
@@ -40,7 +40,13 @@ addButton({
 		const currDevice = devices.find((device) => {return device.active;});
 		const currDeviceName = currDevice ? currDevice.name : '';
 		let info = 'Select output device:';
-		info += '\n' + currDeviceName.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '');
+		info += '\nDevice:\t' + currDeviceName.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '');
+		// const bShift = utils.IsKeyPressed(VK_SHIFT);
+		// const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+		// if (bShift || bInfo) {
+			// info += '\n-----------------------------------------------------';
+			// info += '\n(Shift + L. Click to open config menu)';
+		// }
 		return info;
 	}, void(0), void(0), chars.speaker),
 });
