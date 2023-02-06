@@ -1,16 +1,18 @@
 ﻿'use strict';
-//05/02/23
+//06/02/23
 
-function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defaults, input, bAdd}*/) {
+function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defaults, input, bAdd, bNumbered}*/) {
 	// options.list always point to the original entry list and original values are edited
 	const subMenuSecondName = parent.newMenu('Edit entries from list...' + nextId('invisible', true, false), menuName);
-	options.list.forEach( (entry, index) => {
-		const entryName = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
+	let i = 0;
+	options.list.forEach((entry, index) => {
+		if (entry.name !== 'sep') {i++;}
+		const entryName = (entry.name === 'sep' ? '------(separator)------' : (options.bNumbered ? i + '. ' : '') + (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
 		const subMenuThirdName = parent.newMenu(entryName + nextId('invisible', true, false), subMenuSecondName);
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Edit entry...', func: () => {
 			const oriEntry = JSON.stringify(entry);
 			let newEntry = oriEntry;
-			try {newEntry = utils.InputBox(window.ID, 'Edit entry as JSON:', scriptName + ': ' + options.name, oriEntry, true);}
+			try {newEntry = utils.InputBox(window.ID, 'Edit entry as JSON:', options.name, oriEntry, true);}
 			catch (e) {return;}
 			if (newEntry === oriEntry) {return;}
 			if (!newEntry || !newEntry.length) {fb.ShowPopupMessage('Input: ' + newEntry + '\n\nNon valid entry.', 'JSON error'); return;}
@@ -21,7 +23,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 		}});
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Move entry...', func: () => {
 			let pos = 1;
-			try {pos = Number(utils.InputBox(window.ID, 'Move up X indexes (negative is down):\n', scriptName + ': ' + options.name, pos, true));} 
+			try {pos = Number(utils.InputBox(window.ID, 'Move up X indexes (negative is down):\n', options.name, pos, true));} 
 			catch (e) {return;}
 			if (pos === 0 || !Number.isSafeInteger(pos)) {return;}
 			if (index - pos < 0) {pos = 0;}
@@ -43,7 +45,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 			// Input all variables
 			let input;
 			let entryName = '';
-			try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + options.name, '', true);}
+			try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', options.name, '', true);}
 			catch (e) {return;}
 			if (!entryName.length) {return;}
 			if (entryName === 'sep') {input = {name: entryName};} // Add separator

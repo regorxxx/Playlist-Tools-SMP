@@ -1,13 +1,12 @@
 ﻿'use strict';
-//05/02/23
+//06/02/23
 
 /* 
 	Main Menu shortcut
 	----------------
 	Runs multiple main menus with one single click, on order.
 	Also allows to call such menus before closing foobar, according to button state (enabled/disabled).
-	Default button state may be set at startup, and will change when clicking on the button.
-	There is no fancy tracking between sessions though...
+	Button state may be saved between sessions and will change when clicking on the button.
  */
 
 include('..\\helpers\\helpers_xxx.js');
@@ -29,7 +28,8 @@ var newButtonsProperties = { //You can simply add new properties here
 		{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'}
 	]), {func: isJSON}],
 	unloadCall: 	['Call menus on unload options', JSON.stringify({enabled: false, disabled: false}), {func: isJSON}],
-	indicator: 		['Indicator options', JSON.stringify({init: true, enabled: false}), {func: isJSON}]
+	indicator: 		['Indicator options', JSON.stringify({init: true, enabled: false}), {func: isJSON}],
+	state: 	 		['Current state', false, {func: isBoolean}, false],
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 newButtonsProperties.unloadCall.push(newButtonsProperties.unloadCall[1]);
@@ -53,11 +53,58 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({entryText: 'Select output:', func: null, flags: MF_GRAYED});
 				menu.newEntry({entryText: 'sep'});
 				_createSubMenuEditEntries(menu, void(0), {
-					name: 'Main Menu',
+					name: 'Main Menu Shortcut',
 					list, 
 					defaults: JSON.parse(this.buttonsProperties.entries[3]), 
-					input : () => {return Input.string('string', '', 'Enter complete menu name:\nEx: Library/Playback Statistics/Monitor playing tracks', window.Name + 'Main Menu Shortcut' , 'Library/Playback Statistics/Monitor playing tracks', void(0), true);}
+					input : () => {
+						return {
+							command : Input.string('string', '', 'Enter complete menu name:\nEx: Library/Playback Statistics/Monitor playing tracks', window.Name + 'Main Menu Shortcut' , 'Library/Playback Statistics/Monitor playing tracks', void(0), true),
+							timeOut : Input.number('int positive', 0, 'Time (ms) to wait before running command:', window.Name + 'Main Menu Shortcut' , 10) || 0,
+						};
+					},
+					bNumbered: true
 				});
+				{
+					const menuName = menu.newMenu('Built-in presets...');
+					const options = [
+						{
+							entryText: 'Playback statistics',
+							entries : [
+								{name: 'Playback Statistics', command: 'Library/Playback Statistics/Monitor playing tracks'},
+								{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'},
+								{name: 'Last.fm Statistics', command: 'Playback/Scrobble tracks'}
+							]
+						},
+						{
+							entryText: 'Shuffle and play',
+							entries : [
+								{name: 'ReplayGain track', command: 'Playback/Replay Gain/Source mode/track'},
+								{name: 'Shuffle', command: 'Edit/Sort/Randomize'},
+								{name: 'Playback order', command: 'Order/Default'},
+								{name: 'Play current pls', command: 'Playback/Play', idx: 0, PlaybackFollowCursor: true}
+							]
+						},
+						{
+							entryText: 'Async clear test',
+							entries : [
+								{name: 'Clear', command: 'Edit/Clear'},
+								{name: 'Undo', command: 'Edit/Undo', timeout: 1000}
+							]
+						},
+					];
+					options.forEach((option) => {
+						menu.newEntry({menuName, entryText: option.entryText, func: () => {
+							list.length = 0;
+							const specialKeys = ['PlaybackFollowCursor', 'CursorFollowPlayback', 'idx', 'timeout'];
+							clone(option.entries).forEach(e => list.push(e));
+							fb.ShowPopupMessage(list.reduce((total, curr, i) => {
+								const extra = specialKeys.map(k => {return curr.hasOwnProperty(k) ? k + ':' + curr[k] : null;}).filter(Boolean).join(', ');
+								return total + (total ? '\n' : '') + (i + 1) + '. ' + curr.name + ' -> ' + curr.command + (extra ? ' ' + _p(extra) : '');
+							}, ''), 'Main Menu Shortcut');
+						}});
+					});
+				}
+				menu.newEntry({entryText: 'sep'});
 				{
 					const menuName = menu.newMenu('Run when closing foobar?');
 					menu.newEntry({menuName, entryText: 'If state is enabled', func: () => {
@@ -74,19 +121,26 @@ buttonsBar.list.push(newButtonsProperties);
 					menu.newCheckMenu(menuName, 'If state is disabled', void(0), () => {return unloadCall.disabled;});
 				}
 				{
-					const menuName = menu.newMenu('Button states');
+					const menuName = menu.newMenu('Button states...');
 					menu.newEntry({menuName, entryText: 'Use button states', func: () => {
 						indicator.enabled = !indicator.enabled;
 						this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
 						overwriteProperties(this.buttonsProperties); // Force overwriting
+						if (indicator.enabled) {
+							fb.ShowPopupMessage('Button\'s icon will be highlighted according to tracked state. States can be saved between sessions using the apropiate config.\n\nNote button states should be enabled after syncing with the desired configuration/action to track.\n\ni.e. The default action for the button switches different playback statistics settings. In order to track such settings, enable button states while they are disabled (the button is set to disabled by default at init). Then click on the button to enable them back (while state is set to enabled at the same time). As result, both the button and the desired settings to track will be in sync.', 'Main Menu Shortcut');
+						} else {
+							this.switchActive(false);
+							this.buttonsProperties.state[1] = this.active;
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+						}
 					}});
 					menu.newCheckMenu(menuName, 'Use button states', void(0), () => {return indicator.enabled;});
-					menu.newEntry({menuName, entryText: 'Set as enabled at startup', func: () => {
+					menu.newEntry({menuName, entryText: 'Save between sessions', func: () => {
 						indicator.init = !indicator.init;
 						this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
 						overwriteProperties(this.buttonsProperties); // Force overwriting
-					}});
-					menu.newCheckMenu(menuName, 'Set as enabled at startup', void(0), () => {return indicator.init;});
+					}, flags: indicator.enabled ? MF_STRING : MF_GRAYED});
+					menu.newCheckMenu(menuName, 'Save between sessions', void(0), () => {return indicator.init;});
 				}
 				menu.newEntry({entryText: 'sep'});
 				menu.newEntry({entryText: 'Rename button...', func: () => {
@@ -102,11 +156,42 @@ buttonsBar.list.push(newButtonsProperties);
 				}});
 				menu.btn_up(this.currX, this.currY + this.currH);
 			} else {
-				list.forEach((entry) => {
+				const serial = funcs =>
+					funcs.reduce((promise, func) =>
+						promise.then(result => func().then(Array.prototype.concat.bind(result))), Promise.resolve([]));
+				const step = (entry) => {
 					console.log(entry.name + ' -> ' + entry.command);
+					let cache = {};
+					if (entry.hasOwnProperty('PlaybackFollowCursor') && entry.PlaybackFollowCursor !== fb.PlaybackFollowCursor) {
+						cache.PlaybackFollowCursor = fb.PlaybackFollowCursor;
+						fb.PlaybackFollowCursor = entry.PlaybackFollowCursor; 
+					}
+					if (entry.hasOwnProperty('CursorFollowPlayback') && entry.CursorFollowPlayback !== fb.CursorFollowPlayback) {
+						cache.CursorFollowPlayback = fb.CursorFollowPlayback;
+						fb.CursorFollowPlayback = entry.CursorFollowPlayback;
+					}
+					if (entry.hasOwnProperty('idx')) {
+						plman.SetPlaylistFocusItem(plman.ActivePlaylist, entry.idx);
+					}
 					try {fb.RunMainMenuCommand(entry.command)} catch (e) {console.log(e);}
+					setTimeout(() => {
+						for (let key in cache) {fb[key] = cache[key];}
+					}, 1000);
+				}
+				const funcs = list.map((entry) => {
+					return () => new Promise((resolve) => {
+						if (entry.timeout) {setTimeout(() => {step(entry); resolve();}, entry.timeout);} else {step(entry); resolve();}
+					});
 				});
-				if (indicator.enabled) {this.switchActive();}
+				serial(funcs).then(() => {
+					if (indicator.enabled) {
+						this.switchActive();
+						if (indicator.init) {
+							this.buttonsProperties.state[1] = this.active;
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+						}
+					}
+				});
 			}
 		}, null, void(0), (parent) => {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
@@ -124,14 +209,19 @@ buttonsBar.list.push(newButtonsProperties);
 		{
 			'on_script_unload': (parent) => {
 				const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);
+				const indicator = JSON.parse(parent.buttonsProperties.indicator[1]);
 				if (unloadCall.disabled && !parent.active || unloadCall.enabled && parent.active) {
 					parent.onClick();
 				}
 			}
 		}),
 	};
-	// Default state
+	
+	// Default state: previous state or disabled
 	const indicator = JSON.parse(newButton['Main Menu'].buttonsProperties.indicator[1]);
-	if (indicator.init) {newButton['Main Menu'].active = true;}
+	if (indicator.enabled && indicator.init) {
+		newButton['Main Menu'].switchActive(newButton['Main Menu'].buttonsProperties.state[1]);
+	}
+	
 	addButton(newButton);
 }
