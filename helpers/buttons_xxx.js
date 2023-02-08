@@ -492,8 +492,17 @@ addEventListener('on_mouse_move', (x, y, mask) => {
 	if (!buttonsBar.move.bIsMoving) {
 		buttonsBar.curBtn && buttonsBar.curBtn.changeState(buttonStates.hover);
 		if (buttonsBar.config.bIconModeExpand && buttonsBar.config.orientation === 'x') {
-			if (buttonsBar.curBtn && !buttonsBar.curBtn.bIconModeExpand) {buttonsBar.curBtn.bIconModeExpand = true;}
-			if (old && old !== buttonsBar.curBtn) {old.bIconModeExpand = false;}
+			if (buttonsBar.curBtn && !buttonsBar.curBtn.bIconModeExpand) {
+				const curBtn = buttonsBar.curBtn;
+				const oldBtn = old && old !== buttonsBar.curBtn ? old : null;
+				setTimeout(() => {
+					if (buttonsBar.curBtn === curBtn) {
+						curBtn.bIconModeExpand = true;
+						if (oldBtn) {oldBtn.bIconModeExpand = false;}
+						window.Repaint();
+					}
+				}, 200);
+			}
 		}
 	}
 	// Toolbar Tooltip
@@ -554,9 +563,22 @@ addEventListener('on_mouse_leave', () => {
 	buttonsBar.gDown = false;
 	if (buttonsBar.curBtn) {
 		buttonsBar.curBtn.changeState(buttonStates.normal);
-		buttonsBar.curBtn.bIconModeExpand = false;
 		window.Repaint();
 		buttonsBar.curBtn = null;
+	}
+	if (buttonsBar.config.bIconModeExpand) {
+		let bDone = false;
+		for (let key in buttonsBar.buttons) {
+			if (buttonsBar.buttons[key].bIconModeExpand) {bDone = true; break;}
+		}
+		if (bDone) {
+			setTimeout(() => {
+				for (let key in buttonsBar.buttons) {
+					buttonsBar.buttons[key].bIconModeExpand = false;
+				}
+				window.Repaint();
+			}, 200);
+		}
 	}
 });
 
