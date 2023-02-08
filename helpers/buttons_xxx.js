@@ -494,11 +494,18 @@ addEventListener('on_mouse_move', (x, y, mask) => {
 		if (buttonsBar.config.bIconModeExpand && buttonsBar.config.orientation === 'x') {
 			if (buttonsBar.curBtn && !buttonsBar.curBtn.bIconModeExpand) {
 				const curBtn = buttonsBar.curBtn;
-				const oldBtn = old && old !== buttonsBar.curBtn ? old : null;
+				let oldBtn = old && old !== buttonsBar.curBtn ? old : null;
 				setTimeout(() => {
 					if (buttonsBar.curBtn === curBtn) {
 						curBtn.bIconModeExpand = true;
-						if (oldBtn) {oldBtn.bIconModeExpand = false;}
+						if (oldBtn) { // In case mouse is moved fast, multiple buttons may be 'old'
+							for (let key in buttonsBar.buttons) {
+								oldBtn = buttonsBar.buttons[key];
+								if (oldBtn !== curBtn) {
+									oldBtn.bIconModeExpand = false;
+								}
+							}
+						}
 						window.Repaint();
 					}
 				}, 200);
