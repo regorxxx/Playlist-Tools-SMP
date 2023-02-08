@@ -262,7 +262,7 @@ function createButtonsMenu(name) {
 		menu.newCheckMenu(menuName, 'Show properties IDs on tooltip', void(0), () => {return barProperties.bShowId[1];});
 		menu.newEntry({menuName, entryText: 'sep'});
 		const orientation = barProperties.orientation[1].toLowerCase();
-		menu.newEntry({menuName, entryText: 'Toolbar orientation \t[' + orientation + ']', func: () => {
+		menu.newEntry({menuName, entryText: 'Toolbar orientation \t[' + orientation.toUpperCase() + ']', func: () => {
 			barProperties.orientation[1] = orientation === 'x' ? 'y' : 'x';
 			overwriteProperties(barProperties);
 			buttonsBar.config.orientation = barProperties.orientation[1]; // buttons_xxx.js
@@ -277,13 +277,13 @@ function createButtonsMenu(name) {
 				window.Repaint();
 			}});
 			menu.newCheckMenu(subMenu, 'Force for all buttons', void(0), () => {return buttonsBar.config.bIconMode;});
-			menu.newEntry({menuName: subMenu, entryText: 'Expand on mouse over', func: () => {
+			menu.newEntry({menuName: subMenu, entryText: 'Expand on mouse over' + (buttonsBar.config.orientation === 'y' ? '\t[Y]' : ''), func: () => {
 				barProperties.bIconModeExpand[1] = !barProperties.bIconModeExpand[1];
 				overwriteProperties(barProperties);
 				buttonsBar.config.bIconModeExpand = barProperties.bIconModeExpand[1]; // buttons_xxx.js
 				window.Repaint();
-			}});
-			menu.newCheckMenu(subMenu, 'Expand on mouse over', void(0), () => {return buttonsBar.config.bIconModeExpand;});
+			}, flags: buttonsBar.config.orientation === 'x' ? MF_STRING : MF_GRAYED});
+			menu.newCheckMenu(subMenu, 'Expand on mouse over' + (buttonsBar.config.orientation === 'y' ? '\t[Y]' : ''), void(0), () => {return buttonsBar.config.bIconModeExpand;});
 			menu.newEntry({menuName: subMenu, entryText: 'sep'});
 			buttonsBar.listKeys.forEach((arrKeys, idx) => {
 				const entryText = buttonsPath[idx].split('\\').pop() + '\t(' + (idx + 1) + ')';

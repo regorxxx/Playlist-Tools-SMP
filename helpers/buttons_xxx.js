@@ -491,8 +491,10 @@ addEventListener('on_mouse_move', (x, y, mask) => {
 	old && old.changeState(buttonStates.normal);
 	if (!buttonsBar.move.bIsMoving) {
 		buttonsBar.curBtn && buttonsBar.curBtn.changeState(buttonStates.hover);
-		if (buttonsBar.curBtn && buttonsBar.config.bIconModeExpand) {buttonsBar.curBtn.bIconModeExpand = true;}
-		if (old && old !== buttonsBar.curBtn) {old.bIconModeExpand = false;}
+		if (buttonsBar.config.bIconModeExpand && buttonsBar.config.orientation === 'x') {
+			if (buttonsBar.curBtn && !buttonsBar.curBtn.bIconModeExpand) {buttonsBar.curBtn.bIconModeExpand = true;}
+			if (old && old !== buttonsBar.curBtn) {old.bIconModeExpand = false;}
+		}
 	}
 	// Toolbar Tooltip
 	if (!buttonsBar.curBtn && buttonsBar.config.toolbarTooltip.length && !buttonsBar.move.bIsMoving) {
