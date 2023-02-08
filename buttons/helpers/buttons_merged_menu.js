@@ -270,13 +270,20 @@ function createButtonsMenu(name) {
 		}});
 		{
 			const subMenu = menu.newMenu('Icons-only mode...', menuName);
-			menu.newEntry({menuName: subMenu, entryText: 'All buttons', func: () => {
+			menu.newEntry({menuName: subMenu, entryText: 'Force for all buttons', func: () => {
 				barProperties.bIconMode[1] = !barProperties.bIconMode[1];
 				overwriteProperties(barProperties);
 				buttonsBar.config.bIconMode = barProperties.bIconMode[1]; // buttons_xxx.js
 				window.Repaint();
 			}});
-			menu.newCheckMenu(subMenu, 'All buttons', void(0), () => {return barProperties.bIconMode[1];});
+			menu.newCheckMenu(subMenu, 'Force for all buttons', void(0), () => {return buttonsBar.config.bIconMode;});
+			menu.newEntry({menuName: subMenu, entryText: 'Expand on mouse over', func: () => {
+				barProperties.bIconModeExpand[1] = !barProperties.bIconModeExpand[1];
+				overwriteProperties(barProperties);
+				buttonsBar.config.bIconModeExpand = barProperties.bIconModeExpand[1]; // buttons_xxx.js
+				window.Repaint();
+			}});
+			menu.newCheckMenu(subMenu, 'Expand on mouse over', void(0), () => {return buttonsBar.config.bIconModeExpand;});
 			menu.newEntry({menuName: subMenu, entryText: 'sep'});
 			buttonsBar.listKeys.forEach((arrKeys, idx) => {
 				const entryText = buttonsPath[idx].split('\\').pop() + '\t(' + (idx + 1) + ')';

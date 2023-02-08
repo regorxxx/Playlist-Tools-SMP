@@ -33,7 +33,8 @@ buttonsBar.config = {
 	bUseThemeManager: true,
 	partAndStateID: 1, // 1 standard button, 6  bg/border button (+hover)
 	scale: _scale(0.7, false),
-	bIconMode: false
+	bIconMode: false,
+	bIconModeExpand: true
 };
 buttonsBar.config.default = Object.fromEntries(Object.entries(buttonsBar.config));
 // Drag n drop (internal use)
@@ -113,6 +114,8 @@ function themedButton(coordinates, text, func, state, gFont = _gdiFont('Segoe UI
 	this.prefix = prefix; // This let us identify properties later for different instances of the same button, like an unique ID
 	this.descriptionWithID = isFunction(this.description) ? (parent) => {return (this.prefix ? this.prefix.replace('_','') + ': ' + this.description(parent) : this.description(parent));} : () => {return (this.prefix ? this.prefix.replace('_','') + ': ' + this.description : this.description);}; // Adds prefix to description, whether it's a func or a string
 	this.buttonsProperties = Object.assign({}, buttonsProperties); // Clone properties for later use
+	this.bIconMode = false;
+	this.bIconModeExpand = false;
 	if (variables) {
 		for (let key in variables) {
 			this[key] = variables[key];
@@ -182,7 +185,7 @@ function themedButton(coordinates, text, func, state, gFont = _gdiFont('Segoe UI
 	};
 	
 	this.isIconMode = function () { // Either global or for current button
-		return (buttonsBar.config.bIconMode || this.bIconMode || !(isFunction(this.text) ? this.text(this) : this.text).length);
+		return (((buttonsBar.config.bIconMode || this.bIconMode) && !this.bIconModeExpand) || !(isFunction(this.text) ? this.text(this) : this.text).length);
 	}
 	
 	this.draw = function (gr, x = this.x, y = this.y, w = this.w, h = this.h) {
@@ -488,6 +491,8 @@ addEventListener('on_mouse_move', (x, y, mask) => {
 	old && old.changeState(buttonStates.normal);
 	if (!buttonsBar.move.bIsMoving) {
 		buttonsBar.curBtn && buttonsBar.curBtn.changeState(buttonStates.hover);
+		if (buttonsBar.curBtn && buttonsBar.config.bIconModeExpand) {buttonsBar.curBtn.bIconModeExpand = true;}
+		if (old && old !== buttonsBar.curBtn) {old.bIconModeExpand = false;}
 	}
 	// Toolbar Tooltip
 	if (!buttonsBar.curBtn && buttonsBar.config.toolbarTooltip.length && !buttonsBar.move.bIsMoving) {
@@ -547,6 +552,7 @@ addEventListener('on_mouse_leave', () => {
 	buttonsBar.gDown = false;
 	if (buttonsBar.curBtn) {
 		buttonsBar.curBtn.changeState(buttonStates.normal);
+		buttonsBar.curBtn.bIconModeExpand = false;
 		window.Repaint();
 		buttonsBar.curBtn = null;
 	}
