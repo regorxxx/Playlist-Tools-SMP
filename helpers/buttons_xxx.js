@@ -34,7 +34,7 @@ buttonsBar.config = {
 	partAndStateID: 1, // 1 standard button, 6  bg/border button (+hover)
 	scale: _scale(0.7, false),
 	bIconMode: false,
-	bIconModeExpand: true
+	bIconModeExpand: false
 };
 buttonsBar.config.default = Object.fromEntries(Object.entries(buttonsBar.config));
 // Drag n drop (internal use)
