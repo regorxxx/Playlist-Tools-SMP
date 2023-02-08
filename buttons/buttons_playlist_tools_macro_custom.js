@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Playlist Tools Macro custom
@@ -11,14 +11,15 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\menu_xxx.js');
 
-var prefix = 'mac_';
-prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
+var prefix = 'mac';
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
-	customName: ['Name for the custom UI button', 'Customize!', {func: isString}, 'Customize!'],
-	macro: 		['Macro entry', '', {func: isStringWeak}, '']
+	customName: ['Name for the custom UI button', 'Customize!', {func: isStringWeak}, 'Customize!'],
+	macro: 		['Macro entry', '', {func: isStringWeak}, ''],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
-setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
-newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0); // And retrieve
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({

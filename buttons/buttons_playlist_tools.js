@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//08/02/23
 
 /* 
 	Playlist Tools Menu
@@ -31,17 +31,19 @@ menu_prefix = prefix; // update var for internal use of playlist_tools_menu
 
 var newButtonsProperties = {
 	...menu_properties,
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 
-setProperties(newButtonsProperties, prefix, 0); // This sets all the panel properties at once
-if (newButtonsProperties) {
-		const properties = getPropertiesPairs(newButtonsProperties, prefix, 0);
-		updateMenuProperties(properties); // Update manually the default args
-		buttonsBar.list.push({...properties, ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
+{
+	setProperties(newButtonsProperties, prefix, 0); // This sets all the panel properties at once
+	const properties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+	updateMenuProperties(properties); // Update manually the default args
+	buttonsBar.list.push({...properties, ...getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0)});
 	if (typeof updateCache !== 'undefined') {
 		// Update cache with user set tags
 		doOnce('Update SBD cache', debounce(updateCache, 3000))({properties});
 	}
+	newButtonsProperties = properties;
 }
 
 addButton({
@@ -54,5 +56,5 @@ addButton({
 		} else { // Standard use
 			menu.btn_up(this.currX, this.currY + this.currH);
 		}
-	}, null, void(0), menuTooltip, null, null, chars.wrench),
+	}, null, void(0), menuTooltip, prefix, newButtonsProperties, chars.wrench),
 });

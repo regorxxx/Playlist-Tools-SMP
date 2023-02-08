@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//08/02/23
 
 /*
 	Helpers
@@ -83,7 +83,9 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	// Store for internal use
 	if (menu_panelProperties.bDebug[1]) {console.log('Playlist Tools: updating settings...');}
 	for (let key in propObject) {
-		menu_properties[key][1] = propObject[key][1];
+		if (menu_properties.hasOwnProperty(key)) {
+			menu_properties[key][1] = propObject[key][1];
+		}
 	}
 	for (let key in panelPropObject) {
 		menu_panelProperties[key][1] = panelPropObject[key][1];

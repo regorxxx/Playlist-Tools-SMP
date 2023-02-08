@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Automatic tagging...
@@ -22,7 +22,8 @@ try {window.DefineScript('Automate Tags', {author:'xxx', features: {drag_n_drop:
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = {	//You can simply add new properties here
-	toolsByKey: ['Tools enabled', JSON.stringify(new tagAutomation(void(0), false, true))]
+	toolsByKey:	['Tools enabled', JSON.stringify(new tagAutomation(void(0), false, true))],
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
 };
 newButtonsProperties['toolsByKey'].push({func: isJSON}, newButtonsProperties['toolsByKey'][1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//08/02/23
 
 /* 
 	-> EDIT
@@ -8,10 +8,17 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\tags\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+var prefix = 'st_';
  
 try {window.DefineScript('Save tags button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
 
-buttonsBar.list.push({});
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
+var newButtonsProperties = { //You can simply add new properties here
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
+};
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+buttonsBar.list.push(newButtonsProperties);
 
 addButton({
 	'Save tags': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Save tags', function () {
@@ -23,7 +30,7 @@ addButton({
 		catch (e) {return;}
 		if (!file.length) {return;}
 		saveTags({file});
-	}, null, void(0),'Save all tags from selected tracks to json', void(0), void(0), chars.save),
+	}, null, void(0),'Save all tags from selected tracks to json', prefix, newButtonsProperties, chars.save),
 	'Compare tags': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Compare', function () {
 		let file;
 		try {file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true);}
@@ -40,5 +47,5 @@ addButton({
 		catch (e) {return;}
 		if (!selItemsFolder.length) {return;}
 		compareTags({toTags, toTagsFolder, selItemsFolder});
-	}, null, void(0),'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.', void(0), void(0), chars.exchange),
+	}, null, void(0),'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.', prefix, newButtonsProperties, chars.exchange),
 });

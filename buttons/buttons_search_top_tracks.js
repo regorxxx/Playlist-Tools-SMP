@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Top Tracks
@@ -20,6 +20,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
 	playlistLength:	['Length of playlist', 25, {greater: 0, func: isInt}, 25],
 	forcedQuery: 	['Forced query to pre-filter database', globQuery.notLowRating, {func: (query) => {return checkQuery(query, true);}}, globQuery.notLowRating],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

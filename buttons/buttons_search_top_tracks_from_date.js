@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Top Tracks
@@ -21,6 +21,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	playlistLength:	['Length of playlist', 25, {greater: 0, func: isInt}, 25],
 	forcedQuery: 	['Forced query to pre-filter database',globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
 	year: 			['Year', 0, {greaterEq: 0, func: isInt}, 0],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

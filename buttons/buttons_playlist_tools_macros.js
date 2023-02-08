@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Playlist Tools Macros
@@ -9,11 +9,18 @@
 
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\menu_xxx.js');
+var prefix = 'ptm';
 
-buttonsBar.list.push({});
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
+var newButtonsProperties = { //You can simply add new properties here
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
+};
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Macros': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Macros', function () {
+	'Playlist Tools Macros': new themedButton({x: 0, y: 0, w: 70, h: 22}, 'Macros', function () {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
@@ -45,7 +52,7 @@ addButton({
 					: ''
 				) 
 			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
-	}, null, null, chars.hourglass),
+	}, prefix, newButtonsProperties, chars.hourglass),
 });
 
 // Helpers

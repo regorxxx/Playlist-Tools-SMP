@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Quicksearch for same....
@@ -21,7 +21,8 @@ var newButtonsProperties = { //You can simply add new properties here
 	bEvalSel: 		['Evaluate multiple tracks?', true, {func: isBoolean}, true],
 	lastQuery: 		['Last query used', '', {func: isStringWeak}, ''],
 	playlistName:	['Playlist name', 'Search...', {func: isString}, 'Search...'],
-	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false]
+	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

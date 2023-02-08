@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Output device selector
@@ -11,13 +11,20 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_file.js');
 include('..\\helpers\\menu_xxx.js');
+var prefix = 'ds';
 
 try {window.DefineScript('Output device selector button', {author:'XXX', version: '1.1.0', features: {drag_n_drop: false}});} catch (e) {/* console.log('Output device selector Button loaded.'); */} //May be loaded along other buttons
 
 checkCompatible('1.6.1', 'smp');
 checkCompatible('1.4.0', 'fb');
 
-buttonsBar.list.push({});
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
+var newButtonsProperties = { //You can simply add new properties here
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
+};
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+buttonsBar.list.push(newButtonsProperties);
 
 addButton({
 	'Output device selector': new themedButton({x: 0, y: 0, w: 78, h: 22}, 'Devices', function () {
@@ -48,5 +55,5 @@ addButton({
 			// info += '\n(Shift + L. Click to open config menu)';
 		// }
 		return info;
-	}, void(0), void(0), chars.speaker),
+	}, prefix, newButtonsProperties, chars.speaker),
 });

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -73,13 +73,14 @@ try {window.DefineScript('Search Same By Tags (Combinations) Button', {author:'x
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	customName:			['Name for the custom UI button', 'Search Same By... (c)', {func: isString}, 'Search Same By... (c)'],
+	customName:			['Name for the custom UI button', 'Search Same By... (c)', {func: isStringWeak}, 'Search Same By... (c)'],
 	playlistLength:		['Max Playlist Mix length', 50, {greater: 0, func: isInt}, 50],
 	forcedQuery:		['Forced query to filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
 	checkDuplicatesBy:	['Tags to look for duplicates', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
 	bAdvTitle:			['Advanced RegEx title matching?', true, {func: isBoolean}, true],
 	sameBy: 			['Tags to look for similarity', JSON.stringify({GENRE:1 , STYLE: 2, MOOD: 5}), {func: isJSON}, JSON.stringify({GENRE:1 , STYLE: 2, MOOD: 5})],
-	playlistName:		['Playlist name', 'Search...', {func: isString}, 'Search...']
+	playlistName:		['Playlist name', 'Search...', {func: isString}, 'Search...'],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

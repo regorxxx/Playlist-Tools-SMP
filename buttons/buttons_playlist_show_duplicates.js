@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -25,7 +25,8 @@ var newButtonsProperties = { //You can simply add new properties here
 	checkInputA:	['Tag or TitleFormat expression to check (1)', globTags.artist, {func: isStringWeak}, globTags.artist],
 	checkInputB:	['Tag or TitleFormat expression to check (2)', globTags.date, {func: isStringWeak}, globTags.date],
 	checkInputC:	['Tag or TitleFormat expression to check (3)', globTags.title, {func: isStringWeak}, globTags.title],
-	bAdvTitle:		['Advanced RegExp title matching?', true, {func: isBoolean}, true]
+	bAdvTitle:		['Advanced RegExp title matching?', true, {func: isBoolean}, true],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

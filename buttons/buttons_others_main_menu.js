@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Main Menu shortcut
@@ -22,7 +22,7 @@ try {window.DefineScript('Main Menu Shortcut Button', {author:'XXX', version: '1
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	customName:		['Name for the custom UI button', 'Main Menu', {func: isString}, 'Main Menu'],
+	customName:		['Name for the custom UI button', 'Main Menu', {func: isStringWeak}, 'Main Menu'],
 	entries:		['Main menu entries', JSON.stringify([
 		{name: 'Playback Statistics', command: 'Library/Playback Statistics/Monitor playing tracks'},
 		{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'}
@@ -30,7 +30,8 @@ var newButtonsProperties = { //You can simply add new properties here
 	unloadCall: 	['Call menus on unload options', JSON.stringify({enabled: false, disabled: false}), {func: isJSON}],
 	indicator: 		['Indicator options', JSON.stringify({init: true, enabled: false}), {func: isJSON}],
 	state: 	 		['Current state', false, {func: isBoolean}, false],
-	icon:			['Button icon', chars.cogs, {func: isString}, chars.cogs]
+	icon:			['Button icon', chars.cogs, {func: isString}, chars.cogs],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 newButtonsProperties.unloadCall.push(newButtonsProperties.unloadCall[1]);
@@ -246,7 +247,7 @@ buttonsBar.list.push(newButtonsProperties);
 				info += '\n(Shift + L. Click to open config menu)';
 			}
 			return info;
-		}, void(0), newButtonsProperties, newButtonsProperties.icon[1], void(0), void(0),
+		}, prefix, newButtonsProperties, newButtonsProperties.icon[1], void(0), {defText: 'Main menu shortcut'},
 		{
 			'on_script_unload': (parent) => {
 				const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);

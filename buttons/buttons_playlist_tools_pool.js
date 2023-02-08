@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//08/02/23
 
 /* 
 	Playlist Tools Pools
@@ -9,11 +9,18 @@
 
 include('..\\helpers\\buttons_xxx.js'); 
 include('..\\helpers\\menu_xxx.js');
+var prefix = 'ptp';
 
-buttonsBar.list.push({});
+prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
+var newButtonsProperties = { //You can simply add new properties here
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
+};
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Pools': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Pools', function () {
+	'Playlist Tools Pools': new themedButton({x: 0, y: 0, w: 60, h: 22}, 'Pools', function () {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};
@@ -44,7 +51,7 @@ addButton({
 					: ''
 				) 
 			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
-		}, null, null, chars.music),
+		}, prefix, newButtonsProperties, chars.music),
 });
 
 // Helpers
