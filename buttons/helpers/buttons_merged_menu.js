@@ -226,13 +226,13 @@ function createButtonsMenu(name) {
 			window.Repaint();
 		}});
 		menu.newCheckMenu(menuName, 'Reflow buttons according to ' + (orientation === 'x' ? 'width' : 'height'), void(0), () => {return barProperties.bReflow[1];});
-		menu.newEntry({menuName, entryText: 'Normalize buttons ' + (orientation === 'x' ? 'height' : 'width'), func: () => {
+		menu.newEntry({menuName, entryText: 'Normalize buttons ' + (buttonsBar.config.bReflow ? 'size' : (orientation === 'x' ? 'height' : 'width')), func: () => {
 			barProperties.bAlignSize[1] = !barProperties.bAlignSize[1];
 			overwriteProperties(barProperties);
 			buttonsBar.config.bAlignSize = barProperties.bAlignSize[1]; // buttons_xxx.js
 			window.Repaint();
 		}});
-		menu.newCheckMenu(menuName, 'Normalize buttons ' + (orientation === 'x' ? 'height' : 'width'), void(0), () => {return barProperties.bAlignSize[1];});
+		menu.newCheckMenu(menuName, 'Normalize buttons ' + (buttonsBar.config.bReflow ? 'size' : (orientation === 'x' ? 'height' : 'width')), void(0), () => {return barProperties.bAlignSize[1];});
 		menu.newEntry({menuName, entryText: 'sep'});
 		menu.newEntry({menuName, entryText: 'Set scale...' + '\t[' + round(buttonsBar.config.scale, 2) + ']', func: () => {
 			let input = buttonsBar.config.scale;
@@ -274,7 +274,13 @@ function createButtonsMenu(name) {
 				barProperties.bIconMode[1] = !barProperties.bIconMode[1];
 				overwriteProperties(barProperties);
 				buttonsBar.config.bIconMode = barProperties.bIconMode[1]; // buttons_xxx.js
-				window.Repaint();
+				// When normalizing size, sizers are dynamically calculated on paint... so need to force it
+				if (buttonsBar.config.bAlignSize) {
+					buttonsBar.config.bAlignSize = false; // buttons_xxx.js
+					window.Repaint(true);
+					buttonsBar.config.bAlignSize = true; // buttons_xxx.js
+				}
+				window.Repaint(true);
 			}});
 			menu.newCheckMenu(subMenu, 'Force for all buttons', void(0), () => {return buttonsBar.config.bIconMode;});
 			menu.newEntry({menuName: subMenu, entryText: 'Expand on mouse over' + (buttonsBar.config.orientation === 'y' ? '\t[Y]' : ''), func: () => {

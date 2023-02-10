@@ -116,6 +116,8 @@
 - UI: reworked 'Remove duplicates' and 'Show duplicates' buttons tooltip.
 - UI: playlist revive tools now set back the focus to the latest selected track (instead of the start of the playlist).
 - UI: buttons now show info about background processing if any is being done (usually also animated).
+- UI: unified buttons size normalization settings and behavior for all axis modes. 
+- UI: unified button icon alignment on reflow modes.
 - Macros: buttons is now animated while recording a macro. The 'start recording entry' also shows a warning about it.
 - Tags: Key and Stylegenre tags now also allow TF functions instead of just tag names.
 - Presets: updated all Picard scripts with comments, setting examples, new scripts (for folksonomy tags, performers, ...), code improvements, etc.
@@ -154,6 +156,8 @@
 - UI: custom macro button width is now adjusted to button's custom name (instead of being fixed, which was never intended).
 - UI: don't show tooltip during buttons drag n drop.
 - UI: background color mismatch when resizing windows and using custom background colors.
+- UI: fixed reflow mode in some cases when resizing back to the required width/height to show all buttons on a single row/column.
+- UI: fixed reflow mode in some cases when normalization mode was not active and buttons had different size; non needed empty space was added in some rows/columns.
 - Advanced sort...\Decremental key (Camelot Wheel): inverse order was not working as intended.
 - Pools: some additional checks to ensure non ASCII chars, casing or numbers are correctly identified as equivalent. For ex. 'Classic Pools (3 tracks per artist letter)' would output an artist starting with A and another with a as 2 different letters. Same applies to ASCII equivalences, etc. Now all the values are reduced to an ASCII lowercase string.
 - Pools: 'Current genre/style and instrumentals' query had a typo.
