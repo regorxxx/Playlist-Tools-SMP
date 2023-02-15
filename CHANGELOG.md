@@ -2,21 +2,21 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [3.0.0-beta.16](#300-beta16---2021-09-15)
-- [3.0.0-beta.15](#300-beta15---2021-08-22)
-- [3.0.0-beta.14](#300-beta14---2021-08-21)
-- [3.0.0-beta.13](#300-beta13---2021-08-12)
-- [3.0.0-beta.12](#300-beta12---2021-08-10)
-- [3.0.0-beta.11](#300-beta11---2021-08-09)
-- [3.0.0-beta.10](#300-beta10---2021-08-07)
-- [3.0.0-beta.9](#300-beta9---2021-08-06)
-- [3.0.0-beta.8](#300-beta8---2021-08-05)
-- [3.0.0-beta.7](#300-beta7---2021-05-23)
-- [3.0.0-beta.6](#300-beta6---2021-05-04)
-- [3.0.0-beta.5](#300-beta5---2021-04-13)
-- [3.0.0-beta.4](#300-beta4---2021-03-06)
-- [3.0.0-beta.3](#300-beta3---2021-03-02)
-- [3.0.0-beta.2](#300-beta2---2021-01-17)
+- [3.0.0-beta.16](#300-beta16---2023-02-15)
+- [3.0.0-beta.15](#300-beta15---2022-08-22)
+- [3.0.0-beta.14](#300-beta14---2022-08-21)
+- [3.0.0-beta.13](#300-beta13---2022-08-12)
+- [3.0.0-beta.12](#300-beta12---2022-08-10)
+- [3.0.0-beta.11](#300-beta11---2022-08-09)
+- [3.0.0-beta.10](#300-beta10---2022-08-07)
+- [3.0.0-beta.9](#300-beta9---2022-08-06)
+- [3.0.0-beta.8](#300-beta8---2022-08-05)
+- [3.0.0-beta.7](#300-beta7---2022-05-23)
+- [3.0.0-beta.6](#300-beta6---2022-05-04)
+- [3.0.0-beta.5](#300-beta5---2022-04-13)
+- [3.0.0-beta.4](#300-beta4---2022-03-06)
+- [3.0.0-beta.3](#300-beta3---2022-03-02)
+- [3.0.0-beta.2](#300-beta2---2022-01-17)
 - [3.0.0-beta.1](#300-beta1---2021-12-23)
 - [2.0.2](#202---2021-06-20)
 - [2.0.1](#201---2021-06-17)
@@ -34,7 +34,7 @@
 ### Removed
 ### Fixed
 
-## [3.0.0-beta.16] - 2022-09-15
+## [3.0.0-beta.16] - 2023-02-15
 ### Added
 - Configuration: added user configurable files at '[FOOBAR PROFILE FOLDER]\js_data\presets\global' to edit default queries and tags for multiple tools. Usually used internally or on properties panel. Don't forget to reload the panels/restart foobar and restore defaults on all relevant buttons and menus to use the new values. It's recommended to do it upon installation of this update.
 - Playlist locks: new menu entries at Playlist manipulation to switch playlists locked status. It's meant to be used via Dynamic menus in a button, allowing to lock/unlock specific playlists with the same button.
