@@ -163,6 +163,7 @@
 - Pools: 'Current genre/style and instrumentals' query had a typo.
 - Script Integration\SMP Dynamic menu: crash when 'Script integration' sub-menu was disabled but the option was enabled. The entire feature is now disabled as consequence, as it should be.
 - Top rated tracks from: is now invariant to date order. i.e. 2012,2013 will output the same than 2013,2012 (previously empty output).
+- Buttons: fixed 'buttons_playlist_tools_submenu_custom' button, which was breaking buttons' properties when moving or deleting buttons. Long time issue which only appeared when this button was on the toolbar.
 - Buttons: forbid multiple copies of some buttons (missed on previous releases).
 - Buttons: crash when adding buttons files not associated to a category by their filename. Only relevant for developers.
 - Buttons: no background on buttons configuration for toolbar was not properly set on script init/reloading.
