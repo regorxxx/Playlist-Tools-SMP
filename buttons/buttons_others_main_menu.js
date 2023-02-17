@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//17/02/23
 
 /* 
 	Main Menu shortcut
@@ -25,7 +25,8 @@ var newButtonsProperties = { //You can simply add new properties here
 	customName:		['Name for the custom UI button', 'Main Menu', {func: isStringWeak}, 'Main Menu'],
 	entries:		['Main menu entries', JSON.stringify([
 		{name: 'Playback Statistics', command: 'Library/Playback Statistics/Monitor playing tracks'},
-		{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'}
+		{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'},
+		{name: 'Last.fm Statistics', command: 'Playback/Scrobble tracks'}
 	]), {func: isJSON}],
 	unloadCall: 	['Call menus on unload options', JSON.stringify({enabled: false, disabled: false}), {func: isJSON}],
 	indicator: 		['Indicator options', JSON.stringify({init: true, enabled: false}), {func: isJSON}],
@@ -43,16 +44,13 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	var newButton = {
-		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 35, h: 22}, newButtonsProperties.customName[1], function (mask) {
+		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30 * _scale(0.7, false), h: 22}, newButtonsProperties.customName[1], function (mask) {
 			const list = JSON.parse(this.buttonsProperties.entries[1]);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 			const indicator = JSON.parse(this.buttonsProperties.indicator[1]);
 			const specialKeys = ['PlaybackFollowCursor', 'CursorFollowPlayback', 'idx', 'timeout'];
 			if (mask === MK_SHIFT) {
-				const menu = new _menu({onBtnUp: () => {
-					this.buttonsProperties.entries[1] = JSON.stringify(list);
-					overwriteProperties(this.buttonsProperties);
-				}});
+				const menu = new _menu();
 				menu.newEntry({entryText: 'Select output:', func: null, flags: MF_GRAYED});
 				menu.newEntry({entryText: 'sep'});
 				_createSubMenuEditEntries(menu, void(0), {
@@ -60,12 +58,18 @@ buttonsBar.list.push(newButtonsProperties);
 					list, 
 					defaults: JSON.parse(this.buttonsProperties.entries[3]), 
 					input : () => {
-						return {
+						entry = {
 							command : Input.string('string', '', 'Enter complete menu name:\nEx: Library/Playback Statistics/Monitor playing tracks', window.Name + 'Main Menu Shortcut' , 'Library/Playback Statistics/Monitor playing tracks', void(0), true),
 							timeOut : Input.number('int positive', 0, 'Time (ms) to wait before running command:', window.Name + 'Main Menu Shortcut' , 10) || 0,
 						};
+						if (!entry.command) {return;}
+						return entry;
 					},
-					bNumbered: true
+					bNumbered: true,
+					onBtnUp: (entries) => {
+						this.buttonsProperties.entries[1] = JSON.stringify(entries);
+						overwriteProperties(this.buttonsProperties);
+					}
 				});
 				{
 					const menuName = menu.newMenu('Built-in presets...');
@@ -135,6 +139,7 @@ buttonsBar.list.push(newButtonsProperties);
 							}
 							this.switchActive(option.state || false);
 							this.buttonsProperties.state[1] = this.active;
+							this.buttonsProperties.entries[1] = JSON.stringify(list);
 							overwriteProperties(this.buttonsProperties); // Force overwriting
 							window.Repaint();
 						}});
@@ -193,6 +198,7 @@ buttonsBar.list.push(newButtonsProperties);
 					const input = Input.string('unicode', this.buttonsProperties.icon[1], 'Enter button\'s icon: (unicode)\n\nLook for values at:\nhttps://www.fontawesomecheatsheet.com', window.Name + 'Main Menu Shortcut' , this.buttonsProperties.icon[3], void(0), false);
 					if (input === null) {return;}
 					this.icon = this.buttonsProperties.icon[1] = input;
+					overwriteProperties(this.buttonsProperties); // Force overwriting
 					window.Repaint();
 				}});
 				menu.btn_up(this.currX, this.currY + this.currH);
