@@ -38,6 +38,7 @@
 - UI: pressing Ctrl resets selected setting on buttons bar colors submenu.
 ### Removed
 ### Fixed
+- Pools: duplicated 'Current genre/style and instrumentals' pool entry removed.
 
 ## [3.0.0-beta.16] - 2023-02-15
 ### Added
