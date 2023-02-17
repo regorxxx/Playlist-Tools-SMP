@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//17/02/23
 
 /* 
 	Quicksearch for same....
@@ -10,6 +10,7 @@
 include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\buttons_xxx_menu.js');
+include('..\\helpers\\menu_xxx_extras.js');
 include('..\\main\\filter_and_query\\dynamic_query.js');
 include('..\\main\\main_menu\\main_menu_custom.js');
 var prefix = 'qs';
@@ -22,8 +23,27 @@ var newButtonsProperties = { //You can simply add new properties here
 	lastQuery: 		['Last query used', '', {func: isStringWeak}, ''],
 	playlistName:	['Playlist name', 'Search...', {func: isString}, 'Search...'],
 	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false],
-	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false],
+	entries:		['Quicksearch entries', JSON.stringify([
+		{name: 'Same Title', 
+			query: globQuery.compareTitle},
+		{name: 'Same Artist(s)',
+			query: globTags.artist + ' IS #' + globTags.artist + '#'},
+		{name: 'Same Date',
+			query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
+		{name: 'Same Album',
+			query: 'ALBUM IS #ALBUM#'},
+		{name: 'Same Genre(s)',
+			query: globTags.genre + ' IS #' + globTags.genre + '#'},
+		{name: 'Same Style(s)',
+			query: globTags.style + ' IS #' + globTags.style + '#'},
+		{name: 'Same Title and Artist(s)',
+			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
+		{name: 'Same Title, Artist(s) & Date', 
+			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
+	]), {func: isJSON}],
 };
+newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -47,7 +67,7 @@ if (newButtonsProperties.bDynamicMenus[1]) {
 addButton({
 	'Quicksearch': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Quicksearch', function (mask) {
 		if (mask === MK_SHIFT) {
-			settingsMenu(
+			const menu = settingsMenu(
 				this, true, ['buttons_search_quicksearch.js'],
 				{bDynamicMenus: 
 					{popup: 'Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)'}
@@ -70,8 +90,32 @@ addButton({
 							});
 						} else {deleteMainMenuDynamic('Quicksearch');}
 					}
+				},
+				(menu) => {
+					menu.newEntry({entryText: 'sep'});
+					_createSubMenuEditEntries(menu, void(0), {
+						name: 'Quicsearch',
+						list: JSON.parse(this.buttonsProperties.entries[1]), 
+						defaults: JSON.parse(this.buttonsProperties.entries[3]), 
+						input : () => {
+							const entry = {
+								query: Input.string('string', '',
+								'Enter dynamic query:\n\n#TAG# will be replaced with values from selected track(s).\nRemember TF functions -like "$year()"- need quotes.\n\n' +
+								'Ex:\nTITLE IS #TITLE#\n"$year(%DATE%)" IS #$year(%DATE%)#'
+								, 'Quicksearch' , 'TITLE IS #TITLE#', void(0), true),
+							};
+							if (!entry.query) {return;}
+							return entry;
+						},
+						bNumbered: true,
+						onBtnUp: (entries) => {
+							this.buttonsProperties.entries[1] = JSON.stringify(entries);
+							overwriteProperties(this.buttonsProperties);
+						}
+					});
 				}
-			).btn_up(this.currX, this.currY + this.currH);
+			)
+			menu.btn_up(this.currX, this.currY + this.currH);
 		} else {
 			quickSearchMenu.bind(this)().btn_up(this.currX, this.currY + this.currH);
 		}
@@ -97,24 +141,7 @@ function quickSearchMenu(bSimulate = false) {
 	}
 	const flags = this.selItems && this.selItems.Count ? MF_STRING : MF_GRAYED;
 	// Entry list
-	let queryFilter = [
-		{name: 'Same Title', 
-			query: globQuery.compareTitle},
-		{name: 'Same Artist(s)',
-			query: globTags.artist + ' IS #' + globTags.artist + '#'},
-		{name: 'Same Date',
-			query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
-		{name: 'Same Album',
-			query: 'ALBUM IS #ALBUM#'},
-		{name: 'Same Genre(s)',
-			query: globTags.genre + ' IS #' + globTags.genre + '#'},
-		{name: 'Same Style(s)',
-			query: globTags.style + ' IS #' + globTags.style + '#'},
-		{name: 'Same Title and Artist(s)',
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
-		{name: 'Same Title, Artist(s) & Date', 
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
-	];
+	const queryFilter = JSON.parse(this.buttonsProperties.entries[1]);
 	// Globals
 	const playlistName = this.buttonsProperties.playlistName[1];
 	// Menu

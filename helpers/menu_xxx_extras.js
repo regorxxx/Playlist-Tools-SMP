@@ -1,7 +1,19 @@
 ﻿'use strict';
-//06/02/23
+//17/02/23
 
-function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defaults, input, bAdd, bNumbered}*/) {
+function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defaults, input, bAdd, bNumbered, onBtnUp}*/) {
+	/*
+		name:		popup name
+		list:		current entries. Every entry must have a 'name' key present.
+		defaults:	default entries used on 'reset'
+		input:		should be a function which returns an object: () => {return {....};}
+					there is no need to add logic for 'name' key, it's built-in. Only add whatever you need.
+					make sure it returns null or undefined if user cancels or values are not valid!
+		bAdd: 		true to show an 'Add entry' option on submenu 
+		bNumbered:	true to enumerate each entry shown
+		onBtnUp:	function to run after any menu entry is run (usually to save the modified entries on properties). List is passed as argument. onBtnUp(options.list) => {...}
+	*/
+	if (options.onBtnUp && !isFunction(options.onBtnUp)) {throw new Error('_createSubMenuEditEntries: onBtnUp is not a function');}
 	// options.list always point to the original entry list and original values are edited
 	const subMenuSecondName = parent.newMenu('Edit entries from list...' + nextId('invisible', true, false), menuName);
 	let i = 0;
@@ -19,6 +31,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 			try {newEntry = JSON.parse(newEntry);} catch (e) {fb.ShowPopupMessage('Input: ' + newEntry.toString() + '\n\n' + e, 'JSON error'); return;}
 			if (!newEntry) {return;}
 			options.list[index] = newEntry;
+			if (options.onBtnUp) {options.onBtnUp(options.list);}
 			return options.list;
 		}});
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Move entry...', func: () => {
@@ -30,11 +43,13 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 			else if (index - pos >= options.list.length) {pos = options.list.length;}
 			else {pos = index - pos;}
 			options.list.splice(pos, 0, options.list.splice(index, 1)[0]);
+			if (options.onBtnUp) {options.onBtnUp(options.list);}
 			return options.list;
 		}});
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'sep'});
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Remove entry', func: () => {
 			options.list.splice(index, 1);
+			if (options.onBtnUp) {options.onBtnUp(options.list);}
 			return options.list;
 		}});
 	});
@@ -45,7 +60,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 			// Input all variables
 			let input;
 			let entryName = '';
-			try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', options.name, '', true);}
+			try {entryName = utils.InputBox(window.ID, 'Enter name for menu entry:\nWrite \'sep\' to add a line.', options.name, '', true);}
 			catch (e) {return;}
 			if (!entryName.length) {return;}
 			if (entryName === 'sep') {input = {name: entryName};} // Add separator
@@ -56,6 +71,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 			}
 			// Add entry
 			options.list.push(input);
+			if (options.onBtnUp) {options.onBtnUp(options.list);}
 			return options.list;
 		}});
 	}
@@ -63,6 +79,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defa
 	parent.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults...', func: () => {
 		options.list.length = 0;
 		clone(options.defaults).forEach(e => options.list.push(e));
+		if (options.onBtnUp) {options.onBtnUp(options.list);}
 		return options.list;
 	}});
 }
