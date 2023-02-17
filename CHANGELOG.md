@@ -33,6 +33,7 @@
 - UI: added settings for buttons color (the border and filling).
 - UI: added settings for buttons transparency (the filling).
 ### Changed
+- Quicksearch: entries are now configurable. New ones may be added and existing ones edited. 'Partial match' and 'Begins with' entries are automatically created.
 - UI: enhanced colors and shading for buttons on mouse over/down when using custom toolbar color modes, etc.
 - UI: pressing Ctrl resets selected setting on buttons bar colors submenu.
 ### Removed
