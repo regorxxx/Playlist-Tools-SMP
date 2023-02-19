@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.17](#300-beta17---2023-02-19)
 - [3.0.0-beta.16](#300-beta16---2023-02-15)
 - [3.0.0-beta.15](#300-beta15---2022-08-22)
 - [3.0.0-beta.14](#300-beta14---2022-08-21)
@@ -30,15 +31,23 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.17] - 2023-02-19
+### Added
 - UI: added settings for buttons color (the border and filling).
 - UI: added settings for buttons transparency (the filling).
 ### Changed
 - Quicksearch: entries are now configurable. New ones may be added and existing ones edited. 'Partial match' and 'Begins with' entries are automatically created.
 - UI: enhanced colors and shading for buttons on mouse over/down when using custom toolbar color modes, etc.
 - UI: pressing Ctrl resets selected setting on buttons bar colors submenu.
+- Helpers: updated helpers
 ### Removed
 ### Fixed
 - Pools: duplicated 'Current genre/style and instrumentals' pool entry removed.
+- Buttons: fixed 'Restore default buttons' entry crash (not needed anymore since there are no more 'default buttons'), now replaced with 'Restore all buttons' (which simply restores back default settings for every button).
 
 ## [3.0.0-beta.16] - 2023-02-15
 ### Added
@@ -748,7 +757,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.16...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...HEAD
+[3.0.0-beta.17]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.16...v3.0.0-beta.17
 [3.0.0-beta.16]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.15...v3.0.0-beta.16
 [3.0.0-beta.15]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.14...v3.0.0-beta.15
 [3.0.0-beta.14]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.13...v3.0.0-beta.14
