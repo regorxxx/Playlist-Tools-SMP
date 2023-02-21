@@ -767,7 +767,7 @@
 ### Fixed
 
 [Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.18...HEAD
-[3.0.0-beta.17]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...v3.0.0-beta.18
+[3.0.0-beta.18]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...v3.0.0-beta.18
 [3.0.0-beta.17]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.16...v3.0.0-beta.17
 [3.0.0-beta.16]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.15...v3.0.0-beta.16
 [3.0.0-beta.15]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.14...v3.0.0-beta.15
