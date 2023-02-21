@@ -39,9 +39,11 @@
 ## [3.0.0-beta.18] - 2023-02-19
 ### Added
 ### Changed
+
 - Helpers: updated helpers
 ### Removed
 ### Fixed
+- Buttons: fixed 'buttons_playlist_tools_submenu_custom' behavior when trying to call entries related to some special submenus (like those related to editing/adding/removing entries from menus). For ex. setting it to call the 'Playlist manipulation\Query filtering', all filter entries worked fine... but trying to use 'Edit entries from list...\xxxxxxxxx\Edit entry...' didn't work and reported menu entry not found at console log (although the menu was clearly named the same and it existed).
 - Buttons: properties were sometimes reset/mixed/not saved properly moving buttons using the 'Change buttons position' menu. It worked fine using drag n' drop though.
 
 ## [3.0.0-beta.17] - 2023-02-19
