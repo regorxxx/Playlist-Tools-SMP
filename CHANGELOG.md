@@ -36,7 +36,7 @@
 ### Removed
 ### Fixed
 
-## [3.0.0-beta.18] - 2023-02-19
+## [3.0.0-beta.18] - 2023-02-21
 ### Added
 ### Changed
 - Helpers: updated helpers
