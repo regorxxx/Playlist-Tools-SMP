@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.18](#300-beta18---2023-02-21)
 - [3.0.0-beta.17](#300-beta17---2023-02-19)
 - [3.0.0-beta.16](#300-beta16---2023-02-15)
 - [3.0.0-beta.15](#300-beta15---2022-08-22)
@@ -34,6 +35,14 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.18] - 2023-02-19
+### Added
+### Changed
+- Helpers: updated helpers
+### Removed
+### Fixed
+- Buttons: properties were sometimes reset/mixed/not saved properly moving buttons using the 'Change buttons position' menu. It worked fine using drag n' drop though.
 
 ## [3.0.0-beta.17] - 2023-02-19
 ### Added
@@ -757,7 +766,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.18...HEAD
+[3.0.0-beta.17]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...v3.0.0-beta.18
 [3.0.0-beta.17]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.16...v3.0.0-beta.17
 [3.0.0-beta.16]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.15...v3.0.0-beta.16
 [3.0.0-beta.15]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.14...v3.0.0-beta.15
