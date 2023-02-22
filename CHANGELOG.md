@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.19](#300-beta18---2023-02-22)
 - [3.0.0-beta.18](#300-beta18---2023-02-21)
 - [3.0.0-beta.17](#300-beta17---2023-02-19)
 - [3.0.0-beta.16](#300-beta16---2023-02-15)
@@ -33,6 +34,14 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.19] - 2023-02-22
+### Added
+- UI: default fonts (buttons, icons, toolbar text and tooltip) may now be changed at '[foobar profile]\js_data\presets\global\globFonts.json'.
+### Changed
+- UI: improved compatibility with some fonts under Unix systems (using Wine). Sometimes weird chars appeared on menu entries.
 ### Removed
 ### Fixed
 
@@ -767,7 +776,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.18...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.19...HEAD
+[3.0.0-beta.19]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.18...v3.0.0-beta.19
 [3.0.0-beta.18]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...v3.0.0-beta.18
 [3.0.0-beta.17]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.16...v3.0.0-beta.17
 [3.0.0-beta.16]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.15...v3.0.0-beta.16
