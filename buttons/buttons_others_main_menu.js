@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/23
+//22/02/23
 
 /* 
 	Main Menu shortcut
@@ -44,7 +44,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	var newButton = {
-		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12 * buttonsBar.config.scale)) + 30 * _scale(0.7, false), h: 22}, newButtonsProperties.customName[1], function (mask) {
+		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(0.7, false), h: 22}, newButtonsProperties.customName[1], function (mask) {
 			const list = JSON.parse(this.buttonsProperties.entries[1]);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 			const indicator = JSON.parse(this.buttonsProperties.indicator[1]);

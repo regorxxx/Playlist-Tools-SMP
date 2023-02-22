@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//22/02/23
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -31,7 +31,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Search Same By Tags (Queries)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont('Segoe UI', 12)) + 30, h: 22},  newButtonsProperties.customName[1], function (mask) {
+	'Search Same By Tags (Queries)': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30, h: 22},  newButtonsProperties.customName[1], function (mask) {
 		if (mask === MK_SHIFT) {
 			const oldName = this.buttonsProperties.customName[1].toString();
 			settingsMenu(this, true, ['buttons_search_by_tags_queries.js'], {bAdvTitle: {popup: globRegExp.title.desc}}).btn_up(this.currX, this.currY + this.currH);

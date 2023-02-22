@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//22/02/23
 
 /* 
 	Playlist Tools Menu
@@ -47,7 +47,7 @@ var newButtonsProperties = {
 }
 
 addButton({
-	'Playlist Tools': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Playlist Tools', function (mask) {
+	'Playlist Tools': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Playlist Tools', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 40 * _scale(0.7, false), h: 22}, 'Playlist Tools', function (mask) {
 		if (!defaultArgs.parent) {defaultArgs.parent = this;} // Register this button as parent
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);
