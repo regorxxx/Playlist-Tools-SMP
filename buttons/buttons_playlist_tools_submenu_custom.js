@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/02/23
+//23/02/23
 
 /* 
 	Playlist Tools Submenu Custom
@@ -59,9 +59,7 @@ addButton({
 			} else {
 				const currentMenu = this.buttonsProperties['menu'][1];
 				if (currentMenu.length) {
-					nextId('invisible', void(0), void(0), true); // Fix ids changing after recreating entries
 					const oriEntries = menu.getEntriesAll();
-					nextId('invisible', void(0), void(0), true);
 					const tree = new Set();
 					const entries = oriEntries.filter((entryObj) => {
 						if (entryObj.hasOwnProperty('subMenuFrom')) {
