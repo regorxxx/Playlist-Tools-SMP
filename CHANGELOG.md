@@ -34,8 +34,12 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Internal code cleanup of menus.
 ### Removed
 ### Fixed
+- Select...\Delete selected tracks: didn't allow undo.
+- Select...\Delete Non selected tracks: didn't allow undo.
+- Console: logging of null value not working properly (totally irrelevant except for debug purposes).
 
 ## [3.0.0-beta.19] - 2023-02-22
 ### Added
