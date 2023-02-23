@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/02/23
+//23/02/23
 
 // Selection manipulation...
 {
@@ -505,9 +505,7 @@
 										for (let i = 0; i < subMenusCount; i++) {
 											const bottomIdx =  i * splitBy;
 											const topIdx = (i + 1) * splitBy - 1;
-											const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
-											// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-											// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+											const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx;
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
@@ -556,9 +554,7 @@
 										for (let i = 0; i < subMenusCount; i++) {
 											const bottomIdx =  i * splitBy;
 											const topIdx = (i + 1) * splitBy - 1;
-											const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
-											// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-											// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+											const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx;
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
@@ -607,9 +603,7 @@
 										for (let i = 0; i < subMenusCount; i++) {
 											const bottomIdx =  i * splitBy;
 											const topIdx = (i + 1) * splitBy - 1;
-											const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx + nextId('invisible', true, false);
-											// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-											// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
+											const idx = 'Playlists ' + bottomIdx + ' - ' + topIdx;
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
@@ -674,22 +668,21 @@
 							{	// findRemoveSplitSize ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
 								const options = [5, 10, 20, 30, 'Other...'];
-								const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
-								options.forEach( (val, index) => { // Creates menu entries for all options
+								const optionsIdx = [...options];
+								options.forEach((val, index) => { // Creates menu entries for all options
 									if (index === 0) {
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of entries:', func: null, flags: MF_GRAYED});
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 									}
-									const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
-									optionsIdx[index] = idx; // For later use
+									optionsIdx[index] = val; // For later use
 									if (index !== options.length - 1) { // Predefined sizes
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+										menu.newEntry({menuName: subMenuSecondName, entryText: val, func: () => {
 											menu_properties['findRemoveSplitSize'][1] = val;
 											overwriteMenuProperties(); // Updates panel
 										}});
 									} else { // Last one is user configurable
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+										menu.newEntry({menuName: subMenuSecondName, entryText: val, func: () => {
 											const input = Number(utils.InputBox(window.ID, 'Enter desired Submenu max size.\n', scriptName + ': ' + subMenuName, menu_properties['findRemoveSplitSize'][1]));
 											if (menu_properties['findRemoveSplitSize'][1] === input) {return;}
 											if (!Number.isSafeInteger(input)) {return;}
@@ -706,22 +699,21 @@
 							{	// maxSelCount ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
 								const options = [5, 10, 20, 25, 'Other...'];
-								const optionsIdx = [...options]; // Invisible ID added later is required to avoid collisions
-								options.forEach( (val, index) => { // Creates menu entries for all options
+								const optionsIdx = [...options];
+								options.forEach((val, index) => { // Creates menu entries for all options
 									if (index === 0) {
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'Number of tracks:', func: null, flags: MF_GRAYED});
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 									}
-									const idx = val + nextId('invisible', true, false); // Invisible ID is required to avoid collisions
-									optionsIdx[index] = idx; // For later use
+									optionsIdx[index] = val; // For later use
 									if (index !== options.length - 1) { // Predefined sizes
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+										menu.newEntry({menuName: subMenuSecondName, entryText: val, func: () => {
 											menu_properties['maxSelCount'][1] = val;
 											overwriteMenuProperties(); // Updates panel
 										}});
 									} else { // Last one is user configurable
 										menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-										menu.newEntry({menuName: subMenuSecondName, entryText: idx, func: () => {
+										menu.newEntry({menuName: subMenuSecondName, entryText: val, func: () => {
 											const input = Number(utils.InputBox(window.ID, 'Enter max number of tracks.\n', scriptName + ': ' + subMenuName, menu_properties['maxSelCount'][1]));
 											if (menu_properties['maxSelCount'][1] === input) {return;}
 											if (!Number.isSafeInteger(input)) {return;}
@@ -776,8 +768,6 @@
 							for (let i = 0; i < subMenusCount; i++) {
 								const bottomIdx =  i * splitBy;
 								const topIdx = (i + 1) * splitBy - 1;
-								// Invisible ID is required to avoid collisions with same sub menu name at 'Find track(s) in...'
-								// Otherwise both menus would be called 'Playlist X-Y', leading to bugs (entries duplicated on both places)
 								// Send
 								const idxSend = '(Send sel. to) Playlists ' + bottomIdx + ' - ' + topIdx;
 								const subMenu_i_send = menu.newMenu(idxSend, subMenuNameSend);
@@ -947,11 +937,13 @@
 				menu.newEntry({menuName: subMenuName, entryText: 'Delete selected tracks', func: () => {
 					const ap = plman.ActivePlaylist;
 					if (ap === -1) {return;}
+					plman.UndoBackup(ap);
 					plman.RemovePlaylistSelection(ap);
 				}, flags: selectedFlagsRem});
 				menu.newEntry({menuName: subMenuName, entryText: 'Delete Non selected tracks', func: () => {
 					const ap = plman.ActivePlaylist;
 					if (ap === -1) {return;}
+					plman.UndoBackup(ap);
 					plman.RemovePlaylistSelection(ap, true);
 				}, flags: playlistCountFlagsRem});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
