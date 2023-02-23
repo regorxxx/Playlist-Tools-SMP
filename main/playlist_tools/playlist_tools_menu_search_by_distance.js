@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/02/23
+//23/02/23
 
 // Similar by...Graph\Dyngenre\Weight
 {
@@ -168,7 +168,7 @@
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{
-							const submenuTwo = menu.newMenu('Tag remapping...' + nextId('invisible', true, false), submenu);
+							const submenuTwo = menu.newMenu('Tag remapping...', submenu);
 							{	// Menu to configure tags
 								menu.newEntry({menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED})
 								menu.newEntry({menuName: submenuTwo, entryText: 'sep'})
@@ -176,9 +176,9 @@
 									const tags = JSON.parse(menu_properties.tags[1]);
 									const options = [...Object.keys(tags)];
 									// Create menu on 2 places: tool config submenu and global tag submenu
-									const configMmenu = 'Tag remapping...';
-									menu.newEntry({menuName: configMmenu, entryText: 'sep'});
-									const configSubmenu = menu.newMenu(submenu + '...' + nextId('invisible', true, false), configMmenu);
+									const configMenuTag = menu.findOrNewMenu('Tag remapping...', configMenu);
+									menu.newEntry({menuName: configMenuTag, entryText: 'sep'});
+									const configSubmenu = menu.newMenu(submenu + '...', configMenuTag);
 									options.forEach((key) => {
 										const value = tags[key].tf.join(',');
 										const entryText = capitalize(key) + '\t[' + (

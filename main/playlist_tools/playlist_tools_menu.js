@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/02/23
+//23/02/23
 
 /* 
 	Playlist Tools Menu
@@ -489,7 +489,7 @@ function createMainMenuDynamic() {
 			const toRegEx = [/(Switch lock playlist\.\.\.\\)(?!Active playlist$)/, /(Lock playlist\.\.\.\\)(?!Active playlist$)/, /(Unlock playlist\.\.\.\\)(?!Active playlist$)/];
 			const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...','By... (tags)','By... (expression)','Find or create playlist...','To specified position','Select next tracks...']);
 			const toSkipDynamic = new Set([]);
-			const invRe = getIdRegEx('invisible', false);
+			const invRe = menu.getHiddenCharsRegEx();
 			allEntries.filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
 				const entryText = (isFunction(entry.entryText) ? entry.entryText() : entry.entryText).replace(/\t.*/g,'').replace(invRe,'');
 				const menuName = entry.menuName.replace(invRe,'');

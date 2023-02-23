@@ -1,26 +1,27 @@
 ﻿'use strict';
-//17/02/23
+//23/02/23
 
-function _createSubMenuEditEntries(parent, menuName, options /*{name, list, defaults, input, bAdd, bNumbered, onBtnUp}*/) {
+function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuName, list, defaults, input, bAdd, bNumbered, onBtnUp}*/) {
 	/*
-		name:		popup name
-		list:		current entries. Every entry must have a 'name' key present.
-		defaults:	default entries used on 'reset'
-		input:		should be a function which returns an object: () => {return {....};}
-					there is no need to add logic for 'name' key, it's built-in. Only add whatever you need.
-					make sure it returns null or undefined if user cancels or values are not valid!
-		bAdd: 		true to show an 'Add entry' option on submenu 
-		bNumbered:	true to enumerate each entry shown
-		onBtnUp:	function to run after any menu entry is run (usually to save the modified entries on properties). List is passed as argument. onBtnUp(options.list) => {...}
+		name:			popup name
+		subMenuName:	name for the edit entries sub-menu
+		list:			current entries. Every entry must have a 'name' key present.
+		defaults:		default entries used on 'reset'
+		input:			should be a function which returns an object: () => {return {....};}
+						there is no need to add logic for 'name' key, it's built-in. Only add whatever you need.
+						make sure it returns null or undefined if user cancels or values are not valid!
+		bAdd: 			true to show an 'Add entry' option on submenu 
+		bNumbered:		true to enumerate each entry shown
+		onBtnUp:		function to run after any menu entry is run (usually to save the modified entries on properties). List is passed as argument. onBtnUp(options.list) => {...}
 	*/
 	if (options.onBtnUp && !isFunction(options.onBtnUp)) {throw new Error('_createSubMenuEditEntries: onBtnUp is not a function');}
 	// options.list always point to the original entry list and original values are edited
-	const subMenuSecondName = parent.newMenu('Edit entries from list...' + nextId('invisible', true, false), menuName);
+	const subMenuSecondName = parent.newMenu(options.subMenuName || 'Edit entries from list...', menuName); // It will throw if the menu already exists!
 	let i = 0;
 	options.list.forEach((entry, index) => {
 		if (entry.name !== 'sep') {i++;}
 		const entryName = (entry.name === 'sep' ? '------(separator)------' : (options.bNumbered ? i + '. ' : '') + (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
-		const subMenuThirdName = parent.newMenu(entryName + nextId('invisible', true, false), subMenuSecondName);
+		const subMenuThirdName = parent.newMenu(entryName, subMenuSecondName);
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Edit entry...', func: () => {
 			const oriEntry = JSON.stringify(entry);
 			let newEntry = oriEntry;

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/22
+//23/02/23
 
 // Script integration
 {
@@ -201,7 +201,7 @@
 							});
 						}
 						{	// Remove
-							const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
+							const subMenuSecondName = menu.newMenu('Remove entry from list...', subMenuName);
 							mainMenuSMP.forEach( (entry, index) => {
 								if (!entry) {return;}
 								const entryText = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
@@ -367,7 +367,7 @@
 						overwriteMenuProperties(); // Updates panel
 					}});
 					{
-						const subMenuSecondName = menu.newMenu('Remove entry from list...' + nextId('invisible', true, false), subMenuName);
+						const subMenuSecondName = menu.newMenu('Remove entry from list...', subMenuName);
 						scriptIncluded.forEach( (queryObj, index) => {
 							const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
 							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//23/02/23
 
 /*
 	Helpers
@@ -119,10 +119,10 @@ function updateShortcutsNames(keys = {}) {
 }
 
 function createSubMenuEditEntries(menuName, options /*{name, list, propName:, defaults, defaultPreset, input, bAdd, bImport}*/) {
-	const subMenuSecondName = menu.newMenu('Edit entries from list...' + nextId('invisible', true, false), menuName);
+	const subMenuSecondName = menu.newMenu('Edit entries from list...', menuName);
 	options.list.forEach( (entry, index) => {
 		const entryName = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
-		const subMenuThirdName = menu.newMenu(entryName + nextId('invisible', true, false), subMenuSecondName);
+		const subMenuThirdName = menu.newMenu(entryName, subMenuSecondName);
 		menu.newEntry({menuName: subMenuThirdName, entryText: 'Edit entry...', func: () => {
 			const oriEntry = JSON.stringify(entry);
 			let newEntry = oriEntry;
