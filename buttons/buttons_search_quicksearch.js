@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/23
+//23/02/23
 
 /* 
 	Quicksearch for same....
@@ -94,7 +94,7 @@ addButton({
 				(menu) => {
 					menu.newEntry({entryText: 'sep'});
 					_createSubMenuEditEntries(menu, void(0), {
-						name: 'Quicsearch',
+						name: 'Quicksearch',
 						list: JSON.parse(this.buttonsProperties.entries[1]), 
 						defaults: JSON.parse(this.buttonsProperties.entries[3]), 
 						input : () => {
