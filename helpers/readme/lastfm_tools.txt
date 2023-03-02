@@ -1,0 +1,6 @@
+﻿Allows to create a playlist from Last.fm urls. Either supplied by the user
+or generated automatically by Artist (top tracks), Title (similar tracks), 
+Genre or other Folksonomy tags (top tracks), etc.
+
+It tries to match results with tracks on library, otherwise YouTube links
+will be used if foo_youtube component is installed.
