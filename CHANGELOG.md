@@ -33,6 +33,7 @@
 
 ## [Unreleased][]
 ### Added
+- Last.fm: support for [foo-last-list-smp](https://github.com/L3v3L/foo-last-list-smp). Requires package to imported within SMP Package manager (no need to be active on a panel). Then add a new button as usual from the 'Last.fm' subfolder. Allows to create playlists from Last.fm urls either matching results with library or YouTube links (requires foo_youtube).
 ### Changed
 - UI: tweaked and unified buttons weight and margins, adjusted to scale set and DPI.
 - UI: minor improvements to readme sub-folders names.
