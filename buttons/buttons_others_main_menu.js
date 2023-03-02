@@ -1,11 +1,11 @@
 ﻿'use strict';
-//22/02/23
+//01/03/23
 
 /* 
 	Main Menu shortcut
 	----------------
 	Runs multiple main menus with one single click, on order.
-	Also allows to call such menus before closing foobar, according to button state (enabled/disabled).
+	Also allows to call such menus before closing foobar2000, according to button state (enabled/disabled).
 	Button state may be saved between sessions and will change when clicking on the button.
  */
 
@@ -44,7 +44,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	var newButton = {
-		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(0.7, false), h: 22}, newButtonsProperties.customName[1], function (mask) {
+		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, newButtonsProperties.customName[1], function (mask) {
 			const list = JSON.parse(this.buttonsProperties.entries[1]);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 			const indicator = JSON.parse(this.buttonsProperties.indicator[1]);

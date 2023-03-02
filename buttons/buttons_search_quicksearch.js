@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/02/23
+//28/02/23
 
 /* 
 	Quicksearch for same....
@@ -65,7 +65,7 @@ if (newButtonsProperties.bDynamicMenus[1]) {
 }
 
 addButton({
-	'Quicksearch': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Quicksearch', function (mask) {
+	'Quicksearch': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Quicksearch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, 'Quicksearch', function (mask) {
 		if (mask === MK_SHIFT) {
 			const menu = settingsMenu(
 				this, true, ['buttons_search_quicksearch.js'],

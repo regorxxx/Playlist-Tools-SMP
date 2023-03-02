@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//28/02/23
 
 /* 
 	Playlist Tools Macros
@@ -20,7 +20,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Macros': new themedButton({x: 0, y: 0, w: 70, h: 22}, 'Macros', function () {
+	'Playlist Tools Macros': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Macros', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, 'Macros', function () {
 		if (isPlaylistToolsLoaded()) {
 			const configMenu = new _menu();
 			const scriptDefaultArgs = {properties: [{...menu_properties}, () => {return menu_prefix;}]};

@@ -1,12 +1,12 @@
 ﻿'use strict';
-//22/02/23
+//01/03/23
 
 /* 
 	Playlist Tools Menu
 	-------------------
 	Merges different playlist tools in one menu, called when pressing the button.
 	If any script or plugin is missing, then the menu gets created without those entries.
-	So the menu is created dynamically according to the foobar user's config.
+	So the menu is created dynamically according to the foobar2000 user's config.
 
 	NOTE: 'on_mouse_lbtn_up(x, y)' is simply replaced with a button to call the menu.
  */
@@ -47,7 +47,7 @@ var newButtonsProperties = {
 }
 
 addButton({
-	'Playlist Tools': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Playlist Tools', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 40 * _scale(0.7, false), h: 22}, 'Playlist Tools', function (mask) {
+	'Playlist Tools': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Playlist Tools', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, 'Playlist Tools', function (mask) {
 		if (!defaultArgs.parent) {defaultArgs.parent = this;} // Register this button as parent
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);

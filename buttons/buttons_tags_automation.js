@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//28/02/23
 
 /* 
 	Automatic tagging...
@@ -32,7 +32,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	var newButton = {
-		'Automate Tags': new themedButton({x: 0, y: 0, w: 98, h: 22}, 'Auto. Tags', function (mask) {
+		'Automate Tags': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Auto. Tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, 'Auto. Tags', function (mask) {
 			const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 			if (mask === MK_SHIFT) {
 				if (!this.tAut.isRunning() && handleList.Count) {this.tAut.run();} 

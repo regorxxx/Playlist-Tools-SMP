@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//28/02/23
 
 /* 
 	Top Tracks
@@ -28,7 +28,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Top Tracks from Date': new themedButton({x: 0, y: 0, w: 133, h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1))}, function (mask) {
+	'Top Tracks from Date': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks ' + (newButtonsProperties.year[1] || (new Date().getFullYear() - 1)), _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1))}, function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true, ['buttons_search_top_tracks_from_date.js']).btn_up(this.currX, this.currY + this.currH);
 		} else {

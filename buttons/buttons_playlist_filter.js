@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/02/23
+//28/02/23
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -37,7 +37,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Filter Playlist': new themedButton({x: 0, y: 0, w: 100, h: 22}, 'Filter playlist', function (mask) {
+	'Filter Playlist': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Filter playlist', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, 'Filter playlist', function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true, ['buttons_playlist_filter.js'], {bAdvTitle: {popup: globRegExp.title.desc}}).btn_up(this.currX, this.currY + this.currH);
 		} else {
