@@ -1,12 +1,12 @@
 ﻿'use strict';
-//23/02/23
+//01/03/23
 
 /* 
 	Playlist Tools Menu
 	-----------------------------------
 	Merges different playlist tools in one menu, called when pressing the button.
 	If any script or plugin is missing, then the menu gets created without those entries.
-	So the menu is created dynamically according to the foobar user's config.
+	So the menu is created dynamically according to the foobar2000 user's config.
 		
 	NOTE: menus are enclosed within {} scopes, so they can be easily rearranged, added or removed
 	without affecting the other menus. Only exception to this rule are the menus named 'specialMenu'

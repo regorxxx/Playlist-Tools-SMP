@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/01/23
+//01/03/23
 
 /*
 	Check Library Tags
@@ -476,7 +476,7 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 		}
 	});
 	tipsText += (tipsText.length ? '\n\n' : '') + 'Empty valued tags or tags with redundant spaces\n' +
-												'can be cleaned up using the tag editor within foobar\n' +
+												'can be cleaned up using the tag editor within foobar2000\n' +
 												'on selected tracks (\'Right Button/Properties\').\n' +
 												'Then select the tags with errors and use\n' +
 												'right button\'s menu entry named \'Clean Up\'.';
@@ -484,7 +484,7 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 	tipsText += (tipsText.length ? '\n\n' : '') + 'Queries also work on mp3Tag as is, so they can be\n' +
 												'used in its filter panel too! (\'View/Filter\')\n' +
 												'mp3Tag can also display when a tag is empty valued\n' +
-												'(something foobar can\'t do without queries),\n' +
+												'(something foobar2000 can\'t do without queries),\n' +
 												'use \'Right Button/Extended Tags...\' and you will\n' +
 												'see on the panel the tags present without a value\n.' +
 												'Those tags can be sanitized just saving the tags again\n' +
