@@ -16,7 +16,10 @@ include('..\\helpers\\helpers_xxx_properties.js');
 		} catch (e) {
 			fb.ShowPopupMessage('foo-last-list package error.\n\nPlease re-download or report to its author:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
 		}
-		if (typeof _lastList !== 'undefined') {include('..\\main\\last_list\\last_list_menu.js');}
+		if (typeof _lastList !== 'undefined') {
+			include('..\\main\\last_list\\last_list_menu.js');
+			include('..\\main\\last_list\\last_list_bio.js');
+		}
 	} else {
 	fb.ShowPopupMessage('foo-last-list package is missing. Id:\n{152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
 	}
@@ -33,6 +36,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	lastTag:	['Last.fm tag cache', '', {func: isStringWeak}, ''],
 	lastUser:	['Last.fm user cache', '', {func: isStringWeak}, ''],
 	lastAlbum:	['Last.fm album cache', '', {func: isStringWeak}, ''],
+	bBioTags:	['Use tags from Bio panel?', true, {func: isBoolean}, true],
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -51,7 +55,7 @@ addButton({
 					const properties = this.buttonsProperties;
 					const cache = Object.fromEntries(['lastURL', 'lastArtist', 'lastDate', 'lastTag', 'lastAlbum', 'lastUser'].map((key) => [key, properties[key][1]]));
 					// Call menu
-					const menu = _lastListMenu(this.lastList, cache);
+					const menu = _lastListMenu(this.lastList, cache, this.buttonsProperties.bBioTags ? this.bioTags : null);
 					menu.btn_up(this.currX, this.currY + this.currH);
 					// Cache input values
 					let key;
@@ -96,6 +100,7 @@ addButton({
 			}
 			return info;
 		}, prefix, newButtonsProperties, folders.xxx + 'images\\icons\\lastfm_64.png', null,
-		{lastList: typeof _lastList !== 'undefined' ? new _lastList() : null}
+		{lastList: typeof _lastList !== 'undefined' ? new _lastList() : null, bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
+		lastfmListeners
 	),
 });

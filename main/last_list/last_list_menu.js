@@ -5,7 +5,7 @@ include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 
-function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '', lastURL: ''}) {
+function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '', lastURL: ''}, bioTags = {}) {
 	const menu = new _menu();
 	// Get current selection and metadata
 	const sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
@@ -16,8 +16,8 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 		{name: 'Similar artists',tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
 		// {name: 'Similar tracks', tf: ['TITLE', 'ARTIST', 'ALBUM'], val: [], valSet: new Set(), type: 'TITLE'},
 		{name: 'Album tracks', tf: ['ALBUM', 'ARTIST'], val: [], valSet: new Set(), type: 'ALBUM_TRACKS'},
-		{name: 'Genre & Style(s)', tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC'], val: [], valSet: new Set(), type: 'TAG'},
-		{name: 'Folsonomy & Date(s)', tf: ['FOLKSONOMY', 'OCCASION','ALBUMOCCASION','DATE'], val: [], valSet: new Set(), type: 'TAG'},
+		{name: 'Genre & Style(s)', tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'], val: [], valSet: new Set(), type: 'TAG'},
+		{name: 'Folsonomy & Date(s)', tf: ['FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', 'LOCALE', 'LOCALE LAST.FM', 'DATE'], val: [], valSet: new Set(), type: 'TAG'},
 		{name: 'Mood & Theme(s)', tf: ['MOOD','THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'], val: [], valSet: new Set(), type: 'TAG'},
 	];
 	if (info) {
@@ -32,6 +32,18 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 						tag.val[i].push(val);
 						if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) {tag.valSet.add(val);}
 					};
+				}
+				// Bio tags
+				if (bioTags) {
+					const key = Object.keys(bioTags).find((key) => key.toUpperCase() === tf);
+					if (key) {
+						let count = bioTags[key].length;
+						while (count--) {
+							const val = bioTags[key][count].trim();
+							tag.val[i].push(val);
+							if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) {tag.valSet.add(val);}
+						};
+					}
 				}
 			});
 		});
