@@ -9,4 +9,12 @@ Used along WilB's Biography Script, if selection mode on bio panel is set
 to 'Follow selected track', additional tags are shown on the submenus
 directly provided by the Bio script (like the 'locale' tag). Using 
 'Prefer now playing' mode will disable this feature unless the selected 
-track is also the now playing track when using the button.
+track is also the now playing track when using the button. In any case
+Bio panel must be set to notify tags to other panels to make it work
+(this setting is disabled by default).
+
+Used along World-Map-SMP, no matter the selection mode, 'locale' tags
+will be retrieved from database whenever it's possible, even for 
+multi-value artist tags. They will also work even if no Bio panel
+is present (or the track is not found by Bio panel), as long as
+the artist is on the database (for ex. for manually tagged artists).
