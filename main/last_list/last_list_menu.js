@@ -11,13 +11,13 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 	const sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
 	const info = sel ? sel.GetFileInfo() : null;
 	const tags = [
-		{name: 'Artist(s)',tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
-		{name: 'Artist(s) radio',tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
-		{name: 'Similar artists',tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
+		{name: 'Artist(s)', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
+		{name: 'Artist(s) radio', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
+		{name: 'Similar artists', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
 		// {name: 'Similar tracks', tf: ['TITLE', 'ARTIST', 'ALBUM'], val: [], valSet: new Set(), type: 'TITLE'},
 		{name: 'Album tracks', tf: ['ALBUM', 'ARTIST'], val: [], valSet: new Set(), type: 'ALBUM_TRACKS'},
 		{name: 'Genre & Style(s)', tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'], val: [], valSet: new Set(), type: 'TAG'},
-		{name: 'Folsonomy & Date(s)', tf: ['FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', 'LOCALE', 'LOCALE LAST.FM', 'DATE'], val: [], valSet: new Set(), type: 'TAG'},
+		{name: 'Folksonomy & Date(s)', tf: ['FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'], val: [], valSet: new Set(), type: 'TAG'},
 		{name: 'Mood & Theme(s)', tf: ['MOOD','THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'], val: [], valSet: new Set(), type: 'TAG'},
 	];
 	if (info) {
@@ -47,6 +47,31 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 				}
 			});
 		});
+		// World map tags
+		const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
+		if (_isFile(path)) {
+			const dataId = 'artist';
+			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || {valSet: []}).valSet];
+			if (selIds.length) {
+				const data = _jsonParseFileCheck(path, 'Tags json', window.Name, utf8);
+				const worldMapData = new Set();
+				if (data) {
+					data.forEach((item) => {
+						if (selIds.some((id) => item[dataId] === id)) {
+							item.val.forEach((val) => worldMapData.add(val));
+						}
+					});
+				}
+				if (worldMapData.size) {
+					const localeTag = tags.find((tag) => tag.tf.some((tf) => tf === 'LOCALE WORLD MAP'));
+					const idx = localeTag ? localeTag.tf.findIndex((tf) => tf === 'LOCALE WORLD MAP') : -1;
+					if (idx !== -1) {
+						localeTag.val[idx].push(...worldMapData);
+						localeTag.valSet = localeTag.valSet.union(worldMapData);
+					}
+				}
+			}
+		}
 	}
 	
 	function buildUrl(tag, val, valSec) {

@@ -36,6 +36,7 @@
 ## [Unreleased][]
 ### Added
 - Last.fm: now supports tag retrieval from [WilB's Biography script](https://github.com/Wil-B/Biography). i.e. genres, styles, locale tags, etc. are added to the file tags on the submenus as available values. Bio tags state is displayed at tooltip, warning when tags are not found (usually requires some seconds).
+- Last.fm: supports 'locale' tag retrieval [World-Map-SMP](https://github.com/regorxxx/World-Map-SMP), independently of Bio panel. i.e. it looks at the local database for matches by artist (so it works even for artists not found by Bio panel and manually tagged by user).
 ### Changed
 ### Removed
 ### Fixed
