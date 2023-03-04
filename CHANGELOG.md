@@ -46,7 +46,7 @@
 - Last.fm: added button to one of the default presets ('ListenBrainz & Last.fm') on empty toolbars.
 ### Removed
 ### Fixed
-- UI: png icons now use a dark-mode version (if available) or gets inverted according to the button text color configuration.
+- UI: png icons now use a dark-mode version (if available) or get inverted according to the button text color configuration.
 - Last.fm: missing icon file.
 
 ## [3.0.0-beta.20] - 2023-03-04
