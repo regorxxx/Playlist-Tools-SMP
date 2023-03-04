@@ -18,7 +18,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 		}
 		if (typeof _lastList !== 'undefined') {
 			include('..\\main\\last_list\\last_list_menu.js');
-			include('..\\main\\last_list\\last_list_bio.js');
+			include('..\\main\\bio\\bio_tags.js');
 		}
 	} else {
 	fb.ShowPopupMessage('foo-last-list package is missing. Id:\n{152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
