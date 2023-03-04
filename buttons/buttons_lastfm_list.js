@@ -1,5 +1,5 @@
 'use strict';
-//01/03/23
+//03/03/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -27,33 +27,50 @@ try {window.DefineScript('Last.fm Tools Button', {author:'xxx', features: {drag_
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
-	// lastURL:	['Last.fm url cache', '', {func: isStringWeak}, ''],
-	// lastArtist:	['Last.fm artist cache', '', {func: isStringWeak}, ''],
-	// lastDate:	['Last.fm date cache', '', {func: isStringWeak}, ''],
-	// lastTag:	['Last.fm tag cache', '', {func: isStringWeak}, ''],
+	lastURL:	['Last.fm url cache', '', {func: isStringWeak}, ''],
+	lastArtist:	['Last.fm artist cache', '', {func: isStringWeak}, ''],
+	lastDate:	['Last.fm date cache', '', {func: isStringWeak}, ''],
+	lastTag:	['Last.fm tag cache', '', {func: isStringWeak}, ''],
+	lastUser:	['Last.fm user cache', '', {func: isStringWeak}, ''],
+	lastAlbum:	['Last.fm album cache', '', {func: isStringWeak}, ''],
 };
-// setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
-// newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
+setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
+newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
 	'Last.fm Tools': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Last.fm', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22}, 'Last.fm', function (mask) {
 			if (this.lastList) {
+				doOnce('Last.fm Tools Cache', () => { // Add url cache on internal format
+					if (this.buttonsProperties.lastURL[1].length) {this.lastList.cachedUrls.push(this.buttonsProperties.lastURL[1]);}
+				})();
 				if (mask === MK_SHIFT) {
 					settingsMenu(this, true, ['buttons_lastfm_list.js']).btn_up(this.currX, this.currY + this.currH);
 				} else {
-					const menu = _lastListMenu(this.lastList);
+					// Retrieve cache
+					const properties = this.buttonsProperties;
+					const cache = Object.fromEntries(['lastURL', 'lastArtist', 'lastDate', 'lastTag', 'lastAlbum', 'lastUser'].map((key) => [key, properties[key][1]]));
+					// Call menu
+					const menu = _lastListMenu(this.lastList, cache);
 					menu.btn_up(this.currX, this.currY + this.currH);
-					const last = Input.data.lastInput;
-					// if (menu.lastCall.startsWith('By date')) {
-						// this.buttonProperties.lastDate[1] = last;
-					// } else if (menu.lastCall.startsWith('By tag')) {
-						// this.buttonProperties.lastTag[1] = last;
-					// } else if (menu.lastCall.startsWith('By artist')) {
-						// this.buttonProperties.lastArtist[1] = last;
-					// } else if (menu.lastCall.startsWith('By URL')) {
-						// this.buttonProperties.lastURL[1] = last;
-					// }
+					// Cache input values
+					let key;
+					if (/by date/i.test(menu.lastCall)) {key = 'lastDate';} 
+					else if (/by tag/i.test(menu.lastCall)) {key = 'lastTag';} 
+					else if (/by artist|by similar artist/i.test(menu.lastCall)) {key = 'lastArtist';} 
+					else if (/by user/i.test(menu.lastCall)) {key = 'lastUser';}
+					else if (/by album/i.test(menu.lastCall)) {key = 'lastAlbum';}
+					else if (/by url/i.test(menu.lastCall)) {
+						const url = (this.lastList.cachedUrls[0] || '').toString();
+						if (url && url.length && url !== properties.lastURL[1]) {
+							properties.lastURL[1] = this.lastList.cachedUrls[0];
+							overwriteProperties(properties);
+						}
+					}
+					if (key && Input.data.lastInput !== null && !Input.isLastEqual) {
+						properties[key][1] = Input.data.lastInput.toString();
+						overwriteProperties(properties);
+					}
 				}
 			} else {
 				fb.ShowPopupMessage('foo-last-list package is missing. Id:\n{152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
