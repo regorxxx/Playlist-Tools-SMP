@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/03/23
+//04/03/23
 
 /* 
 	Playlist Tools Menu
@@ -150,7 +150,7 @@ var shortcuts = {
 // Callbacks: append to any previously existing callback
 const plmPromises = [];
 addEventListener('on_notify_data', (name, info) => {
-	if (name === 'bio_imgChange' || name === 'biographyTags' || name === 'bio_chkTrackRev') {return;}
+	if (name === 'bio_imgChange' || name === 'biographyTags' || name === 'bio_chkTrackRev' || name === 'xxx-scripts: panel name reply') {return;}
 	if (!name.startsWith('Playlist manager') && !name.startsWith('Playlist Tools')) {return;}
 	switch (name) {
 		case 'Playlist manager: playlistPath': {
