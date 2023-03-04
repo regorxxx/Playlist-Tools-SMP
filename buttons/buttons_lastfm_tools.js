@@ -1,5 +1,5 @@
 'use strict';
-//04/03/23
+//05/03/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -36,7 +36,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	lastTag:	['Last.fm tag cache', '', {func: isStringWeak}, ''],
 	lastUser:	['Last.fm user cache', '', {func: isStringWeak}, ''],
 	lastAlbum:	['Last.fm album cache', '', {func: isStringWeak}, ''],
-	bBioTags:	['Use tags from Bio panel?', true, {func: isBoolean}, true],
+	bBioTags:	['Use tags from Bio panel?', false, {func: isBoolean}, false],
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -49,7 +49,20 @@ addButton({
 					if (this.buttonsProperties.lastURL[1].length) {this.lastList.cachedUrls.push(this.buttonsProperties.lastURL[1]);}
 				})();
 				if (mask === MK_SHIFT) {
-					settingsMenu(this, true, ['buttons_lastfm_tools.js']).btn_up(this.currX, this.currY + this.currH);
+					settingsMenu(
+						this, true, ['buttons_lastfm_tools.js'],
+						{
+							bBioTags: {
+								popup:	'Used along WilB\'s Biography Script, if selection mode on bio panel is set' +
+									'\nto \'Follow selected track\', additional tags are shown on the submenus' +
+									'\ndirectly provided by the Bio script (like the \'locale\' tag). Using' +
+									'\n\'Prefer now playing\' mode will disable this feature unless the selected' +
+									'\ntrack is also the now playing track when using the button. In any case' +
+									'\nBio panel must be set to notify tags to other panels to make it work' +
+									'\n(this setting is disabled by default).'
+							}
+						}
+					).btn_up(this.currX, this.currY + this.currH);
 				} else {
 					// Retrieve cache
 					const properties = this.buttonsProperties;
