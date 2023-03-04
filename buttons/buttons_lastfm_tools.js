@@ -55,7 +55,7 @@ addButton({
 					const properties = this.buttonsProperties;
 					const cache = Object.fromEntries(['lastURL', 'lastArtist', 'lastDate', 'lastTag', 'lastAlbum', 'lastUser'].map((key) => [key, properties[key][1]]));
 					// Call menu
-					const menu = _lastListMenu(this.lastList, cache, this.buttonsProperties.bBioTags ? this.bioTags : null);
+					const menu = _lastListMenu(this.lastList, cache, this.buttonsProperties.bBioTags[1] ? this.bioTags : null);
 					menu.btn_up(this.currX, this.currY + this.currH);
 					// Cache input values
 					let key;
@@ -88,12 +88,20 @@ addButton({
 				let tfo = fb.TitleFormat(
 						'Current track:	%ARTIST% / %TRACK% - %TITLE%' +
 						'$crlf()Date:		[' + globTags.date + ']' +
-						'$crlf()Genres:		[%' + globTags.genre + '%]' +
+						'$crlf()Genres:		[%' + globTags.genre + '%]' + 
+							// ['Album Genre AllMusic', 'Artist Genre AllMusic', 'Album Genre Wikipedia', 'Artist Genre Wikipedia'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ') +
 						'$crlf()Styles:		[%' + globTags.style + '%]' +
-						'$crlf()Moods:		[%' + globTags.mood + '%]'
+						'$crlf()Moods:		[%' + globTags.mood + '%][,%THEME%][,%ALBUMMOOD%]'
+							// ['Album Mood AllMusic', 'Album Theme AllMusic'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ')
 					);
 				info += tfo.EvalWithMetadb(sel);
 			} else {info += '\nNo track selected';}
+			info += '\nBio tags:	' + (parent.buttonsProperties.bBioTags[1] 
+				? Object.keys(parent.bioTags).length
+					? 'Found' 
+					: 'Not found'
+				: 'Disabled');
+			info += parent.bioSelectionMode === 'Prefer nowplaying' ? ' (now playing)' : ' (selection)';
 			if (bShift || bInfo) {
 				info += '\n-----------------------------------------------------';
 				info += '\n(Shift + L. Click to open config menu)';

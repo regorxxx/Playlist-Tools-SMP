@@ -35,7 +35,7 @@
 
 ## [Unreleased][]
 ### Added
-- Last.fm: now supports tag retrieval from [WilB's Biography script](https://github.com/Wil-B/Biography). i.e. genres, styles, locale tags, etc. are added to the file tags on the submenus as available values.
+- Last.fm: now supports tag retrieval from [WilB's Biography script](https://github.com/Wil-B/Biography). i.e. genres, styles, locale tags, etc. are added to the file tags on the submenus as available values. Bio tags state is displayed at tooltip, warning when tags are not found (usually requires some seconds).
 ### Changed
 ### Removed
 ### Fixed
