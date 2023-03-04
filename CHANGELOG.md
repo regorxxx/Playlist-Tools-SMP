@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.21](#300-beta21---2023-03-04)
 - [3.0.0-beta.20](#300-beta20---2023-03-04)
 - [3.0.0-beta.19](#300-beta19---2023-02-22)
 - [3.0.0-beta.18](#300-beta18---2023-02-21)
@@ -35,10 +36,18 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.21] - 2023-03-04
+### Added
+### Changed
 - Last.fm: renamed button to 'buttons_lastfm_tools.js'. There is no need to do anything user-side on previous installations, it's automatically handled on first load after updating.
 - Last.fm: added button to one of the default presets ('ListenBrainz & Last.fm') on empty toolbars.
 ### Removed
 ### Fixed
+- UI: png icons now use a dark-mode version (if available) or gets inverted according to the button text color configuration.
+- Last.fm: missing icon file.
 
 ## [3.0.0-beta.20] - 2023-03-04
 ### Added
@@ -797,7 +806,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.20...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.21...HEAD
+[3.0.0-beta.21]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.20...v3.0.0-beta.21
 [3.0.0-beta.20]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.19...v3.0.0-beta.20
 [3.0.0-beta.19]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.18...v3.0.0-beta.19
 [3.0.0-beta.18]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.17...v3.0.0-beta.18
