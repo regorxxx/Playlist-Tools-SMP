@@ -58,8 +58,9 @@ addButton({
 									'\ndirectly provided by the Bio script (like the \'locale\' tag). Using' +
 									'\n\'Prefer now playing\' mode will disable this feature unless the selected' +
 									'\ntrack is also the now playing track when using the button. In any case' +
-									'\nBio panel must be set to notify tags to other panels to make it work' +
-									'\n(this setting is disabled by default).'
+									'\n\nBio panel must be set to notify tags to other panels to make it work' +
+									'\n(this setting is disabled by default). It may be found on the HTML options' +
+									'\npanel or the \'biography.cfg\' file. Ask to its author for further support.'
 							}
 						}
 					).btn_up(this.currX, this.currY + this.currH);
