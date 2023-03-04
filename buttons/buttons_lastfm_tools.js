@@ -1,5 +1,5 @@
 'use strict';
-//03/03/23
+//04/03/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -45,7 +45,7 @@ addButton({
 					if (this.buttonsProperties.lastURL[1].length) {this.lastList.cachedUrls.push(this.buttonsProperties.lastURL[1]);}
 				})();
 				if (mask === MK_SHIFT) {
-					settingsMenu(this, true, ['buttons_lastfm_list.js']).btn_up(this.currX, this.currY + this.currH);
+					settingsMenu(this, true, ['buttons_lastfm_tools.js']).btn_up(this.currX, this.currY + this.currH);
 				} else {
 					// Retrieve cache
 					const properties = this.buttonsProperties;

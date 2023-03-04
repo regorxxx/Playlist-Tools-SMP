@@ -35,6 +35,8 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Last.fm: renamed button to 'buttons_lastfm_tools.js'. There is no need to do anything user-side on previous installations, it's automatically handled on first load after updating.
+- Last.fm: added button to one of the default presets ('ListenBrainz & Last.fm') on empty toolbars.
 ### Removed
 ### Fixed
 
