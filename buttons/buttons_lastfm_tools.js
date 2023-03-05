@@ -75,7 +75,7 @@ addButton({
 					let key;
 					if (/by date/i.test(menu.lastCall)) {key = 'lastDate';} 
 					else if (/by tag/i.test(menu.lastCall)) {key = 'lastTag';} 
-					else if (/by artist|by similar artist/i.test(menu.lastCall)) {key = 'lastArtist';} 
+					else if (/by artist|by similar artist to/i.test(menu.lastCall)) {key = 'lastArtist';} 
 					else if (/by user/i.test(menu.lastCall)) {key = 'lastUser';}
 					else if (/by album/i.test(menu.lastCall)) {key = 'lastAlbum';}
 					else if (/by url/i.test(menu.lastCall)) {

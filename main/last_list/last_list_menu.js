@@ -1,5 +1,5 @@
 'use strict';
-//04/03/23
+//05/03/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -13,7 +13,8 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 	const tags = [
 		{name: 'Artist(s)', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
 		{name: 'Artist(s) radio', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
-		{name: 'Similar artists', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
+		{name: 'Similar artists to', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
+		{name: 'Similar artists', tf: ['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'], val: [], valSet: new Set(), type: 'ARTIST'},
 		// {name: 'Similar tracks', tf: ['TITLE', 'ARTIST', 'ALBUM'], val: [], valSet: new Set(), type: 'TITLE'},
 		{name: 'Album tracks', tf: ['ALBUM', 'ARTIST'], val: [], valSet: new Set(), type: 'ALBUM_TRACKS'},
 		{name: 'Genre & Style(s)', tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'], val: [], valSet: new Set(), type: 'TAG'},
@@ -25,6 +26,7 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 			tag.tf.forEach((tf, i) => {
 				const idx = info.MetaFind(tf);
 				tag.val.push([]);
+				// File tags
 				if (idx !== -1) {
 					let count = info.MetaValueCount(idx);
 					while (count--) {
@@ -32,6 +34,19 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 						tag.val[i].push(val);
 						if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) {tag.valSet.add(val);}
 					};
+				} else { 
+					// foo_uie_biography
+					if (tf === 'LASTFM_SIMILAR_ARTIST') {
+						fb.TitleFormat('[%' + tf + '%]')
+							.EvalWithMetadb(sel)
+							.split('; ')
+							.filter(Boolean)
+							.forEach((val) => {
+								val = val.trim();
+								tag.val[i].push(val);
+								tag.valSet.add(val);
+							});
+					}
 				}
 				// Bio tags
 				if (bioTags) {
@@ -140,12 +155,12 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 			const bSingle = tag.valSet.size <= 1;
 			const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu('Current ' + tag.name + '...');
 			if (tag.valSet.size === 0) {tag.valSet.add('');}
-			[...tag.valSet].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach((val) => {
+			[...tag.valSet].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach((val, i) => {
 				menu.newEntry({menuName: subMenu, entryText: bSingle ? 'Current ' + tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']' : val, func: () => {
 					const url = buildUrl(tag, val);
 					console.log('Searching at: ' + url);
 					if (url) {parent.run({url, playlistName: playlistName(tag, val), cacheTime: 0});}
-				}, flags: val ? MF_STRING : MF_GRAYED});
+				}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
 			});
 		});
 	}
@@ -159,7 +174,7 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 					? null 
 					: [buildUrl({type: 'ARTIST'}, input || Input.data.lastInput), playlistName({type: 'ARTIST'}, input || Input.data.lastInput)];
 			}},
-			{name: 'By Similar artist...', url: () => {
+			{name: 'By Similar artist to...', url: () => {
 				const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
