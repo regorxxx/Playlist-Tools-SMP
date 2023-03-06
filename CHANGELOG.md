@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.22](#300-beta22---2023-03-05)
 - [3.0.0-beta.21](#300-beta21---2023-03-04)
 - [3.0.0-beta.20](#300-beta20---2023-03-04)
 - [3.0.0-beta.19](#300-beta19---2023-02-22)
@@ -35,12 +36,19 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.22] - 2023-03-05
+### Added
 - Last.fm: supports -full- tag retrieval from [WilB's Biography script](https://github.com/Wil-B/Biography). i.e. genres, styles, locale tags, etc. are added to the file tags on the submenus as available values. Bio tags state is displayed at tooltip, warning when tags are not found (usually requires some seconds).
 - Last.fm: supports 'locale' tag retrieval from [World-Map-SMP](https://github.com/regorxxx/World-Map-SMP), independently of Bio panel. i.e. it looks at the local database for matches by artist (so it works even for artists not found by Bio panel, multi-value artists tags and artists manually tagged by user on the panel). Bio and World Map tag retrieval can coexist, duplicates are removed in any case.
 - Last.fm: new similar artists sub-menu, to retrieve top tracks by a single selected similar artist. This is different to using the 'Current similar artists to' entry, which creates a playlist mixing all similar artists. Therefore, it's equivalent to using the 'Custom...\By Artist' entry for every single similar artist found.
 - Last.fm: supports 'LASTFM_SIMILAR_ARTIST' tag retrieval from [foo_uie_biography](https://foobar2000.xrea.jp/?User+interface/UI+extension#kbe7a3bd), independently of Bio panel. Bio and foo_uie_biography tag retrieval can coexist, duplicates are removed in any case.
 - Last.fm: supports 'SIMILAR ARTISTS SEARCHBYDISTANCE' tag retrieval from [Search by Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP), independently of Bio panel. Duplicates are removed in any case when merged with other similar artists tags. This tag must be pre-calculated, since it's retrieved from files or database, and its based on similar artists from your library (instead of charts/popularity/other people's listening habits).
 ### Changed
+- Last.fm: updated support for foo-last-list-smp v1.1 (previous version will not work).
 - Last.fm: sub-menu tag lists are now split on columns by 8 items.
 ### Removed
 ### Fixed
@@ -812,7 +820,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.21...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.22...HEAD
+[3.0.0-beta.22]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.21...v3.0.0-beta.22
 [3.0.0-beta.21]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.20...v3.0.0-beta.21
 [3.0.0-beta.20]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.19...v3.0.0-beta.20
 [3.0.0-beta.19]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.18...v3.0.0-beta.19
