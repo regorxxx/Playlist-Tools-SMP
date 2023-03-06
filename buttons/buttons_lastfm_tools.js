@@ -12,11 +12,11 @@ include('..\\helpers\\helpers_xxx_properties.js');
 	const jsPackage = utils.GetPackageInfo('{152DE6E6-A5D6-4434-88D8-E9FF00130BF9}');
 	if (jsPackage) {
 		try {
-			include(jsPackage.Directories.Root + '\\scripts\\last_list.js');
+			include(jsPackage.Directories.Root + '\\scripts\\LastList.js');
 		} catch (e) {
 			fb.ShowPopupMessage('foo-last-list package error.\n\nPlease re-download or report to its author:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
 		}
-		if (typeof _lastList !== 'undefined') {
+		if (typeof LastList !== 'undefined') {
 			include('..\\main\\last_list\\last_list_menu.js');
 			include('..\\main\\bio\\bio_tags.js');
 		}
@@ -122,7 +122,7 @@ addButton({
 			}
 			return info;
 		}, prefix, newButtonsProperties, folders.xxx + 'images\\icons\\lastfm_64.png', null,
-		{lastList: typeof _lastList !== 'undefined' ? new _lastList() : null, bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
+		{lastList: typeof LastList !== 'undefined' ? new LastList() : null, bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
 		lastfmListeners
 	),
 });

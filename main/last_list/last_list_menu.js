@@ -11,8 +11,8 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 	const sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
 	const info = sel ? sel.GetFileInfo() : null;
 	const tags = [
-		{name: 'Artist(s)', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
-		{name: 'Artist(s) radio', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
+		{name: 'Artist top tracks', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
+		{name: 'Artist shuffle', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
 		{name: 'Similar artists to', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
 		{name: 'Similar artists', tf: ['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'], val: [], valSet: new Set(), type: 'ARTIST'},
 		// {name: 'Similar tracks', tf: ['TITLE', 'ARTIST', 'ALBUM'], val: [], valSet: new Set(), type: 'TITLE'},
@@ -186,7 +186,13 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 				menu.newEntry({menuName: subMenu, entryText: bSingle ? 'Current ' + tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']' : val, func: () => {
 					const url = buildUrl(tag, val);
 					console.log('Searching at: ' + url);
-					if (url) {parent.run({url, playlistName: playlistName(tag, val), cacheTime: 0});}
+					if (url) {
+						parent.url = url; 
+						parent.playlistName = playlistName(tag, val);
+						parent.cacheTime = 0;
+						parent.pages = 1;
+						parent.run(); // parent.run({url, playlistName: playlistName(tag, val), cacheTime: 0});
+					}
 				}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
 			});
 		});
@@ -246,13 +252,21 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 				const url = isFunction(entry.url) ? entry.url() : entry.url;
 				if (url && url[0]) {
 					console.log('Searching at: ' + url[0]);
-					parent.run({url: url[0], playlistName: url[1], cacheTime: 0});
+					parent.url = url[0]; 
+					parent.playlistName = url[1];
+					parent.cacheTime = 0;
+					parent.pages = 1;
+					parent.run(); // parent.run({url: url[0], playlistName: url[1], cacheTime: 0});
 				}
 			}});
 		})
 		menu.newEntry({menuName: subMenu, entryText: 'sep'});
 		menu.newEntry({menuName: subMenu, entryText: 'By url...', func: () => {
-			parent.run({url: null, pages: null, playlistName: 'Last.fm', cacheTime: 0});
+			parent.url = null; 
+			parent.playlistName = 'Last.fm';
+			parent.cacheTime = 0;
+			parent.pages = 1;
+			parent.run(); // parent.run({url: null, pages: null, playlistName: 'Last.fm', cacheTime: 0});
 		}});
 	}
 	menu.newEntry({entryText: 'sep'});
@@ -268,7 +282,11 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 				const url = isFunction(entry.url) ? entry.url() : entry.url;
 				if (url) {
 					console.log('Searching at: ' + url);
-					parent.run({url, playlistName: 'Last.fm: ' + entry.name, cacheTime: 0});
+					parent.url = url; 
+					parent.playlistName = 'Last.fm: ' + entry.name;
+					parent.cacheTime = 0;
+					parent.pages = 1;
+					parent.run(); // parent.run({url, playlistName: 'Last.fm: ' + entry.name, cacheTime: 0});
 				}
 			}});
 		})
