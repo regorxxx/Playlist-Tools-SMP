@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.23](#300-beta23---2023-03-08)
 - [3.0.0-beta.22](#300-beta22---2023-03-05)
 - [3.0.0-beta.21](#300-beta21---2023-03-04)
 - [3.0.0-beta.20](#300-beta20---2023-03-04)
@@ -39,6 +40,15 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.23] - 2023-03-08
+### Added
+- Last.fm: added user's recommendations, mix and neighbors entries.
+### Changed
+- Last.fm: improved and simplified entry names.
+### Removed
+### Fixed
+- Last.fm: icon-only mode not working properly.
 
 ## [3.0.0-beta.22] - 2023-03-05
 ### Added
@@ -820,7 +830,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.22...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.23...HEAD
+[3.0.0-beta.23]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.22...v3.0.0-beta.23
 [3.0.0-beta.22]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.21...v3.0.0-beta.22
 [3.0.0-beta.21]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.20...v3.0.0-beta.21
 [3.0.0-beta.20]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.19...v3.0.0-beta.20
