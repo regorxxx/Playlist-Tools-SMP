@@ -1,5 +1,5 @@
 'use strict';
-//05/03/23
+//08/03/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -21,7 +21,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 			include('..\\main\\bio\\bio_tags.js');
 		}
 	} else {
-	fb.ShowPopupMessage('foo-last-list package is missing. Id:\n{152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
+		fb.ShowPopupMessage('foo-last-list package is missing or outdated.\nId: {152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
 	}
 }
 var prefix = 'lfm';
@@ -37,6 +37,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	lastUser:	['Last.fm user cache', '', {func: isStringWeak}, ''],
 	lastAlbum:	['Last.fm album cache', '', {func: isStringWeak}, ''],
 	bBioTags:	['Use tags from Bio panel?', false, {func: isBoolean}, false],
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -46,7 +47,7 @@ addButton({
 	'Last.fm Tools': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Last.fm', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22}, 'Last.fm', function (mask) {
 			if (this.lastList) {
 				doOnce('Last.fm Tools Cache', () => { // Add url cache on internal format
-					if (this.buttonsProperties.lastURL[1].length) {this.lastList.cachedUrls.push(this.buttonsProperties.lastURL[1]);}
+					if (this.buttonsProperties.lastURL[1].length) {this.lastList.url = this.buttonsProperties.lastURL[1];}
 				})();
 				if (mask === MK_SHIFT) {
 					settingsMenu(
@@ -79,9 +80,9 @@ addButton({
 					else if (/by user/i.test(menu.lastCall)) {key = 'lastUser';}
 					else if (/by album/i.test(menu.lastCall)) {key = 'lastAlbum';}
 					else if (/by url/i.test(menu.lastCall)) {
-						const url = (this.lastList.cachedUrls[0] || '').toString();
+						const url = (this.lastList.url || '').toString();
 						if (url && url.length && url !== properties.lastURL[1]) {
-							properties.lastURL[1] = this.lastList.cachedUrls[0];
+							properties.lastURL[1] = this.lastList.url;
 							overwriteProperties(properties);
 						}
 					}
@@ -91,7 +92,7 @@ addButton({
 					}
 				}
 			} else {
-				fb.ShowPopupMessage('foo-last-list package is missing. Id:\n{152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
+				fb.ShowPopupMessage('foo-last-list package is missing or outdated.\nId: {152DE6E6-A5D6-4434-88D8-E9FF00130BF9}\n\nPlease download and install it as package:\nhttps://github.com/L3v3L/foo-last-list-smp', 'Last.fm Tools');
 			}
 		}, null, void(0), (parent) => {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
@@ -123,6 +124,6 @@ addButton({
 			return info;
 		}, prefix, newButtonsProperties, folders.xxx + 'images\\icons\\lastfm_64.png', null,
 		{lastList: typeof LastList !== 'undefined' ? new LastList() : null, bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
-		lastfmListeners
+		typeof lastfmListeners !== 'undefined' ? lastfmListeners : null
 	),
 });
