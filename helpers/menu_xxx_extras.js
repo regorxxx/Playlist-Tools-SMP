@@ -1,7 +1,7 @@
 ﻿'use strict';
-//23/02/23
+//09/03/23
 
-function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuName, list, defaults, input, bAdd, bNumbered, onBtnUp}*/) {
+function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuName, list, defaults, input, bAdd, bNumbered, bDuplicate, onBtnUp}*/) {
 	/*
 		name:			popup name
 		subMenuName:	name for the edit entries sub-menu
@@ -12,9 +12,15 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuNam
 						make sure it returns null or undefined if user cancels or values are not valid!
 		bAdd: 			true to show an 'Add entry' option on submenu 
 		bNumbered:		true to enumerate each entry shown
+		bDuplicate:		allow entries with duplicated names
 		onBtnUp:		function to run after any menu entry is run (usually to save the modified entries on properties). List is passed as argument. onBtnUp(options.list) => {...}
 	*/
-	if (options.onBtnUp && !isFunction(options.onBtnUp)) {throw new Error('_createSubMenuEditEntries: onBtnUp is not a function');}
+	if (options.onBtnUp && !isFunction(options.onBtnUp)) {
+		throw new Error('_createSubMenuEditEntries: onBtnUp is not a function');
+	}
+	if (!options.list || !options.defaults || !Array.isArray(options.list) || !Array.isArray(options.defaults) || !options.input || !isFunction(options.input)) {
+		throw new Error('_createSubMenuEditEntries: list, defaults or input options are non valid or not provided');
+	}
 	// options.list always point to the original entry list and original values are edited
 	const subMenuSecondName = parent.newMenu(options.subMenuName || 'Edit entries from list...', menuName); // It will throw if the menu already exists!
 	let i = 0;
@@ -31,6 +37,10 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuNam
 			if (!newEntry || !newEntry.length) {fb.ShowPopupMessage('Input: ' + newEntry + '\n\nNon valid entry.', 'JSON error'); return;}
 			try {newEntry = JSON.parse(newEntry);} catch (e) {fb.ShowPopupMessage('Input: ' + newEntry.toString() + '\n\n' + e, 'JSON error'); return;}
 			if (!newEntry) {return;}
+			if (!options.bDuplicate && options.list.findIndex((entry) => entry.name === newEntry.name) !== -1) {
+				fb.ShowPopupMessage('There is another entry with same name.\nRetry with another name.', scriptName);
+				return;
+			}
 			options.list[index] = newEntry;
 			if (options.onBtnUp) {options.onBtnUp(options.list);}
 			return options.list;
@@ -66,6 +76,10 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuNam
 			if (!entryName.length) {return;}
 			if (entryName === 'sep') {input = {name: entryName};} // Add separator
 			else { // or new entry
+				if (!options.bDuplicate && options.list.findIndex((entry) => entry.name === entryName) !== -1) {
+					fb.ShowPopupMessage('There is another entry with same name.\nRetry with another name.', scriptName);
+					return;
+				}
 				const entry = options.input();
 				if (!entry) {return;}
 				input = {name: entryName, ...entry}
