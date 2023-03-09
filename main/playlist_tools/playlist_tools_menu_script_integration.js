@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/02/23
+//09/03/23
 
 // Script integration
 {
@@ -18,11 +18,11 @@
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\main_menu_dynamic.txt';
 					readmes[menuName + '\\' + name + ' custom'] = folders.xxx + 'helpers\\readme\\main_menu_dynamic_custom.txt';
 					const subMenuName = menu.newMenu(name, menuName);
-					var mainMenuSMP = clone([
+					const mainMenuSMPDefaults = clone([
 						{name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
 						{name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'}
 					]);
-					const mainMenuSMPDefaults = clone(mainMenuSMP);
+					var mainMenuSMP = clone([mainMenuSMPDefaults[0]]);
 					menu_properties['mainMenuSMP'] = [menuName + '\\' + name + ' entries', JSON.stringify(mainMenuSMP)]; // On main_menu_custom.js
 					menu_properties['mainMenuSMP'].push({func: isJSON}, menu_properties['mainMenuSMP'][1]);
 					const plsListener = 'pt:listener';
@@ -70,7 +70,13 @@
 						const pls = getPlaylistIndexArray(plsListener);
 						const plsData = pls.length === 1 && plman.PlaylistItemCount(pls[0]) !== 0 ? plman.GetPlaylistItems(pls[0]).Convert().map((handle) => {return {name: handle.Path.split('_').pop()};}) : null;
 						if (plsData) {plman.RemovePlaylistSwitch(pls[0]);}
-						const data = (_isFile(ajQueryFile) ? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, utf8) : (_isFile(localFile) ? _jsonParseFileCheck(localFile, 'To execute json', scriptName, utf8) : (plsData ? plsData : null)));
+						const data = (_isFile(ajQueryFile) 
+							? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, utf8) 
+							: (_isFile(localFile) 
+								? _jsonParseFileCheck(localFile, 'To execute json', scriptName, utf8) 
+								: (plsData ? plsData : null)
+							)
+						);
 						if (data) {
 							data.forEach((entry) => {
 								const entryName = entry.hasOwnProperty('name') ? entry.name : '';
@@ -100,7 +106,8 @@
 					menu.newCondEntry({entryText: name + ' (cond)', condFunc: () => {
 						// Entry list
 						mainMenuSMP = JSON.parse(menu_properties['mainMenuSMP'][1]);
-						mainMenuSMP.forEach( (entry, index) => {
+						const entryNames = new Set();
+						mainMenuSMP.forEach((entry, index) => {
 							if (!entry) {return;}
 							// Add separators
 							if (entry.hasOwnProperty('name') && entry.name === 'sep') {
@@ -109,6 +116,10 @@
 								// Create names for all entries
 								let scriptName = entry.name;
 								scriptName = scriptName.length > 40 ? scriptName.substring(0,40) + ' ...' : scriptName;
+								if (entryNames.has(scriptName)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + scriptName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(entry, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(scriptName);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText: scriptName + '\t (' + (index + 1) + ')', func: null, flags: MF_GRAYED});
 							}
@@ -143,7 +154,7 @@
 									if (funcName.startsWith('Pools')) {icon = 'ui-icon ui-icon-circle-zoomout';}
 									if (funcName.startsWith('Macros')) {icon = 'ui-icon ui-icon-clock';}
 									// Save
-									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name, funcName , menuName: 'menu', icon};
+									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name, funcName , menuName: 'menu', icon};
 								;}},
 								{name: 'Custom function', func: (idx = onMainMenuEntries.length) => {
 									let path = '';
@@ -158,21 +169,21 @@
 									try {name = utils.InputBox(window.ID, 'Enter description (name)', 'Playlist Tools: ' + toolName, funcName, true);}
 									catch (e) {return;}
 									if (!name.length) {return;}
-									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name, funcName , path};
+									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name, funcName , path};
 								;}},
 								{name: 'sep'},
 								{name: mainMenuSMPDefaults[0].name, func: (idx = onMainMenuEntries.length) => {
 									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\n\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\n	- Pressing shift while calling the action will append tag to existing SKIP tags (instead of replacing them). Meant to add skipped parts at multiple points for ex.\n\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.\n\nMost common usage would be adding a button to a native buttons toolbar and assigning it this action via main menus (File\Spider Monkey Panel\Script commands\....)', scriptName + ': ' + name);
-									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
+									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
 								}},
 								{name: mainMenuSMPDefaults[1].name, func: (idx = onMainMenuEntries.length) => {
 									const ajQueryFile = folders.ajquerySMP + 'toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
-									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to be able to call an arbitrary number of tools by their menu names.\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)', scriptName + ': ' + name);
-									onMainMenuEntries[idx] = mainMenuSMP[idx - 1] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
+									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to be able to call an arbitrary number of tools by their menu names.\n\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)\n\nIn case json file(s) are not found, then it tries to read commands from a playlist named \'' + plsListener + '\'.', scriptName + ': ' + name);
+									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
 								}}
 							];
-							options.forEach( (entry, index) => {
+							options.forEach((entry, index) => {
 								// Add separators
 								if (entry.hasOwnProperty('name') && entry.name === 'sep') {
 									menu.newEntry({menuName: subMenuNameTwo, entryText: 'sep'});
@@ -286,13 +297,9 @@
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: () => {
 					if (!menu_properties.bPlaylistNameCommands[1]) {
-						if (_isFile(readmes[menuName + '\\' + name])) {
-							const readme = _open(readmes[menuName + '\\' + name], utf8);
-							if (readme.length) {
-								const answer = WshShell.Popup(readme, 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
-								if (answer !== popup.yes) {return;}
-							}
-						}
+						const readme = 'An utility to easily execute Playlist Tools entries creating playlists with specific command names. Checks playlist names regularly for "special" names.\n\nWhen a playlist name starts with \'PT:\', the callback fires and anything after those 3 chars is treated as a special command which will be compared to a list of known commands or executed as a menu name.\n\nLook at Playlist Names Commands readme for more info. Enable it?';
+						const answer = WshShell.Popup(readme, 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+						if (answer !== popup.yes) {return;}
 					}
 					menu_properties.bPlaylistNameCommands[1] = !menu_properties.bPlaylistNameCommands[1];
 					overwriteMenuProperties(); // Updates panel
@@ -338,63 +345,63 @@
 					if (!scriptIncluded.length) {menu.newEntry({menuName: subMenuName, entryText: '(none set yet)', func: null, flags: MF_GRAYED});}
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					{	// Add / Remove
-					menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
-						const answer = WshShell.Popup('This is an utility to easily include (\'merge\') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don\'t require any UI, user interaction, etc.\n\nNote you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\\Spider Monkey Panel) and do nothing more.\n\nThe use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.\n\nIn any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
-						if (answer === popup.no) {return;}
-						// Input all variables
-						let input;
-						let path = '';
-						try {path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', scriptName + ': ' + name, '', true);}
-						catch (e) {return;}
-						if (path === 'sep') {input = {name: path};} // Add separator
-						else { // or new entry
-							if (_isFile(path)) {
-								try {include(path);}
-								catch (e) {return;}
-								const arr = utils.SplitFilePath(path);
-								const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
-								input = {name , path};
+						menu.newEntry({menuName: subMenuName, entryText: 'Add new entry to list...' , func: () => {
+							const answer = WshShell.Popup('This is an utility to easily include (\'merge\') multiple SMP scripts into the same panel, thus not wasting multiple panels. Useful for those scripts that don\'t require any UI, user interaction, etc.\n\nNote you must only include simple utility scripts without UI!. Like scripts which set the main menu SPM entries (File\\Spider Monkey Panel) and do nothing more.\n\nThe use of this functionality is done at your own responsibility, it may obviously break things if you use it without thinking.\n\nIn any case, you can later remove the included script at any point or disable the functionality altogether (just disable the associated menu). If the file fails while loading, it will probably crash and will not be added for later startups... so just reload panel and done.', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
+							if (answer === popup.no) {return;}
+							// Input all variables
+							let input;
+							let path = '';
+							try {path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', scriptName + ': ' + name, '', true);}
+							catch (e) {return;}
+							if (path === 'sep') {input = {name: path};} // Add separator
+							else { // or new entry
+								if (_isFile(path)) {
+									try {include(path);}
+									catch (e) {return;}
+									const arr = utils.SplitFilePath(path);
+									const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
+									input = {name , path};
+								}
 							}
-						}
-						// Add entry
-						scriptIncluded.push(input);
-						// Save as property
-						menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded); // And update property with new value
-						// Presets
-						if (!presets.hasOwnProperty('scriptIncluded')) {presets.scriptIncluded = [];}
-						presets.scriptIncluded.push(input);
-						menu_properties['presets'][1] = JSON.stringify(presets);
-						overwriteMenuProperties(); // Updates panel
-					}});
-					{
-						const subMenuSecondName = menu.newMenu('Remove entry from list...', subMenuName);
-						scriptIncluded.forEach( (queryObj, index) => {
-							const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
-							menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
-								scriptIncluded.splice(index, 1);
+							// Add entry
+							scriptIncluded.push(input);
+							// Save as property
+							menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded); // And update property with new value
+							// Presets
+							if (!presets.hasOwnProperty('scriptIncluded')) {presets.scriptIncluded = [];}
+							presets.scriptIncluded.push(input);
+							menu_properties['presets'][1] = JSON.stringify(presets);
+							overwriteMenuProperties(); // Updates panel
+						}});
+						{
+							const subMenuSecondName = menu.newMenu('Remove entry from list...', subMenuName);
+							scriptIncluded.forEach( (queryObj, index) => {
+								const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name));
+								menu.newEntry({menuName: subMenuSecondName, entryText, func: () => {
+									scriptIncluded.splice(index, 1);
+									menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
+									// Presets
+									if (presets.hasOwnProperty('scriptIncluded')) {
+										presets.scriptIncluded.splice(presets.scriptIncluded.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
+										if (!presets.scriptIncluded.length) {delete presets.scriptIncluded;}
+										menu_properties['presets'][1] = JSON.stringify(presets);
+									}
+									overwriteMenuProperties(); // Updates panel
+								}});
+							});
+							if (!scriptIncluded.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+							menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
+								scriptIncluded = [...scriptIncludedDefaults];
 								menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
 								// Presets
 								if (presets.hasOwnProperty('scriptIncluded')) {
-									presets.scriptIncluded.splice(presets.scriptIncluded.findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(queryObj);}), 1);
-									if (!presets.scriptIncluded.length) {delete presets.scriptIncluded;}
+									delete presets.scriptIncluded;
 									menu_properties['presets'][1] = JSON.stringify(presets);
 								}
 								overwriteMenuProperties(); // Updates panel
 							}});
-						});
-						if (!scriptIncluded.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
-							scriptIncluded = [...scriptIncludedDefaults];
-							menu_properties['scriptIncluded'][1] = JSON.stringify(scriptIncluded);
-							// Presets
-							if (presets.hasOwnProperty('scriptIncluded')) {
-								delete presets.scriptIncluded;
-								menu_properties['presets'][1] = JSON.stringify(presets);
-							}
-							overwriteMenuProperties(); // Updates panel
-						}});
-					}
+						}
 				}
 				}});
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
