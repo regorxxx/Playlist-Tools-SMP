@@ -195,7 +195,7 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 						parent.playlistName = playlistName(tag, val);
 						parent.cacheTime = 0;
 						parent.pages = 1;
-						parent.run(); // parent.run({url, playlistName: playlistName(tag, val), cacheTime: 0});
+						parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0});
 					}
 				}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
 			});
@@ -279,17 +279,17 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 					parent.playlistName = url[1];
 					parent.pages = url[2] || 1;
 					parent.cacheTime = 0;
-					parent.run(); // parent.run({url: url[0], playlistName: url[1], cacheTime: 0});
+					parent.run({url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0});
 				}
 			}});
 		})
 		menu.newEntry({menuName: subMenuCustom, entryText: 'sep'});
 		menu.newEntry({menuName: subMenuCustom, entryText: 'By url...', func: () => {
-			parent.url = null; 
+			parent.url = cache.lastURL; 
 			parent.playlistName = 'Last.fm';
 			parent.cacheTime = 0;
 			parent.pages = 1;
-			parent.run(); // parent.run({url: null, pages: null, playlistName: 'Last.fm', cacheTime: 0});
+			parent.run({url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0});
 		}});
 	}
 	menu.newEntry({entryText: 'sep'});
