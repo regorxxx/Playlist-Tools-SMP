@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.25](#300-beta25---2023-03-09)
 - [3.0.0-beta.24](#300-beta24---2023-03-08)
 - [3.0.0-beta.23](#300-beta23---2023-03-08)
 - [3.0.0-beta.22](#300-beta22---2023-03-05)
@@ -41,6 +42,19 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.25] - 2023-03-09
+### Added
+### Changed
+- Presets: in case a custom menu entry has a duplicated name, it will be reported in a popup and skip for menu creation purposes. This should work as workaround to the crash appearing since [3.0.0-beta.20](#300-beta20---2023-03-04) if there were duplicated entries (allowing to remove them without clearing completely the panel). See [here](https://hydrogenaud.io/index.php/topic,120978.msg1023552.html#msg1023552).
+- Presets: customizable menu entries no longer allow duplicated names when adding or editing an entry. A popup will be shown as warning.
+- Script Integration\SMP Main menu: improved info popup shown for 'Execute menu entry by name'.
+### Removed
+### Fixed
+- Script Integration\Playlist Name Commands: popup text filling entire window (thus making impossible to click yes/no), now reduced to a few lines and pointing to full readme for more info.
+- Script Integration\SMP Dynamic menu: entries were not being added/edited properly at some instances.
+- UI: crash when using drag n' drop if a button file was loaded (instead of using the toolbar), although this installation method is no longer supported.
+- Presets: crash when editing presets at some instances.
 
 ## [3.0.0-beta.24] - 2023-03-08
 ### Added
@@ -838,7 +852,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.24...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.25...HEAD
+[3.0.0-beta.25]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.24...v3.0.0-beta.25
 [3.0.0-beta.24]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.23...v3.0.0-beta.24
 [3.0.0-beta.23]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.22...v3.0.0-beta.23
 [3.0.0-beta.22]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.21...v3.0.0-beta.22
