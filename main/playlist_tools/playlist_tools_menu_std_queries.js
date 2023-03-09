@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//09/03/23
 
 // Standard Queries...
 {
@@ -61,15 +61,20 @@
 				menu.newCondEntry({entryText: 'Search library... (cond)', condFunc: () => {
 					// Entry list
 					queryFilter = JSON.parse(menu_properties['searchQueries'][1]);
-					queryFilter.forEach( (queryObj) => {
+					const entryNames = new Set();
+					queryFilter.forEach((queryObj) => {
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 							let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
 							menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
 						} else { 
 							// Create names for all entries
-							let queryName = queryObj.name;
+							let queryName = queryObj.name || '';
 							queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
+							if (entryNames.has(queryName)) {
+								fb.ShowPopupMessage('There is an entry with duplicated name:\t' + queryName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
+								return;
+							} else {entryNames.add(queryName);}
 							// Entries
 							menu.newEntry({menuName, entryText: queryName, func: () => {
 								let query = queryObj.query;

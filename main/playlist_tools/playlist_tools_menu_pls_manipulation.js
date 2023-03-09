@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/23
+//09/03/23
 
 // Playlist manipulation...
 {
@@ -138,12 +138,18 @@
 						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
 						const bEvalSel = options['Dynamic queries'];
 						queryFilter = JSON.parse(menu_properties['queryFilter'][1]);
-						queryFilter.forEach( (queryObj) => {
+						const entryNames = new Set();
+						queryFilter.forEach((queryObj) => {
 							if (queryObj.name === 'sep') { // Create separators
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 							} else { 
 								// Create names for all entries
-								const queryName = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
+								let queryName = queryObj.name || '';
+								queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
+								if (entryNames.has(queryName)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + queryName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(queryName);}
 								menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + queryName, func: () => {
 									let query = queryObj.query;
 									// Invert query when pressing Control

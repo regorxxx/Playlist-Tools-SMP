@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/02/23
+//09/03/23
 
 // Selection manipulation...
 {
@@ -57,7 +57,8 @@
 					menu.newCondEntry({entryText: 'Sort selection (legacy)... (cond)', condFunc: () => {
 						// Entry list
 						sortLegacy = JSON.parse(menu_properties['sortLegacy'][1]);
-						sortLegacy.forEach( (sortObj) => {
+						const entryNames = new Set();
+						sortLegacy.forEach((sortObj) => {
 							// Add separators
 							if (sortObj.hasOwnProperty('name') && sortObj.name === 'sep') {
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -65,6 +66,10 @@
 								// Create names for all entries
 								let sortName = sortObj.name;
 								sortName = sortName.length > 40 ? sortName.substring(0,40) + ' ...' : sortName;
+								if (entryNames.has(sortName)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + sortName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(sortObj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(sortName);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText: sortName, func: () => {
 									const ap = plman.ActivePlaylist;
@@ -248,6 +253,7 @@
 					menu.newCondEntry({entryText: 'Scatter... (cond)', condFunc: () => {
 						// Entry list
 						scatter = JSON.parse(menu_properties['scatter'][1]);
+						const entryNames = new Set();
 						scatter.forEach((obj) => {
 							// Add separators
 							if (obj.hasOwnProperty('name') && obj.name === 'sep') {
@@ -256,6 +262,10 @@
 								// Create names for all entries
 								let entryText = obj.name;
 								entryText = entryText.length > 40 ? entryText.substring(0,40) + ' ...' : entryText;
+								if (entryNames.has(entryText)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + entryText + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(obj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(entryText);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...obj.args}) => {
 									if (args.tagValue !== null) {scatterByTags(args);} else {intercalateByTags(args);}
@@ -331,6 +341,7 @@
 					menu.newCondEntry({entryText: 'Intercalate... (cond)', condFunc: () => {
 						// Entry list
 						intercalate = JSON.parse(menu_properties['intercalate'][1]);
+						const entryNames = new Set();
 						intercalate.forEach((obj) => {
 							// Add separators
 							if (obj.hasOwnProperty('name') && obj.name === 'sep') {
@@ -339,6 +350,10 @@
 								// Create names for all entries
 								let entryText = obj.name;
 								entryText = entryText.length > 40 ? entryText.substring(0,40) + ' ...' : entryText;
+								if (entryNames.has(entryText)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + entryText + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(obj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(entryText);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...obj.args}) => {
 									if (args.tagValue !== null) {scatterByTags(args);} else {intercalateByTags(args);}
@@ -413,7 +428,8 @@
 					menu.newCondEntry({entryText: 'Shuffle... (cond)', condFunc: () => {
 						// Entry list
 						shuffle = JSON.parse(menu_properties['shuffle'][1]);
-						shuffle.forEach( (shuffleObj) => {
+						const entryNames = new Set();
+						shuffle.forEach((shuffleObj) => {
 							// Add separators
 							if (shuffleObj.hasOwnProperty('name') && shuffleObj.name === 'sep') {
 								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
@@ -421,6 +437,10 @@
 								// Create names for all entries
 								let shuffleName = shuffleObj.name;
 								shuffleName = shuffleName.length > 40 ? shuffleName.substring(0,40) + ' ...' : shuffleName;
+								if (entryNames.has(shuffleName)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + shuffleName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(shuffleObj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(shuffleName);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText: shuffleName, func: () => {
 									shuffleByTags(shuffleObj.args);

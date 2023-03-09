@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/01/23
+//09/03/23
 
 // Macros
 {
@@ -78,12 +78,19 @@
 				let propMacros = JSON.parse(menu_properties['macros'][1]);
 				if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
 				// List
+				const entryNames = new Set();
 				propMacros.forEach((macro) => {
 					if (macro.name === 'sep') { // Create separators
 						menu.newEntry({menuName, entryText: 'sep'});
 					} else {
+						let macroName = macro.name || '';
+						macroName = macroName.length > 40 ? macroName.substring(0,40) + ' ...' : macroName;
+						if (entryNames.has(macroName)) {
+							fb.ShowPopupMessage('There is an entry with duplicated name:\t' + macroName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
+							return;
+						} else {entryNames.add(macroName);}
 						const bAsync = macro.hasOwnProperty('bAsync') && macro.bAsync ? true : false;
-						menu.newEntry({menuName, entryText: macro.name + (bAsync ? '\t(async)' : ''), func: () => {
+						menu.newEntry({menuName, entryText: macroName + (bAsync ? '\t(async)' : ''), func: () => {
 							macro.entry.forEach( (entry, idx, arr) => {
 								menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: bAsync}); // Don't clear menu on last call
 							});

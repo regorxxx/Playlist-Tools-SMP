@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/02/23
+//09/03/23
 
 // Pools
 {
@@ -518,14 +518,19 @@
 			menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: () => {
 				// Entry list
 				pools = JSON.parse(menu_properties['pools'][1]);
-				pools.forEach( (poolObj) => {
+				const entryNames = new Set();
+				pools.forEach((poolObj) => {
 					// Add separators
 					if (poolObj.hasOwnProperty('name') && poolObj.name === 'sep') {
 						menu.newEntry({menuName, entryText: 'sep'});
 					} else { 
 						// Create names for all entries
-						let poolName = poolObj.name;
+						let poolName = poolObj.name || '';
 						poolName = poolName.length > 40 ? poolName.substring(0,40) + ' ...' : poolName;
+						if (entryNames.has(poolName)) {
+							fb.ShowPopupMessage('There is an entry with duplicated name:\t' + poolName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(poolObj, null, '\t'), scriptName + ': ' + name);
+							return;
+						} else {entryNames.add(poolName);}
 						// Global forced query
 						const pool = clone(poolObj.pool);
 						if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {

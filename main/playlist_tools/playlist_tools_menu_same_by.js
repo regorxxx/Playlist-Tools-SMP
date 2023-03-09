@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//09/03/23
 
 // Same by...
 {
@@ -65,15 +65,16 @@
 				menu.newCondEntry({entryText: 'Search same by tags... (cond)', condFunc: () => {
 					// Entry list
 					sameByQueries = JSON.parse(menu_properties['sameByQueries'][1]);
-					sameByQueries.forEach( (queryObj) => {
+					const entryNames = new Set();
+					sameByQueries.forEach((queryObj) => {
 						// Add separators
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 							let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
 							menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
 						} else { 
 							// Create names for all entries
-							let queryName = '';
-							if (!queryObj.hasOwnProperty('name') || !queryObj.name.length) {
+							let queryName = queryObj.name || '';
+							if (!queryName.length) {
 								Object.keys(queryObj.args.sameBy).forEach((key, index, array) => {
 									queryName += (!queryName.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
 									queryName += capitalize(key) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
@@ -81,6 +82,10 @@
 							} else {queryName = queryObj.name;}
 							queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
 							queryObj.name = queryName;
+							if (entryNames.has(queryName)) {
+								fb.ShowPopupMessage('There is an entry with duplicated name:\t' + queryName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
+								return;
+							} else {entryNames.add(queryName);}
 							// Entries
 							const sameByArgs = {...queryObj.args, playlistLength: defaultArgs.playlistLength, forcedQuery: defaultArgs.forcedQuery, checkDuplicatesBy: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle};
 							if (!forcedQueryMenusEnabled[name]) {sameByArgs.forcedQuery = '';}
