@@ -37,7 +37,7 @@ to a list of known commands or executed as a menu name. Some examples:
 As can be seen, arbitrary menus may be used with this approach but since 
 these dummy playlists are deleted after command execution, commands which 
 involve 'editing' the current playlist will not work as intended since it 
-will be deleted afterwards. i.e. naming a playlist 'PT:Duplicates and tag
+would be deleted afterwards. i.e. naming a playlist 'PT:Duplicates and tag
 filtering\Remove duplicates by title, artist, date' would first delete the
 current dummy playlist and then apply the command to the next active 
 playlist. As a workaround, and also as a way to alleviate all the writing 
