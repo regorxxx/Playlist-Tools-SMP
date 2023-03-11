@@ -40,7 +40,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
-- Helpers: updated helpers
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 - Pools: pools using dynamic queries crashed when there was no focus item (on any playlist).
