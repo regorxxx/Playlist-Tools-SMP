@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//10/03/23
 
 // Pools
 {
@@ -172,7 +172,7 @@
 							const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
 							if (query.length && query.toUpperCase() !== 'ALL') {
 								const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
-								if (checkQuery(processedQuery, true)) {
+								if (checkQuery(processedQuery, false)) {
 									console.log('Playlist tools Pools: filter -> ' + processedQuery);
 									handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
 								} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
@@ -358,7 +358,7 @@
 						const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
 						if (query.length && query.toUpperCase() !== 'ALL') {
 							const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
-							if (checkQuery(processedQuery, true)) {
+							if (checkQuery(processedQuery, false)) {
 								console.log('Playlist tools Pools: filter -> ' + processedQuery);
 								handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
 							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
