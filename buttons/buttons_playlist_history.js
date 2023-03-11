@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//11/03/23
 
 /* 
 	Playlist History
@@ -26,15 +26,15 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Playlist Tools History': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Prev. Playlist', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
-			createHistoryMenu().btn_up(this.currX, this.currY + this.currH);
+			this.plsHistory.menu().btn_up(this.currX, this.currY + this.currH);
 		} else {
-			goPrevPls();
+			this.plsHistory.goPrevPls();
 		}
-	}, null, void(0), () => {
+	}, null, void(0), (parent) => {
 		return 'Switch to previous playlist:' + 
-			'\nPlaylist:\t' + getPrevPlsName() + 
+			'\nPlaylist:\t' + parent.plsHistory.getPrevPlsName() + 
 			(typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1] 
 				? '\n-----------------------------------------------------\n(Shift + L. Click to see entire history)' 
 				: '');
-	}, prefix, newButtonsProperties, chars.history),
+	}, prefix, newButtonsProperties, chars.history, void(0), {plsHistory: new PlsHistory()})
 });

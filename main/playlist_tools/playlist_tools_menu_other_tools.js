@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/02/23
+//11/03/23
 
 // Other tools
 {
@@ -366,15 +366,16 @@
 				const name = 'Playlist History';
 				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
+					const plsHistory = new PlsHistory();
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist', func: goPrevPls, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
+					menu.newEntry({menuName: subMenuName, entryText: 'Previous playlist', func: plsHistory.goPrevPls, flags: () => {return (plsHistory.size() >= 2 ? MF_STRING : MF_GRAYED);}});
 					menu.newCondEntry({entryText: 'Playlist History... (cond)', condFunc: () => {
-						const [, ...list] = plsHistory;
+						const [, ...list] = plsHistory.getAll();
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						if (!list.length) {menu.newEntry({menuName: subMenuName, entryText: '-None-', func: null, flags: MF_GRAYED});}
-						list.forEach( (pls, idx) => {
+						list.forEach((pls, idx) => {
 							menu.newEntry({menuName: subMenuName, entryText: pls.name, func: () => {
 								const idx = getPlaylistIndexArray(pls.name);
 								if (idx.length) {
@@ -386,7 +387,7 @@
 								}
 							}});
 						});
-					}, flags: () => {return (plsHistory.length >= 2 ? MF_STRING : MF_GRAYED);}});
+					}, flags: () => {return (plsHistory.size >= 2 ? MF_STRING : MF_GRAYED);}});
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
 			}
 		}
