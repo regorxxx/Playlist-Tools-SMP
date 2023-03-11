@@ -40,8 +40,13 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Helpers: updated helpers
 ### Removed
 ### Fixed
+- Pools: pools using dynamic queries crashed when there was no focus item (on any playlist).
+- Pools: pools using standard queries without a focused item (on any playlist) did not output any results.
+- Macros: updated test macros with latest name changes. There were some entries not working using old names.
+- Macros: removed extra separator on edit entries submenu.
 
 ## [3.0.0-beta.25] - 2023-03-09
 ### Added
