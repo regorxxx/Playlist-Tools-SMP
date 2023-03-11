@@ -179,7 +179,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName:, de
 		}});
 	});
 	if (!options.list.length) {menu.newEntry({menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-	menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
+	if (!options.hasOwnProperty('bImport') || options.bImport || !options.hasOwnProperty('bAdd') || options.bAdd) {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});}
 	if (!options.hasOwnProperty('bAdd') || options.bAdd) {
 		menu.newEntry({menuName: subMenuSecondName, entryText: 'Add new entry to list...' , func: () => {
 			// Input all variables
