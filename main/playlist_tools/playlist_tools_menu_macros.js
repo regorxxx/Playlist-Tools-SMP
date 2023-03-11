@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//10/03/23
 
 // Macros
 {
@@ -14,9 +14,9 @@
 			// Create new properties
 			const macrosDefaults = [
 				{name: 'Test Tools', entry: [
-					'Most played Tracks\\Most played from 2021',
-					'Most played Tracks\\Most played from (all years)',
-					'Top rated Tracks from...\\Top rated from 2021',
+					'Most played Tracks from...\\Most played from 2022',
+					'Most played Tracks from...\\Most played (all years)',
+					'Top rated Tracks from...\\Top rated from 2022',
 					'Select...\\Select first track',
 					'Move selection to...\\To the middle',
 					'Expand...\\By Artist',
@@ -25,17 +25,16 @@
 					'Select...\\Select last track',
 					'Dynamic Queries...\\Same title (any artist)',
 					'Select...\\Select random track',
-					'Search similar by Graph...\\Random Styles/Genres mix, same Mood',
 					'Select...\\Select random track',
 					'Special Playlists...\\Influences from any date',
-					'Duplicates and tag filtering\\Remove duplicates by title, artist, date',
+					'Duplicates and tag filtering\\Remove duplicates by title, artist, year',
 					'Harmonic mix\\Harmonic mix from playlist',
 					'Select...\\Select All',
 					'Advanced sort...\\Incremental genre/styles (DynGenre)',
 					'Advanced sort...\\Incremental key (Camelot Wheel)',
 					'Scatter by tags\\Scatter acoustic tracks',
 					'Playlist Revive\\Find dead items in all playlists',
-					'Import track list\\Import from file (path at properties)',
+					'Import track list\\Import from custom path',
 					'Pools\\Top tracks mix',
 					'Macros\\Report library tags errors',
 					'Search by Distance\\Find genres/styles not on Graph',
@@ -47,13 +46,13 @@
 					'Standard Queries...\\By... (query)',
 					'Select...\\Select random track',
 					'Dynamic Queries...\\By... (query)',
-					// 'Duplicates and tag filtering\\Filter playlist by... (tags)',
-					// 'Query filtering\\Filter playlist by... (query)',
-					// 'Select...\\Select All',
-					// 'Sort...\\By... (expression)',
-					// 'Playlist manipulation\\Find or create playlist...',
-					// 'Import track list\\Import from file \\ url...',
-					// 'Pools\\Custom pool...'
+					'Duplicates and tag filtering\\Filter playlist by... (tags)',
+					'Query filtering\\Filter playlist by... (query)',
+					'Select...\\Select All',
+					'Sort...\\By... (expression)',
+					'Playlist manipulation\\Find or create playlist...',
+					'Import track list\\Import from file \\ url...',
+					'Pools\\Custom pool...'
 				], bAsync: false},
 				{name: 'sep'},
 				{name: 'Report library tags errors', entry: [
