@@ -1,14 +1,18 @@
 'use strict';
-//05/03/23
+//13/03/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 
-function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '', lastURL: ''}, bioTags = {}) {
+function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main menu, entries are not split by tag */} = {}) {
+	const parent = this.lastList;
+	const cache = this.cache || {lastDate: '', lastTag: '', lastArtist: '', lastURL: ''};
+	const bioTags = this.bioTags || {};
+	if (bSimulate) {return _lastListMenu.bind({sel: null})({bSimulate: false, bDynamicMenu: true});}
 	const menu = new _menu();
 	// Get current selection and metadata
-	const sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
+	const sel = this.sel || plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
 	const info = sel ? sel.GetFileInfo() : null;
 	const tags = [
 		{name: 'Artist top tracks', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
@@ -117,6 +121,7 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 	}
 	
 	function buildUrl(tag, val, valSec) {
+		if (val === '' || typeof val === 'undefined' || val === null) {return null;}
 		const mainArtist = /TITLE|ALBUM_TRACKS/i.test(tag.type) ? tag.val[1][0] || null : null;
 		const mainAlbum = /TITLE/i.test(tag.type) ? tag.val[2][0] || null : null;
 		val = val.toString().toLowerCase();
@@ -182,24 +187,43 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 	{
 		menu.newEntry({entryText: 'Search on Last.fm:', flags: MF_GRAYED});
 		menu.newEntry({entryText: 'sep'});
-		tags.forEach((tag) => {
-			const bSingle = tag.valSet.size <= 1;
-			const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name + '...');
-			if (tag.valSet.size === 0) {tag.valSet.add('');}
-			[...tag.valSet].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach((val, i) => {
-				menu.newEntry({menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']' : val, func: () => {
+		if (bDynamicMenu) {
+			tags.forEach((tag) => {
+				const subMenu = menu.getMainMenuName();
+				if (tag.valSet.size === 0) {tag.valSet.add('');}
+				const val = [...tag.valSet][0];
+				menu.newEntry({menuName: subMenu, entryText: tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']', func: () => {
 					const url = buildUrl(tag, val);
-					console.log('Searching at: ' + url);
 					if (url) {
 						parent.url = url; 
 						parent.playlistName = playlistName(tag, val);
 						parent.cacheTime = 0;
 						parent.pages = 1;
+						console.log('Searching at: ' + url);
 						parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0});
 					}
-				}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
+				}, flags: val ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
 			});
-		});
+		} else {
+			tags.forEach((tag) => {
+				const bSingle = tag.valSet.size <= 1;
+				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name + '...');
+				if (tag.valSet.size === 0) {tag.valSet.add('');}
+				[...tag.valSet].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach((val, i) => {
+					menu.newEntry({menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']' : val, func: () => {
+						const url = buildUrl(tag, val);
+						if (url) {
+							parent.url = url; 
+							parent.playlistName = playlistName(tag, val);
+							parent.cacheTime = 0;
+							parent.pages = 1;
+							console.log('Searching at: ' + url);
+							parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0});
+						}
+					}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
+				});
+			});
+		}
 	}
 	menu.newEntry({entryText: 'sep'});
 	{
@@ -274,14 +298,14 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 			menu.newEntry({menuName: entry.menuName, entryText: entry.name, func: () => {
 				const url = isFunction(entry.url) ? entry.url() : entry.url;
 				if (url && url[0]) {
-					console.log('Searching at: ' + url[0]);
 					parent.url = url[0]; 
 					parent.playlistName = url[1];
 					parent.pages = url[2] || 1;
 					parent.cacheTime = 0;
+					console.log('Searching at: ' + url[0]);
 					parent.run({url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0});
 				}
-			}});
+			}, data: {bDynamicMenu: true}});
 		})
 		menu.newEntry({menuName: subMenuCustom, entryText: 'sep'});
 		menu.newEntry({menuName: subMenuCustom, entryText: 'By url...', func: () => {
@@ -290,7 +314,7 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 			parent.cacheTime = 0;
 			parent.pages = 1;
 			parent.run({url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0});
-		}});
+		}, data: {bDynamicMenu: true}});
 	}
 	menu.newEntry({entryText: 'sep'});
 	{
@@ -304,14 +328,14 @@ function _lastListMenu(parent, cache = {lastDate: '', lastTag: '', lastArtist: '
 			menu.newEntry({menuName: entry.menuName, entryText: entry.name, func: () => {
 				const url = isFunction(entry.url) ? entry.url() : entry.url;
 				if (url) {
-					console.log('Searching at: ' + url);
 					parent.url = url; 
 					parent.playlistName = 'Last.fm: ' + entry.name;
 					parent.cacheTime = 0;
 					parent.pages = 1;
+					console.log('Searching at: ' + url);
 					parent.run(); // parent.run({url, playlistName: 'Last.fm: ' + entry.name, cacheTime: 0});
 				}
-			}});
+			}, data: {bDynamicMenu: true}});
 		})
 	}
 	
