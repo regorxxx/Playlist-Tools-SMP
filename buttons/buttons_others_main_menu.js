@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/03/23
+//13/03/23
 
 /* 
 	Main Menu shortcut
@@ -256,20 +256,30 @@ buttonsBar.list.push(newButtonsProperties);
 		}, prefix, newButtonsProperties, newButtonsProperties.icon[1], void(0), {defText: 'Main menu shortcut'},
 		{
 			'on_script_unload': (parent) => {
+				// Properties are not saved on unload
+				// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205
 				const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);
 				const indicator = JSON.parse(parent.buttonsProperties.indicator[1]);
 				if (unloadCall.disabled && !parent.active || unloadCall.enabled && parent.active) {
 					parent.onClick();
-				}
+				} 
 			}
-		}),
-	};
-	
-	// Default state: previous state or disabled
-	const indicator = JSON.parse(newButton['Main Menu'].buttonsProperties.indicator[1]);
-	if (indicator.enabled && indicator.init) {
-		newButton['Main Menu'].switchActive(newButton['Main Menu'].buttonsProperties.state[1]);
-	}
-	
+		},
+		(parent) => { // Default state on init
+			const indicator = JSON.parse(parent.buttonsProperties.indicator[1]);
+			const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);
+			// On unload properties are not saved but some states are not possible and must be fixed
+			let bActive = parent.buttonsProperties.state[1];
+			if (unloadCall.disabled && !bActive || unloadCall.enabled && bActive) {
+				bActive = !bActive;
+			}
+			// Otherwise just load previous state
+			if (indicator.enabled && indicator.init) {
+				parent.switchActive(bActive);
+			}
+			parent.buttonsProperties.state[1] = parent.active;
+			overwriteProperties(parent.buttonsProperties);
+		}
+	)};
 	addButton(newButton);
 }
