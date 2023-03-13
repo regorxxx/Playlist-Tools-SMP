@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//13/03/23
 
 /* 
 	Quicksearch for same....
@@ -132,7 +132,7 @@ addButton({
 	}, '', newButtonsProperties, chars.search),
 });
 
-function quickSearchMenu(bSimulate = false) {
+function quickSearchMenu({bSimulate = false} = {}) {
 	if (bSimulate) {return quickSearchMenu.bind({selItems: {Count: 1}, buttonsProperties: this.buttonsProperties, prefix: this.prefix})(false);}
 	// Safe Check
 	if (!this.selItems || !this.selItems.Count) {
