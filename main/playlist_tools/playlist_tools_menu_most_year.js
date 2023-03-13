@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//13/03/23
 
 // Most played tracks from year
 {
@@ -70,7 +70,7 @@
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_rated_tracks.txt';
 			const menuName = menu.newMenu(name);
-			menu.newEntry({menuName, entryText: 'Based on ratings (' + defaultArgs.ratingLimits.join(' to ') + '):', func: null, flags: MF_GRAYED});
+			menu.newEntry({menuName, entryText: 'Shift + Click to randomize:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			const currentYear = new Date().getFullYear();
 			const fromTo = [1950, Math.ceil(currentYear / 10) * 10];
@@ -100,7 +100,10 @@
 				let selArgs = { ...defaultArgs};
 				[selArgs.forcedQuery, selArgs.playlistName] = queryDateAndName(selArgs, selYear);
 				const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
-				menu.newEntry({menuName, entryText: 'Top rated' + dateName, func: (args = selArgs) => {topRatedTracks(args);}});
+				menu.newEntry({menuName, entryText: 'Top rated' + dateName, func: (args = selArgs) => {
+					if (utils.IsKeyPressed(VK_SHIFT)) {args.sortBy = '';} // Random on shift
+					topRatedTracks(args);
+				}});
 			});
 			menu.newEntry({menuName, entryText: 'sep'});
 			{	// Input menu
