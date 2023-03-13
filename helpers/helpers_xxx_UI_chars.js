@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/02/23
+//12/03/23
 
 // Font Awesome
 // https://www.fontawesomecheatsheet.com/
@@ -74,6 +74,8 @@ const chars = {
 	prevCircle 		: '\uf0e2',
 	nextCircle 		: '\uf01e',
 	exchange		: '\uf0ec',
+	downOutline		: '\uf0d7',
+	leftOutline		: '\uf0d9',
 	// Sort
 	sortAlphaAsc	: '\uf15d',
 	sortAlphaDes	: '\uf15e',
