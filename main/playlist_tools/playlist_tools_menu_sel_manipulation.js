@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//13/03/23
 
 // Selection manipulation...
 {
@@ -529,7 +529,14 @@
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '');
+												const entryText = playlist.name + 
+													(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+														? ' (current | playing)'
+														: ap === playlist.index 
+															? ' (current)'
+															: plman.PlayingPlaylist === playlist.index 
+																? ' (playing)' 
+																: '');
 												menu.newEntry({menuName: subMenu_i, entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 												// Add radio check on current playlist
 												if (playlist.index === ap) {menu.newCheckMenu(subMenu_i, entryText, entryText, () => 0);}
@@ -537,7 +544,14 @@
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '');
+											const entryText = playlist.name +
+												(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+													? ' (current | playing)'
+													: ap === playlist.index 
+														? ' (current)'
+														: plman.PlayingPlaylist === playlist.index 
+															? ' (playing)' 
+															: '');
 											menu.newEntry({menuName: subMenuName,  entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 											// Add radio check on current playlist
 											if (playlist.index === ap) {menu.newCheckMenu(subMenuName, entryText, entryText, () => 0);}
@@ -578,7 +592,14 @@
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '');
+												const entryText = playlist.name +
+													(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+														? ' (current | playing)'
+														: ap === playlist.index 
+															? ' (current)'
+															: plman.PlayingPlaylist === playlist.index 
+																? ' (playing)' 
+																: '');
 												menu.newEntry({menuName: subMenu_i, entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 												// Add radio check on current playlist
 												if (playlist.index === ap) {menu.newCheckMenu(subMenu_i, entryText, entryText, () => 0);}
@@ -586,7 +607,14 @@
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '');
+											const entryText = playlist.name +
+												(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+													? ' (current | playing)'
+													: ap === playlist.index 
+														? ' (current)'
+														: plman.PlayingPlaylist === playlist.index 
+															? ' (playing)' 
+															: '');
 											menu.newEntry({menuName: subMenuName, entryText, func: () => {focusInPlaylist(sel, playlist.index);}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 											// Add radio check on current playlist
 											if (playlist.index === ap) {menu.newCheckMenu(subMenuName, entryText, entryText, () => 0);}
@@ -627,7 +655,14 @@
 											const subMenu_i = menu.newMenu(idx, subMenuName);
 											for (let j = bottomIdx; j <= topIdx && j < playlistsNum; j++) {
 												const playlist = inPlaylist[j];
-												const entryText =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
+												const entryText =  playlist.name +
+													(playlist.bLocked && ap === playlist.index
+														? ' (current | locked)'
+														: ap === playlist.index 
+															? ' (current)'
+															: playlist.bLocked
+																? ' (locked)' 
+																: '');
 												menu.newEntry({menuName: subMenu_i, entryText, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 												// Add radio check on current playlist
 												if (playlist.index === ap) {menu.newCheckMenu(subMenu_i, entryText, entryText, () => 0);}
@@ -635,7 +670,14 @@
 										}
 									} else { // Or just show all
 										for (const playlist of inPlaylist) {
-											const entryText =  playlist.name + (playlist.bLocked ? ' (locked playlist)' : '') + (ap === playlist.index ? ' (current playlist)' : '')
+											const entryText =  playlist.name +
+												(playlist.bLocked && ap === playlist.index
+													? ' (current | locked)'
+													: ap === playlist.index 
+														? ' (current)'
+														: playlist.bLocked
+															? ' (locked)' 
+															: '');
 											menu.newEntry({menuName: subMenuName, entryText, func: () => {plman.UndoBackup(playlist.index); removeFromPlaylist(sel, playlist.index);}, flags: playlist.bLocked ? MF_GRAYED : MF_STRING});
 											// Add radio check on current playlist
 											if (playlist.index === ap) {menu.newCheckMenu(subMenuName, entryText, entryText, () => 0);}
@@ -794,7 +836,14 @@
 								for (let j = bottomIdx + skipped; j <= topIdx + skipped && j < playlistsNum; j++) {
 									if (!addLock(j)) {
 										const playlist = {name: plman.GetPlaylistName(j), index : j};
-										const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '');
+										const entryText = playlist.name +
+											(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+												? ' (current | playing)'
+												: ap === playlist.index 
+													? ' (current)'
+													: plman.PlayingPlaylist === playlist.index 
+														? ' (playing)' 
+														: '');
 										menu.newEntry({menuName: subMenu_i_send, entryText, func: () => {
 											plman.UndoBackup(playlist.index);
 											plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
@@ -808,8 +857,15 @@
 							for (let i = 0; i < playlistsNum; i++) {
 								if (!addLock(i)) {
 									const playlist = {name: plman.GetPlaylistName(i), index : i};
-									const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
-									menu.newEntry({menuName: subMenuNameSend, entryText: playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : ''), func: () => {
+									const entryText = playlist.name +
+										(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+											? ' (current | playing)'
+											: ap === playlist.index 
+												? ' (current)'
+												: plman.PlayingPlaylist === playlist.index 
+													? ' (playing)' 
+													: '');
+									menu.newEntry({menuName: subMenuNameSend, entryText, func: () => {
 										plman.InsertPlaylistItems(playlist.index, plman.PlaylistItemCount(playlist.index), handleList);
 									}, flags: (ap === playlist.index ? MF_GRAYED : MF_STRING)});
 									// Add radio check on current playlist

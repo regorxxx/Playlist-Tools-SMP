@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//13/03/23
 
 // Playlist manipulation...
 {
@@ -391,7 +391,14 @@
 								const subMenu_i_diff = bDiff ? menu.newMenu(idxDiff, subMenuNameDiff) : null;
 								for (let j = bottomIdx; j <= topIdx + skipped && j < playlistsNum; j++) {
 									const playlist = {name: plman.GetPlaylistName(j), index : j};
-									const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
+									const entryText = playlist.name + 
+										(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+											? ' (current | playing)'
+											: ap === playlist.index 
+												? ' (current)'
+												: plman.PlayingPlaylist === playlist.index 
+													? ' (playing)' 
+													: '');
 									if (bMerge && !bAddLock) {
 										menu.newEntry({menuName: subMenu_i_merge, entryText, func: () => {
 											plman.UndoBackup(ap);
@@ -455,7 +462,14 @@
 						} else { // Or just show all
 							for (let i = 0; i < playlistsNum; i++) {
 								const playlist = {name: plman.GetPlaylistName(i), index : i};
-								const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
+								const entryText = playlist.name +
+									(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+										? ' (current | playing)'
+										: ap === playlist.index 
+											? ' (current)'
+											: plman.PlayingPlaylist === playlist.index 
+												? ' (playing)' 
+												: '');
 								if (bMerge && !bAddLock) {
 									menu.newEntry({menuName: subMenuNameMerge,  entryText, func: () => {
 										plman.UndoBackup(ap);
@@ -573,7 +587,14 @@
 						let ss = menu_properties['playlistSplitSize'][1];
 						const sendGoCloseMenu = (index, menuName, obj) => {
 							const playlist = {name: plman.GetPlaylistName(index), index};
-							const entryText = playlist.name + (ap === playlist.index ? ' (current playlist)' : '') +  (plman.PlayingPlaylist === playlist.index ? ' (playing playlist)' : '')
+							const entryText = playlist.name +
+								(plman.PlayingPlaylist === playlist.index && ap === playlist.index
+									? ' (current | playing)'
+									: ap === playlist.index 
+										? ' (current)'
+										: plman.PlayingPlaylist === playlist.index 
+											? ' (playing)' 
+											: '');
 							if (obj.action === 'send' && !addLock(index)){
 								menu.newEntry({menuName, entryText, func: () => {
 									plman.UndoBackup(playlist.index);
