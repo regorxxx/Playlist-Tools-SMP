@@ -1,5 +1,5 @@
 'use strict';
-//13/03/23
+//15/03/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -143,7 +143,7 @@ addButton({
 				info += '\n(Shift + L. Click to open config menu)';
 			}
 			return info;
-		}, prefix, newButtonsProperties, folders.xxx + 'images\\icons\\lastfm_64.png', null,
+		}, prefix, newButtonsProperties, chars.lastFm, void(0),
 		{lastList: typeof LastList !== 'undefined' ? new LastList() : null, bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
 		typeof lastfmListeners !== 'undefined' ? lastfmListeners : null,
 		(parent) => {
