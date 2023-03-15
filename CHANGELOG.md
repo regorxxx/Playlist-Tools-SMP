@@ -45,6 +45,11 @@
 - Helpers: updated helpers.
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
+- Buttons: Last.fm button's icon to font, instead of png image; scales better on different DPI settings.
+- Buttons: macros button's icon to half hourglass; blends better on dark and light themes.
+- Buttons: top tracks button's icon to a heart without filling; blends better on dark and light themes.
+- Buttons: Playlist Tools submenu custom button's icon now changes according to the associated submenu.
+- Buttons: search same button's icon to magnifying glass with a plus; more intuitive than previous icon (link).
 ### Removed
 ### Fixed
 - Buttons: 'main_menu_shortcut' button's state was not saved properly when using 'Run when closing foobar?' option due to a limit on how [foobar2000/SMP work](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205). A workaround has been implemented, considering a button should always be on an specific state at init if these options were used.
