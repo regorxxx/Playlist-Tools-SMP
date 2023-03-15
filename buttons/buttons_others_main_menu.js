@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//15/03/23
 
 /* 
 	Main Menu shortcut
@@ -23,15 +23,11 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
 	customName:		['Name for the custom UI button', 'Main Menu', {func: isStringWeak}, 'Main Menu'],
-	entries:		['Main menu entries', JSON.stringify([
-		{name: 'Playback Statistics', command: 'Library/Playback Statistics/Monitor playing tracks'},
-		{name: 'ListenBrainz Statistics', command: 'Playback/Submit to ListenBrainz'},
-		{name: 'Last.fm Statistics', command: 'Playback/Scrobble tracks'}
-	]), {func: isJSON}],
+	entries:		['Main menu entries', JSON.stringify([]), {func: isJSON}],
 	unloadCall: 	['Call menus on unload options', JSON.stringify({enabled: false, disabled: false}), {func: isJSON}],
 	indicator: 		['Indicator options', JSON.stringify({init: true, enabled: false}), {func: isJSON}],
 	state: 	 		['Current state', false, {func: isBoolean}, false],
-	icon:			['Button icon', chars.cogs, {func: isString}, chars.cogs],
+	icon:			['Button icon', chars.console, {func: isString}, chars.console],
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
@@ -49,7 +45,7 @@ buttonsBar.list.push(newButtonsProperties);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 			const indicator = JSON.parse(this.buttonsProperties.indicator[1]);
 			const specialKeys = ['PlaybackFollowCursor', 'CursorFollowPlayback', 'idx', 'timeout'];
-			if (mask === MK_SHIFT) {
+			if (mask === MK_SHIFT || !list.length) {
 				const menu = new _menu();
 				menu.newEntry({entryText: 'Select output:', func: null, flags: MF_GRAYED});
 				menu.newEntry({entryText: 'sep'});
