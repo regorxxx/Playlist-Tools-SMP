@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//15/03/23
 
 include('helpers_xxx_basic_js.js');
 include('helpers_xxx_prototypes.js');
@@ -464,7 +464,11 @@ function themedButton(
 	if (variables) {
 		if (typeof variables === 'object') {
 			for (let key in variables) {
-				this[key] = variables[key];
+				if (isFunction(variables[key])) {
+					this[key] = variables[key].bind(this, this);
+				} else {
+					this[key] = variables[key];
+				}
 			}
 		} else {console.log('butttons_xxx: variables is not an object');}
 		variables = null;

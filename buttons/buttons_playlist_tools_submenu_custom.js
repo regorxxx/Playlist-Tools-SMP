@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//15/03/23
 
 /* 
 	Playlist Tools Submenu Custom
@@ -17,7 +17,7 @@ prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
 	customName: ['Name for the custom UI button', 'Customize!', {func: isStringWeak}, 'Customize!'],
 	menu: 		['Menu entry', '', {func: isStringWeak}, ''],
-	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
 };
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve
@@ -37,6 +37,7 @@ addButton({
 							this.buttonsProperties['menu'][1] = menuObj.menuName;
 							this.buttonsProperties.customName[1] = menuObj.menuName;
 							overwriteProperties(this.buttonsProperties); // Force overwriting
+							this.setIcon(menuObj.menuName);
 							this.adjustNameWidth(menuObj.menuName);
 						}});
 					} else {
@@ -49,6 +50,7 @@ addButton({
 									this.buttonsProperties['menu'][1] = subMenuObj.menuName;
 									this.buttonsProperties.customName[1] = subMenuObj.menuName;
 									overwriteProperties(this.buttonsProperties); // Force overwriting
+									this.setIcon(subMenuObj.menuName);
 									this.adjustNameWidth(subMenuObj.menuName);
 								}});
 							}
@@ -101,7 +103,69 @@ addButton({
 						: ''
 					)
 			) : 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
-	}, null, newButtonsProperties, chars.wrench),
+	}, null, newButtonsProperties, chars.wrench, void(0), 
+	{
+		setIcon: (parent, name) => {
+			let icon;
+			switch (name.toLowerCase()) {
+				case 'most played tracks from...': icon = chars.calendar; break;
+				case 'top rated tracks from...': icon = chars.heartOff; break;
+				case 'search same by tags...': icon = chars.searchPlus; break;
+				case 'standard queries...':
+				case 'dynamic queries...': icon = chars.filter; break;
+				case 'special playlists...': icon = chars.wand; break;
+				case 'playlist manipulation': icon = chars.fileWhite; break;
+					case 'duplicates and tag filtering': icon = chars.duplicates; break;
+					case 'query filtering': icon = chars.filter; break;
+					case 'harmonic mix': icon = chars.sortBarsAsc; break;
+					case 'cut playlist length to...': icon = chars.cut; break;
+					case 'merge with playlist...':
+					case 'intersect with playlist...':
+					case 'difference with playlist...': icon = chars.sitemap; break;
+					case 'send playlist\'s tracks to...': icon = chars.send; break;
+					case 'go to playlist...': icon = chars.fileWhite; break;
+					case 'close playlist...': icon = chars.ban; break;
+					case 'lock playlist...': icon = chars.lock; break;
+					case 'unlock playlist...': icon = chars.unlock; break;
+					case 'switch lock playlist...': icon = chars.unlockAlt; break;
+				case 'selection manipulation': icon = chars.checkSquareAlt; break;
+					case 'sort...':
+					case 'advanced sort...': icon = chars.sortBarsAsc; break;
+					case 'scatter by tags':
+					case 'intercalate by tags': icon = chars.exchange; break;
+					case 'shuffle by tags': icon = chars.shuffle; break;
+					case 'find now playing track in...':
+					case 'find track(s) in...': icon = chars.search; break;
+					case 'find now playing track in...': icon = chars.search; break;
+					case 'remove track(s) from...': icon = chars.searchMinus; break;
+					case 'send selection to...':
+					case 'move selection to...': icon = chars.send; break;
+					case 'select...': icon = chars.checkSquareAlt; break;
+					case 'expand...': icon = chars.expand; break;
+					case 'jump...': icon = chars.nextCircle; break;
+				case 'other tools': icon = chars.wrench; break;
+					case 'check tags':
+					case 'write tags': icon = chars.tags; break;
+					case 'playlist revive': icon = chars.recycle; break;
+					case 'import track list': icon = chars.fileSound; break;
+					case 'iplaylist history': icon = chars.history; break;
+				case 'pools': icon = chars.music; break;
+				case 'macros': icon = chars.hourglassHalf; break;
+				case 'script integration':
+				case 'configuration': icon = chars.cogs; break;
+					case 'readmes...': icon = chars.question; break;
+				default: icon = chars.wrench; break;
+			}
+			if (icon !== parent.icon) {
+				parent.icon = icon;
+				parent.iconWidth = _gr.CalcTextWidth(parent.icon, parent.gFontIcon);
+			}
+		}
+	}, void(0),
+	(parent) => {
+		parent.setIcon(parent.text);
+	}
+	),
 });
 
 // Helpers
