@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//15/03/23
 
 /* 
 	Top Tracks
@@ -44,5 +44,5 @@ addButton({
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
-	}, prefix, newButtonsProperties, chars.heartOn),
+	}, prefix, newButtonsProperties, chars.heartOff),
 });
