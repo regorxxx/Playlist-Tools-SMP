@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//15/03/23
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -50,5 +50,5 @@ addButton({
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
-	}, prefix, newButtonsProperties, chars.link),
+	}, prefix, newButtonsProperties, chars.searchPlus),
 });

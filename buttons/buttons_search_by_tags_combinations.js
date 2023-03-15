@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//15/03/23
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -106,5 +106,5 @@ addButton({
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
-	}, prefix, newButtonsProperties, chars.link),
+	}, prefix, newButtonsProperties, chars.searchPlus),
 });
