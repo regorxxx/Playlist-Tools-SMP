@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//15/03/23
 
 /* 
 	Playlist Tools Macro custom
@@ -82,7 +82,7 @@ addButton({
 					: ''
 				) 
 			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
-	}, null, newButtonsProperties, chars.hourglass),
+	}, null, newButtonsProperties, chars.hourglassHalf),
 });
 
 // Helpers
