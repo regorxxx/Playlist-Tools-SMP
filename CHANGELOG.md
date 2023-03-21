@@ -42,6 +42,7 @@
 - Last.fm: menu entries are now available as dynamic SMP menus (toogable setting).
 - Top Rated Tracks from...: pressing shift when clicking the menu entries now randomizes the tracks taken from the pool (according to rating and date), instead of sorting them by play count (which always output the same tracks if play count doesn't change). i.e. if someone wants to listen their top rated tracks from the 2000s but different sets of tracks on every listening session, not always the same most rated and most played tracks, the randomize modifier could be used.
 ### Changed
+- Selection manipulation\Shuffle: Spotify-like smart shuffle now also tries to scatter instrumental, live  and other tracks while respecting the smart pattern by tag (usually Artist). For ex. if it can swap tracks without altering the Artist proportion for a given range of tracks, thus moving an instrumental track to another position to soft-limit the appearance of consecutive instrumental tracks. Same rationale applies for live tracks or other special conditions. This somewhat ensures any cluster of tracks is as diverse as possible.
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
 - Buttons: Last.fm button's icon to font, instead of png image; scales better on different DPI settings.
@@ -52,6 +53,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Selection manipulation\Shuffle: 'By...(tag)' entry not working.
 - Playlist Manipulation\Query filtering: dynamic queries were not being properly inverted while pressing Ctrl on some edge cases.
 - Buttons: 'main_menu_shortcut' button's state was not saved properly when using 'Run when closing foobar?' option due to a limit on how [foobar2000/SMP work](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205). A workaround has been implemented, considering a button should always be on an specific state at init if these options were used.
 - Pools: pools using dynamic queries crashed when there was no focus item (on any playlist).
