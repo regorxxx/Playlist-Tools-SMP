@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//21/03/23
 
 // Selection manipulation...
 {
@@ -420,6 +420,7 @@
 						try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
 						catch (e) {return;}
 						if (!tagName.length) {return;}
+						tagName = tagName.split(/;|,/g);
 						return {args: {tagName}};
 					};
 					// Menus
@@ -443,7 +444,7 @@
 								} else {entryNames.add(shuffleName);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText: shuffleName, func: () => {
-									shuffleByTags(shuffleObj.args);
+									shuffleByTags({...shuffleObj.args, bDebug: defaultArgs.bDebug});
 								}, flags: multipleSelectedFlagsReorder});
 							}
 						});
@@ -458,7 +459,7 @@
 								const input = inputShuffle();
 								if (!input) {return;}
 								// Execute
-								shuffleByTags(input.args);
+								shuffleByTags({...input.args, bDebug: defaultArgs.bDebug});
 								// For internal use original object
 								selArg.args = input.args;
 								menu_properties['shuffleCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
