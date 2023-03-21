@@ -152,16 +152,6 @@
 								} else {entryNames.add(queryName);}
 								menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by ' + queryName, func: () => {
 									let query = queryObj.query;
-									// Invert query when pressing Control
-									if (utils.IsKeyPressed(VK_CONTROL) && query.length) {
-										query = 'NOT ' + _p(query);
-									}
-									// Forced query
-									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
-										if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-											query = _p(query) + ' AND ' + _p(defaultArgs.forcedQuery);
-										} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
-									} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 									// Test
 									let focusHandle = fb.GetFocusItem(true);
 									if (focusHandle && query.indexOf('#') !== -1) {
@@ -172,6 +162,16 @@
 											query = queryReplaceWithCurrent(query, focusHandle);
 										}
 									}
+									// Invert query when pressing Control
+									if (utils.IsKeyPressed(VK_CONTROL) && query.length) {
+										query = 'NOT ' + _p(query);
+									}
+									// Forced query
+									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
+										if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+											query = _p(query) + ' AND ' + _p(defaultArgs.forcedQuery);
+										} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
+									} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
 									try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
 									catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
 									// Execute
