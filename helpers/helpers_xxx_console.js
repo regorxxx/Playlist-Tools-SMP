@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//20/03/23
 
 include(fb.ComponentPath + 'docs\\Codepages.js');
 
@@ -74,11 +74,19 @@ function consoleLog() {
 						}
 						try {
 							val = (instance ? instance.name + ' ' : 'Object ') + JSON.stringify(val ? val : arg, (k, v) => {
-								if (v.RawPath && v.Path) {
-									return "FbMetadbHandle " + JSON.stringify({FileSize: v.FileSize, Length: v.Length, Path: v.Path, RawPath: v.RawPath, SubSong: v.SubSong}, null, ' ').replace(/{\n /,'{').replace(/"|\n/g,'').replace(/\\\\/g, '\\');
-								} 
-								else if (v instanceof FbMetadbHandleList) {
-									return "FbMetadbHandleList " + JSON.stringify({Count: v.Count}, null, ' ').replace(/{\n /,'{').replace(/"|\n/g,'');
+								if (typeof v !== 'undefined' && v !== null) {
+									if (v.RawPath && v.Path) {
+										return 'FbMetadbHandle ' + JSON.stringify({FileSize: v.FileSize, Length: v.Length, Path: v.Path, RawPath: v.RawPath, SubSong: v.SubSong}, null, ' ').replace(/{\n /,'{').replace(/"|\n/g,'').replace(/\\\\/g, '\\');
+									} 
+									else if (v instanceof FbMetadbHandleList) {
+										return 'FbMetadbHandleList ' + JSON.stringify({Count: v.Count}, null, ' ').replace(/{\n /,'{').replace(/"|\n/g,'')
+									}
+									else if (v instanceof Set) {
+										return 'Set ' + JSON.stringify([...v]).replace(/"|\n/g,'');
+									}
+									else if (v instanceof Map) {
+										return 'Map ' + JSON.stringify([...v]).replace(/"|\n/g,'');
+									}
 								}
 								return v;
 							});
