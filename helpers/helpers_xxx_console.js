@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/03/23
+//22/03/23
 
 include(fb.ComponentPath + 'docs\\Codepages.js');
 
@@ -86,6 +86,15 @@ function consoleLog() {
 									}
 									else if (v instanceof Map) {
 										return 'Map ' + JSON.stringify([...v]).replace(/"|\n/g,'');
+									}
+									else if (v instanceof WeakMap) {
+										return 'WeakMap ' + JSON.stringify([...v]).replace(/"|\n/g,'');
+									}
+									else if (v instanceof WeakSet) {
+										return 'WeakMap ' + JSON.stringify([...v]).replace(/"|\n/g,'');
+									}
+									else if (v instanceof Error) {
+										return 'Error ' + arg.toString().replace(/"|\n/g,'');
 									}
 								}
 								return v;
