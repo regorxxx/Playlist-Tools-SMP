@@ -41,8 +41,10 @@
 ### Added
 - Last.fm: menu entries are now available as dynamic SMP menus (toogable setting).
 - Top Rated Tracks from...: pressing shift when clicking the menu entries now randomizes the tracks taken from the pool (according to rating and date), instead of sorting them by play count (which always output the same tracks if play count doesn't change). i.e. if someone wants to listen their top rated tracks from the 2000s but different sets of tracks on every listening session, not always the same most rated and most played tracks, the randomize modifier could be used.
+- Pools: new 'smartShuffle' option for pools which mimics 'Selection manipulation\Shuffle' feature on the output by set tag. Check '.\presets\Playlist Tools\pools\allowedKeys.txt' for usage and examples.
+- Selection manipulation\Shuffle: additional option to scatter to scatter instrumental, live and other tracks while respecting the smart pattern by tag (usually Artist). For ex. if it can swap tracks without altering the Artist proportion for a given range of tracks, thus moving an instrumental track to another position to soft-limit the appearance of consecutive instrumental tracks. Same rationale applies for live tracks or other special conditions. This somewhat ensures any cluster of tracks is as diverse as possible.
+- Selection manipulation\Shuffle: additional options for the Spotify-like smart shuffle to prioritize tracks by Rating, Play Count (original Spotify's behavior), Last played date, randomly...
 ### Changed
-- Selection manipulation\Shuffle: Spotify-like smart shuffle now also tries to scatter instrumental, live and other tracks while respecting the smart pattern by tag (usually Artist). For ex. if it can swap tracks without altering the Artist proportion for a given range of tracks, thus moving an instrumental track to another position to soft-limit the appearance of consecutive instrumental tracks. Same rationale applies for live tracks or other special conditions. This somewhat ensures any cluster of tracks is as diverse as possible.
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
 - Buttons: Last.fm button's icon to font, instead of png image; scales better on different DPI settings.
@@ -53,8 +55,11 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Selection manipulation\Advanced sort...: harmonic mixing configuration menu not shown if 'Playlist manipulation' and 'Special playlists' submenus were hidden.
 - Selection manipulation\Shuffle: 'By...(tag)' entry not working.
 - Playlist Manipulation\Query filtering: dynamic queries were not being properly inverted while pressing Ctrl on some edge cases.
+- Script Integration\SMP Dynamic menu: crash on init after disabling submenu (and feature) via shift clicking .
+- Playlist Manipulation: disabling submenu via shift clicking did not output the proper menu list order.
 - Buttons: 'main_menu_shortcut' button's state was not saved properly when using 'Run when closing foobar?' option due to a limit on how [foobar2000/SMP work](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205). A workaround has been implemented, considering a button should always be on an specific state at init if these options were used.
 - Pools: pools using dynamic queries crashed when there was no focus item (on any playlist).
 - Pools: pools using standard queries without a focused item (on any playlist) did not output any results.
