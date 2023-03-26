@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/03/23
+//25/03/23
 
 /* 
 	Playlist Tools Menu
@@ -280,7 +280,7 @@ include('playlist_tools_menu_search_by_distance.js');
 			menu.newMenu(specialMenu);
 		}
 		menu.newEntry({entryText: 'sep'});
-	} else if (menuDisabled.findIndex((menu) => {return menu.menuName === specialMenu}) === -1) {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+	} else if (menuDisabled.findIndex((menu) => {return menu.menuName === specialMenu}) === -1) {menuDisabled.push({menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 }
 
 // Playlist manipulation...
@@ -311,7 +311,6 @@ include('playlist_tools_menu_last_action.js');
 	Enable menu
 */
 {
-	// const menuList = menu.getMenus().slice(1).filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);});
 	const menuList = menu.getEntries().slice(1).filter((entry) => {
 		return (entry.bIsMenu 
 			? menuAltAllowed.has(entry.subMenuFrom) // menu
@@ -322,7 +321,7 @@ include('playlist_tools_menu_last_action.js');
 		);
 	});
 	menuDisabled.forEach((obj) => {obj.disabled = true;});
-	menuDisabled.forEach((obj) => {menuList.splice(obj.index, 0, obj);});
+	menuDisabled.forEach((obj) => {menuList.splice(obj.index - (obj.index < 16 ? 1 : 0), 0, obj);});
 	// Header
 	menuAlt.newEntry({entryText: 'Switch menus functionality:', func: null, flags: MF_GRAYED});
 	menuAlt.newEntry({entryText: 'sep'});
@@ -549,7 +548,11 @@ function exportMainMenuDynamic({file = folders.ajquerySMP + 'playlisttoolsentrie
 }
 // Run once at startup
 deferFunc.push({name: 'createMainMenuDynamic', func: () => {
-	if (menu_panelProperties.bDynamicMenus[1] || typeof mainMenuSMP !== 'undefined') {callbacksListener.listenNames = true; createMainMenuDynamic(); callbacksListener.checkPanelNamesAsync();}
+	if ((menu_panelProperties.bDynamicMenus[1] || typeof mainMenuSMP !== 'undefined') && typeof onMainMenuEntries !== 'undefined') {
+		callbacksListener.listenNames = true; 
+		createMainMenuDynamic(); 
+		callbacksListener.checkPanelNamesAsync();
+	}
 }});
 
 /* 
