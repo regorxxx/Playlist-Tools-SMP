@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/02/23
+//25/03/23
 
 // Similar by...Graph\Dyngenre\Weight
 {
@@ -16,7 +16,7 @@
 			readmes['Search similar by Dyngenre'] = folders.xxx + 'helpers\\readme\\search_by_distance_dyngenre.txt';
 			readmes['Search similar by Weight'] = folders.xxx + 'helpers\\readme\\search_by_distance_weight.txt';
 			// Delete unused properties
-			const toDelete = ['forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'graphDistance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesByTag', 'bSmartShuffle'];
+			const toDelete = ['forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'graphDistance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesByTag', 'bSmartShuffle', 'bSmartShuffleAdvc', 'smartShuffleSortBias'];
 			let toMerge = {}; // Deep copy
 			Object.keys(SearchByDistance_properties).forEach((key) => {
 				if (toDelete.indexOf(key) === -1) {
@@ -34,8 +34,15 @@
 			}});
 			// And merge
 			menu_properties = {...menu_properties, ...toMerge};
+			// Other properties
+			if (!menu_properties.hasOwnProperty('bSmartShuffleAdvc')) {
+				menu_properties['bSmartShuffleAdvc'] = ['Smart shuffle extra conditions', true, {func: isBoolean}, true];
+			}
+			if (!menu_properties.hasOwnProperty('smartShuffleSortBias')) {
+				menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', {func: isStringWeak}, 'random'];
+			}
 			// Set default args
-			const scriptDefaultArgs = {properties: menu_properties, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, graphDistance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: false, bProgressiveListOrder: false, bScatterInstrumentals: false, bSmartShuffle: true, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN:1, bCreatePlaylist: true};
+			const scriptDefaultArgs = {properties: menu_properties, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, graphDistance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, probPick: 100, bSortRandom: false, bProgressiveListOrder: false, bScatterInstrumentals: false, bSmartShuffle: true, bSmartShuffleAdvc: menu_properties.bSmartShuffleAdvc[1], smartShuffleSortBias: menu_properties.smartShuffleSortBias[1], bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN:1, bCreatePlaylist: true};
 			// Menus
 			function loadMenus(menuName, selArgs, entryArgs = []){
 				selArgs.forEach( (selArg) => {
@@ -331,10 +338,60 @@
 								}});
 								menu.newCheckMenu(subMenuName, 'Enable double pass to match more tracks', void(0), () => {return menu_properties['bHarmonicMixDoublePass'][1];});
 							}
+						}
+					}
+					{
+						const subMenuName = 'Smart shuffle';
+						if (!menu.hasMenu(subMenuName, configMenu)) {
+							menu.newMenu(subMenuName, configMenu);
+							{	// bSmartShuffleAdvc
+								menu.newEntry({menuName: subMenuName, entryText: 'For any tool which uses Smart Shuffle:', func: null, flags: MF_GRAYED});
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+								menu.newEntry({menuName: subMenuName, entryText: 'Enable extra conditions', func: () => {
+									menu_properties.bSmartShuffleAdvc[1] = !menu_properties.bSmartShuffleAdvc[1];
+									if (menu_properties.bSmartShuffleAdvc[1]) {
+										fb.ShowPopupMessage(
+											'Smart shuffle will also try to avoid consecutive tracks with these conditions:' +
+											'\n\t-Instrumental tracks.' + 
+											'\n\t-Live tracks.' + 
+											'\n\t-Female/male vocals tracks.' +
+											'\n\nThese rules apply in addition to the main smart shuffle, swapping tracks' +
+											'\nposition whenever possible without altering the main logic.'
+											, scriptName + ': ' + configMenu
+										);
+									}
+									overwriteMenuProperties(); // Updates panel
+								}});
+								menu.newCheckMenu(subMenuName, 'Enable extra conditions', void(0), () => {return menu_properties.bSmartShuffleAdvc[1];});
+								{
+									const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
+									const options = ['Random', 'Play count', 'Rating', 'Popularity', 'Last played'];
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED});
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
+									options.forEach((key, i) => {
+										const tf = key.replace(/ /g, '').toLowerCase();
+										menu.newEntry({menuName: subMenuNameSecond, entryText: key, func: () => {
+											menu_properties.smartShuffleSortBias[1] = tf;
+											overwriteMenuProperties(); // Updates panel
+										}});
+									});
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
+										const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
+										if (input === null) {return;}
+										menu_properties.smartShuffleSortBias[1] = input;
+										overwriteMenuProperties(); // Updates panel
+									}});
+									menu.newCheckMenu(subMenuNameSecond, options[0], 'Custom TF...', () => {
+										const idx = options.findIndex((key) => key.replace(/ /g, '').toLowerCase() === menu_properties.smartShuffleSortBias[1]);
+										return idx !== -1 ? idx : options.length;
+									});
+								}
+							}
 							menu.newEntry({menuName: configMenu, entryText: 'sep'});
 						}
 					}
-				} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 	} else {
