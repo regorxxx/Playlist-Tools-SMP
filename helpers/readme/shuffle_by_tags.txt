@@ -1,9 +1,30 @@
 ﻿Shuffles tracks according to tags (for ex. artist) in a semi-random
-pattern, ensuring no 2 consecutive tracks have the same tag. 
+pattern, ensuring no 2 consecutive tracks have the same tag and
+also that they are distributed in an homogeneous way.
 
-Differs from 'Scatter by tags' (intercalate) in the way tracks are
-ordered (without strict alternation), i.e. it doesn't follow a pattern
-(ABCABAA) when it's possible to ensure no A tracks are together (ABACABA).
+Differs from intercalation in the way tracks are ordered (without 
+strict alternation), i.e. it doesn't follow a pattern (ABCABCAA) 
+when it's possible to ensure no A tracks are together (CABACABA).
  
 Follows [Spotify design]
-(https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/). 
+(https://engineering.atspotify.com/2014/02/how-to-shuffle-songs/).
+
+Contrary to [Spotify's preferences to recently played/loved tracks]
+(https://thetab.com/uk/2021/11/17/spotify-shuffle-explained-228639),
+this algorithm is truly "random", by default, in the sense that 
+there is no preference for any track, it just ensures artists are
+distributed evenly with some randomness (so they don't appear in
+clusters).
+
+The sorting bias may be configured to prioritize tracks by play
+count, rating, popularity or a custom TitleFormat expression.
+
+There is an additional option to also try to avoid consecutive
+tracks with  these conditions:
+	- Instrumental tracks. 
+	- Live tracks.
+	- Female/male vocals tracks.
+
+These rules apply in addition to the main smart shuffle,
+swapping tracks position whenever possible without altering
+the main logic.
