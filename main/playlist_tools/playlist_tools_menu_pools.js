@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/03/23
+//26/03/23
 
 // Pools
 {
@@ -390,8 +390,9 @@
 				if (addLock(idxTo) || removeLock(idxTo)) {Console.log('Output playlist is locked for adding\\removing items: ' + pool.toPls); return;}
 				plman.UndoBackup(idxTo);
 				plman.ClearPlaylist(idxTo);
-				// Harmonic mix?
-				if (pool.hasOwnProperty('harmonicMix') && pool.harmonicMix) {
+				// Harmonic mix
+				const bHarmonic = pool.hasOwnProperty('harmonicMix') && pool.harmonicMix;
+				if (bHarmonic) {
 					const handleListMix = harmonicMixing({selItems: handleListTo, keyTag: defaultArgs.keyTag, bSendToPls: false, bDoublePass: true, bDebug: defaultArgs.bDebug});
 					const newCount = handleListMix ? handleListMix.Count : 0;
 					const oriCount = handleListTo.Count;
@@ -413,10 +414,24 @@
 					handleListTo.AddRange(handleListMix);
 					console.log('Playlist tools Pools: harmonic mix -> ' + newCount + ' ' + _p('+' + (oriCount - newCount)) + ' tracks');
 				}
+				// Smart shuffle
+				const bShuffle = pool.hasOwnProperty('smartShuffle') && pool.smartShuffle.length;
+				if (pool.hasOwnProperty('smartShuffle') && pool.smartShuffle.length) {
+					const shuffle = shuffleByTags({
+						tagName: pool.smartShuffle, 
+						selItems: handleListTo,
+						bSendToActivePls: false,
+						bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
+						sortBias: menu_properties.smartShuffleSortBias[1],
+						bDebug: defaultArgs.bDebug
+					});
+					handleListTo.RemoveAll();
+					handleListTo.AddRange(shuffle.handleList);
+					console.log('Playlist tools Pools: smart shuffle -> ' + pool.smartShuffle + ' tag');
+				}
 				plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
-				// Sort only when not doing harmonic mix
-				if ((!pool.hasOwnProperty('harmonicMix') || !pool.harmonicMix) && typeof pool.sort !== 'undefined') {
-					
+				// Legacy sorting only when not applying special sorting
+				if (!bHarmonic && !bShuffle && typeof pool.sort !== 'undefined') {
 					plman.SortByFormat(idxTo, pool.sort);
 					console.log('Playlist tools Pools: sorting ' + _p(pool.sort.length ? pool.sort : 'random'));
 				}
@@ -601,5 +616,56 @@
 				isPlsMan = _isFile(plsManHelper); // Safety check
 			}});
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+		if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+			const subMenuName = 'Smart shuffle';
+			if (!menu.hasMenu(subMenuName, configMenu)) {
+				menu.newMenu(subMenuName, configMenu);
+				{	// bSmartShuffleAdvc
+					menu.newEntry({menuName: subMenuName, entryText: 'For any tool which uses Smart Shuffle:', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newEntry({menuName: subMenuName, entryText: 'Enable extra conditions', func: () => {
+						menu_properties.bSmartShuffleAdvc[1] = !menu_properties.bSmartShuffleAdvc[1];
+						if (menu_properties.bSmartShuffleAdvc[1]) {
+							fb.ShowPopupMessage(
+								'Smart shuffle will also try to avoid consecutive tracks with these conditions:' +
+								'\n\t-Instrumental tracks.' + 
+								'\n\t-Live tracks.' + 
+								'\n\t-Female/male vocals tracks.' +
+								'\n\nThese rules apply in addition to the main smart shuffle, swapping tracks' +
+								'\nposition whenever possible without altering the main logic.'
+								, scriptName + ': ' + configMenu
+							);
+						}
+						overwriteMenuProperties(); // Updates panel
+					}});
+					menu.newCheckMenu(subMenuName, 'Enable extra conditions', void(0), () => {return menu_properties.bSmartShuffleAdvc[1];});
+					{
+						const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
+						const options = ['Random', 'Play count', 'Rating', 'Popularity', 'Last played'];
+						menu.newEntry({menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED});
+						menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
+						options.forEach((key, i) => {
+							const tf = key.replace(/ /g, '').toLowerCase();
+							menu.newEntry({menuName: subMenuNameSecond, entryText: key, func: () => {
+								menu_properties.smartShuffleSortBias[1] = tf;
+								overwriteMenuProperties(); // Updates panel
+							}});
+						});
+						menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
+							const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
+							if (input === null) {return;}
+							menu_properties.smartShuffleSortBias[1] = input;
+							overwriteMenuProperties(); // Updates panel
+						}});
+						menu.newCheckMenu(subMenuNameSecond, options[0], 'Custom TF...', () => {
+							const idx = options.findIndex((key) => key.replace(/ /g, '').toLowerCase() === menu_properties.smartShuffleSortBias[1]);
+							return idx !== -1 ? idx : options.length;
+						});
+					}
+				}
+				menu.newEntry({menuName: configMenu, entryText: 'sep'});
+			}
+		} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 }

@@ -53,6 +53,9 @@
 |                 |        | (optional, once    | True to use         |
 | harmonicMix     | Bool   |  per pool)         | Not set to disable  |
 +-----------------+--------+--------------------+---------------------+
+|                 |        | (optional, once    | TF/Tag for sorting  |
+| smartShuffle    | String |  per pool)         | Not set to disable  |
++-----------------+--------+--------------------+---------------------+
 |                 |        |                    | standard            |
 |                 |        | (optional for all) | intercalate         |
 | insertMethod    | String |  sources)          | (per source)        |
@@ -134,6 +137,48 @@ Example of pool (X tracks per source):
 		},
 		"toPls": "Happy Mix",
 		"sort": "",
+		"pickMethod": {
+			"_LIBRARY_0": "random",
+			"_LIBRARY_1": "random"
+		}
+	}
+}
+
+Example of pool with Smart shuffle:
+{
+	"name": "Happy Mix (shuffle)",
+	"pool": {
+		"fromPls": {
+			"_LIBRARY_0": 25,
+			"_LIBRARY_1": 25
+		},
+		"query": {
+			"_LIBRARY_0": "MOOD IS happy AND NOT MOOD IS aggressive",
+			"_LIBRARY_1": "MOOD IS acoustic"
+		},
+		"toPls": "Happy Mix",
+		"smartShuffle": "%ARTIST%",
+		"pickMethod": {
+			"_LIBRARY_0": "random",
+			"_LIBRARY_1": "random"
+		}
+	}
+}
+
+Example of pool with Harmonic mixing
+{
+	"name": "Happy Mix (shuffle)",
+	"pool": {
+		"fromPls": {
+			"_LIBRARY_0": 25,
+			"_LIBRARY_1": 25
+		},
+		"query": {
+			"_LIBRARY_0": "MOOD IS happy AND NOT MOOD IS aggressive",
+			"_LIBRARY_1": "MOOD IS acoustic"
+		},
+		"toPls": "Happy Mix",
+		"harmonicMix": true,
 		"pickMethod": {
 			"_LIBRARY_0": "random",
 			"_LIBRARY_1": "random"
