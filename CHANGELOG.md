@@ -63,6 +63,8 @@
 - Buttons: 'main_menu_shortcut' button's state was not saved properly when using 'Run when closing foobar?' option due to a limit on how [foobar2000/SMP work](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205). A workaround has been implemented, considering a button should always be on an specific state at init if these options were used.
 - Pools: pools using dynamic queries crashed when there was no focus item (on any playlist).
 - Pools: pools using standard queries without a focused item (on any playlist) did not output any results.
+- Pools: number of tracks output was lower than expected on classic pools mode (_GROUP_X) due to wrong tag handling of special chars.
+- Pools: missing harmonic mix dependencies when the 'Selection manipulation' submenu was disabled.
 - Macros: updated test macros with latest name changes. There were some entries not working using old names.
 - Macros: removed extra separator on edit entries submenu.
 
