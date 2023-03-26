@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//25/03/23
 
 // Same by...
 {
@@ -154,6 +154,6 @@
 				}
 				menu.newEntry({entryText: 'sep'});
 			}
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 	}
 }

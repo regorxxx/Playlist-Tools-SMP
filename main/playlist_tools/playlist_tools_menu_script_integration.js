@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//25/03/23
 
 // Script integration
 {
@@ -305,7 +305,7 @@
 					overwriteMenuProperties(); // Updates panel
 				}});
 				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void(0), () => {return menu_properties.bPlaylistNameCommands[1];}); 
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		menu.newEntry({menuName, entryText: 'sep'});
 		{	// Include scripts
@@ -404,7 +404,7 @@
 						}
 				}
 				}});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom:  menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom:  menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 }

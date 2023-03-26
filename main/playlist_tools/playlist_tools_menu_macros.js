@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/03/23
+//25/03/23
 
 // Macros
 {
@@ -143,5 +143,5 @@
 			}});
 			menu.newEntry({entryText: 'sep'});
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 }

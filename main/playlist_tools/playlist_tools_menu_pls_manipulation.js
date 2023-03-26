@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//25/03/23
 
 // Playlist manipulation...
 {
@@ -83,7 +83,7 @@
 							updateShortcutsNames({sortInputFilter: menu_properties['sortInputFilter'][1], nAllowed});
 						}});
 					}});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 		{	// Filter by Query
@@ -222,7 +222,7 @@
 						});
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 		{	// Create harmonic mix from playlist
@@ -272,8 +272,8 @@
 							}
 							menu.newEntry({menuName: configMenu, entryText: 'sep'});
 						}
-					} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+					} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 		{	// Find / New Playlist
@@ -286,7 +286,7 @@
 					if (!input.length) {return;}
 					plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
 				}});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Crop playlist length (for use with macros!!)
 			const name = 'Cut playlist length to...';
@@ -323,7 +323,7 @@
 					}
 				});
 				menu.newEntry({menuName, entryText: 'sep'});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Merge / Intersect / Difference
 			const nameMerge = 'Merge with playlist...';
@@ -341,11 +341,11 @@
 				const bDiff = !menusEnabled.hasOwnProperty(nameDiff) || menusEnabled[nameDiff] === true;
 				// Menus
 				const subMenuNameMerge = bMerge ? menu.newMenu(nameMerge, menuName) : null;
-				if (!bMerge) {menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bMerge) {menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				const subMenuNameInter = bInter ? menu.newMenu(nameInter, menuName) : null;
-				if (!bInter) {menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bInter) {menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				const subMenuNameDiff = bDiff ? menu.newMenu(nameDiff, menuName) : null;
-				if (!bDiff) {menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bDiff) {menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				if (bMerge) {
 					menu.newEntry({menuName: subMenuNameMerge, entryText: 'Merge current playlist\'s tracks with:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuNameMerge, entryText: 'sep'});
@@ -538,9 +538,9 @@
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {
-				menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-				menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-				menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameMerge, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+				menuDisabled.push({menuName: nameInter, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+				menuDisabled.push({menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
 			}
 		}
 		{	// Send Playlist to Playlist / Close playlist / Go to Playlist
@@ -559,11 +559,11 @@
 				const bClose = !menusEnabled.hasOwnProperty(nameClose) || menusEnabled[nameClose] === true; 
 				// Menus
 				const subMenuNameSend = bSend ? menu.newMenu(nameSend, menuName) : null;
-				if (!bSend) {menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bSend) {menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true, bIsMenu: true});}
 				const subMenuNameGo = bGo ? menu.newMenu(nameGo, menuName) : null;
-				if (!bGo) {menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bGo) {menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				const subMenuNameClose = bClose ? menu.newMenu(nameClose, menuName) : null;
-				if (!bClose) {menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bClose) {menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				if (bSend) {
 					menu.newEntry({menuName: subMenuNameSend, entryText: 'Sends all tracks from current playlist to:', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuNameSend, entryText: 'sep'});
@@ -663,9 +663,9 @@
 				}});
 				menu.newEntry({menuName, entryText: 'sep'});
 			} else {
-				menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-				menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-				menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+				menuDisabled.push({menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+				menuDisabled.push({menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
 			}
 		}
 		{	// Lock / Unlock / Swtich lock playlist
@@ -684,11 +684,11 @@
 				const bSwitch = !menusEnabled.hasOwnProperty(nameSwitch) || menusEnabled[nameSwitch] === true;
 				// Menus
 				const subMenuNameLock = bLock ? menu.newMenu(nameLock, menuName) : null;
-				if (!bLock) {menuDisabled.push({menuName: nameLock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bLock) {menuDisabled.push({menuName: nameLock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				const subMenuNameUnlock = bUnlock ? menu.newMenu(nameUnlock, menuName) : null;
-				if (!bUnlock) {menuDisabled.push({menuName: nameUnlock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bUnlock) {menuDisabled.push({menuName: nameUnlock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				const subMenuNameSwitch = bSwitch ? menu.newMenu(nameSwitch, menuName) : null;
-				if (!bSwitch) {menuDisabled.push({menuName: nameSwitch, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				if (!bSwitch) {menuDisabled.push({menuName: nameSwitch, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 				if (bLock) {
 					// menu.newEntry({menuName: subMenuNameLock, entryText: ' add, remove, replace and reorder', func: null, flags: MF_GRAYED});
 					const lockTypesMenu = menu.newMenu('Lock playlist (by SMP):', subMenuNameLock);
@@ -813,10 +813,10 @@
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
 			} else {
-				menuDisabled.push({menuName: nameLock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-				menuDisabled.push({menuName: nameUnlock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-				menuDisabled.push({menuName: nameSwitch, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+				menuDisabled.push({menuName: nameLock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+				menuDisabled.push({menuName: nameUnlock, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+				menuDisabled.push({menuName: nameSwitch, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
 			}
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 }

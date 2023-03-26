@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//25/03/23
 
 // Most played tracks from year
 {
@@ -48,7 +48,7 @@
 					}});
 			}
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 	} else if ((isFoobarV2 || utils.CheckComponent('foo_playcount')) && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
@@ -57,7 +57,7 @@
 			include(scriptPathElse);
 			menu.newEntry({entryText: name, func: (args = { ...defaultArgs}) => {topTracks(args);}}); // Skips menu name, added to top
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length  + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length  + disabledCount++, bIsMenu: true});}
 	}
 }
 
@@ -124,6 +124,6 @@
 				}});
 			}
 			menu.newEntry({entryText: 'sep'});
-		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 	}
 }
