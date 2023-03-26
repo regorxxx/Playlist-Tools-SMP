@@ -7,6 +7,9 @@
 	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 		include('..\\..\\helpers\\helpers_xxx_playlists.js');
 		include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
+		// Sorting functions
+		include('..\\sort\\harmonic_mixing.js');
+		include('..\\sort\\scatter_by_tags.js');
 		const plsManHelper = folders.xxx + 'main\\playlist_manager\\playlist_manager_helpers.js';
 		let isPlsMan = false;
 		if (_isFile(plsManHelper)) {
@@ -179,14 +182,14 @@
 							}
 							// Retrieve all possible groups
 							const group = typeof pool.group !== 'undefined' ? pool.group[plsName] : '';
-							const tagSet = [...new Set(getTagsValuesV4(handleListFrom, [group]).flat(Infinity).map((_) => {return sanitizeTagTfo(_.toString().toLowerCase());}))].filter(Boolean).shuffle();
+							const tagSet = [...new Set(getTagsValuesV4(handleListFrom, [group], void(0), void(0), '|').flat(Infinity).map((_) => {return sanitizeQueryVal(_.toString().toLowerCase());}))].filter(Boolean).shuffle();
 							// Retrieve n random groups
 							const num = Math.min(pool.fromPls[plsName] || Infinity, tagSet.length) - 1;
 							const limit = typeof pool.limit !== 'undefined' ? pool.limit[plsName] : Infinity;
 							const handleListsGroups = [];
 							for (let i = 0; i <= num; i++) {
 								const groupTF = group.indexOf('$') !== -1 ? _q(group) : group;
-								const query = groupTF + ' IS ' + _q(tagSet[i]);
+								const query = groupTF + ' IS ' + tagSet[i];
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
 								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
 								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
@@ -194,6 +197,7 @@
 									handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
 								}
 							}
+							console.log(handleListsGroups.length);
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
 							handleListsGroups.forEach((handleList) => {handleListFrom.AddRange(handleList);});
@@ -418,7 +422,7 @@
 				const bShuffle = pool.hasOwnProperty('smartShuffle') && pool.smartShuffle.length;
 				if (pool.hasOwnProperty('smartShuffle') && pool.smartShuffle.length) {
 					const shuffle = shuffleByTags({
-						tagName: pool.smartShuffle, 
+						tagName: [pool.smartShuffle], 
 						selItems: handleListTo,
 						bSendToActivePls: false,
 						bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
