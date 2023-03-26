@@ -1,5 +1,5 @@
 {
-	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF (date), along group size (1) and finally using harmonic mixing.",
+	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF (artist), along group size (1) and finally using harmonic mixing.",
 	"pools": [{
 		"name": "sep"
 	},

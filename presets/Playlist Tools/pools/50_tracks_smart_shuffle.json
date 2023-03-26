@@ -1,0 +1,25 @@
+{
+	"readme": "Mimics behavior of foo_random_pools using groups (50) of tracks by TF (title), along group size (1) and finally using Smart Shuffle.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Smart Shuffle of 50 tracks",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 50
+			},
+			"group": {
+				"_GROUP_0": "TITLE"
+			},
+			"limit": {
+				"_GROUP_0": 1
+			},
+			"query": {
+				"_GROUP_0": ""
+			},
+			"toPls": "Smart Shuffle of 50 tracks",
+			"smartShuffle": "ARTIST"
+		}
+	}]
+}

@@ -157,7 +157,7 @@ Example of pool with Smart shuffle:
 			"_LIBRARY_1": "MOOD IS acoustic"
 		},
 		"toPls": "Happy Mix",
-		"smartShuffle": "%ARTIST%",
+		"smartShuffle": "ARTIST",
 		"pickMethod": {
 			"_LIBRARY_0": "random",
 			"_LIBRARY_1": "random"
