@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/03/23
+//26/03/23
 
 // Selection manipulation...
 {
@@ -113,7 +113,7 @@
 						}
 					}});
 				}
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Advanced Sort
 			const name = 'Advanced sort...';
@@ -184,6 +184,22 @@
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}, args: {bSendToPls: false}
 						});
+						if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+							const subMenuName = 'Harmonic mixing';
+							if (!menu.hasMenu(subMenuName, configMenu)) {
+								menu.newMenu(subMenuName, configMenu);
+								{	// bHarmonicMixDoublePass
+									menu.newEntry({menuName: subMenuName, entryText: 'For any tool which uses harmonic mixing:', func: null, flags: MF_GRAYED});
+									menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+									menu.newEntry({menuName: subMenuName, entryText: 'Enable double pass to match more tracks', func: () => {
+										menu_properties['bHarmonicMixDoublePass'][1] = !menu_properties['bHarmonicMixDoublePass'][1];
+										overwriteMenuProperties(); // Updates panel
+									}});
+									menu.newCheckMenu(subMenuName, 'Enable double pass to match more tracks', void(0), () => {return menu_properties['bHarmonicMixDoublePass'][1];});
+								}
+								menu.newEntry({menuName: configMenu, entryText: 'sep'});
+							}
+						} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 					}
 				}
 				{	// Sort by DynGenre
@@ -207,7 +223,7 @@
 						menu.newEntry({menuName: subMenuName, entryText, func: (args = {...defaultArgs, ...selArg.args}) => {selArg.func(args);}, flags: multipleSelectedFlagsReorder});
 					}
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Scatter
 			const scriptPath = folders.xxx + 'main\\sort\\scatter_by_tags.js';
@@ -302,7 +318,7 @@
 							});
 						}
 					}});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 		{	// Intercalate
@@ -390,7 +406,7 @@
 							});
 						}
 					}});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 		{	// Shuffle
@@ -414,6 +430,13 @@
 					// Check
 					menu_properties['shuffle'].push({func: isJSON}, menu_properties['shuffle'][1]);
 					menu_properties['shuffleCustomArg'].push({func: isJSON}, menu_properties['shuffleCustomArg'][1]);
+					// Other properties
+					if (!menu_properties.hasOwnProperty('bSmartShuffleAdvc')) {
+						menu_properties['bSmartShuffleAdvc'] = ['Smart shuffle extra conditions', true, {func: isBoolean}, true];
+					}
+					if (!menu_properties.hasOwnProperty('smartShuffleSortBias')) {
+						menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', {func: isStringWeak}, 'random'];
+					}
 					// Helpers
 					const inputShuffle = () => {
 						let tagName = '';
@@ -424,7 +447,7 @@
 						return {args: {tagName}};
 					};
 					// Menus
-					menu.newEntry({menuName: subMenuName, entryText: 'Smart shuffle (Spotify-like):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Smart Shuffle (Spotify-like):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Shuffle... (cond)', condFunc: () => {
 						// Entry list
@@ -479,7 +502,58 @@
 						}
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});
-				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+					if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
+						const subMenuName = 'Smart shuffle';
+						if (!menu.hasMenu(subMenuName, configMenu)) {
+							menu.newMenu(subMenuName, configMenu);
+							{	// bSmartShuffleAdvc
+								menu.newEntry({menuName: subMenuName, entryText: 'For any tool which uses Smart Shuffle:', func: null, flags: MF_GRAYED});
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+								menu.newEntry({menuName: subMenuName, entryText: 'Enable extra conditions', func: () => {
+									menu_properties.bSmartShuffleAdvc[1] = !menu_properties.bSmartShuffleAdvc[1];
+									if (menu_properties.bSmartShuffleAdvc[1]) {
+										fb.ShowPopupMessage(
+											'Smart shuffle will also try to avoid consecutive tracks with these conditions:' +
+											'\n\t-Instrumental tracks.' + 
+											'\n\t-Live tracks.' + 
+											'\n\t-Female/male vocals tracks.' +
+											'\n\nThese rules apply in addition to the main smart shuffle, swapping tracks' +
+											'\nposition whenever possible without altering the main logic.'
+											, scriptName + ': ' + configMenu
+										);
+									}
+									overwriteMenuProperties(); // Updates panel
+								}});
+								menu.newCheckMenu(subMenuName, 'Enable extra conditions', void(0), () => {return menu_properties.bSmartShuffleAdvc[1];});
+								{
+									const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
+									const options = ['Random', 'Play count', 'Rating', 'Popularity', 'Last played'];
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED});
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
+									options.forEach((key, i) => {
+										const tf = key.replace(/ /g, '').toLowerCase();
+										menu.newEntry({menuName: subMenuNameSecond, entryText: key, func: () => {
+											menu_properties.smartShuffleSortBias[1] = tf;
+											overwriteMenuProperties(); // Updates panel
+										}});
+									});
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
+									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
+										const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
+										if (input === null) {return;}
+										menu_properties.smartShuffleSortBias[1] = input;
+										overwriteMenuProperties(); // Updates panel
+									}});
+									menu.newCheckMenu(subMenuNameSecond, options[0], 'Custom TF...', () => {
+										const idx = options.findIndex((key) => key.replace(/ /g, '').toLowerCase() === menu_properties.smartShuffleSortBias[1]);
+										return idx !== -1 ? idx : options.length;
+									});
+								}
+							}
+							menu.newEntry({menuName: configMenu, entryText: 'sep'});
+						}
+					} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
 		{	// Remove and find in playlists
@@ -563,7 +637,7 @@
 								}
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
-						} else {menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+						} else {menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 					}
 					{	// Find in Playlists
 						if (!menusEnabled.hasOwnProperty(nameFind) || menusEnabled[nameFind] === true) {
@@ -626,7 +700,7 @@
 								}
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
-						} else {menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+						} else {menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 					}
 					{	// Remove from Playlists
 						if (!menusEnabled.hasOwnProperty(nameRemove) || menusEnabled[nameRemove] === true) {
@@ -689,7 +763,7 @@
 								}
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
-						} else {menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+						} else {menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 					}
 					{	// Configure properties
 						if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
@@ -791,12 +865,12 @@
 								});
 							}
 							menu.newEntry({menuName: configMenu, entryText: 'sep'});
-						} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+						} else {menuDisabled.push({menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 					}
 				} else {
-					menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-					menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
-					menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});
+					menuDisabled.push({menuName: nameNowFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+					menuDisabled.push({menuName: nameFind, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
+					menuDisabled.push({menuName: nameRemove, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});
 				}
 			}
 		}
@@ -879,7 +953,7 @@
 					}
 					if (defaultArgs.bProfile) {profiler.Print();}
 				}});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Move
 			const name = 'Move selection to...';
@@ -929,7 +1003,7 @@
 					plman.SetPlaylistFocusItem(pp, pos);
 				}, flags: () => {return (fb.IsPlaying ? selectedFlagsAddRem() : MF_GRAYED);}});
 				menu.newEntry({menuName, entryText: 'sep'});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Select (for use with macros!!)
 			const name = 'Select...';
@@ -1056,7 +1130,7 @@
 						}, flags: playlistCountFlags});
 					}
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Expand
 			const name = 'Expand...';
@@ -1109,7 +1183,7 @@
 						}, flags: selectedFlags});
 					}
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
 		{	// Jump
 			const name = 'Jump...';
@@ -1178,7 +1252,7 @@
 						}
 					});
 				});
-			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 }
