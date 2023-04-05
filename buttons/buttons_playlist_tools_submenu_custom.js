@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/03/23
+//28/03/23
 
 /* 
 	Playlist Tools Submenu Custom
@@ -124,7 +124,7 @@ addButton({
 					case 'difference with playlist...': icon = chars.sitemap; break;
 					case 'send playlist\'s tracks to...': icon = chars.send; break;
 					case 'go to playlist...': icon = chars.fileWhite; break;
-					case 'close playlist...': icon = chars.ban; break;
+					case 'close playlist...': icon = chars.close; break;
 					case 'lock playlist...': icon = chars.lock; break;
 					case 'unlock playlist...': icon = chars.unlock; break;
 					case 'switch lock playlist...': icon = chars.unlockAlt; break;
