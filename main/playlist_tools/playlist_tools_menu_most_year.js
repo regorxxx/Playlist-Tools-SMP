@@ -1,11 +1,11 @@
 ﻿'use strict';
-//25/03/23
+//27/03/23
 
 // Most played tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\search\\top_tracks_from_date.js';
 	const scriptPathElse = folders.xxx + 'main\\search\\top_tracks.js';
-	if (utils.CheckComponent('foo_enhanced_playcount') && _isFile(scriptPath)) {
+	if (isEnhPlayCount && _isFile(scriptPath)) {
 		const name = 'Most played Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
@@ -49,7 +49,7 @@
 			}
 			menu.newEntry({entryText: 'sep'});
 		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
-	} else if ((isFoobarV2 || utils.CheckComponent('foo_playcount')) && _isFile(scriptPathElse)) {
+	} else if (isPlayCount && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
@@ -64,7 +64,7 @@
 // Top rated Tracks from year
 {
 	const scriptPath = folders.xxx + 'main\\search\\top_rated_tracks.js';
-	if ((isFoobarV2 || utils.CheckComponent('foo_playcount')) && _isFile(scriptPath)) {
+	if (isPlayCount && _isFile(scriptPath)) {
 		const name = 'Top rated Tracks from...';
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
