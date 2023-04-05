@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//27/03/23
 
 /* 
 	Top X Tracks From Date
@@ -10,7 +10,7 @@
 
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 include('..\\filter_and_query\\remove_duplicates.js');
-if (!(isFoobarV2 || utils.CheckComponent('foo_playcount')) ) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed. Script can not work without it.');}
+if (!isPlayCount) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.');}
 
 const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
 
@@ -28,7 +28,7 @@ function topTracksFromDate({
 						bProfile = false
 						} = {}) {
 	// Sanity checks
-	if (!utils.CheckComponent('foo_enhanced_playcount'))  {fb.ShowPopupMessage('foo_enhanced_playcount is not installed and is required.', 'topTracksFromDate'); return;}
+	if (!isEnhPlayCount)  {fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', 'topTracksFromDate'); return;}
 	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return;}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return;}
