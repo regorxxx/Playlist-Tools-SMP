@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//27/03/23
 
 // Similar by...Graph\Dyngenre\Weight
 {
@@ -365,15 +365,21 @@
 								menu.newCheckMenu(subMenuName, 'Enable extra conditions', void(0), () => {return menu_properties.bSmartShuffleAdvc[1];});
 								{
 									const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
-									const options = ['Random', 'Play count', 'Rating', 'Popularity', 'Last played'];
+									const options = [
+										{key: 'Random', flags: MF_STRING},
+										{key: 'Play count', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount'},
+										{key: 'Rating', flags: MF_STRING},
+										{key: 'Popularity', flags: utils.GetPackageInfo('{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}') ? MF_STRING : MF_GRAYED, req: 'Find & Play'},
+										{key: 'Last played', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount'},
+									];
 									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED});
 									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
-									options.forEach((key, i) => {
-										const tf = key.replace(/ /g, '').toLowerCase();
-										menu.newEntry({menuName: subMenuNameSecond, entryText: key, func: () => {
+									options.forEach((opt, i) => {
+										const tf = opt.key.replace(/ /g, '').toLowerCase();
+										menu.newEntry({menuName: subMenuNameSecond, entryText: opt.key + (opt.flags ? '\t' + opt.req : ''), func: () => {
 											menu_properties.smartShuffleSortBias[1] = tf;
 											overwriteMenuProperties(); // Updates panel
-										}});
+										}, flags: opt.flags});
 									});
 									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
 									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
@@ -382,8 +388,8 @@
 										menu_properties.smartShuffleSortBias[1] = input;
 										overwriteMenuProperties(); // Updates panel
 									}});
-									menu.newCheckMenu(subMenuNameSecond, options[0], 'Custom TF...', () => {
-										const idx = options.findIndex((key) => key.replace(/ /g, '').toLowerCase() === menu_properties.smartShuffleSortBias[1]);
+									menu.newCheckMenu(subMenuNameSecond, options[0].key, 'Custom TF...', () => {
+										const idx = options.findIndex((opt) => opt.key.replace(/ /g, '').toLowerCase() === menu_properties.smartShuffleSortBias[1]);
 										return idx !== -1 ? idx : options.length;
 									});
 								}
