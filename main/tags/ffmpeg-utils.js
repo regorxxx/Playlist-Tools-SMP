@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/02/23
+//06/04/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -12,7 +12,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 		tagName = 'LRA',
 		bMerge = true,
-		ffmpegPath = folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe',
+		ffmpegPath = folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe',
 		bDebug = false,
 		bProfile = true
 	}) {

@@ -55,6 +55,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Other Tools\Write tags: tool was checking for x64 binary existence on x32 systems (thus needing both instead of only the latter).
 - Selection manipulation\Advanced sort...: harmonic mixing configuration menu not shown if 'Playlist manipulation' and 'Special playlists' submenus were hidden.
 - Selection manipulation\Shuffle: 'By...(tag)' entry not working.
 - Playlist Manipulation\Query filtering: dynamic queries were not being properly inverted while pressing Ctrl on some edge cases.

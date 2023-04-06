@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/02/23
+//06/04/23
 
 /* 
 	Automatic tagging...
@@ -35,7 +35,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		{key: 'biometric', tag: [globTags.fooidFP], 
 			title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: true},
 		{key: 'chromaPrint', tag: [globTags.acoustidFP],
-			title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc.exe'), bDefault: true},
+			title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true},
 		{key: 'massTag', tag: ['AUDIOMD5'], 
 			title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true), bDefault: true},
 		{key: 'audioMd5', tag: ['MD5'],
@@ -45,7 +45,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 		{key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
 			title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true), bDefault: true},
 		{key: 'ffmpegLRA', tag: ['LRA'],
-			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg.exe'), bDefault: true},
+			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: utils.IsFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true},
 		{key: 'folksonomy', tag: ['FOLKSONOMY'],
 			title: 'Folksonomy', bAvailable: false, bDefault: false},
 		{key: 'essentiaFastKey', tag: [globTags.key],
