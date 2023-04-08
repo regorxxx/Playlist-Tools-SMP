@@ -2,7 +2,7 @@
 REM Helper to execute ffmpeg.exe (%3) on input (%1) and save output to file (%2)
 REM Retrieves LRA data as json
 SET ffPath=%3
-SET arch=x86
+SET arch=x64
 SET sed=%ffPath:ffmpeg.exe=sed.exe%
 SET useSed=TRUE
 IF "%PROCESSOR_ARCHITECTURE%" == "x86" ( 
