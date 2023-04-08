@@ -18,10 +18,11 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 	}) {
 	// Safecheck
 	if (!fromHandleList || !fromHandleList.Count) {return false;}
-	if (!_isFile(ffmpegPath)) {fb.ShowPopupMessage('ffmpeg executable not found:\n' + ffmpegPath, 'EBUR 128 Scanner');}
+	if (!_isFile(ffmpegPath)) {fb.ShowPopupMessage('ffmpeg executable not found:\n' + ffmpegPath, 'EBUR 128 Scanner'); return false;}
 	const profile = bProfile ? new FbProfiler('EBUR 128 Scanner') : null;
 	const bWine = !soFeat.x64 && !soFeat.popup;
-	const batFile = ffmpegPath.replace('.exe',  bWine ? '_wine.bat' : '.bat');
+	const batFile = ffmpegPath.replace((soFeat.x64 ? '' : '_32') +  '.exe',  bWine ? '_wine.bat' : '.bat');
+	if (!_isFile(batFile)) {fb.ShowPopupMessage('ffmpeg bat file not found:\n' + batFile, 'EBUR 128 Scanner'); return false;}
 	const handleListArr = fromHandleList.Convert();
 	const totalTracks = handleListArr.length, numTracks = 25, maxCount = Math.ceil(totalTracks / numTracks);
 	let totalItems = 0;
