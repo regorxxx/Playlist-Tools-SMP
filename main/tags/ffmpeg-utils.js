@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/04/23
+//08/04/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -20,6 +20,8 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 	if (!fromHandleList || !fromHandleList.Count) {return false;}
 	if (!_isFile(ffmpegPath)) {fb.ShowPopupMessage('ffmpeg executable not found:\n' + ffmpegPath, 'EBUR 128 Scanner');}
 	const profile = bProfile ? new FbProfiler('EBUR 128 Scanner') : null;
+	const bWine = !soFeat.x64 && !soFeat.popup;
+	const batFile = ffmpegPath.replace('.exe',  bWine ? '_wine.bat' : '.bat');
 	const handleListArr = fromHandleList.Convert();
 	const totalTracks = handleListArr.length, numTracks = 25, maxCount = Math.ceil(totalTracks / numTracks);
 	let totalItems = 0;
@@ -35,8 +37,13 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 			handleListArr.slice(count * numTracks, currMax).forEach((handle, i) => {
 				const path = handle.Path;
 				if (_isFile(path)) {
-					if (bDebug) {console.log(_q(ffmpegPath) + ' -hide_banner -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  2>&1 | > ' + _q(ffmpegJSON) + '  sed 1,/^\\[Parsed_loudnorm/d');}
-					_runHidden(ffmpegPath.replace('.exe','.bat'), path, ffmpegJSON, ffmpegPath);
+					if (bDebug) {
+						console.log(bWine
+							? _q(ffmpegPath) + ' -hide_banner -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  >' + _q(ffmpegJSON + '.temp') + ' 2>&1\n' + ffmpegPath.replace('ffmpeg.exe','sed.exe') + ' 1,/^\[Parsed_loudnorm/d ' + _q(ffmpegJSON + '.temp') + ' >' + _q(ffmpegJSON)
+							: _q(ffmpegPath) + ' -hide_banner -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  2>&1 | > ' + _q(ffmpegJSON) + '  sed 1,/^\\[Parsed_loudnorm/d'
+						);
+					}
+					_runHidden(batFile, path, ffmpegJSON, ffmpegPath);
 					const data = _jsonParseFileCheck(ffmpegJSON);
 					if (data && data.hasOwnProperty('input_lra')) {
 						items.push(handle);

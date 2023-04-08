@@ -56,6 +56,7 @@
 ### Removed
 ### Fixed
 - Other Tools\Write tags: tool was checking for x64 binary existence on x32 systems (thus needing both instead of only the latter).
+- Other Tools\Write tags: workaround for [Wine's CMD pipes bug](https://hydrogenaud.io/index.php/topic,120978.msg1024697.html#msg1024697) while using  EBUR 128 Scanner (ffmpeg) tool.
 - Selection manipulation\Advanced sort...: harmonic mixing configuration menu not shown if 'Playlist manipulation' and 'Special playlists' submenus were hidden.
 - Selection manipulation\Shuffle: 'By...(tag)' entry not working.
 - Playlist Manipulation\Query filtering: dynamic queries were not being properly inverted while pressing Ctrl on some edge cases.
