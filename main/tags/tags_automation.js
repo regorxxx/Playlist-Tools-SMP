@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/04/23
+//08/04/23
 
 /* 
 	Automatic tagging...
@@ -13,7 +13,7 @@
 
 include('..\\..\\helpers\\helpers_xxx.js');
 
-function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/, bOutputTools = false, bOutputDefTools = false) {
+function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/, bOutputTools = false, bOutputDefTools = false, bWineBug = false) {
 	this.selItems = null;
 	this.selItemsByCheck = {
 		subSong: {present: null, missing: null, num: null},
@@ -29,6 +29,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	this.currentTime = null;
 	this.listener = null;
 	this.timers = {debounce: 300, listener: 1000};
+	this.bWineBug = bWineBug;
 	this.notAllowedTools = new Set();
 	this.incompatibleTools = new biMap({ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey'});
 	this.tools = [
@@ -287,9 +288,9 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				if (this.toolsByKey.ffmpegLRA) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItemsByCheck.subSong.missing});
+							bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItemsByCheck.subSong.missing, bWineBug: this.bWineBug});
 						}
-					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems});}
+					} else {bSucess = ffmpeg.calculateLoudness({fromHandleList: this.selItems, bWineBug: this.bWineBug});}
 				} else {bSucess = false;}
 				break;
 			case 6:

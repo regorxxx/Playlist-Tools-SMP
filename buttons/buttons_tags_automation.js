@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//08/04/23
 
 /* 
 	Automatic tagging...
@@ -23,9 +23,10 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = {	//You can simply add new properties here
 	toolsByKey:	['Tools enabled', JSON.stringify(new tagAutomation(void(0), false, true))],
-	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false]
+	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false],
+	bWineBug:	['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, {func: isBoolean}, !soFeat.x64 && !soFeat.popup]
 };
-newButtonsProperties['toolsByKey'].push({func: isJSON}, newButtonsProperties['toolsByKey'][1]);
+newButtonsProperties.toolsByKey.push({func: isJSON}, newButtonsProperties.toolsByKey[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -84,6 +85,13 @@ buttonsBar.list.push(newButtonsProperties);
 					menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return this.tAut.toolsByKey[key];});
 				});
 				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
+				menu.newEntry({menuName: subMenuTools, entryText: 'Wine ffmpeg bug workaround?', func: () => {
+					this.buttonsProperties.bWineBug[1] = !this.buttonsProperties.bWineBug[1];
+					this.tAut.bWineBug = this.buttonsProperties.bWineBug[1];
+					overwriteProperties(this.buttonsProperties); // Force overwriting
+				}});
+				menu.newCheckMenu(subMenuTools, 'Wine ffmpeg bug workaround?', void(0), () => {return this.buttonsProperties.bWineBug[1];});
+				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 				['Enable all', 'Disable all'].forEach((entryText, i) => {
 					menu.newEntry({menuName: subMenuTools, entryText, func: () => {
 						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault ? true : false;});
@@ -93,6 +101,7 @@ buttonsBar.list.push(newButtonsProperties);
 						this.tAut.loadDependencies();
 					}});
 				});
+				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
 				menu.newEntry({menuName: subMenuTools, entryText: 'Invert selected tools', func: () => {
 					this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = tool.bAvailable ? !this.tAut.toolsByKey[tool.key] : false;});
 					this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
@@ -118,7 +127,7 @@ buttonsBar.list.push(newButtonsProperties);
 			return info;
 		}, prefix, newButtonsProperties, chars.tags),
 	};
-	newButton['Automate Tags'].tAut = new tagAutomation(JSON.parse(newButtonsProperties['toolsByKey'][1]));
+	newButton['Automate Tags'].tAut = new tagAutomation(JSON.parse(newButtonsProperties.toolsByKey[1]), void(0), void(0), newButtonsProperties.bWineBug[1]);
 
 	addButton(newButton);
 }

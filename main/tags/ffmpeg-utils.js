@@ -13,6 +13,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 		tagName = 'LRA',
 		bMerge = true,
 		ffmpegPath = folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe',
+		bWineBug = !soFeat.x64 && !soFeat.popup,
 		bDebug = false,
 		bProfile = true
 	}) {
@@ -20,8 +21,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 	if (!fromHandleList || !fromHandleList.Count) {return false;}
 	if (!_isFile(ffmpegPath)) {fb.ShowPopupMessage('ffmpeg executable not found:\n' + ffmpegPath, 'EBUR 128 Scanner'); return false;}
 	const profile = bProfile ? new FbProfiler('EBUR 128 Scanner') : null;
-	const bWine = !soFeat.x64 && !soFeat.popup;
-	const batFile = ffmpegPath.replace((soFeat.x64 ? '' : '_32') +  '.exe',  bWine ? '_wine.bat' : '.bat');
+	const batFile = ffmpegPath.replace((soFeat.x64 ? '' : '_32') +  '.exe', bWineBug ? '_wine.bat' : '.bat');
 	if (!_isFile(batFile)) {fb.ShowPopupMessage('ffmpeg bat file not found:\n' + batFile, 'EBUR 128 Scanner'); return false;}
 	const handleListArr = fromHandleList.Convert();
 	const totalTracks = handleListArr.length, numTracks = 25, maxCount = Math.ceil(totalTracks / numTracks);
@@ -39,7 +39,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 				const path = handle.Path;
 				if (_isFile(path)) {
 					if (bDebug) {
-						console.log(bWine
+						console.log(bWineBug
 							? _q(ffmpegPath) + ' -hide_banner -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  >' + _q(ffmpegJSON + '.temp') + ' 2>&1\n' + ffmpegPath.replace('ffmpeg.exe','sed.exe') + ' 1,/^\[Parsed_loudnorm/d ' + _q(ffmpegJSON + '.temp') + ' >' + _q(ffmpegJSON)
 							: _q(ffmpegPath) + ' -hide_banner -i ' + _q(path) + ' -af loudnorm=dual_mono=true:print_format=json -nostats -f null -  2>&1 | > ' + _q(ffmpegJSON) + '  sed 1,/^\\[Parsed_loudnorm/d'
 						);

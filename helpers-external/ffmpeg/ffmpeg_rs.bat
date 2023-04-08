@@ -12,6 +12,7 @@ IF "%PROCESSOR_ARCHITECTURE%" == "x86" (
 IF "%arch%" == "x86" (
 	SET ffmpeg="%path%ffmpeg_32.exe"
 )
+IF NOT EXIST %sed% SET useSed=FALSE
 IF "%useSed%" == "TRUE" (
 	ECHO Processing: %1
 	ECHO.
