@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/03/23
+//10/04/23
 
 /* 
 	Playlist Tools Submenu Custom
@@ -86,7 +86,7 @@ addButton({
 						}
 					});
 					if (mask === MK_CONTROL) { // Simulate menus to get names
-						buttonMenu.btn_up(this.currX, this.currY + this.currH, void(0), void(0), false, _setClipboardData);
+						buttonMenu.btn_up(this.currX, this.currY + this.currH, void(0), void(0), false, (val) => {console.log('Called: ' + val); _setClipboardData(val);});
 					} else {
 						buttonMenu.btn_up(this.currX, this.currY + this.currH);
 					}

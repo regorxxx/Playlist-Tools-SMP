@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/03/23
+//10/04/23
 
 /* 
 	Playlist Tools Menu
@@ -52,7 +52,7 @@ addButton({
 		if (mask === MK_SHIFT) { // Enable/disable menus
 			menuAlt.btn_up(this.currX, this.currY + this.currH);
 		} else if (mask === MK_CONTROL) { // Simulate menus to get names
-			menu.btn_up(this.currX, this.currY + this.currH, void(0), void(0), false, _setClipboardData);
+			menu.btn_up(this.currX, this.currY + this.currH, void(0), void(0), false, (val) => {console.log('Called: ' + val); _setClipboardData(val);});
 		} else { // Standard use
 			menu.btn_up(this.currX, this.currY + this.currH);
 		}

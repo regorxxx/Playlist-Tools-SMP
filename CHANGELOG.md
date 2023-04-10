@@ -46,6 +46,7 @@
 - Selection manipulation\Shuffle: additional options for the Spotify-like smart shuffle to prioritize tracks by Rating, Play Count (original Spotify's behavior), Last played date, randomly...
 ### Changed
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
+- Console: menu entries are no longer logged to console after clicking (except when pressing Ctrl before opening the button's menu).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
 - Buttons: Last.fm button's icon to font, instead of png image; scales better on different DPI settings.
 - Buttons: macros button's icon to half hourglass; blends better on dark and light themes.
@@ -334,7 +335,7 @@
 ### Fixed
 - Search by Distance: minor fix about 'Tuareg Music'.
 - Search by Distance: fixed warnings about non ASCII values on the descriptors.
-- Logging: fixed console logging to file (lines were not being split properly).
+- Console: fixed console logging to file (lines were not being split properly).
 
 ## [3.0.0-beta.13] - 2022-08-12
 ### Added
@@ -344,8 +345,8 @@
 - Search by Distance: when calculating similar artists, library tracks are now filtered by nearest genre/styles to tracks by selected artist for every track, instead of using only the first track as reference. This should better reflect the works of an artist without depending on the reference track at all. Previously, output score would be heavily dependent on the reference track.
 - Search by Distance: when calculating similar artists, scores are now weighted with genre/style appearance on all artist's tracks. i.e. if 'Mdour Moctar' has 1 Reggae track on your library and 99 Rock tracks, then if the Reggae track is chosen for the calcs, it's score is weighted as 1% of the total score (instead of averaging all N scores).
 - Search by Distance: when calculating similar artists, current method uses the 2 above changes, named 'weighted'. Using only the filter change is 'variable'. Previous method based on reference track is named 'reference'. This is an internal change, but functionality -based on names- can be seen on the diagrams. 'Weighted' will be the default method from now on, not meant to be changed (unless the script 'search_bydistance_extra.js' is edited). In resume, this change is aimed to better reflect the entire work of an artist, instead of specific tracks or being tied to random variations.
-- Logging: reworked console logging to group buttons loading info into one line.
-- Logging: reduced console logging at startup.
+- Console: reworked console logging to group buttons loading info into one line.
+- Console: reduced console logging at startup.
 - Helpers: switched all callbacks to [event listeners](https://github.com/regorxxx/Callbacks-Framework-SMP).
 ### Removed
 ### Fixed
@@ -509,8 +510,8 @@
 - Dynamic Queries: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other Tools\Write tags: menu is now disabled when there is no selection (instead of only requiring a track in focus).
 - Other tools\Check Tags: fixed multiple crashes on menu calling.
-- Logging: Progress code in multiple tools have been fixed to display more accurately the percentage progress in the log.
-- Logging: non needed warning about 'name' variable not being recognized on recipes.
+- Console: Progress code in multiple tools have been fixed to display more accurately the percentage progress in the log.
+- Console: non needed warning about 'name' variable not being recognized on recipes.
 - Recipes: 'name' was not being excluded when trying to save a recipe from current properties.
 - Properties were not being properly renumbered on some cases when moving buttons.
 
@@ -605,9 +606,9 @@
 - Tag Remapping: Added option at config menu to remap key (for Harmonic Mixing and Key sorting) tag and syle/genre tags (for Dyngenre sorting). Tools based on queries are already directly configurable, so remap doesn't apply there.
 - Tag Remapping: Added option at config menu to remap tags for Search By distance tool. Note changes on those tags only apply there. Key tag is shared with the other tools (and previously mentioned config menu), so changes apply on both places.
 - Harmonic Mixing: now works with Open Keys too (in addition to Camelo Keys and standard notation keys).
-- Logging: Added option to switch console logging at configuration submenu.
-- Logging: Added option to switch profiler logging at configuration submenu.
-- Logging: Added option to show/hide tooltip shortcuts at configuration submenu.
+- Console: Added option to switch console logging at configuration submenu.
+- Console: Added option to switch profiler logging at configuration submenu.
+- Console: Added option to show/hide tooltip shortcuts at configuration submenu.
 - Search by Distance: cache now gets refreshed not only when the descriptors change ('music_graph_descriptors_xxx.js' & 'music_graph_descriptors_xxx_user.js') but also when the 2 functions used to calculate the paths or the own graph constructor change and the influences method. Even if changing those functions is not planned, it ensures the cache reflects the actual state of the graph in any case. In particular, the 'influences bugfix' would have required a manual cache reset by the user without this change which now will be performed automatically. The properties panel now tracks the CRC32 of those 6 items as merged strings (instead of only the first 2).
 - Search by Distance: Added 4 methods top check influences: 'fullPath', 'adjacentNodes', 'zeroNodes' and 'direct'. 'direct' is the previous behavior ("bugged") checking only the first against the last node. 'zeroNodes' the fix listed bellow. 'adjacentNodes' works like zeroNodes but without forcing the adjacent nodes to be substitutions (checks (A,B) against (Y,Z), i.e. max. 4 possible links). 'fullPath' checks all consecutive links on the path (A->B), (B->C), ...) and also applies 'adjacentNodes' logic (to check the origin and final nodes). 'adjacentNodes' is now the default behavior.
 - Search by Distance: Checks graph links cache size on startup and warns when file size > 40 Mb. This is done to avoid memory leaks, since the file is fully loaded on memory and a corrupted file may increase the map size indefinitely until crashing the panel.
