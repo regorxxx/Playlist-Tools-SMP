@@ -45,6 +45,7 @@
 - Selection manipulation\Shuffle: additional option to scatter to scatter instrumental, live and other tracks while respecting the smart pattern by tag (usually Artist). For ex. if it can swap tracks without altering the Artist proportion for a given range of tracks, thus moving an instrumental track to another position to soft-limit the appearance of consecutive instrumental tracks. Same rationale applies for live tracks or other special conditions. This somewhat ensures any cluster of tracks is as diverse as possible.
 - Selection manipulation\Shuffle: additional options for the Spotify-like smart shuffle to prioritize tracks by Rating, Play Count (original Spotify's behavior), Last played date, randomly...
 ### Changed
+- Last.fm: no longer requires [original package](https://github.com/L3v3L/foo-last-list-smp), fully integrated now. Reason: original package follows a design not fully compatible with some of the new features added.
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
 - Console: menu entries are no longer logged to console after clicking (except when pressing Ctrl before opening the button's menu).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
