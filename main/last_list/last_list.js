@@ -14,6 +14,7 @@
 include('last_list_input_error.js');
 include('last_list_helpers.js');
 include('last_list_cache.js');
+include('..\\..\\helpers\\helpers_xxx_prototypes_smp.js');
 
 class LastList {
 	constructor({ url = '', pages = 1, playlistName = 'Last List', cacheTime = 86400000 } = {}) {
@@ -129,7 +130,7 @@ class LastList {
 		plman.ClearPlaylist(playlist);
 		let itemsToAdd = [];
 
-		let hasYoutubeComponent = utils.CheckComponent('foo_youtube', true);
+		let hasYoutubeComponent = typeof isYouTube !== 'undefined' ? isYouTube : utils.CheckComponent('foo_youtube', true);
 
 		let promises = [];
 		for (let i = startPage; i < (startPage + pages); i++) {
