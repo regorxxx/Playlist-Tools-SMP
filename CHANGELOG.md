@@ -46,6 +46,8 @@
 - Selection manipulation\Shuffle: additional options for the Spotify-like smart shuffle to prioritize tracks by Rating, Play Count (original Spotify's behavior), Last played date, randomly...
 ### Changed
 - Last.fm: no longer requires [original package](https://github.com/L3v3L/foo-last-list-smp), fully integrated now. Reason: original package follows a design not fully compatible with some of the new features added.
+- Last.fm: better library matching of extra chars (for ex. in original package '.38 Special' would not match '38 Special').
+- Last.fm: better library matching removing unwanted title words (remastered, ...).
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
 - Console: menu entries are no longer logged to console after clicking (except when pressing Ctrl before opening the button's menu).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
@@ -57,6 +59,8 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Last.fm: tracks are now added preserving last.fm order. Workaround for AddLocations being async, used on original package, which may results on tracks not being inserted on playlist following the original order.
+- Last.fm: link caching on input popups not working, regression on original package 1.2 version.
 - Other Tools\Write tags: tool was checking for x64 binary existence on x32 systems (thus needing both instead of only the latter).
 - Other Tools\Write tags: workaround for [Wine's CMD pipes bug](https://hydrogenaud.io/index.php/topic,120978.msg1024697.html#msg1024697) while using  EBUR 128 Scanner (ffmpeg) tool.
 - Selection manipulation\Advanced sort...: harmonic mixing configuration menu not shown if 'Playlist manipulation' and 'Special playlists' submenus were hidden.
