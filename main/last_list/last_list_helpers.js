@@ -1,5 +1,5 @@
 'use strict';
-//06/03/23
+//21/04/23
 
 class LastListHelpers {
 	static cleanString(str) {
@@ -13,7 +13,12 @@ class LastListHelpers {
 			.replace(/&lt;/g, "<")
 			.replace(/&gt;/g, ">")
 			.replace(/&nbsp;/g, " ")
+			.replace(/remastered/gi, "")
 			.trim();
+	};
+
+	static cleanId(str) {
+		return str.replace(/['"&\\<> \.,-]/g, '');
 	};
 
 	static hashCode(str, seed = 0) {

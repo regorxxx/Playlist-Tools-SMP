@@ -1,8 +1,13 @@
 'use strict';
-//19/04/23
+//21/04/23
 
 /* 
-	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp with proper argument support on run method
+	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp 
+	- Proper argument support on run method (allows caching).
+	- Better library matching of extra chars (for ex. in original script '.38 Special' would not match '38 Special')
+	- Better library matching removing unwanted title words (remastered, ...)
+	- Tracks are now added preserving last.fm order (workaround for AddLocations being async)
+	- Minor fixes
 */
 
 
@@ -22,7 +27,7 @@ class LastList {
 		try { // In case an argument is set to null or '', the default value at constructor is used
 			if (!url) {
 				try {
-					url = utils.InputBox(0, "Enter the URL:", "Download", this.url, true);
+					url = utils.InputBox(0, 'Enter the URL:', 'Download', this.url, true);
 				} catch (e) {
 					throw new InputError('Canceled Input');
 				}
@@ -44,12 +49,12 @@ class LastList {
 					startPage = 1;
 				}
 
-				url = url.replace(matches[0][1], "");
+				url = url.replace(matches[0][1], '');
 			}
 
 			if (!pages || isNaN(pages) || pages < 1) {
 				try {
-					pages = utils.InputBox(0, "Enter the number of pages:", "Download", this.pages, true);
+					pages = utils.InputBox(0, 'Enter the number of pages:', 'Download', this.pages, true);
 				} catch (e) {
 					throw new InputError('Canceled Input');
 				}
@@ -62,7 +67,7 @@ class LastList {
 
 			if (!playlistName) {
 				try {
-					playlistName = utils.InputBox(0, "Enter the playlist name:", "Download", this.playlistName, true);
+					playlistName = utils.InputBox(0, 'Enter the playlist name:', 'Download', this.playlistName, true);
 				} catch (e) {
 					throw new InputError('Canceled Input');
 				}
@@ -79,7 +84,7 @@ class LastList {
 				// do nothing
 			} else {
 				//show error message
-				this.log("Error - " + e.message);
+				this.log('Error - ' + e.message);
 			}
 
 		}
@@ -94,15 +99,15 @@ class LastList {
 		let indexedLibrary = {};
 		fb.GetLibraryItems().Convert().every((item) => {
 			let fileInfo = item.GetFileInfo();
-			const titleIdx = fileInfo.MetaFind("TITLE");
-			const artistIdx = fileInfo.MetaFind("ARTIST");
+			const titleIdx = fileInfo.MetaFind('TITLE');
+			const artistIdx = fileInfo.MetaFind('ARTIST');
 
 			if (titleIdx == -1 || artistIdx == -1) {
 				return true;
 			}
 
-			let titleLib = fileInfo.MetaValue(titleIdx, 0).toLowerCase().trim();
-			let artistLib = fileInfo.MetaValue(artistIdx, 0).toLowerCase().trim();
+			let titleLib = LastListHelpers.cleanId(fileInfo.MetaValue(titleIdx, 0)).toLowerCase().trim();
+			let artistLib = LastListHelpers.cleanId(fileInfo.MetaValue(artistIdx, 0)).toLowerCase().trim();
 
 			if (titleLib.length && artistLib.length) {
 				indexedLibrary[`${artistLib} - ${titleLib}`] = item;
@@ -129,15 +134,15 @@ class LastList {
 		let promises = [];
 		for (let i = startPage; i < (startPage + pages); i++) {
 			promises.push(new Promise((resolve, reject) => {
-				let xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-				let urlAppend = url.includes("?") ? "&" : "?";
+				let xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+				let urlAppend = url.includes('?') ? '&' : '?';
 
 				let urlToUse = `${url}${urlAppend}page=${i}`;
 
-				let cachePath = fb.ProfilePath + "LastListCache\\";
+				let cachePath = fb.ProfilePath + 'LastListCache\\';
 				// check if cache valid
 				let urlHash = LastListHelpers.hashCode(urlToUse);
-				let cachedFilePath = cachePath + urlHash + ".json";
+				let cachedFilePath = cachePath + urlHash + '.json';
 
 				try {
 					if (cacheTime && utils.IsFile(cachedFilePath)) {
@@ -156,7 +161,7 @@ class LastList {
 								}
 
 								// get file from library
-								let file = indexedLibrary[`${track.artist.toLowerCase()} - ${track.title.toLowerCase()}`];
+								let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
 								// if no file and no youtube link or no foo_youtube, skip
 								if (!file && (!track.youtube || !hasYoutubeComponent)) {
 									return true;
@@ -180,7 +185,7 @@ class LastList {
 					this.log(`Error - ${e.message}`);
 				}
 
-				xmlhttp.open("GET", urlToUse, true);
+				xmlhttp.open('GET', urlToUse, true);
 				xmlhttp.onreadystatechange = () => {
 					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 						this.log(`Cached Not Used`);
@@ -237,8 +242,8 @@ class LastList {
 										return true;
 									}
 									// clean strings
-									artist = decodeURIComponent(fallbackData[0][1]).replace(/\+/g, " ");
-									title = decodeURIComponent(fallbackData[0][2]).replace(/\+/g, " ");
+									artist = decodeURIComponent(fallbackData[0][1]).replace(/\+/g, ' ');
+									title = decodeURIComponent(fallbackData[0][2]).replace(/\+/g, ' ');
 								}
 
 								trackItems.push({
@@ -274,7 +279,7 @@ class LastList {
 							}
 
 							// get file from library
-							let file = indexedLibrary[`${track.artist.toLowerCase()} - ${track.title.toLowerCase()}`];
+							let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
 							// if no file and no youtube link or no foo_youtube, skip
 							if (!file && (!track.youtube || !hasYoutubeComponent)) {
 								return true;
@@ -305,68 +310,30 @@ class LastList {
 		}
 
 		Promise.all(promises).then(() => {
-			this.addItemsToPlaylist(itemsToAdd, playlist);
-			// TODO remove duplicates from playlist
-			/*
-			let playlistItems = plman.GetPlaylistItems(playlist);
-			plman.ClearPlaylist(playlist);
-			plman.InsertPlaylistItemsFilter(playlist, 0, playlistItems);
-			*/
-
+			plman.AddPlaylistItemsOrLocations(playlist, this.buildItemList(itemsToAdd), true); // Replaced addItemsToPlaylist, since AddLocations is Async
 			// activate playlist
 			plman.ActivePlaylist = playlist;
-			this.log("finished");
+			this.log('finished');
 		});
 	};
-
-	addItemsToPlaylist(items, playlist) {
-		// remove duplicates
-		items = [...new Set(items)];
-		// check if there are items to add
-		if (items.length == 0) {
-			this.log("No items to add");
-			return false;
-		}
-
-		let lastType = 'youtube';
-		let queue = [];
-		// add items to playlist
-		items.forEach((itemToAdd) => {
-			let type = itemToAdd.file ? "local" : "youtube";
-			// submit queue
-			if (type != lastType) {
-				if (lastType == "youtube") {
-					plman.AddLocations(playlist, queue);
-					queue = new FbMetadbHandleList();
+	
+	buildItemList(items) {
+		return [...new Set(items)]
+			.map((item) => {
+				let newItem;
+				if (item.file) {
+					newItem = item.file;
+				} else {
+					newItem = `3dydfy://www.youtube.com/watch?v=${item.youtube}&fb2k_artist=${encodeURIComponent(item.artist)}&fb2k_title=${encodeURIComponent(item.title)}`;
+					if (item.cover) {
+						// upscale cover art link
+						item.cover = item.cover.replace(/\/64s\//g, '/300x300/');
+						// append cover url to youtube url
+						newItem += `&fb2kx_thumbnail_url=${encodeURIComponent(item.cover)}`;
+						newItem += `&fb2k_last_list_thumbnail_url=${encodeURIComponent(item.cover)}`;
+					}
 				}
-				if (lastType == "local") {
-					plman.InsertPlaylistItems(playlist, plman.PlaylistItemCount(playlist), queue);
-					queue = [];
-				}
-
-				lastType = type;
-			}
-
-			if (type == "youtube") {
-				let fooYoutubeUrl = `3dydfy://www.youtube.com/watch?v=${itemToAdd.youtube}&fb2k_artist=${encodeURIComponent(itemToAdd.artist)}&fb2k_title=${encodeURIComponent(itemToAdd.title)}`;
-				if (itemToAdd.cover) {
-					// upscale cover art link
-					itemToAdd.cover = itemToAdd.cover.replace(/\/64s\//g, "/300x300/");
-					// append cover url to youtube url
-					fooYoutubeUrl += `&fb2kx_thumbnail_url=${encodeURIComponent(itemToAdd.cover)}`;
-					fooYoutubeUrl += `&fb2k_last_list_thumbnail_url=${encodeURIComponent(itemToAdd.cover)}`;
-				}
-				queue.push(fooYoutubeUrl);
-			}
-			if (type == "local") {
-				queue.Insert(queue.Count, itemToAdd.file);
-			}
-		});
-		if (lastType == "youtube") {
-			plman.AddLocations(playlist, queue);
-		}
-		if (lastType == "local") {
-			plman.InsertPlaylistItems(playlist, plman.PlaylistItemCount(playlist), queue);
-		}
+				return newItem;
+			});
 	};
 }
