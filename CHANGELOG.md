@@ -48,6 +48,7 @@
 - Last.fm: no longer requires [original package](https://github.com/L3v3L/foo-last-list-smp), fully integrated now. Reason: original package follows a design not fully compatible with some of the new features added.
 - Last.fm: better library matching of extra chars (for ex. in original package '.38 Special' would not match '38 Special').
 - Last.fm: better library matching removing unwanted title words (remastered, ...).
+- Playlist filter: pressing Ctrl + L. Click now outputs all duplicates found (like the remove duplicates button). Pressing Ctrl + Shift + L. Click outputs only N duplicates following the buttons settings.
 - Console: multiple improvements when logging to file for FbMetadbHandle, FbMetadbHandleList, Error and unknown instances (totally irrelevant except for debug purposes).
 - Console: menu entries are no longer logged to console after clicking (except when pressing Ctrl before opening the button's menu).
 - UI: standardized and shortened all current/locked/playing playlist flags text in menu entries related to playlist and selection manipulation. i.e. 'my playlist (current)' instead of 'my playlist (current playlist)' or 'my playlist (current | playing)' instead of 'my playlist (current playlist) (playing playlist)'.
@@ -56,6 +57,7 @@
 - Buttons: top tracks button's icon to a heart without filling; blends better on dark and light themes.
 - Buttons: Playlist Tools submenu custom button's icon now changes according to the associated submenu.
 - Buttons: search same button's icon to magnifying glass with a plus; more intuitive than previous icon (link).
+- Buttons: profiler logging for 'search_by_tags_combinations', 'search_by_tags_queries', 'search_top_tracks', 'search_top_tracks_from_date', 'playlist_filter', 'playlist_remove_duplicates' and 'playlist_show_duplicates' button now follows Playlist Tools button config, disabled otherwise.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
@@ -68,7 +70,11 @@
 - Playlist Manipulation\Query filtering: dynamic queries were not being properly inverted while pressing Ctrl on some edge cases.
 - Script Integration\SMP Dynamic menu: crash on init after disabling submenu (and feature) via shift clicking .
 - Playlist Manipulation: disabling submenu via shift clicking did not output the proper menu list order.
+- Playlist filter: non uniform tabulation on button tooltip.
+- Remove Duplicates: skip processing if there is no active playlist.
 - Buttons: 'main_menu_shortcut' button's state was not saved properly when using 'Run when closing foobar?' option due to a limit on how [foobar2000/SMP work](https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205). A workaround has been implemented, considering a button should always be on an specific state at init if these options were used.
+- Buttons: removed non needed console logging for 'search_by_tags_queries' button and 'Search same by tags' menu entries.
+- Buttons: 'playlist_remove_duplicates' and 'playlist_show_duplicates' now show the keyboard action associated while pressing control (if the mouse shortcuts has been disabled). Previously it only worked with shift.
 - Pools: pools using dynamic queries crashed when there was no focus item (on any playlist).
 - Pools: pools using standard queries without a focused item (on any playlist) did not output any results.
 - Pools: number of tracks output was lower than expected on classic pools mode (_GROUP_X) due to wrong tag handling of special chars.
