@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//26/04/23
 
 /* 
 	Search same by
@@ -296,7 +296,6 @@ function searchSameByQueries({
 	// Loop tags
 	const tagVal = new Array(sameBy.length).fill(null).map((_) => {return [];});
 	sameBy.forEach((tagsArr, i) => {
-		console.log(tagsArr);
 		tagsArr.forEach((tag) => {
 			let tagIdx = selInfo.MetaFind(tag);
 			let tagNumber = (tagIdx !== -1) ? selInfo.MetaValueCount(tagIdx) : 0;
