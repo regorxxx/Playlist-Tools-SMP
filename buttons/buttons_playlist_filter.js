@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//26/04/23
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -45,19 +45,29 @@ addButton({
 				.map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
 			const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
 			const nAllowed = this.buttonsProperties.nAllowed[1];
-			removeDuplicates({checkKeys, nAllowed, bAdvTitle, bProfile: true});
+			if (mask === (MK_CONTROL + MK_SHIFT)) {
+				showDuplicates({checkKeys, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
+				removeDuplicates({checkKeys, nAllowed, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
+			} else if (mask === MK_CONTROL) {
+				showDuplicates({checkKeys, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
+			} else {
+				removeDuplicates({checkKeys, nAllowed, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
+			}
 		}
 	}, null, void(0), (parent) => {
 		const tagKeys = Object.keys(parent.buttonsProperties).filter((key) => {return key.indexOf('checkInput') !== -1;});
 		const checkKeys = tagKeys.map((key) => {return parent.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
+		const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
 		let info = 'Filter playlist according to equal:';
 		info += '\nTF:\t' + checkKeys.join('|');
-		info += '\nAllowing:\t' + parent.buttonsProperties.nAllowed[3] + ' duplicates';
+		info += '\nAllow:\t' + parent.buttonsProperties.nAllowed[3] + ' duplicates';
 		info += '\nRegExp:\t' + parent.buttonsProperties.bAdvTitle[1];
-		if (bShift || bInfo) {
+		if (bShift || bCtrl || bInfo) {
 			info += '\n-----------------------------------------------------';
+			info += '\n(Ctrl + L. Click to show all duplicates)';
+			info += '\n(Ctrl + Shift + L. Click to show ' + parent.buttonsProperties.nAllowed[1] + ' duplicates)';
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
