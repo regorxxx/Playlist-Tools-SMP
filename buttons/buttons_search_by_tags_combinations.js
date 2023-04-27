@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/03/23
+//26/04/23
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -94,7 +94,7 @@ addButton({
 			const newName = this.buttonsProperties.customName[1].toString();
 			if (oldName !== newName) {this.adjustNameWidth(newName);}
 		} else {
-			searchSameByCombs({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), bAdvTitle: this.buttonsProperties.bAdvTitle[1], playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
+			searchSameByCombs({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), bAdvTitle: this.buttonsProperties.bAdvTitle[1], playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/03/23
+//26/04/23
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -38,7 +38,7 @@ addButton({
 			const newName = this.buttonsProperties.customName[1].toString();
 			if (oldName !== newName) {this.adjustNameWidth(newName);}
 		} else {
-			searchSameByQueries({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), bAdvTitle: this.buttonsProperties.bAdvTitle[1], playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: true});
+			searchSameByQueries({checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]), bAdvTitle: this.buttonsProperties.bAdvTitle[1], playlistLength: Number(this.buttonsProperties.playlistLength[1]), sameBy: JSON.parse(this.buttonsProperties.sameBy[1]), bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
 		}
 	}, null, void(0), (parent) => {
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
