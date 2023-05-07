@@ -69,6 +69,7 @@
 - Selection manipulation\Shuffle: 'By...(tag)' entry not working.
 - Playlist Manipulation\Query filtering: dynamic queries were not being properly inverted while pressing Ctrl on some edge cases.
 - Script Integration\SMP Dynamic menu: crash on init after disabling submenu (and feature) via shift clicking .
+- Script Integration\SMP Dynamic menu: feature was not disabled/enabled properly to work with [ajquery-xxx](https://github.com/regorxxx/ajquery-xxx).
 - Playlist Manipulation: disabling submenu via shift clicking did not output the proper menu list order.
 - Playlist filter: non uniform tabulation on button tooltip.
 - Remove Duplicates: skip processing if there is no active playlist.

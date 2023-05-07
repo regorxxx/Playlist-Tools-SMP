@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//08/05/23
 
 // Script integration
 {
@@ -255,7 +255,7 @@
 							menu_panelProperties.bDynamicMenus[1] = !menu_panelProperties.bDynamicMenus[1];
 							overwritePanelProperties(); // Updates panel
 							if (folders.ajqueryCheck()) {
-								exportComponents(folders.ajquerySMP,  {bDynamicMenus: menu_panelProperties.bDynamicMenus[1]});
+								exportComponents(folders.ajquerySMP,  {bDynamicMenusPT: menu_panelProperties.bDynamicMenus[1]});
 							}
 							// Disable UI shortcuts if they can not be used
 							if (!menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]) {
