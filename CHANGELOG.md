@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.26](#300-beta25---2023-05-08)
 - [3.0.0-beta.25](#300-beta25---2023-03-09)
 - [3.0.0-beta.24](#300-beta24---2023-03-08)
 - [3.0.0-beta.23](#300-beta23---2023-03-08)
@@ -38,6 +39,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0-beta.26] - 2023-05-08
 ### Added
 - Last.fm: menu entries are now available as dynamic SMP menus (toogable setting).
 - Top Rated Tracks from...: pressing shift when clicking the menu entries now randomizes the tracks taken from the pool (according to rating and date), instead of sorting them by play count (which always output the same tracks if play count doesn't change). i.e. if someone wants to listen their top rated tracks from the 2000s but different sets of tracks on every listening session, not always the same most rated and most played tracks, the randomize modifier could be used.
@@ -892,7 +899,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.25...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.26...HEAD
+[3.0.0-beta.26]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.25...v3.0.0-beta.26
 [3.0.0-beta.25]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.24...v3.0.0-beta.25
 [3.0.0-beta.24]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.23...v3.0.0-beta.24
 [3.0.0-beta.23]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.22...v3.0.0-beta.23
