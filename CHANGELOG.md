@@ -43,6 +43,7 @@
 ### Changed
 - Last.fm: button is now animated during all asynchronous tasks.
 - Other tools\Import track list: tracks are now also preferred by higher rating (if possible).
+- Pools: when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
 ### Removed
 ### Fixed
 
