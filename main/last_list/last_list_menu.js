@@ -1,5 +1,5 @@
 'use strict';
-//13/03/23
+//25/05/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -200,7 +200,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 						parent.cacheTime = 0;
 						parent.pages = 1;
 						console.log('Searching at: ' + url);
-						parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0});
+						this.switchAnimation('Last.fm data retrieval', true);
+						parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0})
+							.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
 					}
 				}, flags: val ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
 			});
@@ -218,7 +220,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 							parent.cacheTime = 0;
 							parent.pages = 1;
 							console.log('Searching at: ' + url);
-							parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0});
+							this.switchAnimation('Last.fm data retrieval', true);
+							parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0})
+								.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
 						}
 					}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
 				});
@@ -303,7 +307,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 					parent.pages = url[2] || 1;
 					parent.cacheTime = 0;
 					console.log('Searching at: ' + url[0]);
-					parent.run({url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0});
+					this.switchAnimation('Last.fm data retrieval', true);
+					parent.run({url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0})
+						.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
 				}
 			}, data: {bDynamicMenu: true}});
 		})
@@ -313,7 +319,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 			parent.playlistName = 'Last.fm';
 			parent.cacheTime = 0;
 			parent.pages = 1;
-			parent.run({url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0});
+			this.switchAnimation('Last.fm data retrieval', true);
+			parent.run({url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0})
+				.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
 		}, data: {bDynamicMenu: true}});
 	}
 	menu.newEntry({entryText: 'sep'});
@@ -333,7 +341,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 					parent.cacheTime = 0;
 					parent.pages = 1;
 					console.log('Searching at: ' + url);
-					parent.run(); // parent.run({url, playlistName: 'Last.fm: ' + entry.name, cacheTime: 0});
+					this.switchAnimation('Last.fm data retrieval', true);
+					parent.run() // parent.run({url, playlistName: 'Last.fm: ' + entry.name, cacheTime: 0});
+					.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
 				}
 			}, data: {bDynamicMenu: true}});
 		})

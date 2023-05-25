@@ -1,5 +1,5 @@
 'use strict';
-//21/04/23
+//25/05/23
 
 /* 
 	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp 
@@ -77,9 +77,8 @@ class LastList {
 					throw new InputError('No playlist name');
 				}
 			}
-
-			this.scrapeUrl(url, startPage, pages, playlistName, cacheTime);
 			this.url = url; // Cache
+			return this.scrapeUrl(url, startPage, pages, playlistName, cacheTime);
 		} catch (e) {
 			if (e instanceof InputError) {
 				// do nothing
@@ -87,7 +86,7 @@ class LastList {
 				//show error message
 				this.log('Error - ' + e.message);
 			}
-
+			return Promise.resolve(e);
 		}
 	};
 
@@ -310,7 +309,7 @@ class LastList {
 			}));
 		}
 
-		Promise.all(promises).then(() => {
+		return Promise.all(promises).then(() => {
 			plman.AddPlaylistItemsOrLocations(playlist, this.buildItemList(itemsToAdd), true); // Replaced addItemsToPlaylist, since AddLocations is Async
 			// activate playlist
 			plman.ActivePlaylist = playlist;
