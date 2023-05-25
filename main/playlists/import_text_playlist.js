@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/12/22
+//20/05/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -25,7 +25,7 @@ function importTextPlaylist({
 		formatMask = ['', '. ', '%TITLE%', ' - ', '%ARTIST%'],
 		duplicatesMask = [globTags.title, globTags.artist],
 		bAdvTitle = true,
-		queryFilters = [globQuery.noLiveNone]
+		queryFilters = [globQuery.noLiveNone, globQuery.notLowRating]
 	} = {}) {
 	if (!path || !path.length) {
 		console.log('importTextPlaylist(): no file was provided');
