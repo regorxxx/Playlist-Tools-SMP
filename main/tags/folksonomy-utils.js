@@ -69,7 +69,7 @@ const folksonomyUtils = {
 			const rules = {
 				subsitutions: [
 					// Rap
-					{from: ['Rap','Hip Hop', 'Hip Hop Rap','Hip Hop/Rap','Hip-Hop/Rap'], to: ['Hip-Hop']},
+					{from: ['Rap','Hip Hop', 'Hip Hop Rap','Hip Hop/Rap','Hip-Hop/Rap','Rap/Hip-Hop'], to: ['Hip-Hop']},
 					{from: ['Jazz Hip-Hop', 'Jazz Hip Hop', 'Jazz Rap'], to: ['Jazz-Rap']},
 					{from: ['West Coast Hip Hop'], to: ['West Coast Hip-Hop']},
 					// Rock
@@ -78,7 +78,7 @@ const folksonomyUtils = {
 					{from: ['Pop / Rock / Metal'], to: ['Rock']},
 					{from: ['Pop/Rock'], to: ['Pop Rock']},
 					{from: ['Prog Rock', 'Prog-Rock', 'Progressive'], to: ['Progressive Rock']},
-					{from: ['Alternative/Indie Rock', 'Alternrock'], to: ['Alternative Rock']},
+					{from: ['Alternative/Indie Rock', 'Alternrock', 'Alt Rock', 'Alt. Rock', 'Alternative Pop/Rock'], to: ['Alternative Rock']},
 					{from: ['Postrock'], to: ['Post-Rock']},
 					{from: ['Classic Soft Rock'], to: ['Soft Rock']},
 					{from: ['Rock And Roll', 'Rock Roll'], to: ['Rock & Roll']},
@@ -122,12 +122,14 @@ const folksonomyUtils = {
 					{from: ['Christmas/Holiday'], to: ['Christmas']},
 					{from: ['World-Fusion', 'World Music'], to: ['World']},
 					{from: ['Female Vocals'], to: ['Female Vocal']},
+					{from: ['Singer/Songwriter', 'Singer & Songwriter'], to: ['Singer - Songwriter']},
 					// Countries
 					{from: ['Madrid'], to: ['Spanish']},
 					{from: ['Barcelona'], to: ['Spanish']},
 					{from: ['Boston'], to: ['English']},
 					{from: ['Houston'], to: ['English']},
 					{from: ['Portland'], to: ['English']},
+					{from: ['Seattle'], to: ['English']},
 					{from: ['Italy'], to: ['Italian']},
 					{from: ['Cairo'], to: ['Egyptian']},
 					{from: ['Agadez'], to: ['African', 'Nigerian']},
