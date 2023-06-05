@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/04/23
+//30/05/23
 
 /* 
 	Search same by
@@ -81,6 +81,7 @@ function searchSameByCombs({
 								forcedQuery = globQuery.filter,
 								sortBy = '', 
 								checkDuplicatesBy = globTags.remDupl,
+								checkDuplicatesBias = globQuery.remDuplBias,
 								bAdvTitle = true,
 								sameBy = {genre: 1, style: 2 , mood: 5},
 								playlistName = 'Search...',
@@ -248,6 +249,8 @@ function searchSameByCombs({
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
+			const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
+			if (sortTF) {outputHandleList.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
 			outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile, bAdvTitle});
 		}
 		const oldCount = outputHandleList.Count;
@@ -267,6 +270,7 @@ function searchSameByQueries({
 								forcedQuery = globQuery.filter,
 								sortBy = '', 
 								checkDuplicatesBy = globTags.remDupl,
+								checkDuplicatesBias = globQuery.remDuplBias,
 								bAdvTitle = true,
 								sameBy = [['STYLE'],['MOOD']],
 								playlistName = 'Search...',
@@ -324,6 +328,8 @@ function searchSameByQueries({
 
 	//Find and remove duplicates. Sort Random
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
+		const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
+		if (sortTF) {outputHandleList.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
 		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile, bAdvTitle});
 	}
 	const oldCount = outputHandleList.Count;
