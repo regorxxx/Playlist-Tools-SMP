@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/03/23
+//30/05/23
 
 /* 
 	Top Tracks
@@ -17,6 +17,7 @@ function topTracks({
 						playlistLength = 25, 
 						sortBy = globTags.sortPlayCount, 
 						checkDuplicatesBy = globTags.remDupl,
+						checkDuplicatesBias = globQuery.remDuplBias,
 						bAdvTitle = true,
 						forcedQuery = globQuery.notLowRating,
 						playlistName = 'Top ' + playlistLength + ' Tracks',
@@ -35,6 +36,8 @@ function topTracks({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	//Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
+		const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
+		if (sortTF) {outputHandleList.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
 		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bAdvTitle});
 	}
 	// Output n tracks
