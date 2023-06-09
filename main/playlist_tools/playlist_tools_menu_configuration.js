@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//09/06/23
 
 // Configuration...
 {
@@ -137,6 +137,13 @@
 					defaultArgs.checkDuplicatesBy = input;
 					menu_properties.checkDuplicatesBy[1] = JSON.stringify(input);
 					overwriteMenuProperties();
+				}});
+				menu.newEntry({menuName: subMenuName, entryText: 'Track selection bias...', func: () => {
+					const input = Input.string('string', menu_properties.sortBias[1], 'Enter TF expression for track selection when finding duplicates:\n\nHigher valued tracks will be preffered.', 'Search by distance', globQuery.remDuplBias, void(0), false);
+					if (input === null) {return;}
+					menu_properties.sortBias[1] = input;
+					overwriteMenuProperties(); // Updates panel
+					return;
 				}});
 				menu.newEntry({menuName: subMenuName, entryText: 'Use RegExp for title matching?', func: () => {
 					defaultArgs.bAdvTitle = !defaultArgs.bAdvTitle;
