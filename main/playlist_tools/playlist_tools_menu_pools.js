@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/03/23
+//09/06/23
 
 // Pools
 {
@@ -191,13 +191,15 @@
 								const groupTF = group.indexOf('$') !== -1 ? _q(group) : group;
 								const query = groupTF + ' IS ' + tagSet[i];
 								if (!checkQuery(query, true)) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); bAbort = true; return;}
-								handleListsGroups[i] = new FbMetadbHandleList(fb.GetQueryItems(handleListFrom, query).Convert().shuffle().slice(0, limit));
+								handleListsGroups[i] = fb.GetQueryItems(handleListFrom, query);
 								// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
 								if (defaultArgs.checkDuplicatesBy.length) {
-									handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
+									handleListsGroups[i] = removeDuplicatesV2({handleList: handleListsGroups[i], checkKeys: defaultArgs.checkDuplicatesBy, sortBias: defaultArgs.sortBias, bPreserveSort: false, bAdvTitle: defaultArgs.bAdvTitle});
+									handleListsGroups[i] = new FbMetadbHandleList(handleListsGroups[i].Convert().shuffle().slice(0, limit));
+								} else {
+									handleListsGroups[i] = new FbMetadbHandleList(handleListsGroups[i].Convert().shuffle().slice(0, limit));
 								}
 							}
-							console.log(handleListsGroups.length);
 							// Join all tracks
 							handleListFrom = new FbMetadbHandleList();
 							handleListsGroups.forEach((handleList) => {handleListFrom.AddRange(handleList);});
@@ -368,8 +370,9 @@
 							} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 						}
 						// Remove duplicates
-						if (defaultArgs.checkDuplicatesBy.length) {
-							handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: defaultArgs.checkDuplicatesBy, bAdvTitle: defaultArgs.bAdvTitle});
+						// Search by distance output should be already de-duplicated
+						if (defaultArgs.checkDuplicatesBy.length && !plsName.startsWith('_SEARCHBY')) {
+							handleListFrom = removeDuplicatesV2({handleList: handleListFrom, checkKeys: defaultArgs.checkDuplicatesBy, sortBias: defaultArgs.sortBias, bPreserveSort: true, bAdvTitle: defaultArgs.bAdvTitle});
 						}
 					}
 					// Remove tracks on destination list
