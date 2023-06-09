@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/04/23
+//09/06/23
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -25,6 +25,7 @@ var newButtonsProperties = { //You can simply add new properties here
 	checkInputA:	['Tag or TitleFormat expression to check (1)', globTags.artist, {func: isStringWeak}, globTags.artist],
 	checkInputB:	['Tag or TitleFormat expression to check (2)', globTags.date, {func: isStringWeak}, globTags.date],
 	checkInputC:	['Tag or TitleFormat expression to check (3)', globTags.title, {func: isStringWeak}, globTags.title],
+	sortBias:		['Track selection bias'						 , globQuery.remDuplBias, {func: isStringWeak}, globQuery.remDuplBias],
 	bAdvTitle:		['Advanced RegExp title matching?', true, {func: isBoolean}, true],
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };
@@ -39,9 +40,10 @@ addButton({
 		} else {
 			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => {return key.startsWith('check')})
 				.map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
+			const sortBias = this.buttonsProperties.sortBias[1];
 			const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
 			if (mask === MK_CONTROL) {
-				removeDuplicatesV2({checkKeys, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
+				removeDuplicatesV2({checkKeys, sortBias, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
 			} else {
 				showDuplicates({checkKeys, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
 			}
@@ -53,7 +55,8 @@ addButton({
 		const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
 		let info = 'Show duplicates according to equal:';
-		info += '\nTF:\t' + checkKeys.join('|');
+		info += '\nTF:\t' + checkKeys.join('|').replace(/^(.{50}).{2,}/, '$1…');
+		info += '\nBias:\t' +  parent.buttonsProperties.sortBias[1].replace(/^(.{50}).{2,}/, '$1…');
 		info += '\nRegExp:\t' + parent.buttonsProperties.bAdvTitle[1];
 		if (bShift || bCtrl || bInfo) {
 			info += '\n-----------------------------------------------------';
