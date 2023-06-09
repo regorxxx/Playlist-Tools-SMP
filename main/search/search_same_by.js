@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/05/23
+//09/06/23
 
 /* 
 	Search same by
@@ -249,9 +249,7 @@ function searchSameByCombs({
 		
 		// Find and remove duplicates
 		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-			const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
-			if (sortTF) {outputHandleList.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
-			outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile, bAdvTitle});
+			outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle});
 		}
 		const oldCount = outputHandleList.Count;
 		// Limit n tracks
@@ -328,9 +326,7 @@ function searchSameByQueries({
 
 	//Find and remove duplicates. Sort Random
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
-		if (sortTF) {outputHandleList.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
-		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bProfile, bAdvTitle});
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle});
 	}
 	const oldCount = outputHandleList.Count;
 	//Limit n tracks
