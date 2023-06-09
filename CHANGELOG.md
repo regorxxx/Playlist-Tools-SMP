@@ -41,7 +41,6 @@
 ## [Unreleased][]
 ### Added
 - Global Forced Query: 'Top Rated Tracks from...', 'Most played Tracks from...' and  'Most played Tracks' are now also added to the list of toogable forced query application. This addition should cover all existing tools where the forced query is applicable.
-- Search by tags (queries): new option to specify a picking bias (instead of using the input order of appearance). i.e. tracks may be preferred by higher rating, etc. Enabled by default.
 - Remove duplicates: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
 - Show duplicates: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
 - Playlist filter: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
