@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/03/23
+//07/06/23
 
 // Most played tracks from year
 {
@@ -10,6 +10,7 @@
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks_from_date.txt';
+			forcedQueryMenusEnabled[name] = true;
 			const menuName = menu.newMenu(name);
 			menu.newEntry({menuName, entryText: 'Based on play counts within a period:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
@@ -18,14 +19,20 @@
 				const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
 				selYearArr.forEach( (selYear) => {
 					let selArgs = {year: selYear};
-					menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {topTracksFromDate(args);}});
+					menu.newEntry({menuName, entryText: 'Most played from ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {
+						if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
+						topTracksFromDate(args);
+					}});
 				});
 			}
 			menu.newEntry({menuName, entryText: 'sep'});
 			if (_isFile(scriptPathElse)){
 				// All years
 				include(scriptPathElse);
-				menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {topTracks(args);}});
+				menu.newEntry({menuName, entryText: 'Most played (all years)', func: (args = {...defaultArgs}) => {
+					if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
+					topTracks(args);
+				}});
 				menu.newEntry({menuName, entryText: 'sep'});
 			}
 			{	// Input menu: x year
@@ -35,7 +42,9 @@
 					try {input = Number(utils.InputBox(window.ID, 'Enter year:', scriptName + ': ' + name, selYear, true));}
 					catch (e) {return;}
 					if (!Number.isSafeInteger(input)) {return;}
-					topTracksFromDate({...defaultArgs,  year: input});
+					const args = {...defaultArgs,  last: input, bUseLast: true};
+					if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
+					topTracksFromDate(args);
 					}});
 			}
 			{	// Input menu: last x time
@@ -44,7 +53,9 @@
 					try {input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), scriptName + ': ' + name, '4 WEEKS', true).trim();}
 					catch (e) {return;}
 					if (!input.length) {return;}
-					topTracksFromDate({...defaultArgs,  last: input, bUseLast: true});
+					const args = {...defaultArgs,  last: input, bUseLast: true};
+					if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
+					topTracksFromDate(args);
 					}});
 			}
 			menu.newEntry({entryText: 'sep'});
@@ -55,7 +66,10 @@
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
 			// All years
 			include(scriptPathElse);
-			menu.newEntry({entryText: name, func: (args = { ...defaultArgs}) => {topTracks(args);}}); // Skips menu name, added to top
+			menu.newEntry({entryText: name, func: (args = { ...defaultArgs}) => {
+				if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
+				topTracks(args);
+			}}); // Skips menu name, added to top
 			menu.newEntry({entryText: 'sep'});
 		} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length  + disabledCount++, bIsMenu: true});}
 	}
@@ -69,6 +83,7 @@
 		if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_rated_tracks.txt';
+			forcedQueryMenusEnabled[name] = true;
 			const menuName = menu.newMenu(name);
 			menu.newEntry({menuName, entryText: 'Shift + Click to randomize:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
@@ -89,6 +104,7 @@
 				} else {
 					dateQuery = _q(globTags.date) + ' IS ' + selYear;
 				}
+				if (!forcedQueryMenusEnabled[name]) {selArgs.forcedQuery = '';}
 				dateQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
 				const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
 				const plsName = 'Top ' + selArgs.playlistLength + ' Rated Tracks ' + dateName;
@@ -97,11 +113,10 @@
 			selYearArr.reverse().forEach( (selYear) => {
 				if (selYear === 'sep') {menu.newEntry({menuName, entryText: 'sep'}); return;}
 				selYear.sort(); // Invariant to order
-				let selArgs = { ...defaultArgs};
-				[selArgs.forcedQuery, selArgs.playlistName] = queryDateAndName(selArgs, selYear);
 				const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
-				menu.newEntry({menuName, entryText: 'Top rated' + dateName, func: (args = selArgs) => {
+				menu.newEntry({menuName, entryText: 'Top rated' + dateName, func: (args = { ...defaultArgs}) => {
 					if (utils.IsKeyPressed(VK_SHIFT)) {args.sortBy = '';} // Random on shift
+					[args.forcedQuery, args.playlistName] = queryDateAndName(args, selYear);
 					topRatedTracks(args);
 				}});
 			});
