@@ -40,17 +40,24 @@
 
 ## [Unreleased][]
 ### Added
+- Global Forced Query: 'Top Rated Tracks from...', 'Most played Tracks from...' and  'Most played Tracks' are now also added to the list of toogable forced query application. This addition should cover all existing tools where the forced query is applicable.
+- Search by tags (queries): new option to specify a picking bias (instead of using the input order of appearance). i.e. tracks may be preferred by higher rating, etc. Enabled by default.
+- Remove duplicates: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
+- Show duplicates: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
+- Playlist filter: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
+- Configuration: new setting to set de-duplication bias is at 'Configuration\Duplicates handling...\'. (this only applies to Playlist Tools button for tools listed below)
 ### Changed
 - Last.fm: button is now animated during all asynchronous tasks.
 - Other tools\Import track list: tracks are now also preferred by higher rating (if possible).
-- Pools: when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
-- Top Rated Tracks from...: when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible).
-- Most played Tracks from...: when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible).
-- Most played Tracks: when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible).
-- Search by tags (combinations): when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible).
-- Search by tags (queries): when removing duplicates, tracks left for comparison are now preferred by higher rating and not live tracks (if possible).
+- Pools: when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
+- Top Rated Tracks from...: when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
+- Most played Tracks from...: when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
+- Most played Tracks: when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
+- Search by tags (combinations): when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
+- Search by tags (queries): when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
 ### Removed
 ### Fixed
+- UI: tooltip flickering while pressing Shift/Ctrl over a button in icon-only mode.
 
 ## [3.0.0-beta.26] - 2023-05-08
 ### Added
