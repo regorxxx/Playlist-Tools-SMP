@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/05/23
+//09/06/23
 
 /* 
 	Top X Tracks From Date
@@ -53,9 +53,7 @@ function topTracksFromDate({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return;}
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
-		if (sortTF) {outputHandleList.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
-		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bAdvTitle});
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle});
 	}
 	// Filter Play counts by date
 	const datesArray = fb.TitleFormat(_bt('PLAYED_TIMES')).EvalWithMetadbs(outputHandleList);

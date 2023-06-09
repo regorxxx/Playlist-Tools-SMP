@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/05/23
+//09/06/23
 
 /* 
 	Top Rated Tracks
@@ -48,9 +48,7 @@ function topRatedTracks({
 		catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 		//Find and remove duplicates
 		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-			const sortTF = checkDuplicatesBias.length ? fb.TitleFormat(checkDuplicatesBias) : null;
-			if (sortTF) {handleList_i.OrderByFormat(sortTF, -1);} // In case of duplicates, prefer high rating non-live tracks
-			handleList_i = removeDuplicatesV2({handleList: handleList_i, sortOutput: sortBy, checkKeys: checkDuplicatesBy, bAdvTitle});
+			handleList_i = removeDuplicatesV2({handleList: handleList_i, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle});
 		}
 		outputHandleList.AddRange(handleList_i);
 		currRating--;
