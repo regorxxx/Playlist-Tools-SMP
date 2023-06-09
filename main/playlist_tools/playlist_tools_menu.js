@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//09/06/23
 
 /* 
 	Playlist Tools Menu
@@ -56,7 +56,8 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	async:						['Async processing',  JSON.stringify({'Check tags': true, 'Write tags': true, 'Pools': false, 'Search by distance': false, 'Remove duplicates': false, 'Import track list': false})],
 	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})],
 	checkDuplicatesBy:			['Remove duplicates by', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
-	bAdvTitle:					['Duplicates RegExp title matching?', true, {func: isBoolean}, true]
+	bAdvTitle:					['Duplicates RegExp title matching?', true, {func: isBoolean}, true],
+	sortBias:					['Duplicates RegExp title matching?', globQuery.remDuplBias, {func: isStringWeak}, globQuery.remDuplBias]
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
@@ -94,6 +95,7 @@ const defaultArgs = {
 					styleGenreTag: JSON.parse(menu_properties.styleGenreTag[1]),
 					checkDuplicatesBy: JSON.parse(menu_properties.checkDuplicatesBy[1]),
 					bAdvTitle: menu_properties.bAdvTitle[1],
+					sortBias: menu_properties.sortBias[1],
 					parent: null
 };
 const newReadmeSep = (() => {let i = 0; return (bFull = false) => {return (bFull ? {['sep' + ++i]: 'sep'} : ['sep' + ++i]);}})()
