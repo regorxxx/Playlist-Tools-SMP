@@ -1153,6 +1153,7 @@
 					{name: 'By Style', args: ['%' + globTags.style + '%']},
 					{name: 'By Key', args: ['%' + globTags.key + '%']},
 					{name: 'By Mood', args: ['%' + globTags.mood + '%']},
+					{name: 'By Rating', args: [globTags.rating]},
 					{name: 'sep'},
 					{name: 'By... (tags)', args: () => {
 						let input = '%' + globTags.artist + '%;%ALBUM%';
@@ -1208,6 +1209,7 @@
 					{name: 'By Style', args: ['%' + globTags.style + '%']},
 					{name: 'By Key', args: [defaultArgs.keyTag]}, // Uses remapped tag. Probably missing %, fixed later.
 					{name: 'By Mood', args: ['%' + globTags.mood + '%']},
+					{name: 'By Rating', args: [globTags.rating]},
 					{name: 'sep'},
 					{name: 'By... (tags)', args: () => {
 						let input = '%' + globTags.artist + '%;%ALBUM%';
