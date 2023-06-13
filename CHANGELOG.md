@@ -45,6 +45,8 @@
 - Show duplicates: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
 - Playlist filter: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks.
 - Configuration: new setting to set de-duplication bias is at 'Configuration\Duplicates handling...\'. (this only applies to Playlist Tools button for tools listed below)
+- Selection manipulation\Expand: added 'By rating' entry.
+- Selection manipulation\Jump: added 'By rating' entry.
 ### Changed
 - Last.fm: button is now animated during all asynchronous tasks.
 - Other tools\Import track list: tracks are now also preferred by higher rating (if possible).
@@ -54,6 +56,7 @@
 - Most played Tracks: when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
 - Search by tags (combinations): when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
 - Search by tags (queries): when removing duplicates, chosen tracks are now preferred by higher rating and not live tracks (if possible). This is apart from the forced query filtering (which may result on this feature being irrelevant in some use cases).
+- Last Action: available now as dynamic main menu (and thus can be bound to a keyboard shortcut).
 ### Removed
 ### Fixed
 - UI: tooltip flickering while pressing Shift/Ctrl over a button in icon-only mode.
