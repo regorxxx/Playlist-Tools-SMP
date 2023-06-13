@@ -1,5 +1,5 @@
 'use strict';
-//25/05/23
+//13/06/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -192,7 +192,7 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 				const subMenu = menu.getMainMenuName();
 				if (tag.valSet.size === 0) {tag.valSet.add('');}
 				const val = [...tag.valSet][0];
-				menu.newEntry({menuName: subMenu, entryText: tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']', func: () => {
+				menu.newEntry({menuName: subMenu, entryText: tag.name + '\t[' + (val.cut(20) || (sel ? 'no tag' : 'no sel')) + ']', func: () => {
 					const url = buildUrl(tag, val);
 					if (url) {
 						parent.url = url; 
@@ -212,7 +212,7 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name + '...');
 				if (tag.valSet.size === 0) {tag.valSet.add('');}
 				[...tag.valSet].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach((val, i) => {
-					menu.newEntry({menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val || (sel ? 'no tag' : 'no sel')) + ']' : val, func: () => {
+					menu.newEntry({menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : val.cut(25), func: () => {
 						const url = buildUrl(tag, val);
 						if (url) {
 							parent.url = url; 

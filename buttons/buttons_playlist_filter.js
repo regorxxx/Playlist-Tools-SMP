@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/06/23
+//13/06/23
 
 /* 
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
@@ -63,8 +63,8 @@ addButton({
 		const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
 		let info = 'Filter playlist according to equal:';
-		info += '\nTF:\t' + checkKeys.join('|').replace(/^(.{50}).{2,}/, '$1…');
-		info += '\nBias:\t' +  parent.buttonsProperties.sortBias[1].replace(/^(.{50}).{2,}/, '$1…');
+		info += '\nTF:\t' + checkKeys.join('|').cut(50);
+		info += '\nBias:\t' +  parent.buttonsProperties.sortBias[1].cut(50);
 		info += '\nAllow:\t' + parent.buttonsProperties.nAllowed[3] + ' duplicates';
 		info += '\nRegExp:\t' + parent.buttonsProperties.bAdvTitle[1];
 		if (bShift || bCtrl || bInfo) {
