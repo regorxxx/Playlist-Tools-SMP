@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/01/23
+//12/06/23
 
 // Last action
 {
@@ -9,15 +9,8 @@
 		readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_last_action.txt';
 		menu.newEntry({entryText: 'sep'});
 		menu.newCondEntry({entryText: name, condFunc: () => {
-			const fullName = menu.lastCall.length ? menu.lastCall : null;
-			const entryText = fullName ? fullName.replace(/.*\\/,'') : null;
-			// Reuse original flags
-			let flags = MF_STRING;
-			if (entryText !== null) {
-				const entry = menu.getEntries().find((entry) => entry.entryText === entryText.replace(/.*\\/,''));
-				if (entry) {flags = entry.flags;}
-			}
-			menu.newEntry({entryText: entryText !== null ? 'Last: ' + entryText : '- No last action -', func: () => {
+			const {entryText, fullName, flags} = lastActionEntry();
+			menu.newEntry({entryText, func: () => {
 				menu.btn_up(void(0), void(0), void(0), fullName); // Don't clear menu on last call
 			}, flags: entryText !== null ? flags : MF_GRAYED});
 		}});

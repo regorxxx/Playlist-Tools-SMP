@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//12/06/23
 
 /*
 	Helpers
@@ -260,6 +260,24 @@ function importPreset(path = folders.data + 'playlistTools_presets.json') {
 	menu_properties.presets[1] = JSON.stringify(presets);
 	overwriteMenuProperties(); // Updates panel
 	return true;
+}
+
+function lastActionEntry() {
+	const fullName = menu.lastCall.length ? menu.lastCall : null;
+	let entryText = fullName ? fullName.replace(/.*\\/,'') : null;
+	let flags = MF_STRING;
+	if (entryText !== null) {
+		// Reuse original flags
+		const entry = menu.getEntries().find((entry) => entry.entryText === entryText.replace(/.*\\/,''));
+		if (entry) {flags = entry.flags;}
+		// Prefer the full name if entry name is not clear enough
+		if (/^by/i.test(entryText)) {entryText = fullName;}
+		entryText = 'Last: ' + entryText;
+	} else {
+		entryText = '- No last action -';
+		flags = MF_GRAYED;
+	}
+	return {entryText, fullName, flags};
 }
 
 /* 

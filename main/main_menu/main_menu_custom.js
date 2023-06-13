@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//12/06/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\callbacks_xxx.js');
@@ -71,13 +71,15 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 				catch (e) {console.popup('Error evaluating: ' + entry.funcName + ' from menu (' + entry.menuName + ').', 'SMP Dynamic menu');}
 			}
 		} else {
+			const isFunction = (obj) => !!(obj && obj.constructor && obj.call && obj.apply);
+			const name = isFunction(entry.name) ? entry.name() : entry.name;
 			if (entry.hasOwnProperty('parentMenu') && entry.parentMenu) { // Other buttons
 				try {
-					(entry.args ? entry.parentMenu(entry.args) : entry.parentMenu()).btn_up(void(0), void(0), void(0), entry.name);
-				} catch (e) {console.popup('Error evaluating: ' + entry.name + '.', 'SMP Dynamic menu');}
+					(entry.args ? entry.parentMenu(entry.args) : entry.parentMenu()).btn_up(void(0), void(0), void(0), name);
+				} catch (e) {console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu');}
 			} else { // Playlist Tools
-				try {menu.btn_up(void(0), void(0), void(0), entry.name);}
-				catch (e) {console.popup('Error evaluating: ' + entry.name + '.', 'SMP Dynamic menu');}
+				try {menu.btn_up(void(0), void(0), void(0), name);}
+				catch (e) {console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu');}
 			}
 		}
 	}

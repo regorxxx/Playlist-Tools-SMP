@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/06/23
+//12/06/23
 
 /* 
 	Playlist Tools Menu
@@ -532,6 +532,11 @@ function createMainMenuDynamic() {
 			fb.RegisterMainMenuCommand(i, menu.name, menu.name);
 			onMainMenuDynamicEntries.push({...menu, parent: scriptName});
 		});
+		// Last action entry
+		if (!menusEnabled.hasOwnProperty('Last action') || menusEnabled['Last action'] === true) {
+			fb.RegisterMainMenuCommand(dynamicMenuList.length, 'Last action', 'Repeat last action');
+			onMainMenuDynamicEntries.push({name: () => lastActionEntry().fullName, parent: scriptName});
+		}
 		// Export if needed
 		return menu_panelProperties.bDynamicMenus[1] ? exportMainMenuDynamic({menuList}) : false;
 	} catch (e) {console.log('createMainMenuDynamic: unknown error'); console.log(e.message);}
