@@ -45,7 +45,7 @@
 ### Removed
 ### Fixed
 
-## [3.0.0-beta.24] - 2023-06-27
+## [3.0.0-beta.27] - 2023-06-27
 ### Added
 - Global Forced Query: 'Top Rated Tracks from...', 'Most played Tracks from...' and  'Most played Tracks' are now also added to the list of toogable forced query application. This addition should cover all existing tools where the forced query is applicable.
 - Remove duplicates: new setting at button to prefer tracks by a given TF expression. By default by higher rating and not live tracks. Delete '[foobar_profile]\js_data\presets\global\globQuery.json' and '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json' files after installation.
