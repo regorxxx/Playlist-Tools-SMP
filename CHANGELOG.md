@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.28](#300-beta28---2023-06-28)
 - [3.0.0-beta.27](#300-beta27---2023-06-27)
 - [3.0.0-beta.26](#300-beta26---2023-05-08)
 - [3.0.0-beta.25](#300-beta25---2023-03-09)
@@ -44,6 +45,13 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.28] - 2023-06-28
+### Added
+### Changed
+### Removed
+### Fixed
+- Wrong property value for 'Duplicates RegExp title matching?.
 
 ## [3.0.0-beta.27] - 2023-06-27
 ### Added
@@ -923,7 +931,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.27...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.28...HEAD
+[3.0.0-beta.28]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.27...v3.0.0-beta.28
 [3.0.0-beta.27]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.26...v3.0.0-beta.27
 [3.0.0-beta.26]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.25...v3.0.0-beta.26
 [3.0.0-beta.25]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.24...v3.0.0-beta.25
