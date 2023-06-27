@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/06/23
+//28/06/23
 
 /* 
 	Playlist Tools Menu
@@ -57,7 +57,7 @@ var menu_properties = { // Properties are set at the end of the script, or must 
 	dynQueryEvalSel:			['Dynamic Queries evaluated on entire selection', JSON.stringify({'Dynamic queries': true, 'Playlist manipulation': true})],
 	checkDuplicatesBy:			['Remove duplicates by', JSON.stringify(globTags.remDupl), {func: isJSON}, JSON.stringify(globTags.remDupl)],
 	bAdvTitle:					['Duplicates RegExp title matching?', true, {func: isBoolean}, true],
-	sortBias:					['Duplicates RegExp title matching?', globQuery.remDuplBias, {func: isStringWeak}, globQuery.remDuplBias]
+	sortBias:					['Duplicates track selection bias', globQuery.remDuplBias, {func: isStringWeak}, globQuery.remDuplBias]
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {
