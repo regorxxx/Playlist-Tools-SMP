@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.29](#300-beta29---2023-06-29)
 - [3.0.0-beta.28](#300-beta28---2023-06-28)
 - [3.0.0-beta.27](#300-beta27---2023-06-27)
 - [3.0.0-beta.26](#300-beta26---2023-05-08)
@@ -45,6 +46,13 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.29] - 2023-06-29
+### Added
+### Changed
+### Removed
+### Fixed
+- Helpers: fixed incorrect warning about missing font.
 
 ## [3.0.0-beta.28] - 2023-06-28
 ### Added
@@ -931,7 +939,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.28...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.29...HEAD
+[3.0.0-beta.29]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.28...v3.0.0-beta.29
 [3.0.0-beta.28]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.27...v3.0.0-beta.28
 [3.0.0-beta.27]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.26...v3.0.0-beta.27
 [3.0.0-beta.26]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.25...v3.0.0-beta.26
