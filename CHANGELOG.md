@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0-beta.30](#300-beta30---2023-07-21)
 - [3.0.0-beta.29](#300-beta29---2023-06-29)
 - [3.0.0-beta.28](#300-beta28---2023-06-28)
 - [3.0.0-beta.27](#300-beta27---2023-06-27)
@@ -46,6 +47,15 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.0-beta.30] - 2023-07-21
+### Added
+- Selection manipulation\Shuffle: new sorting bias settings. Key (sorted from 12A to 1B), Key 6A centered (starting from 6A). Using these is like merging Harmonic Mix (consecutive tracks should have similar keys) and Smart Shuffle.
+- Selection manipulation\Group: new tool to group tracks by TF without respecting the original sorting. It may be used to listen to all tracks of a random album played in a shuffled order, then all of another album (chosen randomly), ...
+### Changed
+### Removed
+### Fixed
+- Selection manipulation\Shuffle: sorting bias setting not being applied on selection manipulation tool (thus always using 'random').
 
 ## [3.0.0-beta.29] - 2023-06-29
 ### Added
@@ -939,7 +949,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.29...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.30...HEAD
+[3.0.0-beta.30]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.29...v3.0.0-beta.30
 [3.0.0-beta.29]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.28...v3.0.0-beta.29
 [3.0.0-beta.28]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.27...v3.0.0-beta.28
 [3.0.0-beta.27]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.26...v3.0.0-beta.27
