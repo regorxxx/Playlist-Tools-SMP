@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/06/23
+//21/07/23
 
 // Selection manipulation...
 {
@@ -467,7 +467,12 @@
 								} else {entryNames.add(shuffleName);}
 								// Entries
 								menu.newEntry({menuName: subMenuName, entryText: shuffleName, func: () => {
-									shuffleByTags({...shuffleObj.args, bDebug: defaultArgs.bDebug});
+									shuffleByTags({
+										...shuffleObj.args, 
+										bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
+										sortBias: menu_properties.smartShuffleSortBias[1],
+										bDebug: defaultArgs.bDebug
+									});
 								}, flags: multipleSelectedFlagsReorder});
 							}
 						});
@@ -501,7 +506,6 @@
 							});
 						}
 					}});
-					menu.newEntry({menuName, entryText: 'sep'});
 					if (!menusEnabled.hasOwnProperty(configMenu) || menusEnabled[configMenu] === true) {
 						const subMenuName = 'Smart shuffle';
 						if (!menu.hasMenu(subMenuName, configMenu)) {
@@ -533,6 +537,8 @@
 										{key: 'Rating', flags: MF_STRING},
 										{key: 'Popularity', flags: utils.GetPackageInfo('{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}') ? MF_STRING : MF_GRAYED, req: 'Find & Play'},
 										{key: 'Last played', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount'},
+										{key: 'Key', flags: MF_STRING},
+										{key: 'Key 6A centered', flags: MF_STRING},
 									];
 									menu.newEntry({menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED});
 									menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
@@ -562,6 +568,100 @@
 				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 			}
 		}
+		{	// Group
+			const scriptPath = folders.xxx + 'main\\sort\\group_by_tags.js';
+			if (_isFile(scriptPath)){
+				const name = 'Group by tags';
+				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\group_by_tags.txt';
+					const subMenuName = menu.newMenu(name, menuName);
+					let group = [
+						{name: 'Group by artist'	,	args: {tagName: [globTags.artist]}},
+						{name: 'Group by genre'	,	args: {tagName: [globTags.genre]}},
+						{name: 'Group by style'	,	args: {tagName: [globTags.style]}},
+						{name: 'Group by album'	,	args: {tagName: ['ALBUM']}}
+					];
+					let selArg = {name: 'Custom', args: group[0].args};
+					const groupDefaults = [...group];
+					// Create new properties with previous args
+					menu_properties['group'] = [menuName + '\\' + name + '  entries', JSON.stringify(group)];
+					menu_properties['groupCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', JSON.stringify(selArg)];
+					// Check
+					menu_properties['group'].push({func: isJSON}, menu_properties['group'][1]);
+					menu_properties['groupCustomArg'].push({func: isJSON}, menu_properties['groupCustomArg'][1]);
+					// Helpers
+					const inputGroup = () => {
+						let tagName = '';
+						try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
+						catch (e) {return;}
+						if (!tagName.length) {return;}
+						tagName = tagName.split(/;|,/g);
+						return {args: {tagName}};
+					};
+					// Menus
+					menu.newEntry({menuName: subMenuName, entryText: 'Group by TF (without sorting):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newCondEntry({entryText: 'Group... (cond)', condFunc: () => {
+						// Entry list
+						group = JSON.parse(menu_properties['group'][1]);
+						const entryNames = new Set();
+						group.forEach((groupObj) => {
+							// Add separators
+							if (groupObj.hasOwnProperty('name') && groupObj.name === 'sep') {
+								menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+							} else { 
+								// Create names for all entries
+								let groupName = groupObj.name;
+								groupName = groupName.length > 40 ? groupName.substring(0,40) + ' ...' : groupName;
+								if (entryNames.has(groupName)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + groupName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(groupObj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else {entryNames.add(groupName);}
+								// Entries
+								menu.newEntry({menuName: subMenuName, entryText: groupName, func: () => {
+									groupByTags({
+										...groupObj.args, 
+										bDebug: defaultArgs.bDebug
+									});
+								}, flags: multipleSelectedFlagsReorder});
+							}
+						});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						{	// Static menu: user configurable
+							menu.newEntry({menuName: subMenuName, entryText: 'By... (tag)', func: () => {
+								const ap = plman.ActivePlaylist;
+								if (ap === -1) {return;}
+								// On first execution, must update from property
+								selArg.args.tagName = JSON.parse(menu_properties['groupCustomArg'][1]).args.tagName;
+								// Input
+								const input = inputGroup();
+								if (!input) {return;}
+								// Execute
+								groupByTags({...input.args, bDebug: defaultArgs.bDebug});
+								// For internal use original object
+								selArg.args = input.args;
+								menu_properties['groupCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
+								overwriteMenuProperties(); // Updates panel
+							}, flags: multipleSelectedFlagsReorder});
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						}
+						{	// Add / Remove
+							createSubMenuEditEntries(subMenuName, {
+								name,
+								list: group, 
+								propName: 'group', 
+								defaults: groupDefaults, 
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\group\\default.json',
+								input : inputGroup
+							});
+						}
+					}});
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
+			}
+		}
+		['Sort...', 'Advanced sort...', 'Scatter by tags', 'Intercalate by tags', 'Shuffle by tags', 'Group by tags']
+			.some((n) => !menusEnabled.hasOwnProperty(n) || menusEnabled[n] === true) && menu.newEntry({menuName, entryText: 'sep'});
 		{	// Remove and find in playlists
 			const scriptPath = folders.xxx + 'main\\playlists\\find_remove_from_playlists.js';
 			if (_isFile(scriptPath)){

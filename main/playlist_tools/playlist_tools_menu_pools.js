@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/06/23
+//04/07/23
 
 // Pools
 {
@@ -654,6 +654,8 @@
 							{key: 'Rating', flags: MF_STRING},
 							{key: 'Popularity', flags: utils.GetPackageInfo('{F5E9D9EB-42AD-4A47-B8EE-C9877A8E7851}') ? MF_STRING : MF_GRAYED, req: 'Find & Play'},
 							{key: 'Last played', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount'},
+							{key: 'Key', flags: MF_STRING},
+							{key: 'Key 6A centered', flags: MF_STRING},
 						];
 						menu.newEntry({menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED});
 						menu.newEntry({menuName: subMenuNameSecond, entryText: 'sep'});
