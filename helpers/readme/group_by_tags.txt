@@ -1,0 +1,7 @@
+﻿Reorders selection to group consecutive tracks with the same configurable
+tag. Can be used to group by album, artist, ...
+
+Note it doesn't perform any sorting, so it respects the original one.
+
+i.e. it may be used to listen to all tracks of a random album played in a
+shuffled order, then all of another album (chosen randomly), ...
