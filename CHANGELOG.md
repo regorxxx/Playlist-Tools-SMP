@@ -45,8 +45,12 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Configuration: ALBUM ARTIST is now used instead of ARTIST by default (on new installations). This ensures better compatibility with classical music, where the artist is the actual performer but the album artist is the original composer/artist. To apply the change on existing installations, delete '[foobar_profile]\js_data\presets\global\globQuery.json' and '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json' files. Further configuration may be needed via menus.
 ### Removed
 ### Fixed
+- Portable: 'Script integration\SMP Dynamic menu\Custom function' now allow relative paths for included scripts to enhance portability compatibility. Path is relative to the 'xxx-scripts' root.
+- Portable: 'Add SKIP tag to playback' now uses relative paths by default.
+- Script Integration\SMP Dynamic menu: fixed crash in some instances while using 'Custom function' or 'Custom menu'.
 
 ## [3.0.0-beta.30] - 2023-07-21
 ### Added
