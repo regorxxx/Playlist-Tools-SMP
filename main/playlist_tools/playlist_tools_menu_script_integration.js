@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/05/23
+//26/07/23
 
 // Script integration
 {
@@ -19,7 +19,7 @@
 					readmes[menuName + '\\' + name + ' custom'] = folders.xxx + 'helpers\\readme\\main_menu_dynamic_custom.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					const mainMenuSMPDefaults = clone([
-						{name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
+						{name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: '.\\main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
 						{name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'}
 					]);
 					var mainMenuSMP = clone([mainMenuSMPDefaults[0]]);
@@ -120,8 +120,11 @@
 									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + scriptName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(entry, null, '\t'), scriptName + ': ' + name);
 									return;
 								} else {entryNames.add(scriptName);}
+								// Errors
+								if (entry.hasOwnProperty('path') && entry.path.length && !_isFile(entry.path.replace('.\\', folders.xxx))) {scriptName += '\t-ERROR-  (' + (index + 1) + ')';}
+								else {scriptName += '\t(' + (index + 1) + ')'}
 								// Entries
-								menu.newEntry({menuName: subMenuName, entryText: scriptName + '\t (' + (index + 1) + ')', func: null, flags: MF_GRAYED});
+								menu.newEntry({menuName: subMenuName, entryText: scriptName, func: null, flags: MF_GRAYED});
 							}
 						});
 						if (!mainMenuSMP.filter(Boolean).length) {menu.newEntry({menuName: subMenuName, entryText: '(none set yet)', func: null, flags: MF_GRAYED});}
@@ -133,12 +136,12 @@
 								{name: 'Custom menu', func: (idx = onMainMenuEntries.length) => {
 									let funcName = '';
 									try {funcName = utils.InputBox(window.ID, 'Enter menu entry:\n(subMenu\\Entry)\n\nMenu names may be easily retrieved by simulating menu execution with Ctrl + L. Click, which copies entry names to clipboard.', 'Playlist Tools: ' + toolName, '', true);}
-									catch (e) {return;}
-									if (!funcName.length) {return;}
+									catch (e) {return false;}
+									if (!funcName.length) {return false;}
 									let name = '';
 									try {name = utils.InputBox(window.ID, 'Enter description (name)', 'Playlist Tools: ' + toolName, funcName, true);}
-									catch (e) {return;}
-									if (!name.length) {return;}
+									catch (e) {return false;}
+									if (!name.length) {return false;}
 									let icon = '';
 									// Add icons
 									if (funcName.startsWith('Most played Tracks') || funcName.startsWith('Top rated Tracks from...')) {icon = 'ui-icon ui-icon-heart';}
@@ -155,32 +158,36 @@
 									if (funcName.startsWith('Macros')) {icon = 'ui-icon ui-icon-clock';}
 									// Save
 									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name, funcName , menuName: 'menu', icon};
+									return true;
 								;}},
-								{name: 'Custom function', func: (idx = onMainMenuEntries.length) => {
+								{name: 'Custom function (+ include script)', func: (idx = onMainMenuEntries.length) => {
 									let path = '';
-									try {path = utils.InputBox(window.ID, 'Enter script path', 'Playlist Tools: ' + toolName, funcName, true);}
-									catch (e) {return;}
-									if (!path.length) {return;}
+									try {path = utils.InputBox(window.ID, 'Enter script path:\n(Use \'.\\\' for relative paths at ' + folders.xxx + ')', 'Playlist Tools: ' + toolName, '.\\main\\tags\\skip_tag_from_playback.js', true);}
+									catch (e) {return false;}
+									if (!path.length) {return false;}
 									let funcName = '';
-									try {funcName = utils.InputBox(window.ID, 'Enter function name:\n', 'Playlist Tools: ' + toolName, '', true);}
-									catch (e) {return;}
-									if (!funcName.length) {return;}
+									try {funcName = utils.InputBox(window.ID, 'Enter function name:', 'Playlist Tools: ' + toolName, '', true);}
+									catch (e) {return false;}
+									if (!funcName.length) {return false;}
 									let name = '';
-									try {name = utils.InputBox(window.ID, 'Enter description (name)', 'Playlist Tools: ' + toolName, funcName, true);}
-									catch (e) {return;}
-									if (!name.length) {return;}
+									try {name = utils.InputBox(window.ID, 'Enter description (name):', 'Playlist Tools: ' + toolName, funcName, true);}
+									catch (e) {return false;}
+									if (!name.length) {return false;}
 									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name, funcName , path};
+									return true;
 								;}},
 								{name: 'sep'},
 								{name: mainMenuSMPDefaults[0].name, func: (idx = onMainMenuEntries.length) => {
 									fb.ShowPopupMessage('Adds a \'SKIP\' tag using current playback. Meant to be used along Skip Track (foo_skip) component.\n\nHas an intelligent switch which sets behavior according to playback time:\n	- If time > half track length -> Track will play as usually up to the \'SKIP\' time, where it jumps to next track.\n	- If time < half track length -> Track will play from \'SKIP\' time to the end.\n	- Pressing shift while calling the action will append tag to existing SKIP tags (instead of replacing them). Meant to add skipped parts at multiple points for ex.\n\nThis is a workaround for using %PLAYBACK_TIME% for tagging, since %PLAYBACK_TIME% does not work within masstagger scripts.\n\nMost common usage would be adding a button to a native buttons toolbar and assigning it this action via main menus (File\Spider Monkey Panel\Script commands\....)', scriptName + ': ' + name);
 									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name: 'Add skip Tag at current playback', funcName: 'skipTagFromPlayback' , path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'};
+									return true;
 								}},
 								{name: mainMenuSMPDefaults[1].name, func: (idx = onMainMenuEntries.length) => {
 									const ajQueryFile = folders.ajquerySMP + 'toexecute.json';
 									const localFile = folders.data + 'toexecute.json';
 									fb.ShowPopupMessage('This entry is meant to be used along online controllers, like ajquery-xxx, to be able to call an arbitrary number of tools by their menu names.\n\nThe entry name is read from a local json file which should be edited on demand by the server to set the menu entries that must be executed when calling this SMP main menu.\nTracked files can be found at:\n' + ajQueryFile + '\n' + localFile + ' (if previous one is not found)\n\nIn case json file(s) are not found, then it tries to read commands from a playlist named \'' + plsListener + '\'.', scriptName + ': ' + name);
 									onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = {name: 'Execute menu entry by name', funcName: 'executeByName' , path: '', icon: 'ui-icon ui-icon-star'};
+									return true;
 								}}
 							];
 							options.forEach((entry, index) => {
@@ -198,14 +205,15 @@
 											const answer = WshShell.Popup('Warning: more than 9 menu entries are gonna to be added to the list.\n Only the first 9 entries can be used on online controllers like ajquery-xxx.\nDo you want to continue?', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
 											if (answer === popup.no) {return;}
 										}
-										entry.func(idx);
-										fb.RegisterMainMenuCommand(onMainMenuDynamicEntries.length, onMainMenuEntries[idx].name, onMainMenuEntries[idx].name);
-										onMainMenuDynamicEntries.push({...onMainMenuEntries[idx], onMainMenuEntries: true, parent: scriptName});
-										menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
-										overwriteMenuProperties(); // Updates panel
-										if (folders.ajqueryCheck()) {
-											if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.');}
-											if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.');}
+										if (entry.func(idx)) {
+											fb.RegisterMainMenuCommand(onMainMenuDynamicEntries.length, onMainMenuEntries[idx].name, onMainMenuEntries[idx].name);
+											onMainMenuDynamicEntries.push({...onMainMenuEntries[idx], onMainMenuEntries: true, parent: scriptName});
+											menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
+											overwriteMenuProperties(); // Updates panel
+											if (folders.ajqueryCheck()) {
+												if (!exportMenus(folders.ajquerySMP)) {console.log('Error saving SMP main menus for http Control integration.');}
+												if (!exportEntries(folders.ajquerySMP)) {console.log('Error saving Playlist Tools entries for http Control integration.');}
+											}
 										}
 									}});
 								}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/06/23
+//26/07/23
 
 /* 
 	Playlist Tools Menu
@@ -395,11 +395,11 @@ function menuTooltip() {
 	let info = 'No track selected\nSome menus disabled';
 	if (sel) {
 		let tfo = fb.TitleFormat(
-				'Current track:	%ARTIST% / %TRACK% - %TITLE%' +
-				'$crlf()Date:		[' + globTags.date + ']' +
-				'$crlf()Genres:		[%' + globTags.genre + '%]' +
-				'$crlf()Styles:		[%' + globTags.style + '%]' +
-				'$crlf()Moods:		[%' + globTags.mood + '%]'
+				'Current track:	' + _t(globTags.artist) + ' / %TRACK% - %TITLE%' +
+				'$crlf()Date:		' + _b(globTags.date) +
+				'$crlf()Genres:		' + _b(_t(globTags.genre)) +
+				'$crlf()Styles:		' + _b(_t(globTags.style)) +
+				'$crlf()Moods:		' + _b(_t(globTags.mood))
 			);
 		info = 'Playlist:		' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistName(plman.ActivePlaylist) : '-none-') + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);
@@ -474,7 +474,7 @@ function createMainMenuDynamic() {
 				if (entry) {
 					dynamicMenuList.push({...entry, onMainMenuEntries: true});
 					if (entry.hasOwnProperty('path') && entry.path.length) {
-						try {include(entry.path.replace(folders.xxx  + 'main\\', '..\\'));}
+						try {include(entry.path.replace('.\\', folders.xxx));}
 						catch (e) {console.popup(e.message.split('\n').join('\n'), scriptName + ': SMP Dynamic menu');}
 					}
 				}
