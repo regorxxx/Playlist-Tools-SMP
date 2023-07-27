@@ -1,5 +1,5 @@
 'use strict';
-//19/04/23
+//27/07/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -105,16 +105,16 @@ addButton({
 			let info = '';
 			if (sel) {
 				let tfo = fb.TitleFormat(
-						'Current track:	%ARTIST% / %TRACK% - %TITLE%' +
-						'$crlf()Date:		[' + globTags.date + ']' +
-						'$crlf()Genres:		[%' + globTags.genre + '%]' + 
+						'Current track:		' + _t(globTags.artist) + ' / %TRACK% - %TITLE%' +
+						'$crlf()Date:		' + _b(globTags.date) + 
+						'$crlf()Genres:		' + _b(_t(globTags.genre)) +  
 							// ['Album Genre AllMusic', 'Artist Genre AllMusic', 'Album Genre Wikipedia', 'Artist Genre Wikipedia'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ') +
-						'$crlf()Styles:		[%' + globTags.style + '%]' +
-						'$crlf()Moods:		[%' + globTags.mood + '%][,%THEME%][,%ALBUMMOOD%]'
+						'$crlf()Styles:		' + _b(_t(globTags.style)) +
+						'$crlf()Moods:		' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%]'
 							// ['Album Mood AllMusic', 'Album Theme AllMusic'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ')
 					);
 				info += tfo.EvalWithMetadb(sel);
-			} else {info += '\nNo track selected';}
+			} else {info += 'No track selected';}
 			info += '\nBio tags:	' + (parent.buttonsProperties.bBioTags[1] 
 				? Object.keys(parent.bioTags).length
 					? 'Found' 

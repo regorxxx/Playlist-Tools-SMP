@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//27/07/23
 
 // Other tools
 {
@@ -31,11 +31,11 @@
 						{tag: globTags.genre								, dscrpt: 'Genre (+ dictionary)'		, bUseDic: true	}, 
 						{tag: globTags.style								, dscrpt: 'Style (+ dictionary)'		, bUseDic: true	},
 						{tag: globTags.mood									, dscrpt: 'Mood (+ dictionary)'			, bUseDic: true	},
-						{tag: 'composer'									, dscrpt: 'Composer'					, bUseDic: false},
-						{tag: 'title'										, dscrpt: 'Title'						, bUseDic: false},
+						{tag: 'COMPOSER'									, dscrpt: 'Composer'					, bUseDic: false},
+						{tag: 'TITLE'										, dscrpt: 'Title'						, bUseDic: false},
 						'sep'																						 ,
 						{tag: [globTags.genre, globTags.style].join(',')	, dscrpt: 'Genre + Style (+ dictionary)', bUseDic: true	},
-						{tag: 'composer,artist,albumartist'					, dscrpt: 'Composer + Artist'			, bUseDic: false},
+						{tag: 'COMPOSER,ARTIST,ALBUM ARTIST'				, dscrpt: 'Composer + Artist'			, bUseDic: false},
 					];
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
@@ -308,7 +308,7 @@
 								return;
 							}
 							let formatMask;
-							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%TITLE%\', \' - \', \'%ARTIST%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
+							try {formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%TITLE%\', \' - \', \'%ALBUM ARTIST%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => {return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val;}).join('\n') : '') , scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g,'\''), true).replace(/'/g,'"');}
 							catch (e) {return;}
 							try { 
 								// Load preset if possible

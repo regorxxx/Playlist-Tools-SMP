@@ -1,5 +1,5 @@
 'use strict';
-//13/06/23
+//27/07/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -15,9 +15,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 	const sel = this.sel || plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
 	const info = sel ? sel.GetFileInfo() : null;
 	const tags = [
-		{name: 'Artist top tracks', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
-		{name: 'Artist shuffle', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
-		{name: 'Similar artists to', tf: ['ARTIST', 'ALBUMARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
+		{name: 'Artist top tracks', tf: ['ARTIST', 'ALBUM ARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
+		{name: 'Artist shuffle', tf: ['ARTIST', 'ALBUM ARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
+		{name: 'Similar artists to', tf: ['ARTIST', 'ALBUM ARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
 		{name: 'Similar artists', tf: ['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'], val: [], valSet: new Set(), type: 'ARTIST'},
 		// {name: 'Similar tracks', tf: ['TITLE', 'ARTIST', 'ALBUM'], val: [], valSet: new Set(), type: 'TITLE'},
 		{name: 'Album tracks', tf: ['ALBUM', 'ARTIST'], val: [], valSet: new Set(), type: 'ALBUM_TRACKS'},
