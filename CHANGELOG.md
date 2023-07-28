@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.0](#300---2023-07-28)
 - [3.0.0-beta.30](#300-beta30---2023-07-21)
 - [3.0.0-beta.29](#300-beta29---2023-06-29)
 - [3.0.0-beta.28](#300-beta28---2023-06-28)
@@ -43,6 +44,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.0.0] - 2023-07-28
 ### Added
 ### Changed
 - Configuration: ALBUM ARTIST is now used instead of ARTIST by default (on new installations). This ensures better compatibility with classical music, where the artist is the actual performer but the album artist is the original composer/artist. To apply the change on existing installations, delete '[foobar_profile]\js_data\presets\global\globQuery.json' and '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json' files. Further configuration may be needed via menus.
@@ -953,7 +960,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.30...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.30...v3.0.0
 [3.0.0-beta.30]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.29...v3.0.0-beta.30
 [3.0.0-beta.29]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.28...v3.0.0-beta.29
 [3.0.0-beta.28]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.27...v3.0.0-beta.28
