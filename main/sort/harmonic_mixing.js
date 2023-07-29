@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//29/07/23
 
 /*
 	Harmonic Mixing
@@ -153,4 +153,28 @@ function findTracksWithPattern({selItems, pattern, keyTag, playlistLength, bDoub
 	}
 	const error = selectedHandlesArray.length <= 1 ? (toCheck.size ? 'Not enough tracks (' + selectedHandlesArray.length + ') matched the pattern.': 'Tracks don\'t have key tag (or using not recognized notation).') : null;
 	return {selectedHandlesArray, error};
+}
+
+function queryReplaceKeys(query, handle, bDebug = false) {
+	if (bDebug) {console.log('Initial query:', query);}
+	if (!query.length) {console.log('queryReplaceKeys(): query is empty'); return '';}
+	else if (!handle) {
+		if ((query.match(/#/g) || []).length >= 2) {console.log('queryReplaceKeys(): handle is null'); return;}
+		else {return query;}
+	}
+	if (/#NEXTKEY#|#PREVKEY#/.test(query)) {
+		const keyTag = query.match(/(\S+) \S* #NEXTKEY#|#PREVKEY#/)[1] || '';
+		const key = fb.TitleFormat(_bt(keyTag)).EvalWithMetadb(handle);
+		const keyObj = key.length ? camelotWheel.getKeyNotationObjectCamelot(key) : null;
+		if (keyObj) {
+			const nextKeys = camelotWheel.translateToNotation(camelotWheel.energyBoost(keyObj), ['flat', 'sharp', 'open', 'camelot']);
+			const prevKeys = camelotWheel.translateToNotation(camelotWheel.energyDrop(keyObj), ['flat', 'sharp', 'open', 'camelot']);
+			query = query
+				.replace(/(\S+ \S* )#NEXTKEY#/g, _p(nextKeys.map((val) => '$1' + val).join(' OR ')))
+				.replace(/(\S+ \S* )#PREVKEY#/g, _p(prevKeys.map((val) => '$1' + val).join(' OR ')));
+		} else {
+			query = query.replace(/(\S+) \S* #NEXTKEY#|#PREVKEY#/g, 'NOT $1 PRESENT');
+		}
+	}
+	return query;
 }

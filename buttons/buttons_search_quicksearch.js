@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/23
+//29/07/23
 
 /* 
 	Quicksearch for same....
@@ -25,10 +25,6 @@ var newButtonsProperties = { //You can simply add new properties here
 	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false],
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false],
 	entries:		['Quicksearch entries', JSON.stringify([
-		{name: 'Same Title', 
-			query: globQuery.compareTitle},
-		{name: 'Same Artist(s)',
-			query: globTags.artist + ' IS #' + globTags.artist + '#'},
 		{name: 'Same Date',
 			query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
 		{name: 'Same Album',
@@ -37,10 +33,28 @@ var newButtonsProperties = { //You can simply add new properties here
 			query: globTags.genre + ' IS #' + globTags.genre + '#'},
 		{name: 'Same Style(s)',
 			query: globTags.style + ' IS #' + globTags.style + '#'},
+		{name: 'sep'},
+		{name: 'Same Style(s) and Key',
+			query: globTags.style + ' IS #' + globTags.style + '# AND ' + globTags.key + ' IS #' + globTags.key + '#'},
+		{name: 'Same Style(s) and next Key',
+			query: globTags.style + ' IS #' + globTags.style + '# AND ' + globTags.key + ' IS #NEXTKEY#'},
+		{name: 'Same Style(s) and prev Key',
+			query: globTags.style + ' IS #' + globTags.style + '# AND ' + globTags.key + ' IS #PREVKEY#'},
+		{name: 'Same Genre(s) and Key',
+			query: globTags.genre + ' IS #' + globTags.genre + '# AND ' + globTags.key + ' IS #' + globTags.key + '#'},
+		{name: 'Same Genre(s) and next Key',
+			query: globTags.genre + ' IS #' + globTags.genre + '# AND ' + globTags.key + ' IS #NEXTKEY#'},
+		{name: 'Same Genre(s) and prev Key',
+			query: globTags.genre + ' IS #' + globTags.genre + '# AND ' + globTags.key + ' IS #PREVKEY#'},
+		{name: 'sep'},
+		{name: 'Same Title', 
+			query: globQuery.compareTitle},
+		{name: 'Same Artist(s)',
+			query: globTags.artist + ' IS #' + globTags.artistRaw + '#'},
 		{name: 'Same Title and Artist(s)',
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
+			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'},
 		{name: 'Same Title, Artist(s) & Date', 
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
+			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
 	]), {func: isJSON}],
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
@@ -152,7 +166,6 @@ function quickSearchMenu({bSimulate = false} = {}) {
 		queryFilter.forEach((queryObj) => {
 			// Add separators
 			if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
-				let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
 				menu.newEntry({entryText: 'sep'});
 			} else { 
 				// Create names for all entries
@@ -171,7 +184,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 						} else {
 							dynamicQuery({query, sort: queryObj.sort, handleList: this.selItems, playlistName});
 						}
-					}else{
+					} else {
 						if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
 							query = dynamicQueryProcess({query});
 							if (query) {
@@ -224,8 +237,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 		[{name: 'Same Title', query: 'TITLE IS #TITLE#'}].concat(queryFilter).forEach((queryObj) => {
 			// Add separators
 			if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
-				let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
-				menu.newEntry({entryText: 'sep'});
+				// menu.newEntry({entryText: 'sep'});
 			} else { 
 				// Create names for all entries
 				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
@@ -266,7 +278,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 		menu.newEntry({menuName: partialMenu, entryText: 'sep'});
 		// Mutate original queries into partial matches
 		queryFilter.map((queryObj) => {
-			if (queryObj.query.count('#') === 2) {
+			if (queryObj.hasOwnProperty('query') && queryObj.query.count('#') === 2) {
 				const dynTF = queryObj.query.match(/#.*#/)[0];
 				if (dynTF && dynTF.length) {
 					const bIsFunc = dynTF.indexOf('$') !== -1;
@@ -283,8 +295,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 		}).filter(Boolean).forEach((queryObj) => {
 			// Add separators
 			if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
-				let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
-				menu.newEntry({entryText: 'sep'});
+				// menu.newEntry({entryText: 'sep'});
 			} else { 
 				// Create names for all entries
 				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0,40) + ' ...' : queryObj.name;
