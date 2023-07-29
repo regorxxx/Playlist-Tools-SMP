@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/07/23
+//29/07/23
 
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -22,7 +22,7 @@ include('..\\filter_and_query\\remove_duplicates.js');
 // Track A by Artist B
 function importTextPlaylist({
 		path = folders.data + 'playlistImport.txt',
-		formatMask = ['', '. ', '%TITLE%', ' - ', _t(globTags.artist)],
+		formatMask = ['', '. ', '%TITLE%', ' - ', globTags.artist],
 		duplicatesMask = [globTags.title, globTags.artist],
 		bAdvTitle = true,
 		queryFilters = [globQuery.noLiveNone, globQuery.notLowRating]
