@@ -474,7 +474,7 @@ function createMainMenuDynamic() {
 				if (entry) {
 					dynamicMenuList.push({...entry, onMainMenuEntries: true});
 					if (entry.hasOwnProperty('path') && entry.path.length) {
-						try {include(entry.path.replace('.\\', folders.xxx));}
+						try {include(entry.path.replace('.\\', folders.xxx)); entry.path = '';}
 						catch (e) {console.popup(e.message.split('\n').join('\n'), scriptName + ': SMP Dynamic menu');}
 					}
 				}
