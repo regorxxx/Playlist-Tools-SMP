@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/07/23
+//29/07/23
 
 // Other tools
 {
@@ -284,7 +284,7 @@
 						const subMenuName = menu.newMenu(name, menuName);
 						// Create new properties with previous args
 						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'track_list_to_import.txt'];
-						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', '%' + globTags.artist + '%'])];
+						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', globTags.artist])];
 						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify([globQuery.stereo, globQuery.notLowRating, globQuery.noLive, globQuery.noLiveNone])];
 						// Checks
 						menu_properties['importPlaylistPath'].push({func: isString, portable: true}, menu_properties['importPlaylistPath'][1]);
@@ -292,9 +292,9 @@
 						menu_properties['importPlaylistFilters'].push({func: (x) => {return isJSON(x) && JSON.parse(x).every((query) => {return checkQuery(query, true);});}}, menu_properties['importPlaylistFilters'][1]);
 						// Presets
 						const maskPresets = [
-							{name: 'Numbered Track list', val: JSON.stringify(['. ','%TITLE%',' - ','%' + globTags.artist + '%'])},
-							{name: 'Track list', val: JSON.stringify(['%TITLE%',' - ','%' + globTags.artist + '%'])},
-							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',','%' + globTags.artist + '%',' - ','%TITLE%'])}
+							{name: 'Numbered Track list', val: JSON.stringify(['. ','%TITLE%',' - ',globTags.artist])},
+							{name: 'Track list', val: JSON.stringify(['%TITLE%',' - ',globTags.artist])},
+							{name: 'M3U Extended', val: JSON.stringify(['#EXTINF:',',',globTags.artist,' - ','%TITLE%'])}
 						];
 						// Menus
 						menu.newEntry({menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED});
