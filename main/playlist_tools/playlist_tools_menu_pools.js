@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/07/23
+//29/07/23
 
 // Pools
 {
@@ -107,7 +107,7 @@
 				}},
 				{name: 'Classic Pools (3 tracks per artist letter)', pool: {
 					fromPls: {_GROUP_0: Infinity}, 
-					group: {_GROUP_0: '$lower($ascii($left(%' + globTags.artist + '%,1)))'},
+					group: {_GROUP_0: '$lower($ascii($left(' + globTags.artist + ',1)))'},
 					limit: {_GROUP_0: 3},
 					query: {_GROUP_0: ''}, 
 					toPls: 'Classic Pools (3 tracks per letter)', 
