@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/06/23
+//29/07/23
 
 // Playlist manipulation...
 {
@@ -19,8 +19,8 @@
 					let sortInputFilter = globTags.remDupl;
 					let nAllowed = 2;
 					// Create new properties with previous args
-					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join(',')];
-					menu_properties['sortInputFilter'] = [menuName + '\\' + name + ' Tags to filter playlists', sortInputFilter.join(',')];
+					menu_properties['sortInputDuplic'] = [menuName + '\\' + name + ' Tags to remove duplicates', sortInputDuplic.join('|')];
+					menu_properties['sortInputFilter'] = [menuName + '\\' + name + ' Tags to filter playlists', sortInputFilter.join('|')];
 					menu_properties['nAllowed'] = [menuName + '\\' + name + ' Filtering number allowed (n + 1)', nAllowed];
 					// Checks
 					menu_properties['sortInputDuplic'].push({func: isString}, menu_properties['sortInputDuplic'][1]);
@@ -31,8 +31,8 @@
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newCondEntry({entryText: 'Remove Duplicates... (cond)', condFunc: () => {
 						// Update args
-						sortInputDuplic = menu_properties.sortInputDuplic[1].split(',');
-						sortInputFilter = menu_properties.sortInputFilter[1].split(',');
+						sortInputDuplic = menu_properties.sortInputDuplic[1].split('|');
+						sortInputFilter = menu_properties.sortInputFilter[1].split('|');
 						nAllowed = menu_properties.nAllowed[1];
 						const sortBias = defaultArgs.sortBias;
 						const bAdvTitle = defaultArgs.bAdvTitle;
@@ -46,7 +46,7 @@
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Filter playlist by... (tags)' , func: () => {
 							let tags;
-							try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','), true);}
+							try {tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join('|'), true);}
 							catch (e) {return;}
 							if (!tags.length) {return;}
 							tags = tags.split(',').filter((val) => val);
@@ -58,20 +58,20 @@
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for duplicates)...', func: () => {
-							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join(','));
-							if (sortInputDuplic.join(',') === input) {return;}
+							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join('|'));
+							if (sortInputDuplic.join('|') === input) {return;}
 							if (!input.length) {return;}
-							sortInputDuplic = input.split(',').filter((n) => n);
-							menu_properties['sortInputDuplic'][1] = sortInputDuplic.join(',');
+							sortInputDuplic = input.split('|').filter((n) => n);
+							menu_properties['sortInputDuplic'][1] = sortInputDuplic.join('|');
 							overwriteMenuProperties(); // Updates panel
 							updateShortcutsNames({sortInputDuplic: menu_properties['sortInputDuplic'][1]});
 						}});
 						menu.newEntry({menuName: subMenuName, entryText: 'Set tags (for filtering)...', func: () => {
-							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputFilter.join(','));
-							if (sortInputFilter.join(',') === input) {return;}
+							const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputFilter.join('|'));
+							if (sortInputFilter.join('|') === input) {return;}
 							if (!input.length) {return;}
 							sortInputFilter = input.split(',').filter((n) => n);
-							menu_properties['sortInputFilter'][1] = sortInputFilter.join(',');
+							menu_properties['sortInputFilter'][1] = sortInputFilter.join('|');
 							overwriteMenuProperties(); // Updates panel
 							updateShortcutsNames({sortInputFilter: menu_properties['sortInputFilter'][1], nAllowed});
 						}});
@@ -106,8 +106,8 @@
 							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
 							{name: 'sep'},
 							{name: 'Same title than sel', query: globQuery.compareTitle},
-							{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artist + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
-							{name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artist + '#'},
+							{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
+							{name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#'},
 							{name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#'},
 							{name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#'},
 							{name: 'sep'},
