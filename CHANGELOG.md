@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.0.1](#301---2023-07-29)
 - [3.0.0](#300---2023-07-28)
 - [3.0.0-beta.30](#300-beta30---2023-07-21)
 - [3.0.0-beta.29](#300-beta29---2023-06-29)
@@ -48,6 +49,32 @@
 ### Changed
 ### Removed
 ### Fixed
+
+## [3.0.1] - 2023-07-29
+### Added
+- Quicksearch: added new entries related to Key tag.
+### Changed
+### Removed
+### Fixed
+- Last.fm: some fixes for ALBUM ARTIST usage instead of ARTIST.
+- Quicksearch: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply.
+- Quicksearch: some fixes for KEY usage with values containing '#'.
+- Dynamic Queries: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Dynamic Queries: some fixes for KEY usage with values containing '#'.
+- Selection Manipulation\Intercalate by tags: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Selection Manipulation\Shuffle by tags: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Selection Manipulation\Group by tags: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Selection Manipulation\Expand: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Selection Manipulation\Jump: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Playlist Manipulation\Query filtering: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Playlist Manipulation\Duplicates and tag filtering: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Playlist Manipulation\Duplicates and tag filtering: some fixes for tags containing ','. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Other tools\Import track list: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Pools: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
+- Configuration: some fixes for ALBUM ARTIST usage instead of ARTIST. To apply the change on existing installations, delete '[foobar_profile]\js_data\presets\global\globQuery.json' and '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json' files. Also restore defaults on any button/menu using dynamic queries (like the quicksearch button).
+
+
+- Edit entries not working.
 
 ## [3.0.0] - 2023-07-28
 ### Added
@@ -960,7 +987,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.30...v3.0.0
 [3.0.0-beta.30]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.29...v3.0.0-beta.30
 [3.0.0-beta.29]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.28...v3.0.0-beta.29
