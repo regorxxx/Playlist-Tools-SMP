@@ -49,6 +49,7 @@
 ### Changed
 ### Removed
 ### Fixed
+- Portable: 'Script integration\SMP Dynamic menu\Custom function' removed warning about not found file already included. Also improved the logic to try to include only once.
 
 ## [3.0.1] - 2023-07-29
 ### Added
@@ -73,9 +74,6 @@
 - Other tools\Import track list: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
 - Pools: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply or globally at Playlist Tools button.
 - Configuration: some fixes for ALBUM ARTIST usage instead of ARTIST. To apply the change on existing installations, delete '[foobar_profile]\js_data\presets\global\globQuery.json' and '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json' files. Also restore defaults on any button/menu using dynamic queries (like the quicksearch button).
-
-
-- Edit entries not working.
 
 ## [3.0.0] - 2023-07-28
 ### Added
