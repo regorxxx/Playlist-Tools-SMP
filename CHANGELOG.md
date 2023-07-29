@@ -56,6 +56,7 @@
 ### Changed
 ### Removed
 ### Fixed
+- UI: fix duplication error report while trying to edit a menu entry.
 - Last.fm: some fixes for ALBUM ARTIST usage instead of ARTIST.
 - Quicksearch: some fixes for ALBUM ARTIST usage instead of ARTIST. Restore defaults for this tool to apply.
 - Quicksearch: some fixes for KEY usage with values containing '#'.

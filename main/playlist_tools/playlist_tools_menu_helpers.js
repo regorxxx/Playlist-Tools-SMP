@@ -121,7 +121,7 @@ function updateShortcutsNames(keys = {}) {
 function createSubMenuEditEntries(menuName, options /*{name, list, propName:, defaults, defaultPreset, input, bAdd, bImport}*/) {
 	const subMenuSecondName = menu.newMenu('Edit entries from list...', menuName);
 	const optionsNames = new Set();
-	options.list.forEach( (entry, index) => {
+	options.list.forEach((entry, index) => {
 		const id = entry.name !== 'sep' && optionsNames.has(entry.name) ? '\t' + _b('duplicated: ' + index) : optionsNames.add(entry.name) && ''; // Allow duplicates and mark them
 		const entryName = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name)) + id;
 		const subMenuThirdName = menu.newMenu(entryName, subMenuSecondName);
@@ -134,7 +134,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName:, de
 			if (!newEntry || !newEntry.length) {fb.ShowPopupMessage('Input: ' + newEntry + '\n\nNon valid entry.', 'JSON error'); return;}
 			try {newEntry = JSON.parse(newEntry);} catch (e) {fb.ShowPopupMessage('Input: ' + newEntry.toString() + '\n\n' + e, 'JSON error'); return;}
 			if (!newEntry) {return;}
-			if (options.list.findIndex((entry) => entry.name === newEntry.name) !== -1) {
+			if (options.list.filter((otherEntry) => otherEntry !== entry).findIndex((otherEntry) => otherEntry.name === newEntry.name) !== -1) {
 				fb.ShowPopupMessage('There is another entry with same name.\nRetry with another name.', scriptName);
 				return;
 			}

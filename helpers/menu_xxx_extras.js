@@ -38,7 +38,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuNam
 			if (!newEntry || !newEntry.length) {fb.ShowPopupMessage('Input: ' + newEntry + '\n\nNon valid entry.', 'JSON error'); return;}
 			try {newEntry = JSON.parse(newEntry);} catch (e) {fb.ShowPopupMessage('Input: ' + newEntry.toString() + '\n\n' + e, 'JSON error'); return;}
 			if (!newEntry) {return;}
-			if (!options.bDuplicate && options.list.findIndex((entry) => entry.name === newEntry.name) !== -1) {
+			if (!options.bDuplicate && options.list.filter((otherEntry) => otherEntry !== entry).findIndex((otherEntry) => otherEntry.name === newEntry.name) !== -1) {
 				fb.ShowPopupMessage('There is another entry with same name.\nRetry with another name.', scriptName);
 				return;
 			}
