@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/07/23
+//29/07/23
 
 // Selection manipulation...
 {
@@ -1245,7 +1245,7 @@
 				menu.newEntry({menuName: subMenuName, entryText: 'Expand selection by:', func: null, flags: MF_GRAYED});
 				menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 				const selArgs = [
-					{name: 'By Artist', args: ['%' + globTags.artist + '%']},
+					{name: 'By Artist', args: [globTags.artist]},
 					{name: 'By Album', args: ['%ALBUM%']},
 					{name: 'By Directory', args: ['%DIRECTORYNAME%']},
 					{name: 'By Date', args: [globTags.date]},
@@ -1256,7 +1256,7 @@
 					{name: 'By Rating', args: [globTags.rating]},
 					{name: 'sep'},
 					{name: 'By... (tags)', args: () => {
-						let input = '%' + globTags.artist + '%;%ALBUM%';
+						let input = globTags.artist + ';%ALBUM%';
 						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
 						catch (e) {return [];}
 						if (!input.length) {return [];}
@@ -1301,7 +1301,7 @@
 					menu.newMenu('Previous', subMenuName)
 				];
 				const selArgs = [
-					{name: 'By Artist', args: ['%' + globTags.artist + '%']},
+					{name: 'By Artist', args: [globTags.artist]},
 					{name: 'By Album', args: ['%ALBUM%']},
 					{name: 'By Directory', args: ['%DIRECTORYNAME%']},
 					{name: 'By Date', args: [globTags.date]},
@@ -1312,7 +1312,7 @@
 					{name: 'By Rating', args: [globTags.rating]},
 					{name: 'sep'},
 					{name: 'By... (tags)', args: () => {
-						let input = '%' + globTags.artist + '%;%ALBUM%';
+						let input = globTags.artist + ';%ALBUM%';
 						try {input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true);}
 						catch (e) {return [];}
 						if (!input.length) {return [];}
