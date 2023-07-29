@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//29/07/23
 
 // Dynamic queries...
 {
@@ -16,24 +16,24 @@
 					{name: 'Same title (any artist)', 
 						query: globQuery.compareTitle},
 					{name: 'Same songs (by artist)',
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
+						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'},
 					{name: 'Duplicates on library', 
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'},
+						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'},
 					{name: 'sep'},
 					{name: 'Same date (any track/artist)',
 						query: _q(globTags.date) + ' IS #' + globTags.date + '#'},
 					{name: 'Same artist(s)',
-						query: globTags.artist + ' IS #' + globTags.artist + '#'},
+						query: globTags.artist + ' IS #' + globTags.artistRaw + '#'},
 					{name: 'sep'},
 					{name: 'Acoustic versions of song', 
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + globTags.genre + ' IS acoustic OR ' + globTags.style + ' IS acoustic OR ' + globTags.mood + ' IS acoustic)'},
+						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + globTags.genre + ' IS acoustic OR ' + globTags.style + ' IS acoustic OR ' + globTags.mood + ' IS acoustic)'},
 					{name: 'Live versions of song', 
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artist + '#) AND (' + globTags.genre + ' IS live OR ' + globTags.style + ' IS live)'},
+						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + globTags.genre + ' IS live OR ' + globTags.style + ' IS live)'},
 					{name: 'Cover versions of song', 
-						query: globQuery.compareTitle + ' AND NOT (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
+						query: globQuery.compareTitle + ' AND NOT (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'},
 					{name: 'sep'},
 					{name: 'Rated >2 tracks (by artist)', 
-						query: globTags.rating + ' GREATER 2 AND (' + globTags.artist + ' IS #' + globTags.artist + '#)'},
+						query: globTags.rating + ' GREATER 2 AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'},
 				];
 				const queryFilterDefaults = [...queryFilter];
 				let selArg = {query: queryFilter[0].query};
