@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/23
+//29/07/23
 
 function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuName, list, defaults, input, bAdd, bNumbered, bDuplicate, onBtnUp}*/) {
 	/*
@@ -24,9 +24,10 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuNam
 	// options.list always point to the original entry list and original values are edited
 	const subMenuSecondName = parent.newMenu(options.subMenuName || 'Edit entries from list...', menuName); // It will throw if the menu already exists!
 	let i = 0;
+	const seps = [];
 	options.list.forEach((entry, index) => {
 		if (entry.name !== 'sep') {i++;}
-		const entryName = (entry.name === 'sep' ? '------(separator)------' : (options.bNumbered ? i + '. ' : '') + (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
+		const entryName = (entry.name === 'sep' ? '------(separator)------' + parent.getNextId() : (options.bNumbered ? i + '. ' : '') + (entry.name.length > 40 ? entry.name.substring(0,40) + ' ...' : entry.name));
 		const subMenuThirdName = parent.newMenu(entryName, subMenuSecondName);
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Edit entry...', func: () => {
 			const oriEntry = JSON.stringify(entry);
