@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//30/07/23
 
 /* 
 	Quicksearch for same....
@@ -56,6 +56,7 @@ var newButtonsProperties = { //You can simply add new properties here
 		{name: 'Same Title, Artist(s) & Date', 
 			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
 	]), {func: isJSON}],
+	sortTF:		['Sorting TF expression', globTags.artist + '|%ALBUM%|%TRACK%', {func: isStringWeak}, globTags.artist + '|%ALBUM%|%TRACK%'],
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
@@ -158,6 +159,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 	const queryFilter = JSON.parse(this.buttonsProperties.entries[1]);
 	// Globals
 	const playlistName = this.buttonsProperties.playlistName[1];
+	const sortTF = this.buttonsProperties.sortTF[1];
 	// Menu
 	const menu = new _menu({onBtnUp: () => this.selItems = null});
 	menu.newEntry({entryText: 'Shift to search / Ctrl for Autoplaylist:', flags: MF_GRAYED});
@@ -174,25 +176,29 @@ function quickSearchMenu({bSimulate = false} = {}) {
 				menu.newEntry({entryText: queryObj.name, func: () => {
 					let query = queryObj.query;
 					if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quicksearch'); return;}
+					const bShift = utils.IsKeyPressed(VK_SHIFT);
+					const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 					if (this.buttonsProperties.bEvalSel[1]) {
-						if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+						if (bShift || bCtrl) {
 							query = dynamicQueryProcess({query, handleList: this.selItems});
 							if (query) {
-								if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-								else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
-							dynamicQuery({query, sort: queryObj.sort, handleList: this.selItems, playlistName});
+							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName});
 						}
 					} else {
-						if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+						if (bShift || bCtrl) {
 							query = dynamicQueryProcess({query});
 							if (query) {
-								if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-								else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
-							dynamicQuery({query, sort: queryObj.sort, playlistName});
+							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
 						}
 					}
 				}, flags, data: {bDynamicMenu: true}});
@@ -209,20 +215,23 @@ function quickSearchMenu({bSimulate = false} = {}) {
 			if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, 'Quicksearch'); return;}
 			if (!query.length) {return;}
 			// Playlist
-			if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bCtrl = utils.IsKeyPressed(VK_CONTROL);
+			if (bShift || bCtrl) {
 				if (this.buttonsProperties.bEvalSel[1]) {
 					query = dynamicQueryProcess({query, handleList: this.selItems});
 				} else {
 					query = dynamicQueryProcess({query});
 				}
 				if (query) {
-					if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-					else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+					if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+					else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+					else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 				}
 			} else {
 				const handleList = this.buttonsProperties.bEvalSel[1]
-					? dynamicQuery({query, handleList: this.selItems, playlistName}) 
-					: dynamicQuery({query, playlistName});
+					? dynamicQuery({query, handleList: this.selItems, sort: queryObj.sort || {tfo: sortTF}, playlistName}) 
+					: dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
 				if (!handleList) {fb.ShowPopupMessage('Query failed:\n' + query, 'Quicksearch'); return;}
 			}
 			this.buttonsProperties.lastQuery[1] = query;
@@ -246,25 +255,29 @@ function quickSearchMenu({bSimulate = false} = {}) {
 					menu.newEntry({menuName: beginMenu, entryText: queryObj.name, func: () => {
 						let query = queryObj.query + '*';
 						if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quicksearch'); return;}
+						const bShift = utils.IsKeyPressed(VK_SHIFT);
+						const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 						if (this.buttonsProperties.bEvalSel[1]) {
-							if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+							if (bShift || bCtrl) {
 								query = dynamicQueryProcess({query, handleList: this.selItems});
 								if (query) {
-									if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-									else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+									if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+									else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+									else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 								}
 							} else {
-								dynamicQuery({query, sort: queryObj.sort, handleList: this.selItems, playlistName});
+								dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName});
 							}
 						} else {
-							if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+							if (bShift || bCtrl) {
 								query = dynamicQueryProcess({query});
 								if (query) {
-									if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-									else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+									if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+									else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+									else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 								}
 							} else {
-								dynamicQuery({query, sort: queryObj.sort, playlistName});
+								dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
 							}
 						}
 					}, flags, data: {bDynamicMenu: true}});
@@ -303,25 +316,29 @@ function quickSearchMenu({bSimulate = false} = {}) {
 				menu.newEntry({menuName: partialMenu, entryText: queryObj.name, func: () => {
 					let query = queryObj.query;
 					if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) {fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quicksearch'); return;}
+					const bShift = utils.IsKeyPressed(VK_SHIFT);
+					const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 					if (this.buttonsProperties.bEvalSel[1]) {
-						if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+						if (bShift || bCtrl) {
 							query = dynamicQueryProcess({query, handleList: this.selItems});
 							if (query) {
-								if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-								else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
-							dynamicQuery({query, sort: queryObj.sort, handleList: this.selItems, playlistName});
+							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName});
 						}
 					} else {
-						if (utils.IsKeyPressed(VK_SHIFT) || utils.IsKeyPressed(VK_CONTROL)) {
+						if (bShift || bCtrl) {
 							query = dynamicQueryProcess({query});
 							if (query) {
-								if (utils.IsKeyPressed(VK_SHIFT)) {fb.ShowLibrarySearchUI(query);}
-								else {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
+								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
+								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
-							dynamicQuery({query, sort: queryObj.sort, playlistName});
+							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
 						}
 					}
 				}, flags, data: {bDynamicMenu: true}});

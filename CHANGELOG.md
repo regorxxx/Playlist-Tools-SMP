@@ -46,6 +46,8 @@
 
 ## [Unreleased][]
 ### Added
+- Quicksearch: added setting to sort the results found. By default: '%ALBUM ARTIST%|%ALBUM%|%TRACK%'. Set to '$rand()' to randomize order.
+- Quicksearch: pressing Shift + Ctrl will apply the search to the current playlist instead of the entire library.
 ### Changed
 ### Removed
 ### Fixed
