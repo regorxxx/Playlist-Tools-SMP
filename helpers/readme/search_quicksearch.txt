@@ -11,7 +11,11 @@ Buttons usage:
 	- By default sends results to a [configurable] playlist.
 	- Shift sends results to search window.
 	- Ctrl creates an Autoplaylist with the result.
-	- To add customized entries, use Playlist Tools\Dynamic queries.
+	- Shit + Ctrl uses the current playlist as source for the lookup.
+	- To add customized entries, use Playlist Tools\Dynamic queries
+		or configure the button pressing shift.
+	- Advanced entries (see below) are automatically created if
+		they would produce valid queries/searches.
 
 Original foo_quicksearch only allowed exact matches by queries, but
 this tool allows two additional modes:
@@ -20,7 +24,7 @@ this tool allows two additional modes:
 		For ex. 'Begins with Genre' would allow 'Jazz' and 'Jazz
 		Vocal' in results, when selecting a jazz track since all 
 		start with 'Jazz' string on the genre tag. This method is
-		pretty situationaland probably most used for Title tags.
+		pretty situational and probably most used for Title tags.
 	
 	- Partial match...: 
 		Expands the previous method, allowing any result which 
