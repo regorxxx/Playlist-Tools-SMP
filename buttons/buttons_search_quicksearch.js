@@ -56,7 +56,8 @@ var newButtonsProperties = { //You can simply add new properties here
 		{name: 'Same Title, Artist(s) & Date', 
 			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'}
 	]), {func: isJSON}],
-	sortTF:		['Sorting TF expression', globTags.artist + '|%ALBUM%|%TRACK%', {func: isStringWeak}, globTags.artist + '|%ALBUM%|%TRACK%'],
+	sortTF:			['Sorting TF expression', globTags.artist + '|%ALBUM%|%TRACK%', {func: isStringWeak}, globTags.artist + '|%ALBUM%|%TRACK%'],
+	bOmitSortPls:	['Omit sorting on playlist sources', true, {func: isBoolean}, true],
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
@@ -160,6 +161,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 	// Globals
 	const playlistName = this.buttonsProperties.playlistName[1];
 	const sortTF = this.buttonsProperties.sortTF[1];
+	const bOmitSortPls = this.buttonsProperties.bOmitSortPls[1];
 	// Menu
 	const menu = new _menu({onBtnUp: () => this.selItems = null});
 	menu.newEntry({entryText: 'Shift to search / Ctrl for Autoplaylist:', flags: MF_GRAYED});
@@ -184,7 +186,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 							if (query) {
 								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+								else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
 							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName});
@@ -195,7 +197,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 							if (query) {
 								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+								else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
 							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
@@ -226,7 +228,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 				if (query) {
 					if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 					else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-					else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+					else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 				}
 			} else {
 				const handleList = this.buttonsProperties.bEvalSel[1]
@@ -263,7 +265,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 								if (query) {
 									if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 									else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-									else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+									else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 								}
 							} else {
 								dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName});
@@ -274,7 +276,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 								if (query) {
 									if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 									else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-									else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+									else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 								}
 							} else {
 								dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
@@ -324,7 +326,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 							if (query) {
 								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+								else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
 							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName});
@@ -335,7 +337,7 @@ function quickSearchMenu({bSimulate = false} = {}) {
 							if (query) {
 								if (bShift && !bCtrl) {fb.ShowLibrarySearchUI(query);}
 								else if (!bShift && bCtrl) {plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query);}
-								else {dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
+								else {dynamicQuery({query, sort: (bOmitSortPls ? null : queryObj.sort || {tfo: sortTF}), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist)});}
 							}
 						} else {
 							dynamicQuery({query, sort: queryObj.sort || {tfo: sortTF}, playlistName});
