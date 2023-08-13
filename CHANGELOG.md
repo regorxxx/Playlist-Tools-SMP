@@ -49,7 +49,9 @@
 - Quicksearch: added setting to sort the results found. By default: '%ALBUM ARTIST%|%ALBUM%|%TRACK%'. Set to '$rand()' to randomize order.
 - Quicksearch: pressing Shift + Ctrl will apply the search to the current playlist instead of the entire library.
 - Quicksearch: added setting to preserve original sorting when using current playlist as source. i.e. tracks matched will be output in the original appearance order.
+- Playlist Revive: added entry to select dead items on current playlist.
 ### Changed
+- Playlist Revive: simplified menus to just one option per playlist, selection or all playlists.
 ### Removed
 ### Fixed
 - Portable: 'Script integration\SMP Dynamic menu\Custom function' removed warning about not found file already included. Also improved the logic to try to include only once.

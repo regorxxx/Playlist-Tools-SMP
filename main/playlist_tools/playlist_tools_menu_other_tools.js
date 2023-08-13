@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//13/08/23
 
 // Other tools
 {
@@ -232,35 +232,22 @@
 						menu.newEntry({menuName: subMenuName, entryText: 'Find dead items in all playlists', func: findDeadItems});
 						menu.newEntry({menuName: subMenuName, entryText: 'Replace dead items in all playlists', func: playlistReviveAll});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on selection', func:() => {
-							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1})
-						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on selection (' + entryTextFunc() * 100 + '% simil.)'}, func:() => {
-							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1]})
-						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on current playlist', func: () => {
-							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: 1})
-						}, flags: playlistCountFlagsAddRem});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Replace dead items on current playlist (' + entryTextFunc() * 100 + '% simil.)'}, func: () => {
-							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1]})
+							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true})
 						}, flags: playlistCountFlagsAddRem});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText:() => {return 'Find alternative items on selection (' + entryTextFunc() * 100 + '% simil.)'}, func:() => {
+						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on selection', func:() => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true})
 						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText:'Simulate on selection (see console)', func: () => {
-							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: 1, bSimulate: true})
-						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText: () => {return 'Simulate on selection (' + entryTextFunc() * 100 + '% simil.) (see console)'}, func: () => {
-							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bSimulate: true})
-						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText: 'Simulate on selection (find alternative) (see console)', func:() => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true, bSimulate: true})
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...', func: () => {
+						menu.newEntry({menuName: subMenuName, entryText: 'Select dead items', func:() => {
+							selectDeadItems(plman.ActivePlaylist);
+						}, flags: focusFlags});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...' + '\t' + _b(menu_properties['simThreshold'][1]), func: () => {
 							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, menu_properties['simThreshold'][1]));
 							if (menu_properties['simThreshold'][1] === input) {return;}
 							if (!Number.isFinite(input)) {return;}
