@@ -7,7 +7,6 @@ Original foo_quicksearch:
 https://www.foobar2000.org/components/view/foo_quicksearch
 
 Buttons usage:
-	- Entries are hardcoded.
 	- By default sends results to a [configurable] playlist.
 	- Shift sends results to search window.
 	- Ctrl creates an Autoplaylist with the result.
