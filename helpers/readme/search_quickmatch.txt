@@ -1,0 +1,17 @@
+﻿Tool similar to foo_quicksearch, which allows searching for tracks
+matching specific tag values (shown in a list). Results may be sent 
+to a playlist, Autoplaylist or search window using keyboard modifiers
+(shown on the tool).
+
+Original foo_quicksearch:
+https://www.foobar2000.org/components/view/foo_quicksearch
+
+Buttons usage:
+	- Works similar to ListenBrainz and Last.fm tools buttons.
+	- By default sends results to a [configurable] playlist.
+	- Shift sends results to search window.
+	- Ctrl creates an Autoplaylist with the result.
+	- Shit + Ctrl uses the current playlist as source for the lookup.
+	- To add customized entries, configure the button pressing shift.
+	- Matches a single value per tag (selectable), instead of
+		all or nothing approach found at quicksearch tools.
