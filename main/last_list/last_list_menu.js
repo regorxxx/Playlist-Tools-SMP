@@ -1,5 +1,5 @@
 'use strict';
-//27/07/23
+//14/08/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -8,7 +8,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main menu, entries are not split by tag */} = {}) {
 	const parent = this.lastList;
 	const cache = this.cache || {lastDate: '', lastTag: '', lastArtist: '', lastURL: ''};
-	const bioTags = this.bioTags || {};
+	const bioTags = this.buttonsProperties.bBioTags[1] ? this.bioTags || {} : {};
 	if (bSimulate) {return _lastListMenu.bind({sel: null})({bSimulate: false, bDynamicMenu: true});}
 	const menu = new _menu();
 	// Get current selection and metadata
