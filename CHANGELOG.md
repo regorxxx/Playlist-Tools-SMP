@@ -46,6 +46,7 @@
 
 ## [Unreleased][]
 ### Added
+- Quickmatch: added new button to look for other tracks on library with same tag values than the focused track; similar to "quicksearch" but limited to the selected tag. Also supports -full- tag retrieval from [WilB's Biography script](https://github.com/Wil-B/Biography), 'locale' tag retrieval from [World-Map-SMP](https://github.com/regorxxx/World-Map-SMP), 'LASTFM_SIMILAR_ARTIST' tag retrieval from [foo_uie_biography](https://foobar2000.xrea.jp/?User+interface/UI+extension#kbe7a3bd) and 'SIMILAR ARTISTS SEARCHBYDISTANCE' tag retrieval from [Search by Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP).
 - Quicksearch: added setting to sort the results found. By default: '%ALBUM ARTIST%|%ALBUM%|%TRACK%'. Set to '$rand()' to randomize order.
 - Quicksearch: pressing Shift + Ctrl will apply the search to the current playlist instead of the entire library.
 - Quicksearch: added setting to preserve original sorting when using current playlist as source. i.e. tracks matched will be output in the original appearance order.
@@ -55,6 +56,7 @@
 ### Removed
 ### Fixed
 - Portable: 'Script integration\SMP Dynamic menu\Custom function' removed warning about not found file already included. Also improved the logic to try to include only once.
+- Last.fm: bio tag retrieval setting could not be disabled.
 
 ## [3.0.1] - 2023-07-29
 ### Added
