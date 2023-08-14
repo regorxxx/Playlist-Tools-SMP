@@ -53,6 +53,7 @@
 - Playlist Revive: added entry to select dead items on current playlist.
 ### Changed
 - Playlist Revive: simplified menus to just one option per playlist, selection or all playlists.
+- Playlist Revive: now ensures the track which replaces a dead item also exists, since foobar2000 may have a dead track on library. Thus a dead track may be used to substitute another dead track; not a bug since it's native behavior, but this change aligns better with the expected result.
 ### Removed
 ### Fixed
 - Portable: 'Script integration\SMP Dynamic menu\Custom function' removed warning about not found file already included. Also improved the logic to try to include only once.

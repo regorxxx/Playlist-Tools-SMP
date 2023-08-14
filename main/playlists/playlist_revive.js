@@ -210,10 +210,17 @@ function playlistRevive({
 	if (alternatives.size !== 0) {
 		let bOverHundred = false;
 		let bExact = false;
+		let bDeadLibrary = false;
 		// Process the alternatives
-		alternatives.forEach ( (newHandleIdx, oldHandleIdx) => {
+		alternatives.forEach((newHandleIdx, oldHandleIdx) => {
 			const oldHandle = items[oldHandleIdx];
-			const newHandleIdxBest = newHandleIdx[0];
+			// const newHandleIdxBest = newHandleIdx[0];
+			const newHandleIdxBest = newHandleIdx.find((i) => utils.FileExists(libraryItemsArr[i.idx].Path));
+			if (newHandleIdxBest !== newHandleIdx[0]) {
+				console.log(oldHandle.Path + '   ---->   \n                  ' + libraryItemsArr[newHandleIdx[0].idx].Path + '\n                  Warning: Best match on library is also a dead item. Rescan your library.');
+				bDeadLibrary = true;
+				return;
+			}
 			const newHandleBest = libraryItemsArr[newHandleIdxBest.idx];
 			const idx = selItems.Find(oldHandle);
 			if (!bSimulate) { // Remove old items and insert new ones
@@ -237,6 +244,7 @@ function playlistRevive({
 			}
 		});
 		// Extra info
+		if (bDeadLibrary) {console.popup('There are dead items in your library. Rescan it.', 'Playlist revive');}
 		if (bOverHundred) {console.log('Tracks with a similarity value over 100% have been found. It\'s not an error, but an indicator that the new track matches all tags and has new ones compared to the dead one');}
 		if (bExact) {console.log('Exact matches have been found. That means the tracks have the same Audio MD5, Title + Length + File Size, AcoustID or MBID.');}
 		// Remove all handles and insert new ones
@@ -325,6 +333,38 @@ function selectDeadItems(playlistIndex) {
 		plman.SetPlaylistFocusItem(playlistIndex, deadItems[0].idx);
 	}
 	return deadItems;
+}
+
+function findDeadItemsV2() {
+	let deadItems = [];
+	return Promise.serial(range(0, plman.PlaylistCount, 1), (i) => {
+		if (!plman.IsAutoPlaylist(i)) { // Autoplaylist are created on startup, no need to check for dead items
+			const selItems = plman.GetPlaylistItems(i);
+			let count = 0;
+			selItems.Convert().forEach( (handle) => {
+				if (utils.IsFile(handle.Path)) {return;}
+				if (handle.RawPath.indexOf('file://') === -1) {return;} // Exclude streams and title-only tracks
+				count++;
+			});
+			if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count});}
+		}
+	
+	}, 10).then(() => {
+		if (deadItems.length) {
+			const header = 'Found playlist(s) with dead items:';
+			console.log(header);
+			let list = '';
+			deadItems.forEach( (playlistObj) => {
+				list += playlistObj.name + ': ' + playlistObj.items + '\n';
+				console.log(playlistObj.name + ': ' + playlistObj.items);
+			});
+			fb.ShowPopupMessage(header + '\n' + list, 'Dead Playlists');
+		} else {
+			const header = 'No playlist found with dead items.';
+			fb.ShowPopupMessage(header, 'Dead Playlists');
+		}
+		return deadItems;
+	});
 }
 
 function playlistReviveAll() {
