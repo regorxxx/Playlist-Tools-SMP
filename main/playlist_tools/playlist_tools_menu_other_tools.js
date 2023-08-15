@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/08/23
+//15/08/23
 
 // Other tools
 {
@@ -235,16 +235,15 @@
 						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on current playlist', func: () => {
 							playlistRevive({selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true})
 						}, flags: playlistCountFlagsAddRem});
+						menu.newEntry({menuName: subMenuName, entryText: 'Select dead items on current playlist', func:() => {
+							selectDeadItems(plman.ActivePlaylist);
+						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on selection', func:() => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true})
-						}, flags: focusFlags});
+						}, flags: focusFlags() | playlistCountFlagsAddRem()});
 						menu.newEntry({menuName: subMenuName, entryText:'Simulate on selection (see console)', func: () => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true, bSimulate: true})
-						}, flags: focusFlags});
-						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Select dead items', func:() => {
-							selectDeadItems(plman.ActivePlaylist);
 						}, flags: focusFlags});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...' + '\t' + _b(menu_properties['simThreshold'][1]), func: () => {

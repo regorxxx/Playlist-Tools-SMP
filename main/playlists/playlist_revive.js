@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/08/23
+//15/08/23
 
 /*
 	Playlist Revive
@@ -33,6 +33,10 @@ function playlistRevive({
 	if (typeof selItems === 'undefined' || selItems === null || selItems.Count === 0) {
 		return;
 	}
+	
+	let bLockedPls = false;
+	const locks = plman.GetPlaylistLockedActions(playlist);
+	if (plman.IsAutoPlaylist(playlist) || locks.includes('RemoveItems') || locks.includes('AddItems')) {bLockedPls = true; bSimulate = true;}
 	
 	let cache = new Set();
 	const streamRegEx = /^file:\/\//i;
@@ -244,9 +248,18 @@ function playlistRevive({
 			}
 		});
 		// Extra info
-		if (bDeadLibrary) {console.popup('There are dead items in your library. Rescan it.', 'Playlist revive');}
-		if (bOverHundred) {console.log('Tracks with a similarity value over 100% have been found. It\'s not an error, but an indicator that the new track matches all tags and has new ones compared to the dead one');}
-		if (bExact) {console.log('Exact matches have been found. That means the tracks have the same Audio MD5, Title + Length + File Size, AcoustID or MBID.');}
+		if (bDeadLibrary) {
+			console.popup('There are dead items in your library. Rescan it.', 'Playlist revive');
+		}
+		if (bLockedPls) {
+			console.popup('There are dead items on a locked playlist:\n                  ' + plman.GetPlaylistName(playlist) + ' (locked by ' + (plman.GetPlaylistLockName(playlist) || '?') + ')', 'Playlist revive', true, false);
+		}
+		if (bOverHundred) {
+			console.log('Tracks with a similarity value over 100% have been found. It\'s not an error, but an indicator that the new track matches all tags and has new ones compared to the dead one');
+		}
+		if (bExact) {
+			console.log('Exact matches have been found. That means the tracks have the same Audio MD5, Title + Length + File Size, AcoustID or MBID.');
+		}
 		// Remove all handles and insert new ones
 		if (!bSimulate) {
 			plman.UndoBackup(playlist);
@@ -284,17 +297,15 @@ function findDeadItems() {
 	let cache = new Set();
 	const streamRegEx = /^file:\/\//i;
 	for (let i = 0; i < plman.PlaylistCount; i++) {
-		if (!plman.IsAutoPlaylist(i)) { // Autoplaylist are created on startup, no need to check for dead items
-			const selItems = plman.GetPlaylistItems(i);
-			let count = 0;
-			selItems.Convert().forEach( (handle) => {
-				if (cache.has(handle.RawPath)) {return;}
-				if (utils.IsFile(handle.Path)) {cache.add(handle.RawPath); return;}
-				if (!streamRegEx.test(handle.RawPath)) {cache.add(handle.RawPath); return;} // Exclude streams and title-only tracks
-				count++;
-			});
-			if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count});}
-		}
+		const selItems = plman.GetPlaylistItems(i);
+		let count = 0;
+		selItems.Convert().forEach( (handle) => {
+			if (cache.has(handle.RawPath)) {return;}
+			if (utils.IsFile(handle.Path)) {cache.add(handle.RawPath); return;}
+			if (!streamRegEx.test(handle.RawPath)) {cache.add(handle.RawPath); return;} // Exclude streams and title-only tracks
+			count++;
+		});
+		if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count});}
 	}
 	if (deadItems.length) {
 		const header = 'Found playlist(s) with dead items:';
@@ -318,53 +329,20 @@ function selectDeadItems(playlistIndex) {
 	let deadItems = [];
 	let cache = new Set();
 	const streamRegEx = /^file:\/\//i;
-	if (!plman.IsAutoPlaylist(playlistIndex)) { // Autoplaylist are created on startup, no need to check for dead items
-		const selItems = plman.GetPlaylistItems(playlistIndex);
-		selItems.Convert().forEach((handle, idx) => {
-			if (cache.has(handle.RawPath)) {return;}
-			if (utils.IsFile(handle.Path)) {cache.add(handle.RawPath); return;}
-			if (!streamRegEx.test(handle.RawPath)) {cache.add(handle.RawPath); return;} // Exclude streams and title-only tracks
-			deadItems.push({handle, idx});
-		});
-	}
+	// Also checks AutoPlaylists, since dead items may be on library
+	const selItems = plman.GetPlaylistItems(playlistIndex);
+	selItems.Convert().forEach((handle, idx) => {
+		if (cache.has(handle.RawPath)) {return;}
+		if (utils.IsFile(handle.Path)) {cache.add(handle.RawPath); return;}
+		if (!streamRegEx.test(handle.RawPath)) {cache.add(handle.RawPath); return;} // Exclude streams and title-only tracks
+		deadItems.push({handle, idx});
+	});
 	if (deadItems.length) {
 		plman.ActivePlaylist = playlistIndex;
 		plman.SetPlaylistSelection(playlistIndex, deadItems.map((_) => _.idx), true)
 		plman.SetPlaylistFocusItem(playlistIndex, deadItems[0].idx);
 	}
 	return deadItems;
-}
-
-function findDeadItemsV2() {
-	let deadItems = [];
-	return Promise.serial(range(0, plman.PlaylistCount, 1), (i) => {
-		if (!plman.IsAutoPlaylist(i)) { // Autoplaylist are created on startup, no need to check for dead items
-			const selItems = plman.GetPlaylistItems(i);
-			let count = 0;
-			selItems.Convert().forEach( (handle) => {
-				if (utils.IsFile(handle.Path)) {return;}
-				if (handle.RawPath.indexOf('file://') === -1) {return;} // Exclude streams and title-only tracks
-				count++;
-			});
-			if (count) {deadItems.push({name: plman.GetPlaylistName(i), idx: i, items: count});}
-		}
-	
-	}, 10).then(() => {
-		if (deadItems.length) {
-			const header = 'Found playlist(s) with dead items:';
-			console.log(header);
-			let list = '';
-			deadItems.forEach( (playlistObj) => {
-				list += playlistObj.name + ': ' + playlistObj.items + '\n';
-				console.log(playlistObj.name + ': ' + playlistObj.items);
-			});
-			fb.ShowPopupMessage(header + '\n' + list, 'Dead Playlists');
-		} else {
-			const header = 'No playlist found with dead items.';
-			fb.ShowPopupMessage(header, 'Dead Playlists');
-		}
-		return deadItems;
-	});
 }
 
 function playlistReviveAll() {
