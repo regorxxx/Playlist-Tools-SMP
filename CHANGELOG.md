@@ -52,6 +52,7 @@
 - Quicksearch: added setting to preserve original sorting when using current playlist as source. i.e. tracks matched will be output in the original appearance order.
 - Playlist Revive: added entry to select dead items on current playlist.
 ### Changed
+- Other tools\Check Tags: track list is de-duplicated before analysis. This may be relevant on album list views where a file appears multiple times at the tree.
 - Playlist Revive: some menu entries are now grayed out if the active playlist is locked (remove/add items).
 - Playlist Revive: simplified menus to just one option per playlist, selection or all playlists.
 - Playlist Revive: now ensures the track which replaces a dead item also exists, since foobar2000 may have a dead track on library. Thus a dead track may be used to substitute another dead track; not a bug since it's native behavior, but this change aligns better with the expected result.

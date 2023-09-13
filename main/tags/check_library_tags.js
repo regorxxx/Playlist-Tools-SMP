@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/03/23
+//13/09/23
 
 /*
 	Check Library Tags
@@ -104,14 +104,16 @@ function checkTags({
 					stringSimilThreshold = 0.85, // How much tag values must be similar to be considered as alternative values
 					bUseDic = properties['bUseDic'][1],
 					iSteps = iStepsLibrary, iDelay = iDelayLibrary, // Async processing ~ x1.4 time required
+					bDeDup = true, // Changes original handleList
 					bAsync = true,
 					bDebug = false,
 					bProfile = false
 					} = {}) {
 	if (bProfile) {var profiler = new FbProfiler('checkTags...');}
-	if (typeof selItems === 'undefined' || selItems === null || selItems.count === 0) {
-		return;
+	if (typeof selItems === 'undefined' || selItems === null || selItems.Count === 0) {
+		return (bAsync ? Promise.resolve(false) : false);
 	}
+	if (bDeDup) {selItems.Sort();}
 	if (freqThreshold > 1 || freqThreshold < 0) {freqThreshold = 1;}
 	if (stringSimilThreshold > 1 || stringSimilThreshold < 0) {stringSimilThreshold = 1;}
 	if (maxSizePerTag < 0) {maxSizePerTag = Infinity;}
@@ -138,7 +140,7 @@ function checkTags({
 	const tagsToCheck = [...new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean))]; // i, filter holes and remove duplicates
 	if (!tagsToCheck.length) {
 		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
-		return;
+		return (bAsync ? Promise.resolve(false) : false);
 	}
 	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((tag) => {return [...new Set(tag.split(',').filter(Boolean))];}); // filter holes and remove duplicates
 	const tagsToCompareMap = new Map();
