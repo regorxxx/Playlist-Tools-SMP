@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.1.0](#310---2023-09-14)
 - [3.0.1](#301---2023-07-29)
 - [3.0.0](#300---2023-07-28)
 - [3.0.0-beta.30](#300-beta30---2023-07-21)
@@ -45,6 +46,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.1.0] - 2023-09-14
 ### Added
 - Quickmatch: added new button to look for other tracks on library with same tag values than the focused track; similar to "quicksearch" but limited to the selected tag. Also supports -full- tag retrieval from [WilB's Biography script](https://github.com/Wil-B/Biography), 'locale' tag retrieval from [World-Map-SMP](https://github.com/regorxxx/World-Map-SMP), 'LASTFM_SIMILAR_ARTIST' tag retrieval from [foo_uie_biography](https://foobar2000.xrea.jp/?User+interface/UI+extension#kbe7a3bd) and 'SIMILAR ARTISTS SEARCHBYDISTANCE' tag retrieval from [Search by Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP).
 - Quicksearch: added setting to sort the results found. By default: '%ALBUM ARTIST%|%ALBUM%|%TRACK%'. Set to '$rand()' to randomize order.
@@ -999,7 +1006,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.30...v3.0.0
 [3.0.0-beta.30]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.0-beta.29...v3.0.0-beta.30
