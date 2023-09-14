@@ -58,6 +58,7 @@
 - Playlist Revive: now ensures the track which replaces a dead item also exists, since foobar2000 may have a dead track on library. Thus a dead track may be used to substitute another dead track; not a bug since it's native behavior, but this change aligns better with the expected result.
 - Playlist Revive: AutoPlaylists are now also analyzed, although they can not be changed.
 - Playlist Revive: in case a locked playlist (remove/add items) contains dead items a warning will be shown.
+- Playlist Revive: improved error handling.
 ### Removed
 ### Fixed
 - Portable: 'Script integration\SMP Dynamic menu\Custom function' removed warning about not found file already included. Also improved the logic to try to include only once.
