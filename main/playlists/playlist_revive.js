@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/08/23
+//14/09/23
 
 /*
 	Playlist Revive
@@ -23,20 +23,24 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 
 function playlistRevive({
-					playlist = plman.ActivePlaylist,
-					selItems = plman.GetPlaylistSelectedItems(playlist),
+					playlist = plman.ActivePlaylist, // Set to -1 to create a clone of selItems and output the revived list
+					selItems = playlist !== -1 ? plman.GetPlaylistSelectedItems(playlist) : null,
 					simThreshold = 1, // 1 only allows exact matches, lower allows some tag differences, but at least the main tag must be the same!
 					bFindAlternative = false,
 					bSimulate = false,
 					bReportAllMatches = false,
+					bSilent = false, // Probably should be false if processing only a HandleList!
 					} = {}) {
 	if (typeof selItems === 'undefined' || selItems === null || selItems.Count === 0) {
-		return;
+		return null;
 	}
+	if (playlist === -1 && selItems) {selItems = selItems.Clone();} // Don't edit original handleList
 	
 	let bLockedPls = false;
-	const locks = plman.GetPlaylistLockedActions(playlist);
-	if (plman.IsAutoPlaylist(playlist) || locks.includes('RemoveItems') || locks.includes('AddItems')) {bLockedPls = true; bSimulate = true;}
+	if (playlist !== -1) {
+		const locks = plman.GetPlaylistLockedActions(playlist);
+		if (plman.IsAutoPlaylist(playlist) || locks.includes('RemoveItems') || locks.includes('AddItems')) {bLockedPls = true; bSimulate = true;}
+	}
 	
 	let cache = new Set();
 	const streamRegEx = /^file:\/\//i;
@@ -49,7 +53,9 @@ function playlistRevive({
 		if (!streamRegEx.test(handle.RawPath)) {cache.add(handle.RawPath); return;} // Exclude streams and title-only tracks
 		items.Insert(items.Count, handle);
 	});
-	console.log('Found ' + items.Count + ' dead item(s) on ' + (plman.ActivePlaylist === playlist ? 'active' : '')+ ' playlist: ' + plman.GetPlaylistName(playlist));
+	if (!bSilent) {
+		console.log('Found ' + items.Count + ' dead item(s) on ' + (plman.ActivePlaylist === playlist ? 'active' : '')+ ' playlist: ' + plman.GetPlaylistName(playlist));
+	}
 	if (!items.Count) {return;}
 	// Filter library with items with same tags
 	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
@@ -74,7 +80,7 @@ function playlistRevive({
 	// instead of using this, which would combine the different tags too
 	// const query =  query_join(query_combinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');
 	const query = query_join(queryArr.filter(Boolean), 'OR');
-	if (bSimulate) {console.log('Filtered library by: ' + query);}
+	if (!bSilent && bSimulate) {console.log('Filtered library by: ' + query);}
 	try {fb.GetQueryItems(fb.GetLibraryItems(), query);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	const libraryItems = fb.GetQueryItems(fb.GetLibraryItems(), query);
@@ -210,7 +216,7 @@ function playlistRevive({
 		}
 		if (alternativesSet.size !== 0) {alternatives.set(index, alternativesObj.sort(function (a, b) {return b.simil - a.simil;}));}
 	});
-	console.log('Found ' + alternatives.size + ' alternative(s) on active playlist');
+	if (!bSilent) {console.log('Found ' + alternatives.size + ' alternative(s) on active playlist');}
 	if (alternatives.size !== 0) {
 		let bOverHundred = false;
 		let bExact = false;
@@ -221,47 +227,49 @@ function playlistRevive({
 			// const newHandleIdxBest = newHandleIdx[0];
 			const newHandleIdxBest = newHandleIdx.find((i) => utils.FileExists(libraryItemsArr[i.idx].Path));
 			if (newHandleIdxBest !== newHandleIdx[0]) {
-				console.log(oldHandle.Path + '   ---->   \n                  ' + libraryItemsArr[newHandleIdx[0].idx].Path + '\n                  Warning: Best match on library is also a dead item. Rescan your library.');
+				if (!bSilent) {console.log(oldHandle.Path + '   ---->   \n                  ' + libraryItemsArr[newHandleIdx[0].idx].Path + '\n                  Warning: Best match on library is also a dead item. Rescan your library.');}
 				bDeadLibrary = true;
 				return;
 			}
 			const newHandleBest = libraryItemsArr[newHandleIdxBest.idx];
 			const idx = selItems.Find(oldHandle);
-			if (!bSimulate) { // Remove old items and insert new ones
+			if (!bSimulate || playlist !== -1 && selItems) { // Remove old items and insert new ones
 				selItems.RemoveById(idx);
 				selItems.Insert(idx, newHandleBest); // Always use the most similar item
 				if (newHandleIdxBest.simil > 100) {bOverHundred = true;}
 				if (newHandleIdxBest.bExact) {bExact = true;}
-				console.log(oldHandle.Path + '   --(' + (newHandleIdxBest.bExact ? 'Exact Match': newHandleIdxBest.simil + '% ') + ')-->   \n                  ' +  newHandleBest.Path);
+				if (!bSilent) {console.log(oldHandle.Path + '   --(' + (newHandleIdxBest.bExact ? 'Exact Match': newHandleIdxBest.simil + '% ') + ')-->   \n                  ' +  newHandleBest.Path);}
 			} else { // Just console log
 				if (bReportAllMatches) {
 					newHandleIdx.forEach ( (obj) => {
 						if (obj.simil > 100) {bOverHundred = true;}
 						if (obj.bExact) {bExact = true;}
-						console.log(oldHandle.Path + '   --(' + (obj.bExact ? 'Exact Match': obj.simil + '% ') + ')-->   \n                  ' +  libraryItemsArr[obj.idx].Path);
+						if (!bSilent) {console.log(oldHandle.Path + '   --(' + (obj.bExact ? 'Exact Match': obj.simil + '% ') + ')-->   \n                  ' +  libraryItemsArr[obj.idx].Path);}
 					});
 				} else {
 					if (newHandleIdxBest.simil > 100) {bOverHundred = true;}
 					if (newHandleIdxBest.bExact) {bExact = true;}
-					console.log(oldHandle.Path + '   --(' + (newHandleIdxBest.bExact ? 'Exact Match': newHandleIdxBest.simil + '% ') + ')-->   \n                  ' +  newHandleBest.Path);
+					if (!bSilent) {console.log(oldHandle.Path + '   --(' + (newHandleIdxBest.bExact ? 'Exact Match': newHandleIdxBest.simil + '% ') + ')-->   \n                  ' +  newHandleBest.Path);}
 				}
 			}
 		});
 		// Extra info
-		if (bDeadLibrary) {
-			console.popup('There are dead items in your library. Rescan it.', 'Playlist revive');
-		}
-		if (bLockedPls) {
-			console.popup('There are dead items on a locked playlist:\n                  ' + plman.GetPlaylistName(playlist) + ' (locked by ' + (plman.GetPlaylistLockName(playlist) || '?') + ')', 'Playlist revive', true, false);
-		}
-		if (bOverHundred) {
-			console.log('Tracks with a similarity value over 100% have been found. It\'s not an error, but an indicator that the new track matches all tags and has new ones compared to the dead one');
-		}
-		if (bExact) {
-			console.log('Exact matches have been found. That means the tracks have the same Audio MD5, Title + Length + File Size, AcoustID or MBID.');
+		if (!bSilent) {
+			if (bDeadLibrary) {
+				console.popup('There are dead items in your library. Rescan it.', 'Playlist revive');
+			}
+			if (bLockedPls) {
+				console.popup('There are dead items on a locked playlist:\n                  ' + plman.GetPlaylistName(playlist) + ' (locked by ' + (plman.GetPlaylistLockName(playlist) || '?') + ')', 'Playlist revive', true, false);
+			}
+			if (bOverHundred) {
+				console.log('Tracks with a similarity value over 100% have been found. It\'s not an error, but an indicator that the new track matches all tags and has new ones compared to the dead one');
+			}
+			if (bExact) {
+				console.log('Exact matches have been found. That means the tracks have the same Audio MD5, Title + Length + File Size, AcoustID or MBID.');
+			}
 		}
 		// Remove all handles and insert new ones
-		if (!bSimulate) {
+		if (!bSimulate && playlist !== -1) {
 			plman.UndoBackup(playlist);
 			if (selItems.Count !== plman.PlaylistItemCount(playlist)) { // When selecting only a portion, replace selection and left the rest untouched
 				const listItems = plman.GetPlaylistItems(playlist);
@@ -289,7 +297,8 @@ function playlistRevive({
 			}
 		}
 	}
-	fb.ShowConsole();
+	if (!bSilent) {fb.ShowConsole();}
+	return selItems;
 }
 
 function findDeadItems() {
@@ -348,7 +357,7 @@ function selectDeadItems(playlistIndex) {
 function playlistReviveAll() {
 	const deadItems = findDeadItems();
 	if (deadItems.length) {
-		deadItems.forEach( (playlistObj) => {
+		deadItems.forEach((playlistObj) => {
 			if (playlistObj.name === plman.GetPlaylistName(playlistObj.idx)) { // Safety check
 				playlistRevive({playlist: playlistObj.idx, selItems: plman.GetPlaylistItems(playlistObj.idx), simThreshold: 1});
 			}
