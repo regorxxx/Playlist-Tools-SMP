@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/07/23
+//17/09/23
 
 // Similar by...Graph\Dyngenre\Weight
 {
@@ -202,7 +202,7 @@
 												tags[key].tf = input;
 												menu_properties.tags[1] = JSON.stringify(tags);
 												overwriteMenuProperties(); // Updates panel
-												if (tag.type.includes('graph')) {
+												if (tags[key].type.includes('graph')) {
 													const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 													if (answer === popup.yes) {
 														menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
