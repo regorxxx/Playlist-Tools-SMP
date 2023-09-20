@@ -52,7 +52,7 @@
 ### Removed
 ### Fixed
 
-## [3.1.1] - 2023-09-14
+## [3.1.1] - 2023-09-20
 ### Added
 ### Changed
 ### Removed
