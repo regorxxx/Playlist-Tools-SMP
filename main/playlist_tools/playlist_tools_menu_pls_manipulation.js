@@ -98,22 +98,22 @@
 					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
-							{name: 'Rating > 2', query: globQuery.notLowRating}, 
-							{name: 'Not instrumental', query: globQuery.noInstrumental}, 
-							{name: 'Not live (none)', query: globQuery.noLiveNone},  
-							{name: 'Not live (except Hi-Fi)', query: globQuery.noLive},  
-							{name: 'Not multichannel', query: globQuery.stereo}, 
-							{name: 'Not SACD or DVD', query: globQuery.noSACD}, 
-							{name: 'Global forced query', query: defaultArgs['forcedQuery']},
-							{name: 'sep'},
-							{name: 'Same title than sel', query: globQuery.compareTitle},
-							{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
-							{name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#'},
-							{name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#'},
-							{name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#'},
-							{name: 'sep'},
-							{name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#'},
-							{name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#'}
+						{name: 'Rating > 2', query: globQuery.notLowRating}, 
+						{name: 'Not instrumental', query: globQuery.noInstrumental}, 
+						{name: 'Not live (none)', query: globQuery.noLiveNone},  
+						{name: 'Not live (except Hi-Fi)', query: globQuery.noLive},  
+						{name: 'Not multichannel', query: globQuery.stereo}, 
+						{name: 'Not SACD or DVD', query: globQuery.noSACD}, 
+						{name: 'Global forced query', query: defaultArgs['forcedQuery']},
+						{name: 'sep'},
+						{name: 'Same title than sel', query: globQuery.compareTitle},
+						{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
+						{name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#'},
+						{name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#'},
+						{name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#'},
+						{name: 'sep'},
+						{name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#'},
+						{name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#'}
 					];
 					let selArg = {name: 'Custom', query: queryFilter[0].query};
 					const queryFilterDefaults = [...queryFilter];
@@ -220,7 +220,7 @@
 							list: queryFilter, 
 							propName: 'queryFilter', 
 							defaults: queryFilterDefaults, 
-							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_query_filter\\themes.json',
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_query_filter\\filters.json',
 							input : inputPlsQuery
 						});
 					}});
