@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//29/09/23
 
 // Playlist manipulation...
 {
@@ -99,6 +99,7 @@
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
 							{name: 'Rating > 2', query: globQuery.notLowRating}, 
+							{name: 'Not instrumental', query: globQuery.noInstrumental}, 
 							{name: 'Not live (none)', query: globQuery.noLiveNone},  
 							{name: 'Not live (except Hi-Fi)', query: globQuery.noLive},  
 							{name: 'Not multichannel', query: globQuery.stereo}, 
