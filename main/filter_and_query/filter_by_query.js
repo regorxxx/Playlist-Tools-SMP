@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/10/22
+//29/09/23
 
 /*
 	Filter by Query
@@ -30,6 +30,40 @@ function filterByQuery(handleList = null, query = 'ALL') {
 			console.log('Removed ' + removedCount + ' tracks from active playlist by: ' + query);
 		} else {
 			console.log('No tracks removed by: ' + query);
+		}
+	}
+	return items;
+}
+
+function selectByQuery(handleList = null, query = 'ALL') {
+	if (!query || !query.length || query === 'ALL') {
+		return handleList;
+	}
+	
+	let items; // Active playlist or input list?
+	let bActivePlaylist = false;
+	if (handleList === null) {
+		bActivePlaylist = true;
+		handleList = plman.GetPlaylistItems(plman.ActivePlaylist);
+	}
+
+	items = handleList.Clone();
+	items = fb.GetQueryItems(items, query);
+	
+	if (bActivePlaylist) {
+		let selCount = items.Count;
+		if (selCount) { // Send to active playlist if there was no input list and changes were made
+			const selIdx = [];
+			const selItems = items.Clone();
+			selItems.Sort();
+			handleList.Convert().map((handle, i) => {
+				if (selItems.BSearch(handle) !== -1) {selIdx.push(i);}
+			});
+			plman.ClearPlaylistSelection(plman.ActivePlaylist);
+			plman.SetPlaylistSelection(plman.ActivePlaylist, selIdx, true);
+			console.log('Selected ' + selCount + ' tracks from active playlist by: ' + query);
+		} else {
+			console.log('No tracks selected by: ' + query);
 		}
 	}
 	return items;

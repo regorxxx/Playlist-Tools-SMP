@@ -1111,6 +1111,146 @@
 				menu.newEntry({menuName, entryText: 'sep'});
 			} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
 		}
+		{	// Select by query
+			const scriptPath = folders.xxx + 'main\\filter_and_query\\filter_by_query.js';
+			if (_isFile(scriptPath)){
+				const name = 'Select by query...';
+				if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+					const subMenuName = menu.newMenu(name, menuName);
+					include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\filter_by_query.txt';
+					forcedQueryMenusEnabled[name] = false;
+					let selQueryFilter = [
+						{name: 'Rating > 2', query: globQuery.notLowRating}, 
+						{name: 'Instrumental', query: globQuery.instrumental}, 
+						{name: 'Live (all)', query: globQuery.live},  
+						{name: 'Live (Hi-Fi)', query: globQuery.liveHifi},  
+						{name: 'Multichannel', query: 'NOT ' +_p(globQuery.stereo)}, 
+						{name: 'SACD or DVD', query: globQuery.SACD}, 
+						{name: 'Global forced query', query: defaultArgs['forcedQuery']},
+						{name: 'sep'},
+						{name: 'Same title than sel', query: globQuery.compareTitle},
+						{name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#'},
+						{name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#'},
+						{name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#'},
+						{name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#'},
+						{name: 'sep'},
+						{name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#'},
+						{name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#'}
+					];
+					let selArg = {name: 'Custom', query: selQueryFilter[0].query};
+					const selQueryFilterDefaults = [...selQueryFilter];
+					// Create new properties with previous args
+					menu_properties['selQueryFilter'] = [menuName + '\\' + name + ' queries', JSON.stringify(selQueryFilter)];
+					menu_properties['selQueryFilterCustomArg'] = [menuName + '\\' + name + ' Dynamic menu custom args', selArg.query];
+					// Check
+					menu_properties['selQueryFilter'].push({func: isJSON}, menu_properties['selQueryFilter'][1]);
+					menu_properties['selQueryFilter'].push({func: (query) => {return checkQuery(query, true);}}, menu_properties['selQueryFilter'][1]);
+					// Helpers
+					const inputPlsQuery = () => {
+							let query;
+							try {query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true);}
+							catch (e) {return;}
+							if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
+								try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
+								catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return;}
+							}
+							return {query};
+						};
+					// Menus
+					menu.newEntry({menuName: subMenuName, entryText: 'Select from active playlist: (Ctrl + click to invert)', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+					menu.newCondEntry({entryText: 'Selection using queries... (cond)', condFunc: () => {
+							const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
+							const bEvalSel = options['Dynamic queries'];
+							selQueryFilter = JSON.parse(menu_properties['selQueryFilter'][1]);
+							const entryNames = new Set();
+							selQueryFilter.forEach((queryObj) => {
+								if (queryObj.name === 'sep') { // Create separators
+									menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+								} else { 
+									// Create names for all entries
+									let queryName = queryObj.name || '';
+									queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
+									if (entryNames.has(queryName)) {
+										fb.ShowPopupMessage('There is an entry with duplicated name:\t' + queryName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
+										return;
+									} else {entryNames.add(queryName);}
+									menu.newEntry({menuName: subMenuName, entryText: 'Select by ' + queryName, func: () => {
+										let query = queryObj.query;
+										// Test
+										let focusHandle = fb.GetFocusItem(true);
+										if (focusHandle && query.indexOf('#') !== -1) {
+											if (bEvalSel) {
+												const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}))];
+												query = query_join(queries, 'OR');
+											} else {
+												query = queryReplaceWithCurrent(query, focusHandle);
+											}
+										}
+										// Invert query when pressing Control
+										if (utils.IsKeyPressed(VK_CONTROL) && query.length) {
+											query = 'NOT ' + _p(query);
+										}
+										// Forced query
+										if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
+											if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+												query = _p(query) + ' AND ' + _p(defaultArgs.forcedQuery);
+											} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
+										} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
+										try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
+										catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
+										// Execute
+										selectByQuery(null, query);
+									}, flags: playlistCountFlagsAddRem});
+								}
+							});
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+							menu.newEntry({menuName: subMenuName, entryText: 'Select by... (query)' , func: () => {
+								selArg.query = menu_properties['selQueryFilterCustomArg'][1];
+								let input;
+								try {input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true);}
+								catch (e) {return;}
+								// Forced query
+								let query = input;
+								if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
+									if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+										query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
+									} else if (!query.length) {query = defaultArgs.forcedQuery;} // Empty uses forced query or ALL
+								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
+								// Test
+								let focusHandle = fb.GetFocusItem(true);
+								if (focusHandle && query.indexOf('#') !== -1) {
+									if (bEvalSel) {
+										const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => {return queryReplaceWithCurrent(query, handle);}))];
+										query = query_join(queries, 'OR');
+									} else {
+										query = queryReplaceWithCurrent(query, focusHandle);
+									}
+								}
+								try {fb.GetQueryItems(new FbMetadbHandleList(), query);}
+								catch (e) {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return;}
+								// Execute
+								selectByQuery(null, query);
+								// For internal use original object
+								selArg.query = input; 
+								menu_properties['selQueryFilterCustomArg'][1] = input; // And update property with new value
+								overwriteMenuProperties(); // Updates panel
+							}, flags: playlistCountFlagsAddRem});
+							menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+							createSubMenuEditEntries(subMenuName, {
+								name,
+								list: selQueryFilter, 
+								propName: 'selQueryFilter', 
+								defaults: selQueryFilterDefaults, 
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_sel_filter\\filters.json',
+								input : inputPlsQuery
+							});
+						}});
+						menu.newEntry({menuName, entryText: 'sep'});
+				} else {menuDisabled.push({menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
+			}
+		}
 		{	// Select (for use with macros!!)
 			const name = 'Select...';
 			if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
