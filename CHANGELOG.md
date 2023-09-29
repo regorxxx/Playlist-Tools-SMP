@@ -51,11 +51,12 @@
 ### Added
 - Selection Manipulation\Select by query: equivalent to 'Playlist Manipulation\Query filtering' but selecting the tracks by query (instead of removing them). Not it also works with dynamic queries.
 ### Changed
-- Helpers: updated helpers.
 - Pools: default presets have been changed for all 'Top tracks...' pools. Now instrumentals are only allowed for tracks with rating > 3 (see query below). Restore defaults in submenu to load updated presets.
 - Playlist Manipulation\Query filtering: new default preset added to filter instrumental tracks ('NOT (STYLE IS instrumental OR GENRE IS instrumental OR SPEECHNESS EQUAL 0 OR LANGUAGE IS zxx)').
 - Configuration: expanded user configurable files at '[FOOBAR PROFILE FOLDER]\js_data\presets\global' with new queries. File will be automatically updated with new values (maintaining the user settings).
 - Configuration: improved the user configurable files update check for missing keys.
+- Presets: all default menu entries are now saved as a file preset named 'default.json' for every tool at '.\presets\Playlist Tools\'. Importing them, when all entries have been removed, is equivalent to use 'Restore defaults' for that tool. Whenever a default entry is updated (for ex in future versions), the file is also updated. These entries may be used as example to create your own presets.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 

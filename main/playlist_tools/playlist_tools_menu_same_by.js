@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//29/09/23
 
 // Same by...
 {
@@ -119,8 +119,9 @@
 							list: sameByQueries, 
 							propName: 'sameByQueries', 
 							defaults: sameByQueriesDefaults, 
-							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\same_by_queries\\artist.json',
-							input: inputSameByQuery
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\same_by_queries\\default.json',
+							input: inputSameByQuery,
+							bDefaultFile: true
 						});
 					}
 				}});

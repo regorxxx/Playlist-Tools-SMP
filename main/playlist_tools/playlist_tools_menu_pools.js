@@ -613,8 +613,9 @@
 						list: pools, 
 						propName: 'pools', 
 						defaults: poolsDefaults, 
-						defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pools\\themes.json',
-						input : inputPool
+						defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pools\\default.json',
+						input: inputPool,
+						bDefaultFile: true
 					});
 				}
 			}});

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//29/09/23
 
 // Selection manipulation...
 {
@@ -107,8 +107,9 @@
 								list: sortLegacy, 
 								propName: 'sortLegacy', 
 								defaults: sortLegacyDefaults, 
-								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\sort\\themes.json',
-								input: inputSort
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\sort\\default.json',
+								input: inputSort,
+								bDefaultFile: true
 							});
 						}
 					}});
@@ -314,7 +315,8 @@
 								propName: 'scatter', 
 								defaults: scatterDefaults, 
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\scatter\\default.json',
-								input : inputScatter
+								input : inputScatter,
+								bDefaultFile: true
 							});
 						}
 					}});
@@ -402,7 +404,8 @@
 								propName: 'intercalate', 
 								defaults: intercalateDefaults, 
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\intercalate\\default.json',
-								input : inputIntercalate
+								input : inputIntercalate,
+								bDefaultFile: true
 							});
 						}
 					}});
@@ -502,7 +505,8 @@
 								propName: 'shuffle', 
 								defaults: shuffleDefaults, 
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\shuffle\\default.json',
-								input : inputShuffle
+								input : inputShuffle,
+								bDefaultFile: true
 							});
 						}
 					}});
@@ -653,7 +657,8 @@
 								propName: 'group', 
 								defaults: groupDefaults, 
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\group\\default.json',
-								input : inputGroup
+								input : inputGroup,
+								bDefaultFile: true
 							});
 						}
 					}});
@@ -1243,8 +1248,9 @@
 								list: selQueryFilter, 
 								propName: 'selQueryFilter', 
 								defaults: selQueryFilterDefaults, 
-								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_sel_filter\\filters.json',
-								input : inputPlsQuery
+								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_sel_filter\\default.json',
+								input : inputPlsQuery,
+								bDefaultFile: true
 							});
 						}});
 						menu.newEntry({menuName, entryText: 'sep'});

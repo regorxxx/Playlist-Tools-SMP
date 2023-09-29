@@ -220,8 +220,9 @@
 							list: queryFilter, 
 							propName: 'queryFilter', 
 							defaults: queryFilterDefaults, 
-							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_query_filter\\filters.json',
-							input : inputPlsQuery
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_query_filter\\default.json',
+							input: inputPlsQuery,
+							bDefaultFile: true
 						});
 					}});
 					menu.newEntry({menuName, entryText: 'sep'});

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//29/09/23
 
 // Dynamic queries...
 {
@@ -126,8 +126,9 @@
 							list: queryFilter, 
 							propName: 'dynamicQueries', 
 							defaults: queryFilterDefaults, 
-							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\dyn_query_filter\\all_by_artist.json',
-							input: inputDynQuery
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\dyn_query_filter\\default.json',
+							input: inputDynQuery,
+							bDefaultFile: true
 						});
 					}
 				}});

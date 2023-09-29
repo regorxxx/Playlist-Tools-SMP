@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/06/23
+//30/09/23
 
 /*
 	Helpers
@@ -118,7 +118,22 @@ function updateShortcutsNames(keys = {}) {
 	}
 }
 
-function createSubMenuEditEntries(menuName, options /*{name, list, propName:, defaults, defaultPreset, input, bAdd, bImport}*/) {
+function createDefaultPreset(options /* name, propName, defaultPreset, defaults*/) {
+	let bSave = false;
+	const defaults = {
+		readme: 'Default entries for ' + _q(options.name) + '.',
+		[options.propName]: options.defaults
+	};
+	if (_isFile(options.defaultPreset)) {
+		const data = _jsonParseFileCheck(options.defaultPreset, 'Shortcuts json', scriptName, utf8);
+		if (data) {
+			if (!compareObjects(data, defaults)) {bSave = true;}
+		} else {bSave = true;}
+	} else {bSave = true;}
+	if (bSave) {_save(options.defaultPreset, JSON.stringify(defaults, null, '\t'));}
+}
+
+function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bImport, bDefaultFile}*/) {
 	const subMenuSecondName = menu.newMenu('Edit entries from list...', menuName);
 	const optionsNames = new Set();
 	options.list.forEach((entry, index) => {
@@ -225,6 +240,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName:, de
 		}
 		overwriteMenuProperties(); // Updates panel
 	}});
+	if (options.bDefaultFile) {createDefaultPreset(options);} // Write default file
 }
 
 function importPreset(path = folders.data + 'playlistTools_presets.json') {

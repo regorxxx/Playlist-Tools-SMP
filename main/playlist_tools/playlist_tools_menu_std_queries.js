@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//29/09/23
 
 // Standard Queries...
 {
@@ -113,8 +113,9 @@
 							list: queryFilter, 
 							propName: 'searchQueries', 
 							defaults: queryFilterDefaults, 
-							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\std_query_filter\\themes.json',
-							input : inputStdQuery
+							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\std_query_filter\\default.json',
+							input: inputStdQuery,
+							bDefaultFile: true
 						});
 					}
 				}});
