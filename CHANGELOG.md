@@ -51,6 +51,8 @@
 ### Added
 ### Changed
 - Helpers: updated helpers.
+- Pools: default presets have been changed for all 'Top tracks...' pools. Now instrumentals are only allowed for tracks with rating > 3 (see query below). Restore defaults in submenu to load updated presets.
+- Playlist Manipulation\Query filtering: new default preset added to filter instrumental tracks ('NOT (STYLE IS instrumental OR GENRE IS instrumental OR SPEECHNESS EQUAL 0 OR LANGUAGE IS zxx)').
 ### Removed
 ### Fixed
 
