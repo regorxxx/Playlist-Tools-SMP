@@ -50,6 +50,8 @@
 ## [Unreleased][]
 ### Added
 - Selection Manipulation\Select by query: equivalent to 'Playlist Manipulation\Query filtering' but selecting the tracks by query (instead of removing them). Not it also works with dynamic queries.
+- Last.fm: tag remapping is now available along customizable entries at buttons configuration menu.
+- Last.fm: added forced query to pre-filter library for all lookups. Greatly speedups the process of searching matches in library.
 ### Changed
 - Pools: default presets have been changed for all 'Top tracks...' pools. Now instrumentals are only allowed for tracks with rating > 3 (see query below). Restore defaults in submenu to load updated presets.
 - Playlist Manipulation\Query filtering: new default preset added to filter instrumental tracks ('NOT (STYLE IS instrumental OR GENRE IS instrumental OR SPEECHNESS EQUAL 0 OR LANGUAGE IS zxx)').
