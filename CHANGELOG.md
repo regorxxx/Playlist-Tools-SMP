@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.2.0](#320---2023-10-05)
 - [3.1.2](#312---2023-09-25)
 - [3.1.1](#311---2023-09-20)
 - [3.1.0](#310---2023-09-14)
@@ -49,6 +50,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.2.0] - 2023-10-05
+### Added
 - Selection Manipulation\Select by query: equivalent to 'Playlist Manipulation\Query filtering' but selecting the tracks by query (instead of removing them). Not it also works with dynamic queries.
 - Last.fm: tag remapping is now available along customizable entries at buttons configuration menu.
 - Last.fm: added forced query to pre-filter library for all lookups. Greatly speedups the process of searching matches in library.
@@ -58,9 +65,13 @@
 - Configuration: expanded user configurable files at '[FOOBAR PROFILE FOLDER]\js_data\presets\global' with new queries. File will be automatically updated with new values (maintaining the user settings).
 - Configuration: improved the user configurable files update check for missing keys.
 - Presets: all default menu entries are now saved as a file preset named 'default.json' for every tool at '.\presets\Playlist Tools\'. Importing them, when all entries have been removed, is equivalent to use 'Restore defaults' for that tool. Whenever a default entry is updated (for ex in future versions), the file is also updated. These entries may be used as example to create your own presets.
+- Search by Distance: changed default tag values, reset defaults at 'Configuration/Search by Distance/Tag remapping...' to apply.
 - Helpers: updated helpers.
 ### Removed
+- Search by Distance: tags cache menu entry on configuration submenu has been removed (the setting is still accessible via the properties panel).
+- Search by Distance: 'Create theme file with selected track' menu entry on configuration submenu has been removed. It has no use now on this tool.
 ### Fixed
+- Search by Distance: 'dynGenre' tag being configurable when it should have not been (along other virtual tags added).
 - UI: fix extra tab on Last.fm tools tooltip.
 
 ## [3.1.2] - 2023-09-25
@@ -1032,7 +1043,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.2...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.2...v3.2.0
 [3.1.2]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.0.1...v3.1.0
