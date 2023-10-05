@@ -138,6 +138,7 @@
 							menu.newEntry({menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
 								if (defaultArgs.bProfile) {var profiler = new FbProfiler('graphDebug');}
 								graphDebug(sbd.allMusicGraph, true); // Show popup on pass
+								music_graph_descriptors_culture.debug(sbd.allMusicGraph);
 								if (defaultArgs.bProfile) {profiler.Print();}
 							}});
 							// Graph test
@@ -160,18 +161,6 @@
 								cacheLinkSet = void(0);
 								updateCache({bForce: true, properties: menu_properties}); // Creates new one and also notifies other panels to discard their cache
 							}, flags: () => !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED});
-							// Tags cache reset Async
-							menu.newEntry({menuName: submenu, entryText: 'Reset tags cache' + (!isFoobarV2 ? '\t-only Fb >= 2.0-' : (sbd.panelProperties.bTagsCache[1] ?  '' : '\t -disabled-')), func: () => {
-								const tagsObj = JSON.parse(menu_properties.tags[1]);
-								const keys = Object.values(tagsObj).filter(t => !t.type.includes('virtual')).map(t => t.tf.filter(Boolean));
-								const tags = keys.concat([['TITLE']])
-									.map((tagName) => {return tagName.map((subTagName) => {return (subTagName.indexOf('$') === -1 ? '%' + subTagName + '%' : subTagName);});})
-									.map((tagName) => {return tagName.join(', ');}).filter(Boolean)
-									.filter((tagName) => {return tagsCache.cache.has(tagName);});
-								tagsCache.clear(tags);
-								tagsCache.save();
-								tagsCache.cacheTags(tags, iStepsLibrary, iDelayLibrary, fb.GetLibraryItems().Convert(), true);
-							}, flags: sbd.panelProperties.bTagsCache[1] ? MF_STRING : MF_GRAYED});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{
@@ -187,28 +176,36 @@
 									menu.newEntry({menuName: configMenuTag, entryText: 'sep'});
 									const configSubmenu = menu.newMenu(submenu + '...', configMenuTag);
 									options.forEach((key) => {
-										const value = tags[key].tf.join(',');
-										const entryText = capitalize(key) + '\t[' + (
+										const tag = tags[key];
+										const value = tag.tf.join(',');
+										const keyFormat = new Set(['dynGenre']).has(key)
+											? capitalize(key)
+											: capitalizeAll(key.replace(/(Genre|Style)/g,'/$1').replace(/(Region)/g,' $1'), [' ', '/', '\\']);
+										const entryText = keyFormat + '\t[' + (
 												typeof value === 'string' && value.length > 10 
 												? value.slice(0,10) + '...' 
 												: value
 											) + ']';
 										[configSubmenu, submenuTwo].forEach((sm) => {
-											menu.newEntry({menuName: sm, entryText, func: () => {
-												const example = '["GENRE","LASTFM_GENRE","GENRE2"]';
-												const input = Input.json('array strings', tags[key].tf, 'Enter tag(s) or TF expression(s): (JSON)\n\nFor example:\n' + example, 'Search by distance', example, void(0), true);
-												if (input === null) {return;}
-												if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
-												tags[key].tf = input;
-												menu_properties.tags[1] = JSON.stringify(tags);
-												overwriteMenuProperties(); // Updates panel
-												if (tags[key].type.includes('graph')) {
-													const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
-													if (answer === popup.yes) {
-														menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
+											if (!tag.type.includes('virtual') || tag.type.includes('tfRemap')) {
+												menu.newEntry({menuName: sm, entryText, func: () => {
+													const example = '["GENRE","LASTFM_GENRE","GENRE2"]';
+													const input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s): (JSON)\n\nFor example:\n' + example, 'Search by distance', example, void(0), true);
+													if (input === null) {return;}
+													if (defaultArgs.hasOwnProperty(key)) {defaultArgs[key] = input;}
+													tag.tf = input;
+													menu_properties.tags[1] = JSON.stringify(tags);
+													overwriteMenuProperties(); // Updates panel
+													if (tag.type.includes('graph')) {
+														const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
+														if (answer === popup.yes) {
+															menu.btn_up(void(0), void(0), void(0), 'Search by Distance\\Reset link cache');
+														}
 													}
-												}
-											}});
+												}});
+											} else {
+												menu.newEntry({menuName: sm, entryText: keyFormat + '\t[virtual]', flags: MF_GRAYED});
+											}
 										});
 									});
 									[configSubmenu, submenuTwo].forEach((sm) => {
@@ -268,37 +265,6 @@
 									});
 								}});
 							}
-						}
-						menu.newEntry({menuName: submenu, entryText: 'sep'});
-						{ // Create theme
-							menu.newEntry({menuName: submenu, entryText: 'Create theme file with selected track', func: () => {
-								// Tag names
-								const tags = JSON.parse(menu_properties.tags[1]);
-								const themeTagsKeys = Object.keys(tags).filter((k) => !tags[k].type.includes('virtual'));
-								const themeTagsTf = themeTagsKeys.map((k) => tags[k].tf.filter(Boolean));
-								// Retrieve values
-								const selHandleList = new FbMetadbHandleList(fb.GetFocusItem());
-								const themeTagsValues = themeTagsTf.map((tf) => getTagsValuesV3(selHandleList, tf, true).flat().filter(Boolean));
-								// Force data type
-								themeTagsKeys.forEach((key, i) => {
-									if (tags[key].type.includes('number')) {
-										themeTagsValues[i] = themeTagsValues[i].map((val) => Number(val)); 
-									}
-								});
-								// Tags obj
-								const themeTags = {};
-								themeTagsKeys.forEach((key, i) => {themeTags[key] = themeTagsValues[i];});
-								// Theme obj
-								let input = '';
-								try {input = utils.InputBox(window.ID, 'Enter theme name', scriptName + ': ' + configMenu, 'my theme', true);}
-								catch (e) {return;}
-								if (!input.length) {return;}
-								const theme = {name: input, tags: []};
-								theme.tags.push(themeTags);
-								const filePath = folders.xxx + 'presets\\Search by\\themes\\' + input + '.json';
-								const bDone = _save(filePath, JSON.stringify(theme, null, '\t'));
-								if (!bDone) {fb.ShowPopupMessage('Error saving theme file:' + filePath, scriptName + ': ' + name); return;}
-							}, flags: focusFlags});
 						}
 						menu.newEntry({menuName: submenu, entryText: 'sep'});
 						{ // Open descriptors
