@@ -59,6 +59,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- UI: fix extra tab on Last.fm tools tooltip.
 
 ## [3.1.2] - 2023-09-25
 ### Added

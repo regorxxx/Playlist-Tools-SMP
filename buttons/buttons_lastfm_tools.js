@@ -1,5 +1,5 @@
 'use strict';
-//29/07/23
+//05/10/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -105,7 +105,7 @@ addButton({
 			let info = '';
 			if (sel) {
 				let tfo = fb.TitleFormat(
-						'Current track:		' + _t(globTags.artist) + ' / %TRACK% - %TITLE%' +
+						'Current track:	'	+ _t(globTags.artist) + ' / %TRACK% - %TITLE%' +
 						'$crlf()Date:		' + _b(globTags.date) + 
 						'$crlf()Genres:		' + _b(_t(globTags.genre)) +  
 							// ['Album Genre AllMusic', 'Artist Genre AllMusic', 'Album Genre Wikipedia', 'Artist Genre Wikipedia'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ') +
