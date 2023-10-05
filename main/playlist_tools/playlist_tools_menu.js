@@ -395,7 +395,7 @@ function menuTooltip() {
 	let info = 'No track selected\nSome menus disabled';
 	if (sel) {
 		let tfo = fb.TitleFormat(
-				'Current track:	' + globTags.artist + ' / %TRACK% - %TITLE%' +
+				'Current track:	'	+ globTags.artist + ' / %TRACK% - %TITLE%' +
 				'$crlf()Date:		' + _b(globTags.date) +
 				'$crlf()Genres:		' + _b(_t(globTags.genre)) +
 				'$crlf()Styles:		' + _b(_t(globTags.style)) +
