@@ -1,5 +1,5 @@
 'use strict';
-//14/08/23
+//05/10/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -14,17 +14,14 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 	// Get current selection and metadata
 	const sel = this.sel || plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
 	const info = sel ? sel.GetFileInfo() : null;
-	const tags = [
-		{name: 'Artist top tracks', tf: ['ARTIST', 'ALBUM ARTIST'], val: [], valSet: new Set(), type: 'ARTIST'},
-		{name: 'Artist shuffle', tf: ['ARTIST', 'ALBUM ARTIST'], val: [], valSet: new Set(), type: 'ARTIST_RADIO'},
-		{name: 'Similar artists to', tf: ['ARTIST', 'ALBUM ARTIST'], val: [], valSet: new Set(), type: 'SIMILAR'},
-		{name: 'Similar artists', tf: ['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'], val: [], valSet: new Set(), type: 'ARTIST'},
-		// {name: 'Similar tracks', tf: ['TITLE', 'ARTIST', 'ALBUM'], val: [], valSet: new Set(), type: 'TITLE'},
-		{name: 'Album tracks', tf: ['ALBUM', 'ARTIST'], val: [], valSet: new Set(), type: 'ALBUM_TRACKS'},
-		{name: 'Genre & Style(s)', tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'], val: [], valSet: new Set(), type: 'TAG'},
-		{name: 'Folksonomy & Date(s)', tf: ['FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'], val: [], valSet: new Set(), type: 'TAG'},
-		{name: 'Mood & Theme(s)', tf: ['MOOD','THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'], val: [], valSet: new Set(), type: 'TAG'},
-	];
+	// Set tags for lookup and filter wrong values
+	const tags = (JSON.parse(this.buttonsProperties.tags[1]) || []).filter((tag) => {
+		return tag && tag.tf && tag.tf.length && tag.name.length && tag.type;
+	});
+	tags.forEach((tag) => {
+		tag.val = [];
+		tag.valSet = new Set();
+	});
 	if (info) {
 		tags.forEach((tag) => {
 			tag.tf.forEach((tf, i) => {

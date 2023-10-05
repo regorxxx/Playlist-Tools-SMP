@@ -7,7 +7,9 @@
 
 include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\buttons_xxx.js');
+include('..\\helpers\\helpers_xxx_input.js');
 include('..\\helpers\\helpers_xxx_properties.js');
+include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\main\\last_list\\last_list.js');
 include('..\\main\\last_list\\last_list_menu.js');
 include('..\\main\\bio\\bio_tags.js');
@@ -26,6 +28,18 @@ var newButtonsProperties = { //You can simply add new properties here
 	bBioTags:		['Use tags from Bio panel?', false, {func: isBoolean}, false],
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false],
 	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false],
+	forcedQuery: 	['Forced query to pre-filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
+	tags: 			['Tags remap for lookups', JSON.stringify([
+		{name: 'Artist top tracks',		tf: ['ARTIST', 'ALBUM ARTIST'], type: 'ARTIST'},
+		{name: 'Artist shuffle',		tf: ['ARTIST', 'ALBUM ARTIST'], type: 'ARTIST_RADIO'},
+		{name: 'Similar artists to',	tf: ['ARTIST', 'ALBUM ARTIST'], type: 'SIMILAR'},
+		{name: 'Similar artists',		tf: ['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'], type: 'ARTIST'},
+		// {name: 'Similar tracks',		tf: ['TITLE', 'ARTIST', 'ALBUM'], type: 'TITLE'},
+		{name: 'Album tracks',			tf: ['ALBUM', 'ARTIST'], type: 'ALBUM_TRACKS'},
+		{name: 'Genre & Style(s)',		tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'], type: 'TAG'},
+		{name: 'Folksonomy & Date(s)',	tf: ['FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'], type: 'TAG'},
+		{name: 'Mood & Theme(s)',	tf: ['MOOD','THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'], type: 'TAG'},
+	])],
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -73,6 +87,23 @@ addButton({
 								});
 							} else {deleteMainMenuDynamic('Last.fm Tools');}
 						}
+					},
+					(menu) => { // Append this menu entries to the config menu
+						const menuName = menu.getMainMenuName();
+						menu.newEntry({menuName: menu.getMainMenuName(), entryText: 'sep'});
+						const subMenuName = menu.newMenu('Tag remap...', menuName);
+						menu.newEntry({menuName: subMenuName, entryText: 'Available entries:', flags: MF_GRAYED});
+						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
+						const tags = JSON.parse(properties.tags[1]);
+						tags.forEach((tag) => {
+							menu.newEntry({menuName: subMenuName, entryText: tag.name + (tag.tf && tag.tf.length ? '' : '\t-disabled-'), func: () => {
+								const input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s):\n(JSON)\n\nSetting it to [] will disable the menu entry.', 'Last.fm Tools', '["ARTIST","ALBUM ARTIST"]', void(0), true);
+								if (input === null) {return;}
+								tag.tf = input;
+								properties.tags[1] = JSON.stringify(tags);
+								overwriteProperties(properties);
+							}});
+						});
 					}
 				).btn_up(this.currX, this.currY + this.currH);
 			} else {
