@@ -1,5 +1,5 @@
 'use strict';
-//25/05/23
+//05/10/23
 
 /* 
 	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp 
@@ -17,14 +17,15 @@ include('last_list_cache.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes_smp.js');
 
 class LastList {
-	constructor({ url = '', pages = 1, playlistName = 'Last List', cacheTime = 86400000 } = {}) {
+	constructor({ url = '', pages = 1, playlistName = 'Last List', cacheTime = 86400000, forcedQuery = ''} = {}) {
 		this.url = url;
 		this.pages = pages;
 		this.playlistName = playlistName;
 		this.cacheTime = cacheTime;
+		this.forcedQuery = forcedQuery;
 	}
 
-	run({ url = this.url, pages = this.pages, playlistName = this.playlistName, cacheTime = this.cacheTime } = {}) {
+	run({url = this.url, pages = this.pages, playlistName = this.playlistName, cacheTime = this.cacheTime, forcedQuery = this.forcedQuery} = {}) {
 		try { // In case an argument is set to null or '', the default value at constructor is used
 			if (!url) {
 				try {
@@ -78,7 +79,7 @@ class LastList {
 				}
 			}
 			this.url = url; // Cache
-			return this.scrapeUrl(url, startPage, pages, playlistName, cacheTime);
+			return this.scrapeUrl(url, startPage, pages, playlistName, cacheTime, forcedQuery);
 		} catch (e) {
 			if (e instanceof InputError) {
 				// do nothing
@@ -94,10 +95,15 @@ class LastList {
 		console.log('Last List: ' + msg);
 	};
 
-	scrapeUrl(url, startPage, pages, playlistName, cacheTime) {
+	scrapeUrl(url, startPage, pages, playlistName, cacheTime, forcedQuery = '') {
 		// create an index of the library
 		let indexedLibrary = {};
-		fb.GetLibraryItems().Convert().every((item) => {
+		let libItems;
+		if (forcedQuery.length) {
+			try {libItems = fb.GetQueryItems(fb.GetLibraryItems(), forcedQuery).Convert();} // Sanity check
+			catch (e) {libItems = fb.GetLibraryItems().Convert();}
+		} else {libItems = fb.GetLibraryItems().Convert();}
+		libItems.every((item) => {
 			let fileInfo = item.GetFileInfo();
 			const titleIdx = fileInfo.MetaFind('TITLE');
 			const artistIdx = fileInfo.MetaFind('ARTIST');

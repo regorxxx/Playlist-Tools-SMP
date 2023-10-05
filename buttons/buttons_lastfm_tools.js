@@ -158,7 +158,7 @@ addButton({
 			}
 			return info;
 		}, prefix, newButtonsProperties, chars.lastFm, void(0),
-		{lastList: new LastList(), bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
+		{lastList: new LastList({forcedQuery: newButtonsProperties.forcedQuery[1]}), bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
 		lastfmListeners,
 		(parent) => {
 			// Create dynamic menus
