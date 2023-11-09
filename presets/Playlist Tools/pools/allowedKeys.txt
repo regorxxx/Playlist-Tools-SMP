@@ -64,6 +64,10 @@
 |                 |        |  _GROUP_# sources) |                     |
 | limit           | Number | Pair source-number | Number (per source) |
 +-----------------+--------+--------------------+---------------------+
+|                 |        | (optional for all  |                     |
+|                 |        |  sources)          | Array of TF/Tags    |
+| deDuplicate     | String | Pair source-array  | (per source)        |
++-----------------+--------+--------------------+---------------------+
 |                 |        | (required for all  |                     |
 |                 |        |  _SEARCHBY..._#    | JSON filename       |
 |                 |        |  sources)          | Recipe object       |
