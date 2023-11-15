@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//15/11/23
 
 function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuName, list, defaults, input, bAdd, bNumbered, bDuplicate, onBtnUp}*/) {
 	/*
@@ -45,7 +45,7 @@ function _createSubMenuEditEntries(parent, menuName, options /*{name, subMenuNam
 			options.list[index] = newEntry;
 			if (options.onBtnUp) {options.onBtnUp(options.list);}
 			return options.list;
-		}});
+		}, flags: entry.name === 'sep' ? MF_GRAYED : MF_STRING});
 		parent.newEntry({menuName: subMenuThirdName, entryText: 'Move entry...', func: () => {
 			let pos = 1;
 			try {pos = Number(utils.InputBox(window.ID, 'Move up X indexes (negative is down):\n', options.name, pos, true));} 

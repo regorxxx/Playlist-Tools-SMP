@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/09/23
+//15/11/23
 
 /*
 	Helpers
@@ -157,14 +157,16 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			menu_properties[options.propName][1] = JSON.stringify(options.list);
 			// Presets
 			if (presets.hasOwnProperty(options.propName)) {
-				const presetIdx = presets[options.propName].findIndex((obj) => {return JSON.stringify(obj) === JSON.stringify(oriEntry);});
+				const presetIdxJSON = presets[options.propName].findIndex((obj) => {return JSON.stringify(obj) === oriEntry;});
+				const presetIdxName = presetIdxJSON === -1 ? presets[options.propName].findIndex((obj) => {return obj.name === entry.name;}) : -1;
+				const presetIdx = presetIdxJSON !== -1 ? presetIdxJSON : presetIdxName; // Harden against manual changes since name is unique
 				if (presetIdx !== -1) {
 					presets[options.propName][presetIdx] = newEntry;
 					menu_properties.presets[1] = JSON.stringify(presets);
 				}
 			}
 			overwriteMenuProperties(); // Updates panel
-		}});
+		}, flags: entry.name === 'sep' ? MF_GRAYED : MF_STRING});
 		menu.newEntry({menuName: subMenuThirdName, entryText: 'Move entry...', func: () => {
 			let pos = 1;
 			try {pos = Number(utils.InputBox(window.ID, 'Move up X indexes (negative is down):\n', scriptName + ': ' + options.name, pos, true));} 
@@ -225,9 +227,22 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 		}});
 	}
 	if (!options.hasOwnProperty('bImport') || options.bImport) {
+		menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 		menu.newEntry({menuName: subMenuSecondName, entryText: 'Import preset...', func: () => {
 			importPreset(options.defaultPreset);
 		}});
+		menu.newEntry({menuName: subMenuSecondName, entryText: 'Export preset...', func: () => {
+			const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries.', 0, scriptName + ': ' + options.name, popup.question + popup.yes_no);
+			if (answer === popup.yes) {
+				const path = folders.data + options.propName + '_presets.json'
+				_recycleFile(path);
+				const readme = 'Backup ' + new Date().toString();
+				if (_save(path, JSON.stringify({readme, [options.propName]: presets[options.propName]}, null, '\t'))) {
+					_explorer(path);
+					console.log('Playlist tools: presets backup saved at ' + path);
+				}
+			}
+		}, flags: presets.hasOwnProperty(options.propName) && presets[options.propName].length > 0 ? MF_STRING : MF_GRAYED});
 	}
 	menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 	menu.newEntry({menuName: subMenuSecondName, entryText: 'Restore defaults...', func: () => {
