@@ -1,0 +1,52 @@
+{
+	"readme": "Pool with no duplicates by artist - title",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Stoner Girls",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 10,
+				"_GROUP_1": 10,
+				"_GROUP_2": 20
+			},
+			"group": {
+				"_GROUP_0": "%ARTIST%",
+				"_GROUP_1": "%ARTIST%",
+				"_GROUP_2": "%ARTIST%"
+			},
+			"deDuplicate": {
+				"_GROUP_0": [
+					"%ARTIST%",
+					"%TITLE%"
+				],
+				"_GROUP_1": [
+					"%ARTIST%",
+					"%TITLE%"
+				],
+				"_GROUP_2": [
+					"%ARTIST%",
+					"%TITLE%"
+				]
+			},
+			"limit": {
+				"_GROUP_0": 5,
+				"_GROUP_1": 5,
+				"_GROUP_2": 5
+			},
+			"query": {
+				"_GROUP_0": "(STYLE IS Stoner Rock OR STYLE IS Doom Metal OR STYLE IS Garage Rock Revival OR STYLE IS Black Metal OR STYLE IS Post-Rock OR STYLE IS Stoner Sludge) AND STYLE IS Female Vocal AND NOT STYLE IS Live AND %RATING% IS 5",
+				"_GROUP_1": "(STYLE IS Stoner Rock OR STYLE IS Doom Metal OR STYLE IS Black Metal OR STYLE IS Post-Rock OR STYLE IS Stoner Sludge) AND STYLE IS Female Vocal AND NOT STYLE IS Live AND %RATING% IS 3",
+				"_GROUP_2": "(STYLE IS Stoner Rock OR STYLE IS Doom Metal OR STYLE IS Black Metal OR STYLE IS Post-Rock OR STYLE IS Stoner Sludge) AND STYLE IS Female Vocal AND NOT STYLE IS Live AND %RATING% GREATER 3"
+			},
+			"toPls": "Stoner Girls",
+			"sort": "",
+			"pickMethod": {
+				"_GROUP_0": "random",
+				"_GROUP_1": "random",
+				"_GROUP_2": "random"
+			}
+		}
+	}]
+}

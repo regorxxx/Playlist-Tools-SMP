@@ -1,0 +1,34 @@
+{
+	"readme": "Uses 3 artists as sources and inserts randomly chosen tracks in order intercalating them.\nModify the preset substituting the artist names as needed.",
+	"pools": [{
+		"name": "sep"
+	},
+	{
+		"name": "Intercalate albums",
+		"pool": {
+			"fromPls": {
+				"_GROUP_0": 20,
+				"_GROUP_1": 20,
+				"_GROUP_2": 20
+			},
+			"group": {
+				"_GROUP_0": "ALBUM",
+				"_GROUP_1": "ALBUM",
+				"_GROUP_2": "ALBUM"
+			},
+			"query": {
+				"_GROUP_0": "RATING IS 5",
+				"_GROUP_1": "RATING IS 4",
+				"_GROUP_2": "RATING IS 3"
+			},
+			"toPls": "Albums by rating",
+			"sort": "%PLAYLIST_INDEX%",
+			"pickMethod": {
+				"_GROUP_0": "random",
+				"_GROUP_1": "random",
+				"_GROUP_2": "random"
+			},
+			"insertMethod": "intercalate"
+		}
+	}]
+}
