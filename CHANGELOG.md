@@ -70,6 +70,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Quickmatch: crash without Last.fm tools button also loaded.
 
 ## [3.2.0] - 2023-10-05
 ### Added
