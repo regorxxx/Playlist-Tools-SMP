@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.3.0](#330---2023-11-15)
 - [3.2.0](#320---2023-10-05)
 - [3.1.2](#312---2023-09-25)
 - [3.1.1](#311---2023-09-20)
@@ -49,6 +50,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.3.0] - 2023-11-15
 ### Added
 - Auto-update: added -optional- automatic checks for updates on script load; enabled by default. Compares version of current file against GitHub repository. Manual checking can also be found at the settings menu. For buttons within the toolbar every button will check for updates independently (although the toolbar menu has an entry for batch checking). Setting may also be globally switched at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json', by changing 'bAutoUpdateCheck'. It will apply by default to any new installed script (previous scripts will still need to be manually configured to change them).
 - Pools: new 'deDuplicate' option for pools which filters the group by TF and against the rest of the tracks already picked, to ensure there are zero duplicates -tracks with same TF result- (within the group and at the final playlist). For ex. for groups defined by '%ARTIST%', X tracks per artist would be retrieved. The standard duplicates removal procedure would check for tracks with same title, artist and date. But is possible to have a track and a live track from another year, which may be undesirable. Setting 'deDuplicate' to '[%ARTIST%,%TITLE%]' would also ensure that within a group of same artist, no 2 tracks have the same title. Note that's different to define a group by '%ARTIST%-%TITLE%', which does not ensure X track per artist (you could have 10 tracks from Artist A and 2 from Artist B as long as their titles are different). Check '.\presets\Playlist Tools\pools\allowedKeys.txt' for usage and examples.
@@ -1053,7 +1060,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.2.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.2...v3.2.0
 [3.1.2]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.0...v3.1.1
