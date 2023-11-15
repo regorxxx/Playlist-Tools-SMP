@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/08/23
+//15/11/23
 
 /* 
 	Quickmatch same....
@@ -13,9 +13,11 @@ include('..\\helpers\\buttons_xxx_menu.js');
 include('..\\helpers\\menu_xxx_extras.js');
 include('..\\main\\filter_and_query\\dynamic_query.js');
 include('..\\main\\main_menu\\main_menu_custom.js');
+include('..\\main\\bio\\bio_tags.js');
 var prefix = 'qm';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
-try {window.DefineScript('Quickmatch button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Quickmatch Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Quickmatch button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Quickmatch Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -108,6 +110,7 @@ addButton({
 		}, '', newButtonsProperties, chars.search, void(0),
 		{bioSelectionMode: 'Prefer nowplaying', bioTags: {}},
 		lastfmListeners,
+		void(0), {scriptName: 'Playlist-Tools-SMP', version}
 	),
 });
 

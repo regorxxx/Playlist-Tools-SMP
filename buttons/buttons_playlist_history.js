@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/23
+//15/11/23
 
 /* 
 	Playlist History
@@ -10,8 +10,9 @@
 include('..\\helpers\\buttons_xxx.js'); 
 include('..\\helpers\\playlist_history.js');
 var prefix = 'ph';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
-try {window.DefineScript('Playlist Tools History', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools History Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Playlist Tools History', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools History Button loaded.'); */} //May be loaded along other buttons
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
@@ -36,5 +37,5 @@ addButton({
 			(typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1] 
 				? '\n-----------------------------------------------------\n(Shift + L. Click to see entire history)' 
 				: '');
-	}, prefix, newButtonsProperties, chars.history, void(0), {plsHistory: new PlsHistory()})
+	}, prefix, newButtonsProperties, chars.history, void(0), {plsHistory: new PlsHistory()}, void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version})
 });

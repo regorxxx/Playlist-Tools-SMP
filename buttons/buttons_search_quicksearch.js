@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/07/23
+//15/11/23
 
 /* 
 	Quicksearch for same....
@@ -14,8 +14,9 @@ include('..\\helpers\\menu_xxx_extras.js');
 include('..\\main\\filter_and_query\\dynamic_query.js');
 include('..\\main\\main_menu\\main_menu_custom.js');
 var prefix = 'qs';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
-try {window.DefineScript('Quicksearch button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Quicksearch Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Quicksearch button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Quicksearch Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -145,7 +146,7 @@ addButton({
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
-	}, '', newButtonsProperties, chars.search),
+	}, '', newButtonsProperties, chars.search, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
 });
 
 function quickSearchMenu({bSimulate = false} = {}) {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/04/23
+//15/11/23
 
 /* 
 	Search same by v 1.0 24/08/22
@@ -68,8 +68,9 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ssbytc';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
  
-try {window.DefineScript('Search Same By Tags (Combinations) Button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Search Same By Tags (Combinations) Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -106,5 +107,5 @@ addButton({
 			info += '\n(Shift + L. Click to open config menu)';
 		}
 		return info;
-	}, prefix, newButtonsProperties, chars.searchPlus),
+	}, prefix, newButtonsProperties, chars.searchPlus, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
 });

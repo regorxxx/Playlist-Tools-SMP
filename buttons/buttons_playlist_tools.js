@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/04/23
+//15/11/23
 
 /* 
 	Playlist Tools Menu
@@ -10,9 +10,11 @@
 
 	NOTE: 'on_mouse_lbtn_up(x, y)' is simply replaced with a button to call the menu.
  */
+ 
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
-try {window.DefineScript('Playlist Tools: Button', {author:'XXX', version: '3.0.0-beta.16', features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Playlist Tools: Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
 
 {
 	const dependencies = [
@@ -56,5 +58,5 @@ addButton({
 		} else { // Standard use
 			menu.btn_up(this.currX, this.currY + this.currH);
 		}
-	}, null, void(0), menuTooltip, prefix, newButtonsProperties, chars.wrench),
+	}, null, void(0), menuTooltip, prefix, newButtonsProperties, chars.wrench, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
 });

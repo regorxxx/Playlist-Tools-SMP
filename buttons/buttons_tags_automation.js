@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/04/23
+//15/11/23
 
 /* 
 	Automatic tagging...
@@ -16,8 +16,9 @@ include('..\\helpers\\menu_xxx.js');
 include('..\\main\\tags\\tags_automation.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'ta';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
-try {window.DefineScript('Automate Tags', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Automate Tags Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Automate Tags', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Automate Tags Button loaded.'); */} //May be loaded along other buttons
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
@@ -125,7 +126,7 @@ buttonsBar.list.push(newButtonsProperties);
 				info += parent.tAut.isRunning() ? '\n(Shift + L. Click to force next step)' : '\n(Shift + L. Click to directly run on selection)';
 			}
 			return info;
-		}, prefix, newButtonsProperties, chars.tags),
+		}, prefix, newButtonsProperties, chars.tags, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
 	};
 	newButton['Automate Tags'].tAut = new tagAutomation(JSON.parse(newButtonsProperties.toolsByKey[1]), void(0), void(0), newButtonsProperties.bWineBug[1]);
 

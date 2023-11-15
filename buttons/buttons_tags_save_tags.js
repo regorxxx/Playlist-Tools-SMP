@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/23
+//15/11/23
 
 /* 
 	-> EDIT
@@ -9,8 +9,9 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\tags\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'st_';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
  
-try {window.DefineScript('Save tags button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Save tags button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { //You can simply add new properties here
@@ -47,5 +48,5 @@ addButton({
 		catch (e) {return;}
 		if (!selItemsFolder.length) {return;}
 		compareTags({toTags, toTagsFolder, selItemsFolder});
-	}, null, void(0),'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.', prefix, newButtonsProperties, chars.exchange),
+	}, null, void(0),'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.', prefix, newButtonsProperties, chars.exchange, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
 });

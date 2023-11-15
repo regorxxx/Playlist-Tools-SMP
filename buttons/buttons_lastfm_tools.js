@@ -1,5 +1,5 @@
 'use strict';
-//05/10/23
+//15/11/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -14,8 +14,9 @@ include('..\\main\\last_list\\last_list.js');
 include('..\\main\\last_list\\last_list_menu.js');
 include('..\\main\\bio\\bio_tags.js');
 var prefix = 'lfm';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
-try {window.DefineScript('Last.fm Tools Button', {author:'xxx', features: {drag_n_drop: false}});} catch (e) {/* console.log('Last.fm Tools Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Last.fm Tools Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Last.fm Tools Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { //You can simply add new properties here
@@ -173,6 +174,7 @@ addButton({
 					}
 				});
 			}
-		}
+		},
+		{scriptName: 'Playlist-Tools-SMP', version}
 	),
 });

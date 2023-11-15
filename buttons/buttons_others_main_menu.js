@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/03/23
+//15/11/23
 
 /* 
 	Main Menu shortcut
@@ -16,8 +16,9 @@ include('..\\helpers\\helpers_xxx_input.js');
 include('..\\helpers\\menu_xxx.js');
 include('..\\helpers\\menu_xxx_extras.js');
 var prefix = 'mms';
+var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
 
-try {window.DefineScript('Main Menu Shortcut Button', {author:'XXX', version: '1.0.0', features: {drag_n_drop: false}});} catch (e) {/* console.log('Main Menu Shortcut Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Main Menu Shortcut Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Main Menu Shortcut Button loaded.'); */} //May be loaded along other buttons
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
@@ -275,7 +276,8 @@ buttonsBar.list.push(newButtonsProperties);
 			}
 			parent.buttonsProperties.state[1] = parent.active;
 			overwriteProperties(parent.buttonsProperties);
-		}
+		},
+		{scriptName: 'Playlist-Tools-SMP', version}
 	)};
 	addButton(newButton);
 }
