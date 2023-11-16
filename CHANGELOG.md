@@ -52,6 +52,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Buttons bar: transparency input popup now has a description for the values.
 ### Removed
 ### Fixed
 
