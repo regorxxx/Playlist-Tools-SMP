@@ -55,6 +55,7 @@
 - Buttons bar: transparency input popup now has a description for the values.
 ### Removed
 ### Fixed
+- Buttons bar: border setting was grayed out when the buttons color had been set.
 
 ## [3.3.0] - 2023-11-15
 ### Added
