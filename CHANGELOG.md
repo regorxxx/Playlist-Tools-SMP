@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.3.1](#331---2023-11-16)
 - [3.3.0](#330---2023-11-15)
 - [3.2.0](#320---2023-10-05)
 - [3.1.2](#312---2023-09-25)
@@ -50,6 +51,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.3.1] - 2023-11-16
 ### Added
 ### Changed
 - Buttons bar: transparency input popup now has a description for the values.
@@ -1066,7 +1073,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.1...HEAD
+[3.3.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.2...v3.2.0
 [3.1.2]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.1...v3.1.2
