@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//19/11/23
 
 /* 
 	Automatic tagging...
@@ -23,9 +23,11 @@ try {window.DefineScript('Automate Tags', {author:'regorxxx', version, features:
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = {	//You can simply add new properties here
-	toolsByKey:	['Tools enabled', JSON.stringify(new tagAutomation(void(0), false, true))],
-	bIconMode:	['Icon-only mode?', false, {func: isBoolean}, false],
-	bWineBug:	['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, {func: isBoolean}, !soFeat.x64 && !soFeat.popup]
+	toolsByKey:		['Tools enabled', JSON.stringify(new tagAutomation({bOutputDefTools: true}))],
+	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false],
+	bWineBug:		['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, {func: isBoolean}, !soFeat.x64 && !soFeat.popup],
+	bFormatPopups:	['Show format warning popups', true, {func: isBoolean}, true],
+	bToolPopups:	['Show tool warning popups', true, {func: isBoolean}, true],
 };
 newButtonsProperties.toolsByKey.push({func: isJSON}, newButtonsProperties.toolsByKey[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
@@ -54,62 +56,79 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({entryText: () => {return 'Manually force next step' + (this.tAut.isRunning() ? '' : ' (not running)');}, func: this.tAut.nextStepTag, flags: firedFlags});
 				menu.newEntry({entryText: () => {return 'Stop execution' + (this.tAut.isRunning() ? '' : ' (not running)');}, func: this.tAut.stopStepTag, flags: firedFlags});
 				menu.newEntry({entryText: 'sep'});
-				const subMenuTools = menu.newMenu('Available tools...', void(0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
-				menu.newEntry({menuName: subMenuTools, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED});
-				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
-				this.tAut.tools.forEach((tool) => {
-					const key = tool.key;
-					const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
-					menu.newEntry({menuName: subMenuTools, entryText: tool.title, func: () => {
-						// Disable all other tools when pressing shift
-						if (utils.IsKeyPressed(VK_SHIFT)) {
-							this.tAut.tools.filter((_) => {return _.key !== key}).forEach((_) => {this.tAut.toolsByKey[_.key] = false;});
-							this.tAut.toolsByKey[key] = true;
-						} else {
-							this.tAut.toolsByKey[key] = !this.tAut.toolsByKey[key];
-							// Warn about incompatible tools
-							if (this.tAut.toolsByKey[key]) {
-								if (this.tAut.incompatibleTools.has(key)) {
-									const toDisable = this.tAut.incompatibleTools.get(key);
-									if (this.tAut.toolsByKey[toDisable]) {
-										this.tAut.toolsByKey[toDisable] = false; 
-										console.popup(this.tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+				{
+					const subMenu = menu.newMenu('Available tools...', void(0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
+					menu.newEntry({menuName: subMenu, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenu, entryText: 'sep'});
+					this.tAut.tools.forEach((tool) => {
+						const key = tool.key;
+						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
+						menu.newEntry({menuName: subMenu, entryText: tool.title, func: () => {
+							// Disable all other tools when pressing shift
+							if (utils.IsKeyPressed(VK_SHIFT)) {
+								this.tAut.tools.filter((_) => {return _.key !== key}).forEach((_) => {this.tAut.toolsByKey[_.key] = false;});
+								this.tAut.toolsByKey[key] = true;
+							} else {
+								this.tAut.toolsByKey[key] = !this.tAut.toolsByKey[key];
+								// Warn about incompatible tools
+								if (this.tAut.toolsByKey[key]) {
+									if (this.tAut.incompatibleTools.has(key)) {
+										const toDisable = this.tAut.incompatibleTools.get(key);
+										if (this.tAut.toolsByKey[toDisable]) {
+											this.tAut.toolsByKey[toDisable] = false; 
+											console.popup(this.tAut.titlesByKey[toDisable] + ' has been disabled.', 'Tags Automation');
+										}
 									}
 								}
 							}
-						}
-						// Save
-						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
-						overwriteProperties(this.buttonsProperties); // Force overwriting
-						this.tAut.loadDependencies();
-					}, flags});
-					menu.newCheckMenu(subMenuTools, tool.title, void(0), () => {return this.tAut.toolsByKey[key];});
-				});
-				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
-				menu.newEntry({menuName: subMenuTools, entryText: 'Wine ffmpeg bug workaround?', func: () => {
-					this.buttonsProperties.bWineBug[1] = !this.buttonsProperties.bWineBug[1];
-					this.tAut.bWineBug = this.buttonsProperties.bWineBug[1];
-					overwriteProperties(this.buttonsProperties); // Force overwriting
-				}});
-				menu.newCheckMenu(subMenuTools, 'Wine ffmpeg bug workaround?', void(0), () => {return this.buttonsProperties.bWineBug[1];});
-				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
-				['Enable all', 'Disable all'].forEach((entryText, i) => {
-					menu.newEntry({menuName: subMenuTools, entryText, func: () => {
-						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault ? true : false;});
+							// Save
+							this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+							this.tAut.loadDependencies();
+						}, flags});
+						menu.newCheckMenu(subMenu, tool.title, void(0), () => {return this.tAut.toolsByKey[key];});
+					});
+					menu.newEntry({menuName: subMenu, entryText: 'sep'});
+					['Enable all', 'Disable all'].forEach((entryText, i) => {
+						menu.newEntry({menuName: subMenu, entryText, func: () => {
+							this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault ? true : false;});
+							this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
+							this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+							this.tAut.loadDependencies();
+						}});
+					});
+					menu.newEntry({menuName: subMenu, entryText: 'sep'});
+					menu.newEntry({menuName: subMenu, entryText: 'Invert selected tools', func: () => {
+						this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = tool.bAvailable ? !this.tAut.toolsByKey[tool.key] : false;});
 						this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
 						this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 						overwriteProperties(this.buttonsProperties); // Force overwriting
 						this.tAut.loadDependencies();
 					}});
-				});
-				menu.newEntry({menuName: subMenuTools, entryText: 'sep'});
-				menu.newEntry({menuName: subMenuTools, entryText: 'Invert selected tools', func: () => {
-					this.tAut.tools.forEach((tool) => {this.tAut.toolsByKey[tool.key] = tool.bAvailable ? !this.tAut.toolsByKey[tool.key] : false;});
-					this.tAut.incompatibleTools.uniValues().forEach((tool) => {this.tAut.toolsByKey[tool] = false;});
-					this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
-					overwriteProperties(this.buttonsProperties); // Force overwriting
-					this.tAut.loadDependencies();
-				}});
+				}
+				menu.newEntry({entryText: 'sep'});
+				{
+					const subMenu = menu.newMenu('Settings...', void(0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
+					menu.newEntry({menuName: subMenu, entryText: 'Wine ffmpeg bug workaround', func: () => {
+						this.buttonsProperties.bWineBug[1] = !this.buttonsProperties.bWineBug[1];
+						this.tAut.bWineBug = this.buttonsProperties.bWineBug[1];
+						overwriteProperties(this.buttonsProperties); // Force overwriting
+					}});
+					menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void(0), () => {return this.buttonsProperties.bWineBug[1];});
+					menu.newEntry({menuName: subMenu, entryText: 'Show format warnings popups', func: () => {
+						this.buttonsProperties.bFormatPopups[1] = !this.buttonsProperties.bFormatPopups[1];
+						this.tAut.bFormatPopups = this.buttonsProperties.bFormatPopups[1];
+						overwriteProperties(this.buttonsProperties); // Force overwriting
+					}});
+					menu.newCheckMenu(subMenu, 'Show format warnings popups', void(0), () => {return this.buttonsProperties.bFormatPopups[1];});
+					menu.newEntry({menuName: subMenu, entryText: 'Show tool tips popups', func: () => {
+						this.buttonsProperties.bToolPopups[1] = !this.buttonsProperties.bToolPopups[1];
+						this.tAut.bToolPopups = this.buttonsProperties.bToolPopups[1];
+						overwriteProperties(this.buttonsProperties); // Force overwriting
+					}});
+					menu.newCheckMenu(subMenu, 'Show tool tips popups', void(0), () => {return this.buttonsProperties.bToolPopups[1];});
+				}
 				menu.btn_up(this.currX, this.currY + this.currH);
 			}
 		}, null, void(0), (parent) => {
@@ -128,7 +147,12 @@ buttonsBar.list.push(newButtonsProperties);
 			return info;
 		}, prefix, newButtonsProperties, chars.tags, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
 	};
-	newButton['Automate Tags'].tAut = new tagAutomation(JSON.parse(newButtonsProperties.toolsByKey[1]), void(0), void(0), newButtonsProperties.bWineBug[1]);
+	newButton['Automate Tags'].tAut = new tagAutomation({
+		toolsByKey: JSON.parse(newButtonsProperties.toolsByKey[1]), 
+		bWineBug: newButtonsProperties.bWineBug[1],
+		bFormatPopups: newButtonsProperties.bFormatPopups[1],
+		bToolPopups: newButtonsProperties.bToolPopups[1]
+	});
 
 	addButton(newButton);
 }

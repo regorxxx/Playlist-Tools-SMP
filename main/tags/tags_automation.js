@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/04/23
+//19/11/23
 
 /* 
 	Automatic tagging...
@@ -13,7 +13,14 @@
 
 include('..\\..\\helpers\\helpers_xxx.js');
 
-function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/, bOutputTools = false, bOutputDefTools = false, bWineBug = false) {
+function tagAutomation({
+	toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/, 
+	bOutputTools = false, 
+	bOutputDefTools = false,
+	bWineBug = false,
+	bFormatPopups = true,
+	bToolPopups = true,
+} = {}) {
 	this.selItems = null;
 	this.selItemsByCheck = {
 		subSong: {present: null, missing: null, num: null},
@@ -97,7 +104,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 	
 	this.run = () => {
 		// Usage tips
-		if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
+		if (this.bToolPopups && (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA)) {
 			if (this.toolsByKey.ffmpegLRA) {
 				console.popup('ffmpeg is being used to calculate LRA tag, along Essentia (full extractor) for other tag(s); in such case it\'s recommended to disable ffmpeg and retrieve the LRA tag with Essentia too.\n\nCalculation time will decrease since Essentia computes all low level data even when retrieving only a single tag, thus skipping an additional step with ffmpeg.', 'Tags Automation');
 			}
@@ -141,7 +148,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					const notAllowedTools = this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean);
 					this.check.subSong = this.check.subSong && notAllowedTools.length;
 					if (this.check.subSong) {
-						console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (%' + globTags.key + '%, %LRA%, %DACENESS%, %' + globTags.bpm + '%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
+						bFormatPopups && console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (%' + globTags.key + '%, %LRA%, %DACENESS%, %' + globTags.bpm + '%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 						// Remove old tags
 						{	// Update problematic tracks with safe tools
 							this.selItemsByCheck.subSong.present = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return handle.SubSong !== 0;}));
@@ -172,7 +179,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 					const notAllowedTools = this.tools.map((tool) => {return this.toolsByKey[tool.key] && this.notAllowedTools.has(tool.key) ? tool.title : null;}).flat(Infinity).filter(Boolean);
 					this.check.md5 = this.check.md5 && notAllowedTools.length;
 					if (this.check.md5) {
-						console.popup('Some of the selected tracks are encoded in a format with no MD5 support.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', '), 'Tags Automation');
+						bFormatPopups && console.popup('Some of the selected tracks are encoded in a format with no MD5 support.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', '), 'Tags Automation');
 						// Remove old tags
 						{	// Update problematic tracks with safe tools
 							this.selItemsByCheck.md5.present = new FbMetadbHandleList(this.selItems.Clone().Convert().filter((handle) => {return !md5TF.EvalWithMetadb(handle).length;}));
@@ -325,7 +332,7 @@ function tagAutomation(toolsByKey = null /*{biometric: true, chromaPrint: true, 
 				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
-					const cacheSelItemsNoSubSong = this.selItemsNoSubSong;
+					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
 					const bSubSong = this.check.subSong;
 					if (this.toolsByKey.audioMd5) {
 						setTimeout(function(){
