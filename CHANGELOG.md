@@ -52,9 +52,13 @@
 
 ## [Unreleased][]
 ### Added
+- Other tools\Write Tags: new setting to disable popups about file format/tools compatibility.
+- Other tools\Write Tags: new setting to disable popups about tool tips.
+- Buttons bar: new setting to enable asynchronous loading of buttons, now the default behavior.
 ### Changed
 ### Removed
 ### Fixed
+- Other tools\Write Tags: crash when running Audio MD5 tool on iso files.
 
 ## [3.3.1] - 2023-11-16
 ### Added
