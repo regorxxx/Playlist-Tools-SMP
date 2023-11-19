@@ -22,6 +22,7 @@ EmptyObject.prototype.set = function set(key, value) {return this[key] = value;}
 EmptyObject.prototype.get = function get(key) {return this[key];};
 EmptyObject.prototype.forEach = function forEach(fn) {return Object.entries(this).forEach((pair) => {return fn(pair[1], pair[0]);});};
 EmptyObject.prototype.concat = function concat(fastmap) {Object.entries(fastmap).forEach((pair) => {this.set(pair[0], pair[1]);}); return this;};
+Object.defineProperty(EmptyObject.prototype, 'size', {configurable: false, get() {return Object.keys(this).length;}});
 
 /**
  * Create an accelerated hash map
