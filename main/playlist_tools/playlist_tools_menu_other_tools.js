@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/09/23
+//20/11/23
 
 // Other tools
 {
@@ -241,12 +241,12 @@
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 						menu.newEntry({menuName: subMenuName, entryText:'Replace dead items on selection', func:() => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true})
-						}, flags: focusFlags() | playlistCountFlagsAddRem() | selectedFlags()});
+						}, flags: () => focusFlags() | playlistCountFlagsAddRem() | selectedFlags()});
 						menu.newEntry({menuName: subMenuName, entryText:'Simulate on selection (see console)', func: () => {
 							playlistRevive({selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true, bSimulate: true})
-						}, flags: focusFlags | selectedFlags()});
+						}, flags: () =>  focusFlags() | selectedFlags()});
 						menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-						menu.newEntry({menuName: subMenuName, entryText: 'Sets similarity threshold...' + '\t' + _b(menu_properties['simThreshold'][1]), func: () => {
+						menu.newEntry({menuName: subMenuName, entryText: () => 'Sets similarity threshold...' + '\t' + _b(menu_properties['simThreshold'][1]), func: () => {
 							const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, menu_properties['simThreshold'][1]));
 							if (menu_properties['simThreshold'][1] === input) {return;}
 							if (!Number.isFinite(input)) {return;}
