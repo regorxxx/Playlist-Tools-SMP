@@ -56,9 +56,13 @@
 - Other tools\Write Tags: new setting to disable popups about tool tips.
 - Buttons bar: new setting to enable asynchronous loading of buttons, now the default behavior.
 ### Changed
+- Helpers: updated helpers.
+- Console: reduced max log file size to 1 MB.
 ### Removed
 ### Fixed
 - Other tools\Write Tags: crash when running Audio MD5 tool on iso files.
+- Playlist Revive: fixed menu entries not being grayed out in some cases.
+- Playlist Revive: fixed menu entry not showing the actual similarity value after changing it.
 
 ## [3.3.1] - 2023-11-16
 ### Added
