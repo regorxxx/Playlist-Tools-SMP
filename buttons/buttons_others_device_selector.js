@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//24/11/23
 
 /* 
 	Output device selector
@@ -12,7 +12,7 @@ include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\helpers_xxx_file.js');
 include('..\\helpers\\menu_xxx.js');
 var prefix = 'ds';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
 
 try {window.DefineScript('Output device selector button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Output device selector Button loaded.'); */} //May be loaded along other buttons
 

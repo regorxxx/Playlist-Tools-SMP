@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//24/11/23
 
 include('helpers_xxx_basic_js.js');
 include('helpers_xxx_prototypes.js');
@@ -861,8 +861,8 @@ function moveButton(fromKey, toKey) {
 	const properties = buttonsBar.list[toPos];
 	const keys = properties ? Object.keys(properties) : [];
 	if (keys.length) {
-		const prefix = properties[Object.keys(properties)[0]][0].match(/([A-z]*[0-9]*)(_*[0-9]*\.)/)[1]; // plto3_01. or plt3. -> plto3
-		const currentId = prefix.match(/([A-z]*)(?:[0-9]*)/)[1]; // plto
+		const prefix = properties[Object.keys(properties)[0]][0].match(/([a-zA-Z]*[0-9]*)(_*[0-9]*\.)/)[1]; // plto3_01. or plt3. -> plto3
+		const currentId = prefix.match(/([a-zA-Z]*)(?:[0-9]*)/)[1]; // plto
 		let currentIdNumber = 0;
 		// Backup all properties
 		const propertiesBack = buttonsBar.list.map((oldProperties) => {return getPropertiesPairs(oldProperties, '', 0, false);});
@@ -870,8 +870,8 @@ function moveButton(fromKey, toKey) {
 		buttonsBar.list.forEach((oldProperties, newIdx) => {
 			const oldKeys = oldProperties ? Object.keys(oldProperties) : [];
 			if (oldKeys.length) {
-				const oldPrefix = oldProperties[oldKeys[0]][0].match(/([A-z]*[0-9]*)(_*[0-9]*\.)/)[1];
-				const oldId = oldPrefix.match(/([A-z]*)(?:[0-9]*)/)[1];
+				const oldPrefix = oldProperties[oldKeys[0]][0].match(/([a-zA-Z]*[0-9]*)(_*[0-9]*\.)/)[1];
+				const oldId = oldPrefix.match(/([a-zA-Z]*)(?:[0-9]*)/)[1];
 				if (oldId === currentId) {
 					const backup = propertiesBack[newIdx];
 					for (const key in backup) { // Update Id
@@ -936,4 +936,17 @@ function getButtonsMaxSize(bCurrent = true) {
 	if (orientation === 'x') {maxSize.totalH = maxSize.h;}
 	if (orientation === 'y') {maxSize.totalW = maxSize.w;}
 	return maxSize;
+}
+
+function getButtonVersion(source = 'Playlist-Tools-SMP') {
+	let ver = (buttonsBar.getUpdateList().find((btn) => btn.scriptName === source) || {}).version;
+	if (!ver) {
+		switch (source.toLowerCase()) {
+			case 'playlist-tools-smp': 
+				try {ver = utils.ReadTextFile(folders.xxx + '\\buttons\\buttons_playlist_tools.js', 65001).match(/var version = '(.*)'/mi)[1]}
+				catch (e) {}
+				break;
+		}
+	}
+	return ver || 'x.x.x';
 }

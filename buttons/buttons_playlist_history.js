@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//24/11/23
 
 /* 
 	Playlist History
@@ -10,7 +10,7 @@
 include('..\\helpers\\buttons_xxx.js'); 
 include('..\\helpers\\playlist_history.js');
 var prefix = 'ph';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
 
 try {window.DefineScript('Playlist Tools History', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools History Button loaded.'); */} //May be loaded along other buttons
 
