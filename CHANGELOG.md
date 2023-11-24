@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.4.0](#340---2023-11-24)
 - [3.3.1](#331---2023-11-16)
 - [3.3.0](#330---2023-11-15)
 - [3.2.0](#320---2023-10-05)
@@ -52,6 +53,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.4.0] - 2023-11-24
+### Added
 - Other tools\Write Tags: new setting to disable popups about file format/tools compatibility.
 - Other tools\Write Tags: new setting to disable popups about tool tips.
 - Buttons bar: new setting to enable asynchronous loading of buttons, now the default behavior.
@@ -64,6 +71,7 @@
 - Other tools\Write Tags: crash when running Audio MD5 tool on iso files.
 - Playlist Revive: fixed menu entries not being grayed out in some cases.
 - Playlist Revive: fixed menu entry not showing the actual similarity value after changing it.
+- Auto-update: changed logic to check [Playlist Tools](https://github.com/regorxxx/Playlist-Tools-SMP/)'s buttons updates independently to the toolbar version, so mixed scripts versions no longer produce false negatives.
 
 ## [3.3.1] - 2023-11-16
 ### Added
@@ -1082,7 +1090,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.1...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.1...v3.4.0
 [3.3.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.1.2...v3.2.0
