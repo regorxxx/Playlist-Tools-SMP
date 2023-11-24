@@ -56,6 +56,7 @@
 - Other tools\Write Tags: new setting to disable popups about tool tips.
 - Buttons bar: new setting to enable asynchronous loading of buttons, now the default behavior.
 ### Changed
+- Readmes: improved dynamic queries and tags readme.
 - Helpers: updated helpers.
 - Console: reduced max log file size to 1 MB.
 ### Removed
