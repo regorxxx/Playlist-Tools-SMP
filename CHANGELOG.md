@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.4.1](#341---2023-11-26)
 - [3.4.0](#340---2023-11-24)
 - [3.3.1](#331---2023-11-16)
 - [3.3.0](#330---2023-11-15)
@@ -57,6 +58,14 @@
 ### Removed
 ### Fixed
 
+## [3.4.1] - 2023-11-24
+### Added
+- UI: added setting to disable tooltip on all scripts. Found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json', by changing 'bTooltip'. By default tooltip is always shown. This setting will never be exposed within foobar, only at this file.
+### Changed
+### Removed
+### Fixed
+- Buttons bar: crash with multiple buttons while checking version number.
+
 ## [3.4.0] - 2023-11-24
 ### Added
 - Other tools\Write Tags: new setting to disable popups about file format/tools compatibility.
@@ -90,7 +99,7 @@
 - Buttons bar: added custom button hover color and customization.
 - Buttons bar: added custom offset for buttons along X/Y axis.
 - Buttons bar: added full size mode for buttons, which will use full Width/Height according to Y/X orientation.
-- Added setting to disable popups related to features not being supported by the OS (at startup). Found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json', by changing 'bPopupOnCheckSOFeatures'. By default popups are always shown. This setting will never be exposed within foobar, only at this file.
+- UI: added setting to disable popups related to features not being supported by the OS (at startup). Found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json', by changing 'bPopupOnCheckSOFeatures'. By default popups are always shown. This setting will never be exposed within foobar, only at this file.
 ### Changed
 - Presets: separator entries are now non editable.
 - UI: toolbar's color menu entries now show the color name along the menu entry. 'none' equals to no color.
@@ -1090,7 +1099,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.1...HEAD
+[3.4.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.1...v3.4.0
 [3.3.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.2.0...v3.3.0
