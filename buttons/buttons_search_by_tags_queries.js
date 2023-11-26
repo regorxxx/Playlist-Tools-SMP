@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//26/11/23
 
 /* 
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -12,7 +12,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ssbytq';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
   
 try {window.DefineScript('Search Same By Tags (Queries) Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Search Same By Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'

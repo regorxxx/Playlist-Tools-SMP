@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//26/11/23
 
 /* 
 	Quicksearch for same....
@@ -14,7 +14,7 @@ include('..\\helpers\\menu_xxx_extras.js');
 include('..\\main\\filter_and_query\\dynamic_query.js');
 include('..\\main\\main_menu\\main_menu_custom.js');
 var prefix = 'qs';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
 
 try {window.DefineScript('Quicksearch button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Quicksearch Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
@@ -131,7 +131,7 @@ addButton({
 						}
 					});
 				}
-			)
+			);
 			menu.btn_up(this.currX, this.currY + this.currH);
 		} else {
 			quickSearchMenu.bind(this)().btn_up(this.currX, this.currY + this.currH);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/11/23
+//26/11/23
 
 /* 
 	Automatic tagging...
@@ -16,7 +16,7 @@ include('..\\helpers\\menu_xxx.js');
 include('..\\main\\tags\\tags_automation.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'ta';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
 
 try {window.DefineScript('Automate Tags', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Automate Tags Button loaded.'); */} //May be loaded along other buttons
 

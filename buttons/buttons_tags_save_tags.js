@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//26/11/23
 
 /* 
 	-> EDIT
@@ -9,7 +9,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\main\\tags\\save_tags.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'st_';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
  
 try {window.DefineScript('Save tags button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Sace Tags Buttons loaded.'); */} //May be loaded along other buttons
 

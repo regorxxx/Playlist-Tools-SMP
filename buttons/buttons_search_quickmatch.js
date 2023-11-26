@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//26/11/23
 
 /* 
 	Quickmatch same....
@@ -15,7 +15,7 @@ include('..\\main\\filter_and_query\\dynamic_query.js');
 include('..\\main\\main_menu\\main_menu_custom.js');
 include('..\\main\\bio\\bio_tags.js');
 var prefix = 'qm';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
 
 try {window.DefineScript('Quickmatch button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Quickmatch Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'

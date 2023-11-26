@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/23
+//26/11/23
 
 /* 
 	Top Tracks
@@ -13,7 +13,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 var prefix = 'ttd';
-var version = window.ScriptInfo.Version || utils.ReadTextFile(folders.xxx + 'buttons_toolbar.js', 65001).match(/var version = '(.*)'/mi)[1] || 'x.x.x';
+var version = getButtonVersion('Playlist-Tools-SMP');
 
 try {window.DefineScript('Top Tracks Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Top Tracks from Date Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
