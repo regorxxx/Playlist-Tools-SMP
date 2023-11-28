@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.5.0](#350---2023-11-28)
 - [3.4.1](#341---2023-11-26)
 - [3.4.0](#340---2023-11-24)
 - [3.3.1](#331---2023-11-16)
@@ -58,7 +59,16 @@
 ### Removed
 ### Fixed
 
-## [3.4.1] - 2023-11-24
+## [3.5.0] - 2023-11-28
+### Added
+- Buttons bar: added compatibility with headless mode (for other buttons).
+### Changed
+- Helpers: updated helpers.
+- Improved error messages about features not working related to OS checks (at startup) with tips and warnings.
+### Removed
+### Fixed
+
+## [3.4.1] - 2023-11-26
 ### Added
 - UI: added setting to disable tooltip on all scripts. Found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json', by changing 'bTooltip'. By default tooltip is always shown. This setting will never be exposed within foobar, only at this file.
 ### Changed
@@ -1099,7 +1109,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.1...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.5.0...HEAD
+[3.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.1...v3.5.0
 [3.4.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.1...v3.4.0
 [3.3.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.0...v3.3.1

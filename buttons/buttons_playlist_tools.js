@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/11/23
+//28/11/23
 
 /* 
 	Playlist Tools Menu
@@ -11,7 +11,7 @@
 	NOTE: 'on_mouse_lbtn_up(x, y)' is simply replaced with a button to call the menu.
  */
  
-var version = '3.4.1';
+var version = '3.5.0';
 
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
 try {window.DefineScript('Playlist Tools: Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
