@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/07/23
+//29/11/23
 
 /* 
 	Top Tracks
@@ -36,10 +36,11 @@ function topTracks({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	//Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle});
+		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle});
 	}
 	// Output n tracks
 	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+	if (globTags.sortPlayCount !== sortBy) {outputHandleList.OrderByFormat(fb.TitleFormat(sortBy ||'$rand()'), 1);}
 	if (bSendToPls) {sendToPlaylist(outputHandleList, playlistName);}
 	if (bProfile) {test.Print('Task #1: Top tracks from date', false);}
 	return outputHandleList;

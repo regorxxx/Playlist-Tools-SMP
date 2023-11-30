@@ -122,7 +122,6 @@ function topTracksFromDate({
 	// Order by Play Count
 	dataPool.sort(function (a, b) {return b.playCount - a.playCount;});
 	dataPool.forEach((item) => pool.push(outputHandleList[item.idx]));
-	// dataPool.forEach((item) => console.log(item.idx,item.playCount));
 	outputHandleList = new FbMetadbHandleList(pool);
 	// Output n tracks
 	if (playlistLength < outputHandleList.Count) {outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);}
