@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/23
+//29/11/23
 
 /* 
 	Playlist Tools Menu
@@ -313,7 +313,7 @@ include('playlist_tools_menu_last_action.js');
 	Enable menu
 */
 {
-	const menuList = menu.getEntries().slice(1).filter((entry) => {
+	const menuList = menu.getEntries().slice(0).filter((entry) => {
 		return (entry.bIsMenu 
 			? menuAltAllowed.has(entry.subMenuFrom) // menu
 			: (entry.hasOwnProperty('condFunc')
