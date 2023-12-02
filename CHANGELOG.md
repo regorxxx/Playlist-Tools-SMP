@@ -55,10 +55,12 @@
 
 ## [Unreleased][]
 ### Added
+- Pools: can now read .fpl playlist files from [Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP).
 - Toolbar: now supports color for image icons (which are not drawn using fonts).
 - Added 'Top played tracks from' tool to retrieve most played tracks with a %DATE% tag value within a period or equal to a year.
 ### Changed
 - Renamed 'Most played tracks from' tool to 'Most played tracks at', along its entries, so there is no confusion about the tracks selected, those which were listened at an specific year (or perior), and not related to a %DATE% tag.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 - 'Most played tracks at' and 'Top rated tracks from' now always output the first X tracks (with highest scoring) when randomized and the random sorting is applied afterwards.
