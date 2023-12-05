@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/09/23
+//05/12/23
 
 // Selection manipulation...
 {
@@ -258,10 +258,10 @@
 						try {tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true);}
 						catch (e) {return;}
 						if (!tagName.length) {return;}
-						let tagvalue = '';
-						try {tagvalue = utils.InputBox(window.ID, 'Enter tag values to match:\n(multiple values may be separated by \',\')', scriptName + ': ' + name, selArg.args.tagvalue, true);}
+						let tagValue = '';
+						try {tagValue = utils.InputBox(window.ID, 'Enter tag values to match:\n(multiple values may be separated by \',\')', scriptName + ': ' + name, selArg.args.tagValue, true);}
 						catch (e) {return;}
-						if (!tagvalue.length) {return;}
+						if (!tagValue.length) {return;}
 						return {args: {tagName, tagValue}};
 					};
 					// Menus
