@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/07/23
+//05/12/23
 
 /* 
 	Top X Tracks From Date
@@ -33,15 +33,19 @@ function topTracksFromDate({
 	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return;}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);}
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return;}
-	last = last.trim();
-	if (bUseLast && !last.length) {fb.ShowPopupMessage('Time period string is empty:\n' + last, 'topTracksFromDate'); return;}
-	// Find time-unit
-	let timeKey = '';
-	let timePeriod = Number(last.split(' ')[0]);
-	if (!Number.isSafeInteger(timePeriod)) {fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'topTracksFromDate'); return;}
-	if (!Object.keys(timeKeys).some( (key) => {if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) {timeKey = key; return true;} else {return false;}})) {
-		fb.ShowPopupMessage('Time-unit not valid (must be ' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'topTracksFromDate');
-		return;
+	let timeKey, timePeriod;
+	if (bUseLast) {
+		if (last && typeof last === 'string') {last = last.trim();}
+		else {last = '';}
+		if (!last.length) {fb.ShowPopupMessage('Time period string is empty:\n' + last, 'topTracksFromDate'); return;}
+		// Find time-unit
+		timeKey = '';
+		timePeriod = Number(last.split(' ')[0]);
+		if (!Number.isSafeInteger(timePeriod)) {fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'topTracksFromDate'); return;}
+		if (!Object.keys(timeKeys).some( (key) => {if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) {timeKey = key; return true;} else {return false;}})) {
+			fb.ShowPopupMessage('Time-unit not valid (must be ' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'topTracksFromDate');
+			return;
+		}
 	}
 	if (bProfile) {var test = new FbProfiler('topTracksFromDate');}
 	// Load query

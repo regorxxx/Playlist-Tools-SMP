@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/11/23
+//05/12/23
 
 // Most played tracks at year
 {
@@ -17,9 +17,24 @@
 			{	// Static menus
 				const currentYear = new Date().getFullYear();
 				const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
-				selYearArr.forEach( (selYear) => {
-					let selArgs = {year: selYear};
+				selYearArr.forEach((selYear) => {
+					let selArgs = {year: selYear, bUseLast: false};
 					menu.newEntry({menuName, entryText: 'Most played at ' + selYear, func: (args = {...defaultArgs, ...selArgs}) => {
+						if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
+						topTracksFromDate(args);
+					}});
+				});
+				menu.newEntry({menuName, entryText: 'sep'});
+				const options = [
+					{name: 'day', arg: '1 DAY'},
+					{name: 'week', arg: '1 WEEK'},
+					{name: 'month', arg: '4 WEEKS'},
+					{name: 'trimester', arg: '12 WEEKS'},
+					{name: 'year', arg: '52 WEEKS'}
+				];
+				options.forEach((option) => {
+					let selArgs = {last: option.arg, bUseLast: true};
+					menu.newEntry({menuName, entryText: 'Most played last ' + option.name, func: (args = {...defaultArgs, ...selArgs}) => {
 						if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
 						topTracksFromDate(args);
 					}});
@@ -42,7 +57,7 @@
 					try {input = Number(utils.InputBox(window.ID, 'Enter year:', scriptName + ': ' + name, selYear, true));}
 					catch (e) {return;}
 					if (!Number.isSafeInteger(input)) {return;}
-					const args = {...defaultArgs,  last: input, bUseLast: true};
+					const args = {...defaultArgs, year: input, bUseLast: false};
 					if (!forcedQueryMenusEnabled[name]) {args.forcedQuery = '';}
 					topTracksFromDate(args);
 					}});
