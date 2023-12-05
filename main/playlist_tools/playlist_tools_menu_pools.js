@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/11/23
+//05/12/23
 
 // Pools
 {
@@ -238,7 +238,7 @@
 							// On first execution, must update from property
 							selArg.tfo = JSON.parse(menu_properties['poolsCustomArg'][1]).tfo;
 							// Input
-							const input = inputPool();
+							const input = poolsGen.inputPool(selArg.pool);
 							if (!input) {return;}
 							const pool = clone(input.pool);
 							if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {

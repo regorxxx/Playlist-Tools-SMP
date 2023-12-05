@@ -63,6 +63,9 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Pools: crash at deduplication step.
+- Pools: crash at custom pool menu entry usage.
+- Pools: error at pools' entry list edition.
 - 'Most played tracks at' and 'Top rated tracks from' now always output the first X tracks (with highest scoring) when randomized and the random sorting is applied afterwards.
 - First menu entry on the 'Switch enabled menus' list was skipped due to a typo. Now available. This bug made 'Most played tracks from...' to not be available on previous installation.
 

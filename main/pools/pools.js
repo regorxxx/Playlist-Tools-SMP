@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/11/23
+//05/12/23
 
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
@@ -159,7 +159,7 @@ function _pools({
 						// Remove tracks on destination list
 						handleListTo.Convert().forEach((handle) => {handleListsGroups[i].Remove(handle)});
 						// Filter current group against list of groups and destination list
-						if (typeof pool.hasOwnProperty('deDuplicate')) {
+						if (pool.hasOwnProperty('deDuplicate')) {
 							const dedup = pool.deDuplicate[plsName];
 							if (dedup && dedup.length) {
 								handleListsGroups[i] = this.deDuplicate({handleList: handleListsGroups[i], prevListArr: i > 0 ? handleListsGroups.slice(0, i) : null, checkKeys: dedup});
@@ -419,10 +419,10 @@ function _pools({
 		console.log((this.title ? this.title + ' ' : '') + 'Pools: playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks');
 		if (this.bProfile) {profiler.Print();}
 	}
-	this.inputPool = () => {
+	this.inputPool = (last = {fromPls: {_LIBRARY_0: 15, _LIBRARY_1: 15, _LIBRARY_2: 15}}) => {
 		// Sources
 		let fromPls;
-		try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', (this.title ? this.title + ': ' : '') + 'Pools', Object.keys(pools[0].pool.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pools[0].pool.fromPls[key];}, ''), true);}
+		try {fromPls = utils.InputBox(window.ID, 'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)', (this.title ? this.title + ': ' : '') + 'Pools', Object.keys(last.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.fromPls[key];}, ''), true);}
 		catch (e) {return;}
 		if (!fromPls.length) {console.log('Input was empty'); return;}
 		if (fromPls.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
