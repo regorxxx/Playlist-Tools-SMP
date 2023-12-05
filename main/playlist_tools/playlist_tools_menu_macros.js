@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/03/23
+//05/12/23
 
 // Macros
 {
@@ -12,11 +12,13 @@
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_macros.txt';
 			// Create new properties
+			const thisYear = (new Date()).getFullYear() - 1;
 			const macrosDefaults = [
 				{name: 'Test Tools', entry: [
-					'Most played Tracks from...\\Most played from 2022',
-					'Most played Tracks from...\\Most played (all years)',
-					'Top rated Tracks from...\\Top rated from 2022',
+					'Most played Tracks at...\\Most played at ' + thisYear,
+					'Most played Tracks at...\\Most played (all years)',
+					'Top played Tracks from...\\Top played from ' + thisYear,
+					'Top rated Tracks from...\\Top rated from ' + thisYear,
 					'Select...\\Select first track',
 					'Move selection to...\\To the middle',
 					'Expand...\\By Artist',
@@ -27,12 +29,25 @@
 					'Select...\\Select random track',
 					'Select...\\Select random track',
 					'Special Playlists...\\Influences from any date',
+					'Duplicates and tag filtering\\Remove duplicates by title, %album artist%, year',
 					'Duplicates and tag filtering\\Remove duplicates by title, artist, year',
+					'Query filtering\\Filter playlist by Rating > 2',
 					'Harmonic mix\\Harmonic mix from playlist',
 					'Select...\\Select All',
 					'Advanced sort...\\Incremental genre/styles (DynGenre)',
 					'Advanced sort...\\Incremental key (Camelot Wheel)',
 					'Scatter by tags\\Scatter acoustic tracks',
+					'Intercalate by tags\\Intercalate same artist tracks',
+					'Shuffle by tags\\Shuffle by artist',
+					'Group by tags\\Group by artist',
+					'Select...\\Select random track',
+					'Next\\By Date',
+					'Move selection to...\\To the middle',
+					'Select by query...\\Select by Rating > 2',
+					'Select...\\Select random track',
+					'Expand...\\By Artist',
+					'Select...\\Select random track',
+					'Next\\By Artist',
 					'Playlist Revive\\Find dead items in all playlists',
 					'Import track list\\Import from custom path',
 					'Pools\\Top tracks mix',
@@ -41,6 +56,9 @@
 					'Search by Distance\\Debug Graph (check console)'
 				], bAsync: false},
 				{name: 'Test Tools (with input)', entry: [
+					'Most played Tracks at...\\At year...',
+					'Most played Tracks at...\\Since last...',
+					'Top played Tracks from...\\from year...',
 					'Top rated Tracks from...\\From year...',
 					'Search same by tags...\\By... (pairs of tags)',
 					'Standard Queries...\\By... (query)',
@@ -50,6 +68,15 @@
 					'Query filtering\\Filter playlist by... (query)',
 					'Select...\\Select All',
 					'Sort...\\By... (expression)',
+					'Scatter by tags\\By... (tag-value)',
+					'Intercalate by tags\\By... (tag)',
+					'Shuffle by tags\\By... (tag)',
+					'Group by tags\\By... (tag)',
+					'Select by query...\Select by... (query)',
+					'Select...\\Select random track',
+					'Expand...\\By... (tags)',
+					'Select...\\Select random track',
+					'Next\\By... (tags)',
 					'Playlist manipulation\\Find or create playlist...',
 					'Import track list\\Import from file \\ url...',
 					'Pools\\Custom pool...'
