@@ -57,7 +57,8 @@
 ### Added
 - Pools: can now read .fpl playlist files from [Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP).
 - Toolbar: now supports color for image icons (which are not drawn using fonts).
-- Added 'Top played tracks from' tool to retrieve most played tracks with a %DATE% tag value within a period or equal to a year.
+- Top played tracks from: added 'Top played tracks from' tool to retrieve most played tracks with a %DATE% tag value within a period or equal to a year.
+- Macros: more tests added to the default macros.
 ### Changed
 - Renamed 'Most played tracks from' tool to 'Most played tracks at', along its entries, so there is no confusion about the tracks selected, those which were listened at an specific year (or perior), and not related to a %DATE% tag.
 - Helpers: updated helpers.
@@ -66,6 +67,7 @@
 - Pools: crash at deduplication step.
 - Pools: crash at custom pool menu entry usage.
 - Pools: error at pools' entry list edition.
+- Selection manipulation\Scatter by tags: crash using By... (tag-value)' due to a typo.
 - 'Most played tracks at' and 'Top rated tracks from' now always output the first X tracks (with highest scoring) when randomized and the random sorting is applied afterwards.
 - First menu entry on the 'Switch enabled menus' list was skipped due to a typo. Now available. This bug made 'Most played tracks from...' to not be available on previous installation.
 
@@ -269,7 +271,7 @@
 - Last.fm: menu entries are now available as dynamic SMP menus (toogable setting).
 - Top Rated Tracks from...: pressing shift when clicking the menu entries now randomizes the tracks taken from the pool (according to rating and date), instead of sorting them by play count (which always output the same tracks if play count doesn't change). i.e. if someone wants to listen their top rated tracks from the 2000s but different sets of tracks on every listening session, not always the same most rated and most played tracks, the randomize modifier could be used.
 - Pools: new 'smartShuffle' option for pools which mimics 'Selection manipulation\Shuffle' feature on the output by set tag. Check '.\presets\Playlist Tools\pools\allowedKeys.txt' for usage and examples.
-- Selection manipulation\Shuffle: additional option to scatter to scatter instrumental, live and other tracks while respecting the smart pattern by tag (usually Artist). For ex. if it can swap tracks without altering the Artist proportion for a given range of tracks, thus moving an instrumental track to another position to soft-limit the appearance of consecutive instrumental tracks. Same rationale applies for live tracks or other special conditions. This somewhat ensures any cluster of tracks is as diverse as possible.
+- Selection manipulation\Shuffle: additional option to scatter instrumental, live and other tracks while respecting the smart pattern by tag (usually Artist). For ex. if it can swap tracks without altering the Artist proportion for a given range of tracks, thus moving an instrumental track to another position to soft-limit the appearance of consecutive instrumental tracks. Same rationale applies for live tracks or other special conditions. This somewhat ensures any cluster of tracks is as diverse as possible.
 - Selection manipulation\Shuffle: additional options for the Spotify-like smart shuffle to prioritize tracks by Rating, Play Count (original Spotify's behavior), Last played date, randomly...
 ### Changed
 - Last.fm: no longer requires [original package](https://github.com/L3v3L/foo-last-list-smp), fully integrated now. Reason: original package follows a design not fully compatible with some of the new features added.
