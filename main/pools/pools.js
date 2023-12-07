@@ -125,11 +125,13 @@ function _pools({
 		for await (const plsName of Object.keys(pool.fromPls)) {
 			if (bAbort) {return;}
 			let handleListFrom;
+			let sourceCount = 0;
 			// Select source
 			switch (true) {
 				case plsName.startsWith('_LIBRARY_'): { // Library Source
 					handleListFrom = fb.GetLibraryItems();
 					console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Library');
+					if (handleListFrom) {sourceCount = handleListFrom.Count;}
 					break;
 				}
 				case plsName.startsWith('_GROUP_'): { // Library Source grouping by TF
@@ -208,6 +210,7 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
+						if (handleListFrom) {sourceCount = handleListFrom.Count;}
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Search by GRAPH');
 					} else {
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
@@ -242,6 +245,7 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
+						if (handleListFrom) {sourceCount = handleListFrom.Count;}
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Search by WEIGHT');
 					} else {
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
@@ -276,6 +280,7 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
+						if (handleListFrom) {sourceCount = handleListFrom.Count;}
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Search by DYNGENRE');
 					} else {
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
@@ -319,6 +324,7 @@ function _pools({
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> ' + plsName);
 						handleListFrom = plman.GetPlaylistItems(idxFrom);
 					}
+					if (handleListFrom) {sourceCount = handleListFrom.Count;}
 				}
 			}
 			if (!handleListFrom || !handleListFrom.Count) {return;}
@@ -357,7 +363,7 @@ function _pools({
 				if (count !== 1) {
 					handleListFrom = this.pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
 				}
-				console.log((this.title ? this.title + ' ' : '') + 'Pools: pool size -> ' + handleListFrom.Count + ' (' + count +') tracks');
+				console.log((this.title ? this.title + ' ' : '') + 'Pools: pool size -> ' + handleListFrom.Count + ' tracks (from ' + count + ' deduplicated / ' + sourceCount + ' total)');
 			} else {console.log((this.title ? this.title + ' ' : '') + 'Pools: pool size -> ' + handleListFrom.Count + ' tracks from ' + num + ' groups');}
 			// Insert
 			if (pool.hasOwnProperty('insertMethod')) {
@@ -427,7 +433,9 @@ function _pools({
 				window.ID,
 				'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)',
 				(this.title ? this.title + ': ' : '') + 'Pools',
-				Object.keys(last.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.fromPls[key];}, ''),
+				last.hasOwnProperty('fromPls')
+					? Object.keys(last.fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.fromPls[key];}, '')
+					: '_LIBRARY_0,15;_LIBRARY_1,15;_LIBRARY_2,15',
 				true
 			);
 		} catch (e) {return;}
@@ -445,25 +453,46 @@ function _pools({
 		fromPls = Object.fromEntries(fromPls);
 		// Queries
 		let query;
-		try {query = utils.InputBox(window.ID, 'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent, but empty applies global forced query too if enabled.\n(playlist,query;playlist,query)', (this.title ? this.title + ': ' : '') + 'Pools', Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''), true);}
-		catch (e) {return;}
+		try {
+			query = utils.InputBox(
+				window.ID,
+				'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent, but empty applies global forced query too if enabled.\n(playlist,query;playlist,query)',
+				(this.title ? this.title + ': ' : '') + 'Pools',
+				last.hasOwnProperty('query')
+					? Object.keys(last.query).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.query[key];}, '')
+					: Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''),
+				true
+			);
+		} catch (e) {return;}
 		if (!query.length) {console.log('Input was empty'); return;}
 		if (query.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
 		query = query.split(';');
 		query = query.map((pair) => {
 			pair = pair.split(',');
-			// if (!pair[1].length) {pair[1] = 'ALL'}
 			return pair;
 		});
-		// TODO Check queries
 		if (query.some((pair) => {return pair.length % 2 !== 0})) {console.log('Input was not a list of pairs separated \';\''); return;}
 		if (query.some((pair) => {return !fromPls.hasOwnProperty(pair[0])})) {console.log('Playlist named did not match with sources'); return;}
+		if (query.some((pair) => {
+			const bCheck = pair[1] === 'ALL' || checkQuery(pair[1], true);
+			if (!bCheck) {console.log('Query not valid: ' + pair[1])}
+			return !bCheck;
+		})) {return;}
 		query = Object.fromEntries(query);
 		// Picking Method
 		let pickMethod;
 		const pickMethodsKeys = Object.keys(this.pickMethods);
-		try {pickMethod = utils.InputBox(window.ID, 'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)', (this.title ? this.title + ': ' : '') + 'Pools', Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''), true);}
-		catch (e) {return;}
+		try {
+			pickMethod = utils.InputBox(
+				window.ID,
+				'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)',
+				(this.title ? this.title + ': ' : '') + 'Pools',
+				last.hasOwnProperty('pickMethod')
+					? Object.keys(last.pickMethod).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.pickMethod[key]}, '')
+					: Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''),
+				true
+			);
+		} catch (e) {return;}
 		if (!pickMethod.length) {console.log('Input was empty'); return;}
 		if (pickMethod.indexOf(',') === -1) {console.log('Input was not a pair separated by \',\''); return;}
 		pickMethod = pickMethod.split(';');

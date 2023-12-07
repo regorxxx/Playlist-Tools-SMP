@@ -60,12 +60,14 @@
 - Top played tracks from: added 'Top played tracks from' tool to retrieve most played tracks with a %DATE% tag value within a period or equal to a year.
 - Macros: more tests added to the default macros.
 ### Changed
+- Pools: now indicate the total and deduplicated size of the source.
 - Renamed 'Most played tracks from' tool to 'Most played tracks at', along its entries, so there is no confusion about the tracks selected, those which were listened at an specific year (or perior), and not related to a %DATE% tag.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
 - Pools: crash at deduplication step.
 - Pools: crash at custom pool menu entry usage.
+- Pools: custom pool menu entry did not save some of the settings for posterior executions.
 - Pools: error at pools' entry list edition.
 - Selection manipulation\Scatter by tags: crash using By... (tag-value)' due to a typo.
 - 'Most played tracks at' and 'Top rated tracks from' now always output the first X tracks (with highest scoring) when randomized and the random sorting is applied afterwards.
