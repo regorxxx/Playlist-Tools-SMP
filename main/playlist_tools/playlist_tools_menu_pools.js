@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/12/23
+//07/12/23
 
 // Pools
 {
@@ -135,7 +135,7 @@
 						sort: '',
 					}},
 				];
-				let selArg = {...pools[0]};
+				let selArg = {...clone(pools[0]), name: 'Custom'};
 				const poolsDefaults = [...pools];
 				// Create new properties with previous args
 				menu_properties['pools'] = [name + ' entries', JSON.stringify(pools)];
@@ -185,6 +185,8 @@
 					}
 				});
 				menu.newCondEntry({entryText: 'Pools... (cond)', condFunc: () => {
+					// On first execution, must update from property
+					selArg = JSON.parse(menu_properties['poolsCustomArg'][1]);
 					// Entry list
 					pools = JSON.parse(menu_properties['pools'][1]);
 					const entryNames = new Set();
@@ -235,8 +237,6 @@
 					menu.newEntry({menuName, entryText: 'sep'});
 					{ // Static menu: user configurable
 						menu.newEntry({menuName, entryText: 'Custom pool...', func: () => {
-							// On first execution, must update from property
-							selArg.tfo = JSON.parse(menu_properties['poolsCustomArg'][1]).tfo;
 							// Input
 							const input = poolsGen.inputPool(selArg.pool);
 							if (!input) {return;}
@@ -269,7 +269,7 @@
 								bProfile: defaultArgs.bProfile
 							}).processPool(pool, menu_properties);
 							// For internal use original object
-							selArg.pool = input;
+							selArg = {name: 'Custom', ...input};
 							menu_properties['poolsCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
 							overwriteMenuProperties(); // Updates panel
 						}});
