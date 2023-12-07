@@ -69,6 +69,7 @@
 - Pools: crash at custom pool menu entry usage.
 - Pools: custom pool menu entry did not save some of the settings for posterior executions.
 - Pools: error at pools' entry list edition.
+- Pools: 'start' picking method was retrieving one track less than intended.
 - Selection manipulation\Scatter by tags: crash using By... (tag-value)' due to a typo.
 - 'Most played tracks at' and 'Top rated tracks from' now always output the first X tracks (with highest scoring) when randomized and the random sorting is applied afterwards.
 - First menu entry on the 'Switch enabled menus' list was skipped due to a typo. Now available. This bug made 'Most played tracks from...' to not be available on previous installation.

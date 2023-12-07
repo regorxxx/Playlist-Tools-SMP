@@ -50,7 +50,7 @@ function _pools({
 				const handleListFromClone = handleListFrom.Clone().Convert();
 				return new FbMetadbHandleList(numbers.flatMap((i) => {return handleListFromClone.slice(i, i + 1)}));
 			},
-		start: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(num - 1, count);} return handleListFrom;},
+		start: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(num, count);} return handleListFrom;},
 		end: (handleListFrom, num, count) => {if (count > num) {handleListFrom.RemoveRange(0, count - num);} return handleListFrom;},
 	};
 	this.insertMethods = {
