@@ -119,6 +119,9 @@ function _pools({
 	};
 	this.processPool = async (pool, properties) => {
 		if (this.bProfile) {var profiler = new FbProfiler('processPool');}
+		const libItems = Object.keys(pool.fromPls).some((key) => key.startsWith('_LIBRARY_') || key.startsWith('_GROUP_')) 
+			? fb.GetLibraryItems() 
+			: null;
 		let handleListTo = new FbMetadbHandleList();
 		let bAbort = false;
 		let n = 0;
@@ -129,15 +132,14 @@ function _pools({
 			// Select source
 			switch (true) {
 				case plsName.startsWith('_LIBRARY_'): { // Library Source
-					handleListFrom = fb.GetLibraryItems();
+					handleListFrom = libItems;
 					console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Library');
-					if (handleListFrom) {sourceCount = handleListFrom.Count;}
 					break;
 				}
 				case plsName.startsWith('_GROUP_'): { // Library Source grouping by TF
 					console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> TF Group');
 					// Pre-Filter with query
-					handleListFrom = fb.GetLibraryItems();
+					handleListFrom = libItems;
 					const query = typeof pool.query  !== 'undefined' ? pool.query[plsName] : '';
 					if (query.length && query.toUpperCase() !== 'ALL') {
 						const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
@@ -210,10 +212,9 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
-						if (handleListFrom) {sourceCount = handleListFrom.Count;}
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Search by GRAPH');
 					} else {
-						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 						bAbort = true;
 						return;
 					}
@@ -245,10 +246,9 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
-						if (handleListFrom) {sourceCount = handleListFrom.Count;}
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Search by WEIGHT');
 					} else {
-						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 						bAbort = true;
 						return;
 					}
@@ -280,10 +280,9 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray, ...rest] = await searchByDistance({properties, theme, recipe});
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
-						if (handleListFrom) {sourceCount = handleListFrom.Count;}
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> Search by DYNGENRE');
 					} else {
-						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not lodaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+						console.log((this.title ? this.title + ' ' : '') + 'Pools: source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
 						bAbort = true;
 						return;
 					}
@@ -324,7 +323,6 @@ function _pools({
 						console.log((this.title ? this.title + ' ' : '') + 'Pools: source -> ' + plsName);
 						handleListFrom = plman.GetPlaylistItems(idxFrom);
 					}
-					if (handleListFrom) {sourceCount = handleListFrom.Count;}
 				}
 			}
 			if (!handleListFrom || !handleListFrom.Count) {return;}
@@ -339,6 +337,7 @@ function _pools({
 						handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
 					} else {fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); bAbort = true; return;}
 				}
+				sourceCount = handleListFrom.Count;
 				// Remove duplicates
 				// Search by distance output should be already de-duplicated
 				if (this.checkDuplicatesBy.length && !plsName.startsWith('_SEARCHBY')) {
@@ -427,6 +426,7 @@ function _pools({
 	}
 	this.inputPool = (last = {fromPls: {_LIBRARY_0: 15, _LIBRARY_1: 15, _LIBRARY_2: 15}}) => {
 		// Sources
+		const origKeys = last.hasOwnProperty('fromPls') ? Object.keys(last.fromPls) : [];
 		let fromPls;
 		try {
 			fromPls = utils.InputBox(
@@ -458,7 +458,7 @@ function _pools({
 				window.ID,
 				'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent, but empty applies global forced query too if enabled.\n(playlist,query;playlist,query)',
 				(this.title ? this.title + ': ' : '') + 'Pools',
-				last.hasOwnProperty('query')
+				last.hasOwnProperty('query') && isArrayEqual(origKeys, Object.keys(fromPls))
 					? Object.keys(last.query).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.query[key];}, '')
 					: Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + 'ALL';}, ''),
 				true
@@ -487,7 +487,7 @@ function _pools({
 				window.ID,
 				'How tracks should be picked? (pairs)\nMethods: ' + pickMethodsKeys.join(', ') + '\n(playlist,method;playlist,method)',
 				(this.title ? this.title + ': ' : '') + 'Pools',
-				last.hasOwnProperty('pickMethod')
+				last.hasOwnProperty('pickMethod') && isArrayEqual(origKeys, Object.keys(fromPls))
 					? Object.keys(last.pickMethod).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + last.pickMethod[key]}, '')
 					: Object.keys(fromPls).reduce((total, key) => {return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]}, ''),
 				true
