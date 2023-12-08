@@ -40,6 +40,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
           gh release create
+          --verify-tag
+          --latest
           -F RELEASE.md
           -t 'v${{ inputs.tag }} - ${{ inputs.title }}'
           'v${{ inputs.tag }}'
