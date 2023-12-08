@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.6.0](#360---2023-12-08)
 - [3.5.0](#350---2023-11-28)
 - [3.4.1](#341---2023-11-26)
 - [3.4.0](#340---2023-11-24)
@@ -54,6 +55,13 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+
+## [3.6.0] - 2023-12-08
 ### Added
 - Pools: can now read .fpl playlist files from [Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP).
 - Toolbar: now supports color for image icons (which are not drawn using fonts).
@@ -1124,7 +1132,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.5.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.6.0...HEAD
+[3.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.1...v3.5.0
 [3.4.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.3.1...v3.4.0
