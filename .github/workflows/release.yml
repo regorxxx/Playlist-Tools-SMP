@@ -26,15 +26,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ inputs.tag }}
           tag_prefix: 'v'
-      - name: Create readme header
+      - name: 'Create readme header'
         shell: bash
         working-directory: '.'
         run: |
           cp .github/RELEASE_HEAD.md RELEASE_HEAD.md
-      - name: 'Create Release using GitHub CLI'
-      - uses: CSchoel/release-notes-from-changelog@v1.3.0
+      - name: 'Create release notes'
+        uses: CSchoel/release-notes-from-changelog@v1.3.0
         with:
           version: ${{ inputs.tag }}
+      - name: 'Create Release using GitHub CLI'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
