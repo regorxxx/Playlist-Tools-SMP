@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag: (vX.X.X)'
+        description: 'Release tag: (X.X.X)'
         required: true
         type: string
       title:
@@ -36,7 +36,7 @@ jobs:
           gh release create
           -F RELEASE.md
           -t 'v${{ inputs.tag }} - ${{ inputs.title }}'
-          ${ RELEASE_VERSION }
+          ${{ env.RELEASE_VERSION }}
   # Attach assets
   mod:
     needs: release
@@ -54,7 +54,7 @@ jobs:
         with:
           files: 'foo_spider_monkey_panel-v1.6.1-mod.fb2k-component'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${ RELEASE_VERSION }
+          release-tag: ${{ env.RELEASE_VERSION }}
   # Build and attach package
   package:
     needs: release
@@ -81,7 +81,7 @@ jobs:
         with:
           files: 'packages/*.zip'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${ RELEASE_VERSION }
+          release-tag: ${{ env.RELEASE_VERSION }}
       - name: 'No package associated to repository'
         if: ${{ steps.switch-case.outputs.match == '0' }}
         run: echo 'No package associated'
