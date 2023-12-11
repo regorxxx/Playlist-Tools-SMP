@@ -1,5 +1,5 @@
 'use strict';
-//05/10/23
+//10/12/23
 
 include('..\\..\\helpers\\menu_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
@@ -235,18 +235,18 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 				const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'ARTIST'}, input || Input.data.lastInput), playlistName({type: 'ARTIST'}, input || Input.data.lastInput)];
+					: [buildUrl({type: 'ARTIST'}, input || Input.lastInput), playlistName({type: 'ARTIST'}, input || Input.lastInput)];
 			}},
 			{name: 'By Similar artist to...', menuName: subMenuCustom, url: () => {
 				const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'SIMILAR'}, input || Input.data.lastInput), playlistName({type: 'SIMILAR'}, input || Input.data.lastInput), 2];
+					: [buildUrl({type: 'SIMILAR'}, input || Input.lastInput), playlistName({type: 'SIMILAR'}, input || Input.lastInput), 2];
 			}},
 			{name: 'By Album...', menuName: subMenuCustom, url: () => {
 				const input = Input.string('string', (cache.lastAlbum || '').toString(), 'Input Artist|Album (case insensitive):\n\nFor ex: lana del rey|born to die', 'Last.fm', 'lana del rey|born to die', [], true);
 				if (input === null && !Input.isLastEqual ) {return null;}
-				const [, artist, album] = (input || Input.data.lastInput).match(/(.*?)\|(.*)/i);
+				const [, artist, album] = (input || Input.lastInput).match(/(.*?)\|(.*)/i);
 				return !isString(artist) || !isString(album)
 					? null 
 					: [buildUrl({type: 'ALBUM_TRACKS', val: [[],[artist]]}, album), playlistName({type: 'ALBUM_TRACKS'}, album)];
@@ -255,44 +255,44 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 				const input = Input.string('string', (cache.lastTag || '').toString(), 'Input any Folksonomy/Genre/Style tag (case insensitive):\n\nFor ex: Rock, Summer, Cool, Female Vocal, ...', 'Last.fm', 'Rock', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'TAG'}, input || Input.data.lastInput), playlistName({type: 'TAG'}, input || Input.data.lastInput)];
+					: [buildUrl({type: 'TAG'}, input || Input.lastInput), playlistName({type: 'TAG'}, input || Input.lastInput)];
 			}},
 			{name: 'By Date...', menuName: subMenuCustom, url: () => {
 				const year = new Date().getFullYear();
 				const input = Input.number('int positive', Number(cache.lastDate || year), 'Input Year:', 'Last.fm', 1975, [(n) => n <= year]);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'TAG'}, input || Input.data.lastInput), playlistName({type: 'TAG'}, input || Input.data.lastInput)];
+					: [buildUrl({type: 'TAG'}, input || Input.lastInput), playlistName({type: 'TAG'}, input || Input.lastInput)];
 			}},
 			{name: 'Top tracks...', menuName: subMenuUser, url: () => {
 				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'USER_LIBRARY'}, input || Input.data.lastInput), playlistName({type: 'USER_LIBRARY'}, input || Input.data.lastInput)];
+					: [buildUrl({type: 'USER_LIBRARY'}, input || Input.lastInput), playlistName({type: 'USER_LIBRARY'}, input || Input.lastInput)];
 			}},
 			{name: 'Loved...', menuName: subMenuUser, url: () => {
 				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'USER_LOVED'}, input || Input.data.lastInput), playlistName({type: 'USER_LOVED'}, input || Input.data.lastInput)];
+					: [buildUrl({type: 'USER_LOVED'}, input || Input.lastInput), playlistName({type: 'USER_LOVED'}, input || Input.lastInput)];
 			}},
 			{name: 'Mix...', menuName: subMenuUser, url: () => {
 				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'USER_MIX'}, input || Input.data.lastInput), playlistName({type: 'USER_MIX'}, input || Input.data.lastInput), 2];
+					: [buildUrl({type: 'USER_MIX'}, input || Input.lastInput), playlistName({type: 'USER_MIX'}, input || Input.lastInput), 2];
 			}},			
 			{name: 'Recommendations...', menuName: subMenuUser, url: () => {
 				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'USER_RECOMMENDATIONS'}, input || Input.data.lastInput), playlistName({type: 'USER_RECOMMENDATIONS'}, input || Input.data.lastInput), 2];
+					: [buildUrl({type: 'USER_RECOMMENDATIONS'}, input || Input.lastInput), playlistName({type: 'USER_RECOMMENDATIONS'}, input || Input.lastInput), 2];
 			}},
 			{name: 'Neighbours...', menuName: subMenuUser, url: () => {
 				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
 				return input === null && !Input.isLastEqual 
 					? null 
-					: [buildUrl({type: 'USER_NEIGHBOURS'}, input || Input.data.lastInput), playlistName({type: 'USER_LOVED'}, input || Input.data.lastInput), 2];
+					: [buildUrl({type: 'USER_NEIGHBOURS'}, input || Input.lastInput), playlistName({type: 'USER_LOVED'}, input || Input.lastInput), 2];
 			}},
 		];
 		customURLS.forEach((entry) => {

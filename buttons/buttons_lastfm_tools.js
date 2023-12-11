@@ -1,5 +1,5 @@
 'use strict';
-//24/11/23
+//10/12/23
 
 /* 
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -125,8 +125,8 @@ addButton({
 						overwriteProperties(properties);
 					}
 				}
-				if (key && Input.data.lastInput !== null && !Input.isLastEqual) {
-					properties[key][1] = Input.data.lastInput.toString();
+				if (key && Input.lastInput !== null && !Input.isLastEqual) {
+					properties[key][1] = Input.lastInput.toString();
 					overwriteProperties(properties);
 				}
 			}
