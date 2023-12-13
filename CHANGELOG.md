@@ -60,6 +60,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Portable: 'Other tools\Check tags' error on portable installations while setting dictionaries with relative paths.
 
 ## [3.6.0] - 2023-12-08
 ### Added
