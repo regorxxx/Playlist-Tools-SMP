@@ -57,10 +57,15 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Macros: changed implementation to don't record entries called by other macros, just the parent; this ensures any action run by other macros is always run and up to date with any change at a later point. Also no double processing (due to recording of both the parent and child items).
+- Macros: added a limit on the recursion within macros, not allowing infinite loops due to Macro A calling Macro B and Macro B calling Macro A at the same time.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
 - Portable: 'Other tools\Check tags' error on portable installations while setting dictionaries with relative paths.
+- Macros: saving a macro corrupted the Playlist Tools button configuration.
+- Macros: did not save properly the asynchronous flag as true/false.
+- Macros: did not apply the asynchronous flag properly to the configurable tools (in this case only to 'Other tools\Check tags').
 
 ## [3.6.0] - 2023-12-08
 ### Added
