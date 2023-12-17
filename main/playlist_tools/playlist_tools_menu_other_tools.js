@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/11/23
+//14/12/23
 
 // Other tools
 {
@@ -40,13 +40,13 @@
 					// Menus
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: () => {
-						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+					menu.newEntry({menuName: subMenuName, entryText: 'Report errors by comparison', func: (_, bAsync) => {
+						if (typeof bAsync === 'undefined') {bAsync = JSON.parse(menu_properties.async[1])['Check tags'];}
 						const endPromise = checkTags({properties: menu_properties, bUseDic: false, bAsync});
 						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: () => {
-						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+					menu.newEntry({menuName: subMenuName, entryText: 'Report errors + dictionary', func: (_, bAsync) => {
+						if (typeof bAsync === 'undefined') {bAsync = JSON.parse(menu_properties.async[1])['Check tags'];}
 						const endPromise = checkTags({properties: menu_properties, bUseDic: true, bAsync});
 						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
@@ -56,10 +56,10 @@
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
-							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: () => {
+							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (_, bAsync) => {
 								const properties = clone(menu_properties);
 								properties['tagNamesToCheck'][1] = obj.tag;
-								const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+								if (typeof bAsync === 'undefined') {bAsync = JSON.parse(menu_properties.async[1])['Check tags'];}
 								const endPromise = checkTags({properties, bUseDic: obj.bUseDic, bAsync});
 								if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 							}, flags: multipleSelectedFlags});
@@ -68,13 +68,13 @@
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					menu.newEntry({menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: () => {
-						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags by comparison', func: (_, bAsync) => {
+						if (typeof bAsync === 'undefined') {bAsync = JSON.parse(menu_properties.async[1])['Check tags'];}
 						const endPromise = checkTags({properties: menu_properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: false, bAsync});
 						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
-					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: () => {
-						const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+					menu.newEntry({menuName: subMenuName, entryText: 'Report all tags + dictionary', func: (_, bAsync) => {
+						if (typeof bAsync === 'undefined') {bAsync = JSON.parse(menu_properties.async[1])['Check tags'];}
 						const endPromise = checkTags({properties: menu_properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: true, bAsync});
 						if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 					}, flags: multipleSelectedFlags});
@@ -84,10 +84,10 @@
 						menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});
 						tagsToCheck.forEach( (obj) => {
 							if (obj === 'sep') {menu.newEntry({menuName: subMenuSecondName, entryText: 'sep'});return;}
-							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: () => {
+							menu.newEntry({menuName: subMenuSecondName, entryText: obj.dscrpt, func: (_, bAsync) => {
 								const properties = clone(menu_properties);
 								properties['tagNamesToCheck'][1] = obj.tag;
-								const bAsync = JSON.parse(menu_properties.async[1])['Check tags'];
+								if (typeof bAsync === 'undefined') {bAsync = JSON.parse(menu_properties.async[1])['Check tags'];}
 								const endPromise = checkTags({properties, freqThreshold: 1, maxSizePerTag: Infinity, bUseDic: obj.bUseDic, bAsync});
 								if (defaultArgs.parent && bAsync) {defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise);} // Apply animation on registered parent button...
 							}, flags: multipleSelectedFlags});
