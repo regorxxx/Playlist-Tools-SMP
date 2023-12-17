@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/11/23
+//14/12/23
 
 /* 
 	Playlist Tools Menu
@@ -422,11 +422,11 @@ function menuTooltip() {
 */
 
 menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Runs the first time the menu is clicked
-	if (bInit && menu_panelProperties.bDebug[1]) {
+	if (bInit && menu_panelProperties.bDebug[1] && (menusEnabled.hasOwnProperty('Macros') || menusEnabled.Macros === true) && menu.hasOwnProperty('Macros')) {
 		const mainMenu = menu.getMainMenuName();
 		const tree = {};
 		let menuList = [];
-		const toSkip = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'By... (tags)', 'sep']);
+		const toSkip = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'By... (tags)', 'By... (tag-value)', 'By... (tag)', 'sep']);
 		const toSkipMenuMatch = new Set(['Configuration']);
 		const toInclude = new Set(['Most played Tracks', 'Top rated Tracks from...', 'Select...','Expand...', 'Next', 'Search same by tags...','Dynamic Queries...', 'Search similar by Graph...', 'Search similar by DynGenre...', 'Search similar by Weight...', 'Special Playlists...', 'Duplicates and tag filtering', 'Harmonic mix', 'Advanced sort...', 'Scatter by tags','Pools'].map((entry) => {return entry.toLowerCase();}));
 		menu.getEntries().filter((entry) => {return entry.hasOwnProperty('entryText') && entry.hasOwnProperty('menuName');}).forEach((entry) => {
@@ -437,7 +437,7 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Ru
 			if (!toInclude.has(menuName.toLowerCase())) {return;}
 			if (entryText === 'sep') {return;}
 			if (flag === MF_GRAYED) {return;}
-			if (toSkip.has(entryText) || toSkip.has(menuName)) {return;}
+			if (toSkip.has(entryText) || toSkip.has(menuName) || toSkip.has(entryText.split('\\').pop())) {return;}
 			if (entryText.endsWith('...')) {return;}
 			// Save
 			if (!tree.hasOwnProperty(menuName)) {tree[menuName] = [];}
@@ -453,9 +453,7 @@ menu.newCondEntry({entryText: 'Macros test', condFunc: (bInit = true) => { // Ru
 		let menuName = 'Macros';
 		menu.newEntry({menuName, entryText: 'sep'});
 		menu.newEntry({menuName, entryText: newMacro.name + (newMacro.bAsync ? '\t(async)' : ''), func: () => {
-			newMacro.entry.forEach( (entry, idx, arr) => {
-				menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: newMacro.bAsync}); // Don't clear menu on last call
-			});
+			menu.Macros.run(newMacro, true);
 		}});
 	}
 }});
