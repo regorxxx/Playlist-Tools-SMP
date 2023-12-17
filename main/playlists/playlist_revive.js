@@ -1,50 +1,53 @@
 ﻿'use strict';
-//14/09/23
+//17/12/23
 
 /*
 	Playlist Revive
 	Alternative to foo_playlist_revive.
 	Playlist Revive makes dead items in a playlist alive again by replacing them with the matching ones in media library.
 	A handy utility for those who often move or rename their media files/folders.
-	
+
 	Matching:
 		- Audio MD5 (Exact Match)
 		- Title + Length + Size (Exact Match)
 		- Tags (Similarity)
-	
+
 	Usage:
 		- Select the tracks in the relevant playlist.
 		- Apply script (using a button, menu entry, main menu SMP, etc. associated to it).
 
  */
- 
+
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
+include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
+/* global similarity:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
+/* global getTagsValuesV4:readable, query_combinations:readable, query_join:readable */
 
 function playlistRevive({
-					playlist = plman.ActivePlaylist, // Set to -1 to create a clone of selItems and output the revived list
-					selItems = playlist !== -1 ? plman.GetPlaylistSelectedItems(playlist) : null,
-					simThreshold = 1, // 1 only allows exact matches, lower allows some tag differences, but at least the main tag must be the same!
-					bFindAlternative = false,
-					bSimulate = false,
-					bReportAllMatches = false,
-					bSilent = false, // Probably should be false if processing only a HandleList!
-					} = {}) {
+	playlist = plman.ActivePlaylist, // Set to -1 to create a clone of selItems and output the revived list
+	selItems = playlist !== -1 ? plman.GetPlaylistSelectedItems(playlist) : null,
+	simThreshold = 1, // 1 only allows exact matches, lower allows some tag differences, but at least the main tag must be the same!
+	bFindAlternative = false,
+	bSimulate = false,
+	bReportAllMatches = false,
+	bSilent = false, // Probably should be false if processing only a HandleList!
+} = {}) {
 	if (typeof selItems === 'undefined' || selItems === null || selItems.Count === 0) {
 		return null;
 	}
 	if (playlist === -1 && selItems) {selItems = selItems.Clone();} // Don't edit original handleList
-	
+
 	let bLockedPls = false;
 	if (playlist !== -1) {
 		const locks = plman.GetPlaylistLockedActions(playlist);
 		if (plman.IsAutoPlaylist(playlist) || locks.includes('RemoveItems') || locks.includes('AddItems')) {bLockedPls = true; bSimulate = true;}
 	}
-	
+
 	let cache = new Set();
 	const streamRegEx = /^file:\/\//i;
-	
+
 	// Filter items which already exist
 	let items = new FbMetadbHandleList();
 	selItems.Convert().forEach( (handle) => {
@@ -68,8 +71,8 @@ function playlistRevive({
 		const values = new Set();
 		const tagsArr = tags[index].filter(String).filter((arr) => {
 			return !arr.every((tag) => {
-					if (values.has(tag)) {return true;}
-					else {values.add(tag); return false;}
+				if (values.has(tag)) {return true;}
+				else {values.add(tag); return false;}
 			});
 		});
 		queryArr.push(tagsArr.length // Don't report missing tags for items without tags...
@@ -112,7 +115,7 @@ function playlistRevive({
 						if (trackNum && trackNum.length && trackNumLibr && trackNumLibr.length) {
 							if (trackNum[0] === trackNumLibr[0]) {score = Math.round((dirSim * 0.75 + fileSim * 0.25) * 100);}
 						} else {score = Math.round((dirSim * 0.75 + fileSim * 0.25) * 100);}
-					} 
+					}
 					else if (fileSim >= 0.90 && dirSim >= 0.60) {score = Math.round((dirSim * 0.25 + fileSim * 0.75) * 100);}
 					else if (pathSim >= 0.95) {score = Math.round(pathSim * 100);}
 					if (score >= simThreshold) {
@@ -146,7 +149,7 @@ function playlistRevive({
 				let tag, tagLibr;
 				for (let i = 1; i <= 2; i++) {
 					tag = tags[i][index][0], tagLibr = tagsLibrary[i][indexLibr][0];
-					if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true; break;} 
+					if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true; break;}
 				}
 				if (bExact && !alternativesSet.has(indexLibr)) {
 					alternativesSet.add(indexLibr);
@@ -168,7 +171,7 @@ function playlistRevive({
 			!bExact && libraryItemsArr.forEach( (handleLibr, indexLibr) => {
 				if (bExact) {return;} // No need to continue then
 				const tag = tags[3][index][0], tagLibr = tagsLibrary[3][indexLibr][0];
-				if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true;} 
+				if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true;}
 				if (bExact && !alternativesSet.has(indexLibr)) {
 					alternativesSet.add(indexLibr);
 					alternativesObj.push({idx: indexLibr, simil: 100, bExact});
@@ -178,7 +181,7 @@ function playlistRevive({
 			!bExact && libraryItemsArr.forEach( (handleLibr, indexLibr) => {
 				if (bExact) {return;} // No need to continue then
 				const tag = tags[4][index][0], tagLibr = tagsLibrary[4][indexLibr][0];
-				if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true;} 
+				if (tag.length && tagLibr.length && tag === tagLibr) {bExact = true;}
 				if (bExact && !alternativesSet.has(indexLibr)) {
 					alternativesSet.add(indexLibr);
 					alternativesObj.push({idx: indexLibr, simil: 100, bExact});
@@ -256,7 +259,7 @@ function playlistRevive({
 		// Extra info
 		if (!bSilent) {
 			if (bDeadLibrary) {
-				console.popup('There are dead items in your library. Rescan it.', 'Playlist revive');
+				console.popup('There are dead items in your library. Re-scan it.', 'Playlist revive');
 			}
 			if (bLockedPls) {
 				console.popup('There are dead items on a locked playlist:\n                  ' + plman.GetPlaylistName(playlist) + ' (locked by ' + (plman.GetPlaylistLockName(playlist) || '?') + ')', 'Playlist revive', true, false);
@@ -332,6 +335,7 @@ function findDeadItems() {
 	return deadItems;
 }
 
+/* exported selectDeadItems */
 function selectDeadItems(playlistIndex) {
 	if (playlistIndex === -1 || playlistIndex >= plman.PlaylistCount) {return;}
 	plman.ClearPlaylistSelection(playlistIndex);
@@ -348,12 +352,13 @@ function selectDeadItems(playlistIndex) {
 	});
 	if (deadItems.length) {
 		plman.ActivePlaylist = playlistIndex;
-		plman.SetPlaylistSelection(playlistIndex, deadItems.map((_) => _.idx), true)
+		plman.SetPlaylistSelection(playlistIndex, deadItems.map((_) => _.idx), true);
 		plman.SetPlaylistFocusItem(playlistIndex, deadItems[0].idx);
 	}
 	return deadItems;
 }
 
+/* exported playlistReviveAll */
 function playlistReviveAll() {
 	const deadItems = findDeadItems();
 	if (deadItems.length) {
