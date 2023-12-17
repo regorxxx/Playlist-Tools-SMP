@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [3.7.0](#370---2023-12-17)
 - [3.6.0](#360---2023-12-08)
 - [3.5.0](#350---2023-11-28)
 - [3.4.1](#341---2023-11-26)
@@ -55,6 +56,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [3.7.0] - 2023-12-17
 ### Added
 ### Changed
 - Macros: changed implementation to don't record entries called by other macros, just the parent; this ensures any action run by other macros is always run and up to date with any change at a later point. Also no double processing (due to recording of both the parent and child items).
@@ -1138,7 +1145,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.6.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.7.0...HEAD
+[3.7.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.1...v3.5.0
 [3.4.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.0...v3.4.1
