@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/12/23
+//14/12/23
 
 // Selection manipulation...
 {
@@ -144,7 +144,7 @@
 						readmes[name + '\\' + 'Harmonic mix'] = folders.xxx + 'helpers\\readme\\harmonic_mixing.txt';
 						if (selArgs.length) {selArgs.push({name: 'sep'});}
 						selArgs.push({
-							name: 'Harmonic mix (Camelot Wheel)', 	func: (args) => {
+							name: 'Harmonic mix (Camelot Wheel)', func: (args) => {
 								const ap = plman.ActivePlaylist;
 								args.selItems = plman.GetPlaylistSelectedItems(ap);
 								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1];
