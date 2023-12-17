@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/12/23
+//14/12/23
 
 // Macros
 {
@@ -9,6 +9,7 @@
 		if (_isFile(scriptPath)){
 			let menuName = menu.newMenu(name);
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
+			const Macros = menu.Macros = new _Macros(menu, {prefixMenu: name});
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_macros.txt';
 			// Create new properties
@@ -101,8 +102,7 @@
 			menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', func: null, flags: MF_GRAYED});
 			menu.newEntry({menuName, entryText: 'sep'});
 			menu.newCondEntry({entryText: 'Macros', condFunc: () => {
-				let propMacros = JSON.parse(menu_properties['macros'][1]);
-				if (!macros.length && propMacros.length) {macros = propMacros;} // Restore macros list on first init
+				const propMacros = JSON.parse(menu_properties['macros'][1]);
 				// List
 				const entryNames = new Set();
 				propMacros.forEach((macro) => {
@@ -117,43 +117,38 @@
 						} else {entryNames.add(macroName);}
 						const bAsync = macro.hasOwnProperty('bAsync') && macro.bAsync ? true : false;
 						menu.newEntry({menuName, entryText: macroName + (bAsync ? '\t(async)' : ''), func: () => {
-							macro.entry.forEach( (entry, idx, arr) => {
-								menu.btn_up(void(0), void(0), void(0), entry, void(0), void(0), void(0), {pos: 1, args: bAsync}); // Don't clear menu on last call
-							});
+							Macros.run(macro);
 						}});
 					}
 				});
 				if (!propMacros.length) {menu.newEntry({menuName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
 				menu.newEntry({menuName, entryText: 'sep'});
 				// Save
-				menu.newEntry({menuName, entryText: 'Start recording a macro' + (currListener !== null ? '\t[recording]' : ''), func: () => {
-					const macro = initMacro(menu);
+				menu.newEntry({menuName, entryText: 'Start recording a macro' + (Macros.isRecording()  ? '\t[recording]' : ''), func: () => {
+					Macros.set(propMacros); // There is no need for updating the list, but doing this ensures names are not duplicated
+					const macro = Macros.record();
 					if (macro && macro.name === 'sep') { // Just add a separator
-						saveMacro();
-						menu_properties['macros'][1] = JSON.stringify(macros);
+						Macros.save();
+						menu_properties['macros'][1] = JSON.stringify(Macros.get());
 						// Presets
 						if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
 						presets.macros.push(macro);
 						menu_properties['presets'][1] = JSON.stringify(presets);
-						overwriteProperties(menu_properties); // Updates panel
+						overwriteMenuProperties(); // Updates panel
 					} else if (defaultArgs.parent) { // Apply animation on registered parent button...
-						defaultArgs.parent.switchAnimation(menuName + '\\Recording...', true, () => {return currListener === null;});
+						defaultArgs.parent.switchAnimation(menuName + '\\Recording...', true, () => {return !Macros.isRecording();});
 					}
-				}, flags: currListener === null ? MF_STRING : MF_GRAYED});
+				}, flags: !Macros.isRecording() ? MF_STRING : MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'Stop recording and Save macro', func: () => {
-					const macro = saveMacro();
-					if (!macro.entry.length) {
-						console.popup('No actions recorded. Macro will not be saved.', scriptName + ': ' + name);
-						macros.pop();
-						return;
-					}
-					menu_properties['macros'][1] = JSON.stringify(macros);
+					const macro = Macros.save();
+					if (!macro) {console.popup('No actions recorded. Macro will not be saved.', scriptName + ': ' + name); return;}
+					menu_properties['macros'][1] = JSON.stringify(Macros.get());
 					// Presets
 					if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
 					presets.macros.push(macro);
 					menu_properties['presets'][1] = JSON.stringify(presets);
-					overwriteProperties(menu_properties); // Updates panel
-				}, flags: currListener !== null ? MF_STRING : MF_GRAYED});
+					overwriteMenuProperties(); // Updates panel
+				}, flags: Macros.isRecording() ? MF_STRING : MF_GRAYED});
 				menu.newEntry({menuName, entryText: 'sep'});
 				{	// Add / Remove
 					createSubMenuEditEntries(menuName, {
