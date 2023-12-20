@@ -1,11 +1,11 @@
 ﻿'use strict';
 //19/11/23
 
-/* 
+/*
 	Automatic tagging...
-	File processing takes time, specially for some functions (ReplayGain, etc.), so we delay next step execution 
-	until onMetadbChanged fires for all selected handles. 
-	
+	File processing takes time, specially for some functions (ReplayGain, etc.), so we delay next step execution
+	until onMetadbChanged fires for all selected handles.
+
 	Note there is no way to know when some arbitrary plugin finish their processing.
 	Some plugins expect user input for final tagging after processing the files (ReplayGain for ex.), so those steps
 	are delayed to the end so the user can press OK on those popups without blocking processing.
@@ -14,8 +14,8 @@
 include('..\\..\\helpers\\helpers_xxx.js');
 
 function tagAutomation({
-	toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/, 
-	bOutputTools = false, 
+	toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/,
+	bOutputTools = false,
 	bOutputDefTools = false,
 	bWineBug = false,
 	bFormatPopups = true,
@@ -38,13 +38,13 @@ function tagAutomation({
 	this.timers = {debounce: 300, listener: 1000};
 	this.bWineBug = bWineBug;
 	this.notAllowedTools = new Set();
-	this.incompatibleTools = new biMap({ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey'});
+	this.incompatibleTools = new BiMap({ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey'});
 	this.tools = [
-		{key: 'biometric', tag: [globTags.fooidFP], 
+		{key: 'biometric', tag: [globTags.fooidFP],
 			title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: true},
 		{key: 'chromaPrint', tag: [globTags.acoustidFP],
 			title: 'ChromaPrint Fingerprinting', bAvailable: utils.IsFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && utils.IsFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true},
-		{key: 'massTag', tag: ['AUDIOMD5'], 
+		{key: 'massTag', tag: ['AUDIOMD5'],
 			title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true), bDefault: true},
 		{key: 'audioMd5', tag: ['MD5'],
 			title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true), bDefault: true},
@@ -83,11 +83,11 @@ function tagAutomation({
 		this.incompatibleTools.uniValues().forEach((tool) => {this.toolsByKey[tool] = false;});
 		return this.toolsByKey;
 	}
-	
+
 	this.description = () => {
 		return this.tools.reduce((text, tool, index) => {return (this.toolsByKey[tool.key] ? (text.length ? text + ', ' + tool.title : tool.title) : text);}, ''); // Initial value is '';
 	};
-	
+
 	this.setNotAllowedTools = (type) => {
 		switch (type) {
 			case 'subSong':
@@ -101,7 +101,7 @@ function tagAutomation({
 				break;
 		}
 	};
-	
+
 	this.run = () => {
 		// Usage tips
 		if (this.bToolPopups && (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA)) {
@@ -359,9 +359,9 @@ function tagAutomation({
 		if (!bSucess) {this.stepTag(this.iStep);} // If the step was omitted, then run next step
 		return;
 	};
-	
+
 	this.debouncedStep = debounce(this.stepTag, this.timers.debounce); // Only continues next step when last tag update was done > X ms ago
-	
+
 	this.checkHandleList = () => {
 		const i = this.iStep - 1;
 		if (i >= 0) {
@@ -391,18 +391,18 @@ function tagAutomation({
 		}
 		this.nextStepTag();
 	};
-	
+
 	this.createListener = () => {
 		if (this.listener !== null) {clearInterval(this.listener);}
 		this.listener = repeatFn(this.checkHandleList, this.timers.listener)();
 		return this.listener;
 	};
-	
+
 	this.changeTools = (toolsByKey) => {
 		this.toolsByKey = toolsByKey;
 		this.loadDependencies();
 	};
-	
+
 	this.loadDependencies = () => {
 		if (this.toolsByKey.chromaPrint) {include('..\\fingerprint\\chromaprint-utils-js_fingerprint.js');}
 		if (this.toolsByKey.ffmpegLRA) {include('..\\tags\\ffmpeg-utils.js');}
@@ -410,14 +410,14 @@ function tagAutomation({
 		if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {include('..\\tags\\essentia-utils.js');}
 		if (this.toolsByKey.folksonomy) {include('..\\tags\\folksonomy-utils.js');}
 	};
-	
+
 	this.isRunning = () => {
 		return 	this.selItems !== null && this.countItems !== null && this.iStep !== null;
 	};
-	
+
 	this.init = () => {
 		this.loadDependencies();
 	};
-	
+
 	this.init();
 }

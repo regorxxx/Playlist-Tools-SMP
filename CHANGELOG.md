@@ -58,8 +58,10 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Code cleanup.
 ### Removed
 ### Fixed
+- Minor fixes.
 
 ## [3.7.0] - 2023-12-17
 ### Added

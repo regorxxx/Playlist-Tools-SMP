@@ -1,24 +1,33 @@
 ﻿'use strict';
-//08/01/23
+//20/12/23
+
+/* exported sortByDyngenre */
+/* global globTags:readable */
 
 /*
 	Sort by Dyngenre
 	-----------------------------------
 	Uses notation described at 'dyngenre_map' on dyngenre_map_xxx.js to sort selection by genre/style.
-*/ 
+*/
 
 include('..\\..\\helpers\\dyngenre_map_xxx.js');
+/* global dyngenreMap:readable */
+include('..\\..\\helpers\\helpers_xxx_prototypes.js');
+/* global _asciify:readable */
+include('..\\..\\helpers\\helpers_xxx_tags.js');
+/* global getTagsValuesV3:readable, sanitizeTagTfo:readable */
 
 const [,, genreStyleMap] = dyngenreMap();
 
+
 function sortByDyngenre({
-								playlistIdx = plman.ActivePlaylist,
-								styleGenreTag = typeof globTags !== 'undefined' ? [globTags.genre, globTags.style] : ['GENRE', 'STYLE'],
-								bSelection = true,
-								sortOrder = 1,
-								bAscii = true,
-								bDebug = false
-							} = {}) {
+	playlistIdx = plman.ActivePlaylist,
+	styleGenreTag = typeof globTags !== 'undefined' ? [globTags.genre, globTags.style] : ['GENRE', 'STYLE'],
+	bSelection = true,
+	sortOrder = 1,
+	bAscii = true,
+	bDebug = false
+} = {}) {
 	// Safety checks
 	if (!styleGenreTag.length) {return false;}
 	if (playlistIdx >= plman.PlaylistCount) {return false;}
