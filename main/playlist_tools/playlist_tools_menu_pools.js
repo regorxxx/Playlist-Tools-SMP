@@ -42,55 +42,55 @@
 				const plLenQuart = Math.floor(plLen / 4);
 				let pools = [
 					{name: 'Top tracks mix', pool: {
-						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
+						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf},
+						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 						toPls: 'Top tracks mix',
 						sort: '',
 					}},
 					{name: 'Top tracks mix (harmonic)', pool: {
-						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
+						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf},
+						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 						toPls: 'Top tracks mix',
 						harmonicMix: true
 					}},
 					{name: 'Top tracks mix (intercalate)', pool: {
-						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
+						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf},
+						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 						insertMethod: 'intercalate',
-						toPls: 'Top tracks mix', 
+						toPls: 'Top tracks mix',
 						sort: '%PLAYLIST_INDEX%',
 					}},
 					{name: 'sep'},
 					{name: 'Top recently played tracks mix', pool: {
-						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %LAST_PLAYED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %LAST_PLAYED% DURING LAST 1 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %LAST_PLAYED% DURING LAST 5 WEEKS'}, 
+						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf},
+						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %LAST_PLAYED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND (%LAST_PLAYED_ENHANCED% DURING LAST 1 WEEK OR %LAST_PLAYED% DURING LAST 1 WEEK)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 						toPls: 'Top recently played tracks mix',
 						sort: '',
 					}},
 					{name: 'Top recently added tracks mix', pool: {
-						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'}, 
+						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf},
+						query: {_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
 						toPls: 'Top recently added tracks mix',
 						sort: '',
 					}},
 					{name: 'sep'},
 					{name: 'Current genre/style and top tracks', pool: {
-						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf}, 
-						query: {_LIBRARY_0: '' + globTags.genre + ' IS #' + globTags.genre + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: globTags.style + ' IS #' + globTags.style + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_2: globTags.rating + ' EQUAL 5'}, 
+						fromPls: {_LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf},
+						query: {_LIBRARY_0: '' + globTags.genre + ' IS #' + globTags.genre + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: globTags.style + ' IS #' + globTags.style + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_2: globTags.rating + ' EQUAL 5'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
-						toPls: 'Current genre/style and top tracks', 
+						toPls: 'Current genre/style and top tracks',
 						sort: '',
 					}},
 					{name: 'Current genre/style and instrumentals', pool: {
-						fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart}, 
-						query: {_LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5', _LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globQuery.instrumental + ') AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)'}, 
+						fromPls: {_LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart},
+						query: {_LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5', _LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globQuery.instrumental + ') AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)'},
 						pickMethod: {_LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random'},
-						toPls: 'Current genre/style and instrumentals', 
+						toPls: 'Current genre/style and instrumentals',
 						sort: '',
 					}},
 					{name: 'sep'},
@@ -98,40 +98,40 @@
 						fromPls: {_GROUP_0: 50},
 						group: {_GROUP_0: globTags.artist},
 						limit: {_GROUP_0: 3},
-						query: {_GROUP_0: '' + globTags.genre + ' IS #' + globTags.genre + '#'}, 
-						toPls: 'Classic Pools (50 artists current genre)', 
+						query: {_GROUP_0: '' + globTags.genre + ' IS #' + globTags.genre + '#'},
+						toPls: 'Classic Pools (50 artists current genre)',
 						sort: '',
 					}},
 					{name: 'Classic Pools (50 random artists)', pool: {
 						fromPls: {_GROUP_0: 50},
 						group: {_GROUP_0: globTags.artist},
 						limit: {_GROUP_0: 3},
-						query: {_GROUP_0: ''}, 
-						toPls: 'Classic Pools (50 artists)', 
+						query: {_GROUP_0: ''},
+						toPls: 'Classic Pools (50 artists)',
 						sort: '',
 					}},
 					{name: 'Classic Pools (all dates)', pool: {
-						fromPls: {_GROUP_0: Infinity}, 
+						fromPls: {_GROUP_0: Infinity},
 						group: {_GROUP_0: globTags.date},
 						limit: {_GROUP_0: 2},
-						query: {_GROUP_0: ''}, 
-						toPls: 'Classic Pools (all dates)', 
+						query: {_GROUP_0: ''},
+						toPls: 'Classic Pools (all dates)',
 						sort: globTags.date,
 					}},
 					{name: 'Classic Pools (3 tracks per artist letter)', pool: {
-						fromPls: {_GROUP_0: Infinity}, 
+						fromPls: {_GROUP_0: Infinity},
 						group: {_GROUP_0: '$lower($ascii($left(' + globTags.artist + ',1)))'},
 						limit: {_GROUP_0: 3},
-						query: {_GROUP_0: ''}, 
-						toPls: 'Classic Pools (3 tracks per letter)', 
+						query: {_GROUP_0: ''},
+						toPls: 'Classic Pools (3 tracks per letter)',
 						sort: '',
 					}},
 					{name: 'Classic Pools (3 tracks per genre)', pool: {
-						fromPls: {_GROUP_0: Infinity}, 
+						fromPls: {_GROUP_0: Infinity},
 						group: {_GROUP_0: globTags.genre},
 						limit: {_GROUP_0: 3},
-						query: {_GROUP_0: ''}, 
-						toPls: 'Classic Pools (3 tracks per genre)', 
+						query: {_GROUP_0: ''},
+						toPls: 'Classic Pools (3 tracks per genre)',
 						sort: '',
 					}},
 				];
@@ -194,7 +194,7 @@
 						// Add separators
 						if (poolObj.hasOwnProperty('name') && poolObj.name === 'sep') {
 							menu.newEntry({menuName, entryText: 'sep'});
-						} else { 
+						} else {
 							// Create names for all entries
 							let poolName = poolObj.name || '';
 							poolName = poolName.length > 40 ? poolName.substring(0,40) + ' ...' : poolName;
@@ -279,9 +279,9 @@
 					{	// Add / Remove
 						createSubMenuEditEntries(menuName, {
 							name,
-							list: pools, 
-							propName: 'pools', 
-							defaults: poolsDefaults, 
+							list: pools,
+							propName: 'pools',
+							defaults: poolsDefaults,
 							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pools\\default.json',
 							input: poolsGen.inputPool,
 							bDefaultFile: true
@@ -305,8 +305,8 @@
 							if (menu_properties.bSmartShuffleAdvc[1]) {
 								fb.ShowPopupMessage(
 									'Smart shuffle will also try to avoid consecutive tracks with these conditions:' +
-									'\n\t-Instrumental tracks.' + 
-									'\n\t-Live tracks.' + 
+									'\n\t-Instrumental tracks.' +
+									'\n\t-Live tracks.' +
 									'\n\t-Female/male vocals tracks.' +
 									'\n\nThese rules apply in addition to the main smart shuffle, swapping tracks' +
 									'\nposition whenever possible without altering the main logic.'

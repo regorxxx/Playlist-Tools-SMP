@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/09/23
+//21/12/23
 
 // Standard Queries...
 {
@@ -19,7 +19,7 @@
 					{name: 'sep'},
 					{name: 'Rating 4-5', query: globTags.rating + ' EQUAL 5 OR ' + globTags.rating + ' EQUAL 4', sort: {tfo: globTags.rating, direction: 1}},
 					{name: 'sep'},
-					{name: 'Recently played', query: '%LAST_PLAYED% DURING LAST 1 WEEK', sort: {tfo: '%LAST_PLAYED%', direction: -1}},
+					{name: 'Recently played', query: '%LAST_PLAYED_ENHANCED% DURING LAST 1 WEEK OR %LAST_PLAYED% DURING LAST 1 WEEK', sort: {tfo: '$if2(%LAST_PLAYED_ENHANCED%,%LAST_PLAYED%)', direction: -1}},
 					{name: 'Recently added', query: '%ADDED% DURING LAST 1 WEEK', sort: {tfo: '%ADDED%', direction: -1}},
 					{name: 'sep'},
 					{name: 'Rock tracks', query: globTags.genre + ' IS rock OR ' + globTags.genre + ' IS alt. rock OR ' + globTags.genre + ' IS progressive rock OR ' + globTags.genre + ' IS hard rock OR ' + globTags.genre + ' IS rock & roll', sort: {tfo: '$rand()', direction: 1}},
@@ -67,7 +67,7 @@
 						if (queryObj.hasOwnProperty('name') && queryObj.name === 'sep') {
 							let entryMenuName = queryObj.hasOwnProperty('menu') ? queryObj.menu : menuName;
 							menu.newEntry({menuName: entryMenuName, entryText: 'sep'});
-						} else { 
+						} else {
 							// Create names for all entries
 							let queryName = queryObj.name || '';
 							queryName = queryName.length > 40 ? queryName.substring(0,40) + ' ...' : queryName;
@@ -83,7 +83,7 @@
 										query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
 									} else if (!query.length) {query =  defaultArgs.forcedQuery;} // Empty uses forced query or ALL
 								} else if (!query.length) {query = 'ALL';} // Otherwise empty is replaced with ALL
-								dynamicQuery({query, sort: queryObj.sort}); 
+								dynamicQuery({query, sort: queryObj.sort});
 							}});
 						}
 					});
@@ -110,9 +110,9 @@
 					{	// Add / Remove
 						createSubMenuEditEntries(menuName, {
 							name,
-							list: queryFilter, 
-							propName: 'searchQueries', 
-							defaults: queryFilterDefaults, 
+							list: queryFilter,
+							propName: 'searchQueries',
+							defaults: queryFilterDefaults,
 							defaultPreset: folders.xxx + 'presets\\Playlist Tools\\std_query_filter\\default.json',
 							input: inputStdQuery,
 							bDefaultFile: true
