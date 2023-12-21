@@ -1,15 +1,24 @@
 'use strict';
-//10/12/23
+//21/12/23
 
+/* exported _lastListMenu */
+
+include('..\\..\\helpers\\helpers_xxx.js');
+/* global folders:readable, MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable,  */
 include('..\\..\\helpers\\menu_xxx.js');
+/* global _menu:readable */
+include('..\\..\\helpers\\helpers_xxx_file.js');
+/* global _isFile:readable, _jsonParseFileCheck:readable, utf8:readable */
 include('..\\..\\helpers\\helpers_xxx_input.js');
+/* global Input:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
+/* global isString:readable, isFunction:readable, */
 
-function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main menu, entries are not split by tag */} = {}) {
+function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main menu, entries are not split by tag */ } = {}) {
 	const parent = this.lastList;
-	const cache = this.cache || {lastDate: '', lastTag: '', lastArtist: '', lastURL: ''};
+	const cache = this.cache || { lastDate: '', lastTag: '', lastArtist: '', lastURL: '' };
 	const bioTags = this.buttonsProperties.bBioTags[1] ? this.bioTags || {} : {};
-	if (bSimulate) {return _lastListMenu.bind({sel: null})({bSimulate: false, bDynamicMenu: true});}
+	if (bSimulate) { return _lastListMenu.bind({ sel: null })({ bSimulate: false, bDynamicMenu: true }); }
 	const menu = new _menu();
 	// Get current selection and metadata
 	const sel = this.sel || plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
@@ -33,9 +42,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 					while (count--) {
 						const val = info.MetaValue(idx, count).trim();
 						tag.val[i].push(val);
-						if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) {tag.valSet.add(val);}
-					};
-				} else { 
+						if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) { tag.valSet.add(val); }
+					}
+				} else {
 					// foo_uie_biography
 					if (tf === 'LASTFM_SIMILAR_ARTIST') {
 						fb.TitleFormat('[%' + tf + '%]')
@@ -57,8 +66,8 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 						while (count--) {
 							const val = bioTags[key][count].trim();
 							tag.val[i].push(val);
-							if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) {tag.valSet.add(val);}
-						};
+							if (i === 0 || i !== 0 && !/TITLE|ALBUM_TRACKS/i.test(tag.type)) { tag.valSet.add(val); }
+						}
 					}
 				}
 			});
@@ -67,7 +76,7 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 		const sbdPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'searchByDistance_artists.json';
 		if (_isFile(sbdPath)) {
 			const dataId = 'artist';
-			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || {valSet: []}).valSet];
+			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
 				const data = _jsonParseFileCheck(sbdPath, 'Tags json', window.Name, utf8);
 				const sdbData = new Set();
@@ -75,7 +84,7 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 					data.forEach((item) => {
 						if (selIds.some((id) => item[dataId] === id)) {
 							item.val.forEach((val) => {
-								if (val.scoreW >= 70) {sdbData.add(val.artist)}
+								if (val.scoreW >= 70) { sdbData.add(val.artist); }
 							});
 						}
 					});
@@ -94,7 +103,7 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 		const worldMapPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
 		if (_isFile(worldMapPath)) {
 			const dataId = 'artist';
-			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || {valSet: []}).valSet];
+			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
 				const data = _jsonParseFileCheck(worldMapPath, 'Tags json', window.Name, utf8);
 				const worldMapData = new Set();
@@ -116,9 +125,9 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 			}
 		}
 	}
-	
+
 	function buildUrl(tag, val, valSec) {
-		if (val === '' || typeof val === 'undefined' || val === null) {return null;}
+		if (val === '' || typeof val === 'undefined' || val === null) { return null; }
 		const mainArtist = /TITLE|ALBUM_TRACKS/i.test(tag.type) ? tag.val[1][0] || null : null;
 		const mainAlbum = /TITLE/i.test(tag.type) ? tag.val[2][0] || null : null;
 		val = val.toString().toLowerCase();
@@ -139,13 +148,13 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 			default: return null;
 		}
 	}
-	
+
 	function playlistName(tag, val, valSec) {
 		let name = 'Last.fm: ';
 		switch (tag.type) {
 			case 'TITLE':
 			case 'TAG':
-			case 'ARTIST': 
+			case 'ARTIST':
 			case 'ALBUM_TRACKS':
 				name += val;
 				break;
@@ -176,175 +185,205 @@ function _lastListMenu({bSimulate = false, bDynamicMenu = false /* on SMP main m
 			case 'USER_NEIGHBOURS':
 				name += valSec + ' neighbours';
 				break;
-			default: 
+			default:
 				name += val;
 		}
 		return name;
 	}
 	{
-		menu.newEntry({entryText: 'Search on Last.fm:', flags: MF_GRAYED});
-		menu.newEntry({entryText: 'sep'});
+		menu.newEntry({ entryText: 'Search on Last.fm:', flags: MF_GRAYED });
+		menu.newEntry({ entryText: 'sep' });
 		if (bDynamicMenu) {
 			tags.forEach((tag) => {
 				const subMenu = menu.getMainMenuName();
-				if (tag.valSet.size === 0) {tag.valSet.add('');}
+				if (tag.valSet.size === 0) { tag.valSet.add(''); }
 				const val = [...tag.valSet][0];
-				menu.newEntry({menuName: subMenu, entryText: tag.name + '\t[' + (val.cut(20) || (sel ? 'no tag' : 'no sel')) + ']', func: () => {
-					const url = buildUrl(tag, val);
-					if (url) {
-						parent.url = url; 
-						parent.playlistName = playlistName(tag, val);
-						parent.cacheTime = 0;
-						parent.pages = 1;
-						console.log('Searching at: ' + url);
-						this.switchAnimation('Last.fm data retrieval', true);
-						parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0})
-							.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
-					}
-				}, flags: val ? MF_STRING : MF_GRAYED, data: {bDynamicMenu: true}});
-			});
-		} else {
-			tags.forEach((tag) => {
-				const bSingle = tag.valSet.size <= 1;
-				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name + '...');
-				if (tag.valSet.size === 0) {tag.valSet.add('');}
-				[...tag.valSet].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach((val, i) => {
-					menu.newEntry({menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : val.cut(25), func: () => {
+				menu.newEntry({
+					menuName: subMenu, entryText: tag.name + '\t[' + (val.cut(20) || (sel ? 'no tag' : 'no sel')) + ']', func: () => {
 						const url = buildUrl(tag, val);
 						if (url) {
-							parent.url = url; 
+							parent.url = url;
 							parent.playlistName = playlistName(tag, val);
 							parent.cacheTime = 0;
 							parent.pages = 1;
 							console.log('Searching at: ' + url);
 							this.switchAnimation('Last.fm data retrieval', true);
-							parent.run({url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0})
-								.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
+							parent.run({ url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0 })
+								.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
 						}
-					}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)});
+					}, flags: val ? MF_STRING : MF_GRAYED, data: { bDynamicMenu: true }
+				});
+			});
+		} else {
+			tags.forEach((tag) => {
+				const bSingle = tag.valSet.size <= 1;
+				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name + '...');
+				if (tag.valSet.size === 0) { tag.valSet.add(''); }
+				[...tag.valSet].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })).forEach((val, i) => {
+					menu.newEntry({
+						menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : val.cut(25), func: () => {
+							const url = buildUrl(tag, val);
+							if (url) {
+								parent.url = url;
+								parent.playlistName = playlistName(tag, val);
+								parent.cacheTime = 0;
+								parent.pages = 1;
+								console.log('Searching at: ' + url);
+								this.switchAnimation('Last.fm data retrieval', true);
+								parent.run({ url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0 })
+									.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
+							}
+						}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)
+					});
 				});
 			});
 		}
 	}
-	menu.newEntry({entryText: 'sep'});
+	menu.newEntry({ entryText: 'sep' });
 	{
 		const subMenuCustom = menu.newMenu('Custom...');
 		const subMenuUser = menu.newMenu('By User...');
 		const customURLS = [
-			{name: 'By Artist...', menuName: subMenuCustom, url: () => {
-				const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'ARTIST'}, input || Input.lastInput), playlistName({type: 'ARTIST'}, input || Input.lastInput)];
-			}},
-			{name: 'By Similar artist to...', menuName: subMenuCustom, url: () => {
-				const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'SIMILAR'}, input || Input.lastInput), playlistName({type: 'SIMILAR'}, input || Input.lastInput), 2];
-			}},
-			{name: 'By Album...', menuName: subMenuCustom, url: () => {
-				const input = Input.string('string', (cache.lastAlbum || '').toString(), 'Input Artist|Album (case insensitive):\n\nFor ex: lana del rey|born to die', 'Last.fm', 'lana del rey|born to die', [], true);
-				if (input === null && !Input.isLastEqual ) {return null;}
-				const [, artist, album] = (input || Input.lastInput).match(/(.*?)\|(.*)/i);
-				return !isString(artist) || !isString(album)
-					? null 
-					: [buildUrl({type: 'ALBUM_TRACKS', val: [[],[artist]]}, album), playlistName({type: 'ALBUM_TRACKS'}, album)];
-			}},
-			{name: 'By Tag...', menuName: subMenuCustom, url: () => {
-				const input = Input.string('string', (cache.lastTag || '').toString(), 'Input any Folksonomy/Genre/Style tag (case insensitive):\n\nFor ex: Rock, Summer, Cool, Female Vocal, ...', 'Last.fm', 'Rock', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'TAG'}, input || Input.lastInput), playlistName({type: 'TAG'}, input || Input.lastInput)];
-			}},
-			{name: 'By Date...', menuName: subMenuCustom, url: () => {
-				const year = new Date().getFullYear();
-				const input = Input.number('int positive', Number(cache.lastDate || year), 'Input Year:', 'Last.fm', 1975, [(n) => n <= year]);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'TAG'}, input || Input.lastInput), playlistName({type: 'TAG'}, input || Input.lastInput)];
-			}},
-			{name: 'Top tracks...', menuName: subMenuUser, url: () => {
-				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'USER_LIBRARY'}, input || Input.lastInput), playlistName({type: 'USER_LIBRARY'}, input || Input.lastInput)];
-			}},
-			{name: 'Loved...', menuName: subMenuUser, url: () => {
-				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'USER_LOVED'}, input || Input.lastInput), playlistName({type: 'USER_LOVED'}, input || Input.lastInput)];
-			}},
-			{name: 'Mix...', menuName: subMenuUser, url: () => {
-				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'USER_MIX'}, input || Input.lastInput), playlistName({type: 'USER_MIX'}, input || Input.lastInput), 2];
-			}},			
-			{name: 'Recommendations...', menuName: subMenuUser, url: () => {
-				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'USER_RECOMMENDATIONS'}, input || Input.lastInput), playlistName({type: 'USER_RECOMMENDATIONS'}, input || Input.lastInput), 2];
-			}},
-			{name: 'Neighbours...', menuName: subMenuUser, url: () => {
-				const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
-				return input === null && !Input.isLastEqual 
-					? null 
-					: [buildUrl({type: 'USER_NEIGHBOURS'}, input || Input.lastInput), playlistName({type: 'USER_LOVED'}, input || Input.lastInput), 2];
-			}},
+			{
+				name: 'By Artist...', menuName: subMenuCustom, url: () => {
+					const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'ARTIST' }, input || Input.lastInput), playlistName({ type: 'ARTIST' }, input || Input.lastInput)];
+				}
+			},
+			{
+				name: 'By Similar artist to...', menuName: subMenuCustom, url: () => {
+					const input = Input.string('string', (cache.lastArtist || '').toString(), 'Input Artist (case insensitive):', 'Last.fm', 'Silvana Estrada', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'SIMILAR' }, input || Input.lastInput), playlistName({ type: 'SIMILAR' }, input || Input.lastInput), 2];
+				}
+			},
+			{
+				name: 'By Album...', menuName: subMenuCustom, url: () => {
+					const input = Input.string('string', (cache.lastAlbum || '').toString(), 'Input Artist|Album (case insensitive):\n\nFor ex: lana del rey|born to die', 'Last.fm', 'lana del rey|born to die', [], true);
+					if (input === null && !Input.isLastEqual) { return null; }
+					const [, artist, album] = (input || Input.lastInput).match(/(.*?)\|(.*)/i);
+					return !isString(artist) || !isString(album)
+						? null
+						: [buildUrl({ type: 'ALBUM_TRACKS', val: [[], [artist]] }, album), playlistName({ type: 'ALBUM_TRACKS' }, album)];
+				}
+			},
+			{
+				name: 'By Tag...', menuName: subMenuCustom, url: () => {
+					const input = Input.string('string', (cache.lastTag || '').toString(), 'Input any Folksonomy/Genre/Style tag (case insensitive):\n\nFor ex: Rock, Summer, Cool, Female Vocal, ...', 'Last.fm', 'Rock', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'TAG' }, input || Input.lastInput), playlistName({ type: 'TAG' }, input || Input.lastInput)];
+				}
+			},
+			{
+				name: 'By Date...', menuName: subMenuCustom, url: () => {
+					const year = new Date().getFullYear();
+					const input = Input.number('int positive', Number(cache.lastDate || year), 'Input Year:', 'Last.fm', 1975, [(n) => n <= year]);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'TAG' }, input || Input.lastInput), playlistName({ type: 'TAG' }, input || Input.lastInput)];
+				}
+			},
+			{
+				name: 'Top tracks...', menuName: subMenuUser, url: () => {
+					const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'USER_LIBRARY' }, input || Input.lastInput), playlistName({ type: 'USER_LIBRARY' }, input || Input.lastInput)];
+				}
+			},
+			{
+				name: 'Loved...', menuName: subMenuUser, url: () => {
+					const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'USER_LOVED' }, input || Input.lastInput), playlistName({ type: 'USER_LOVED' }, input || Input.lastInput)];
+				}
+			},
+			{
+				name: 'Mix...', menuName: subMenuUser, url: () => {
+					const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'USER_MIX' }, input || Input.lastInput), playlistName({ type: 'USER_MIX' }, input || Input.lastInput), 2];
+				}
+			},
+			{
+				name: 'Recommendations...', menuName: subMenuUser, url: () => {
+					const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'USER_RECOMMENDATIONS' }, input || Input.lastInput), playlistName({ type: 'USER_RECOMMENDATIONS' }, input || Input.lastInput), 2];
+				}
+			},
+			{
+				name: 'Neighbours...', menuName: subMenuUser, url: () => {
+					const input = Input.string('string', (cache.lastUser || '').toString(), 'Input User name (case insensitive):', 'Last.fm', 'myuser', [], true);
+					return input === null && !Input.isLastEqual
+						? null
+						: [buildUrl({ type: 'USER_NEIGHBOURS' }, input || Input.lastInput), playlistName({ type: 'USER_LOVED' }, input || Input.lastInput), 2];
+				}
+			},
 		];
 		customURLS.forEach((entry) => {
-			menu.newEntry({menuName: entry.menuName, entryText: entry.name, func: () => {
-				const url = isFunction(entry.url) ? entry.url() : entry.url;
-				if (url && url[0]) {
-					parent.url = url[0]; 
-					parent.playlistName = url[1];
-					parent.pages = url[2] || 1;
-					parent.cacheTime = 0;
-					console.log('Searching at: ' + url[0]);
-					this.switchAnimation('Last.fm data retrieval', true);
-					parent.run({url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0})
-						.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
-				}
-			}, data: {bDynamicMenu: true}});
-		})
-		menu.newEntry({menuName: subMenuCustom, entryText: 'sep'});
-		menu.newEntry({menuName: subMenuCustom, entryText: 'By url...', func: () => {
-			parent.url = cache.lastURL; 
-			parent.playlistName = 'Last.fm';
-			parent.cacheTime = 0;
-			parent.pages = 1;
-			this.switchAnimation('Last.fm data retrieval', true);
-			parent.run({url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0})
-				.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
-		}, data: {bDynamicMenu: true}});
+			menu.newEntry({
+				menuName: entry.menuName, entryText: entry.name, func: () => {
+					const url = isFunction(entry.url) ? entry.url() : entry.url;
+					if (url && url[0]) {
+						parent.url = url[0];
+						parent.playlistName = url[1];
+						parent.pages = url[2] || 1;
+						parent.cacheTime = 0;
+						console.log('Searching at: ' + url[0]);
+						this.switchAnimation('Last.fm data retrieval', true);
+						parent.run({ url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0 })
+							.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
+					}
+				}, data: { bDynamicMenu: true }
+			});
+		});
+		menu.newEntry({ menuName: subMenuCustom, entryText: 'sep' });
+		menu.newEntry({
+			menuName: subMenuCustom, entryText: 'By url...', func: () => {
+				parent.url = cache.lastURL;
+				parent.playlistName = 'Last.fm';
+				parent.cacheTime = 0;
+				parent.pages = 1;
+				this.switchAnimation('Last.fm data retrieval', true);
+				parent.run({ url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0 })
+					.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
+			}, data: { bDynamicMenu: true }
+		});
 	}
-	menu.newEntry({entryText: 'sep'});
+	menu.newEntry({ entryText: 'sep' });
 	{
 		const year = new Date().getFullYear();
 		const staticURLS = [
 			// {name: 'Charts', url: 'https://www.last.fm/charts'},
-			{name: 'Top tracks ' + year, url: buildUrl({type: 'TAG'}, year.toString()), menuName: menu.getMainMenuName()},
-			{name: 'Top tracks ' + (year - 1), url: buildUrl({type: 'TAG'}, (year - 1).toString()), menuName: menu.getMainMenuName()}
+			{ name: 'Top tracks ' + year, url: buildUrl({ type: 'TAG' }, year.toString()), menuName: menu.getMainMenuName() },
+			{ name: 'Top tracks ' + (year - 1), url: buildUrl({ type: 'TAG' }, (year - 1).toString()), menuName: menu.getMainMenuName() }
 		];
 		staticURLS.forEach((entry) => {
-			menu.newEntry({menuName: entry.menuName, entryText: entry.name, func: () => {
-				const url = isFunction(entry.url) ? entry.url() : entry.url;
-				if (url) {
-					parent.url = url; 
-					parent.playlistName = 'Last.fm: ' + entry.name;
-					parent.cacheTime = 0;
-					parent.pages = 1;
-					console.log('Searching at: ' + url);
-					this.switchAnimation('Last.fm data retrieval', true);
-					parent.run() // parent.run({url, playlistName: 'Last.fm: ' + entry.name, cacheTime: 0});
-					.finally(() => {this.switchAnimation('Last.fm data retrieval', false);});
-				}
-			}, data: {bDynamicMenu: true}});
-		})
+			menu.newEntry({
+				menuName: entry.menuName, entryText: entry.name, func: () => {
+					const url = isFunction(entry.url) ? entry.url() : entry.url;
+					if (url) {
+						parent.url = url;
+						parent.playlistName = 'Last.fm: ' + entry.name;
+						parent.cacheTime = 0;
+						parent.pages = 1;
+						console.log('Searching at: ' + url);
+						this.switchAnimation('Last.fm data retrieval', true);
+						parent.run()
+							.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
+					}
+				}, data: { bDynamicMenu: true }
+			});
+		});
 	}
-	
+
 	return menu;
 }
