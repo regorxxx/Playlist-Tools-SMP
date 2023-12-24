@@ -1,8 +1,13 @@
 ﻿'use strict';
-//29/07/23
+//24/12/23
 
+/* exported onMainMenuEntries, bindDynamicMenus */
+
+/* global menu:readable */
 include('..\\..\\helpers\\helpers_xxx.js');
+/* global folders:readable */
 include('..\\..\\helpers\\callbacks_xxx.js');
+/* global callbacksListener:readable */
 
 const onMainMenuEntries = [
 	// {name: 'Add SKIP Tag at current playback', funcName: 'skipTagFromPlayback', path: folders.xxx + 'main\\tags\\skip_tag_from_playback.js', icon: 'ui-icon ui-icon-tag'},
@@ -38,7 +43,7 @@ function bindDynamicMenus({
 	descrCallback = void(0) /* return entry description */
 } = {}) {
 	callbacksListener.checkPanelNames();
-	if (!menu) {throw 'No parentMenu';}
+	if (!menu) {throw new Error('No parentMenu');}
 	const menuSimul = menu({bSimulate: true});
 	const mainMenu = menuSimul.getMainMenuName();
 	menuSimul.getEntries().forEach((entry, index) => {
@@ -58,22 +63,22 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 		const entry = onMainMenuDynamicEntries[idx];
 		if (entry.onMainMenuEntries) {
 			console.log('SMP main menu ' + (idx + 1) + ': ' + entry.name);
-			if (entry.hasOwnProperty('path')) {
+			if (Object.hasOwn(entry, 'path')) {
 				if (entry.path.length) {
 					try {include(entry.path.replace('.\\', folders.xxx));}
 					catch (e) {console.popup(e.message.split('\n').join('\n\t '), 'SMP Dynamic menu');}
 					entry.path = '';
 				}
-				try {eval(entry.funcName)();} 
+				try {eval(entry.funcName)();}
 				catch (e) {console.popup('Error evaluating: ' + entry.funcName + ' from script (' + (entry.path.length ? entry.path : 'parent') + ').', 'SMP Dynamic menu');}
-			} else if (entry.hasOwnProperty('menuName')) {
-				try {eval(entry.menuName).btn_up(void(0), void(0), void(0), entry.funcName);} 
+			} else if (Object.hasOwn(entry, 'menuName')) {
+				try {eval(entry.menuName).btn_up(void(0), void(0), void(0), entry.funcName);}
 				catch (e) {console.popup('Error evaluating: ' + entry.funcName + ' from menu (' + entry.menuName + ').', 'SMP Dynamic menu');}
 			}
 		} else {
 			const isFunction = (obj) => !!(obj && obj.constructor && obj.call && obj.apply);
 			const name = isFunction(entry.name) ? entry.name() : entry.name;
-			if (entry.hasOwnProperty('parentMenu') && entry.parentMenu) { // Other buttons
+			if (Object.hasOwn(entry, 'parentMenu') && entry.parentMenu) { // Other buttons
 				try {
 					(entry.args ? entry.parentMenu(entry.args) : entry.parentMenu()).btn_up(void(0), void(0), void(0), name);
 				} catch (e) {console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu');}

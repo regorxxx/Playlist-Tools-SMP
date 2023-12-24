@@ -1,33 +1,42 @@
 ﻿'use strict';
-//29/11/23
+//24/12/23
 
-/* 
+/*
 	Top Tracks
 	Search n most played tracks on library. Sorting is done by play count by default.
 	Duplicates by title - album artist - date are removed, so it doesn't output the same tracks
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).
  */
- 
+
+/* exported topTracks */
+
+/* global isPlayCount:readable */
+include('..\\..\\helpers\\helpers_xxx.js');
+/* global globTags:readable, globQuery:readable */
+include('..\\..\\helpers\\helpers_xxx_prototypes.js');
+/* global _q:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
+/* global sendToPlaylist:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
+/* global removeDuplicatesV2:readable */
 if (!isPlayCount) {fb.ShowPopupMessage('top_tracks: foo_playcount component is not installed.');}
 
 // Top n Tracks
 function topTracks({
-						playlistLength = 25, 
-						sortBy = globTags.sortPlayCount, 
-						checkDuplicatesBy = globTags.remDupl,
-						checkDuplicatesBias = globQuery.remDuplBias,
-						bAdvTitle = true,
-						forcedQuery = globQuery.notLowRating,
-						playlistName = 'Top ' + playlistLength + ' Tracks',
-						bSendToPls = true,
-						bProfile = false
-					} = {}) {
+	playlistLength = 25,
+	sortBy = globTags.sortPlayCount,
+	checkDuplicatesBy = globTags.remDupl,
+	checkDuplicatesBias = globQuery.remDuplBias,
+	bAdvTitle = true,
+	forcedQuery = globQuery.notLowRating,
+	playlistName = 'Top ' + playlistLength + ' Tracks',
+	bSendToPls = true,
+	bProfile = false
+} = {}) {
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('topTracks: playlistLength (' + playlistLength + ') must be greater than zero'); return;}
 	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);} // Sanity check
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return;}
-	if (bProfile) {var test = new FbProfiler('topTracks');}
+	const test = bProfile ? new FbProfiler('topTracks') : null;
 	//Load query
 	let query = _q(globTags.playCount) + ' GREATER 1';
 	let outputHandleList;

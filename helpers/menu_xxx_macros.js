@@ -1,8 +1,12 @@
 ﻿'use strict';
-//17/12/23
+//24/12/23
+
+/* exported _Macros */
 
 include('helpers_xxx.js');
+/* global popup:readable, WshShell:readable */
 include('helpers_xxx_prototypes.js');
+/* global repeatFn:readable */
 
 function _Macros(
 	menu, // Linked to some menu object by Menu-Framework-SMP
@@ -12,9 +16,9 @@ function _Macros(
 		maxRecursion: 10
 */}) {
 	const stack = [];
-	const queue = {stack: [], processed: [], stackCalls: 0}
+	const queue = {stack: [], processed: [], stackCalls: 0};
 	let currListener = null;
-	this.options = {listenerRate: 100, runRate: 25, maxRecursion: 10, ...options}
+	this.options = {listenerRate: 100, runRate: 50, maxRecursion: 10, ...options};
 	this.get = () => [...stack];
 	this.set = (newStack) => {
 		stack.length = 0;
@@ -32,9 +36,9 @@ function _Macros(
 			try {name = utils.InputBox(window.ID, 'Enter name', window.Name + ': Macros', 'My macro', true);}
 			catch (e) {return;}
 			if (!name.length) {return;}
-			if (stack.findIndex((macro) => {return macro.name === name;}) !== -1) {fb.ShowPopupMessage('Already exists a macro with same name', scriptName);}
+			if (stack.findIndex((macro) => {return macro.name === name;}) !== -1) {fb.ShowPopupMessage('Already exists a macro with same name', window.Name + ': Macros');}
 		}
-		bAsync = WshShell.Popup('Execute entries asynchronously?\ni.e. Don\'t wait for entry\'s completion to call the next one.\nOnly for those entries that support it.\nCheck \'Configuration\Asynchronous processing\' for more info.', 0, scriptName, popup.question + popup.yes_no) === popup.yes;
+		bAsync = WshShell.Popup('Execute entries asynchronously?\ni.e. Don\'t wait for entry\'s completion to call the next one.\nOnly for those entries that support it.\nCheck \'Configuration\\Asynchronous processing\' for more info.', 0, window.Name + ': Macros', popup.question + popup.yes_no) === popup.yes;
 		stack.push({name, entry, bAsync});
 		menu.lastCall = '';
 		currListener = this.listener(name);
@@ -68,7 +72,7 @@ function _Macros(
 		// Don't save macros' sub-entries within macros (but the parent macro entry is allowed)
 		const wasRunning = this.isRunning();
 		if (this.isRecording() && !wasRunning && menu.lastCall) {
-			const recMacro = stack[stack.length - 1]
+			const recMacro = stack[stack.length - 1];
 			if (recMacro) {recMacro.entry.push(menu.lastCall);}
 		}
 		return Promise.serial(macro.entry, (entry) => { // Without this, panel crashes due to menu resources not being freed fast enough
@@ -83,6 +87,6 @@ function _Macros(
 	};
 	this.runByName = (name, bDebug) => {
 		const macro = stack.find((macro) => {return macro.name === name;});
-		return macro ? this.run(macr0, bDebug) : Promise.resolve(null);
+		return macro ? this.run(macro, bDebug) : Promise.resolve(null);
 	};
 }

@@ -62,6 +62,7 @@
 - Code cleanup.
 ### Removed
 ### Fixed
+- Other tools\Import track list: error setting custom path.
 - Minor fixes.
 
 ## [3.7.0] - 2023-12-17

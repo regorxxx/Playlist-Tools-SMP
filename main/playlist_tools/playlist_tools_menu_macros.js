@@ -1,11 +1,16 @@
 ﻿'use strict';
-//14/12/23
+//24/12/23
+
+/* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
+
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, MF_STRING:readable */
 
 // Macros
 {
 	const name = 'Macros';
-	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 		const scriptPath = folders.xxx + 'helpers\\menu_xxx_macros.js';
+		/* global _Macros:readable */
 		if (_isFile(scriptPath)){
 			let menuName = menu.newMenu(name);
 			include(scriptPath.replace(folders.xxx  + 'main\\', '..\\'));
@@ -73,7 +78,7 @@
 					'Intercalate by tags\\By... (tag)',
 					'Shuffle by tags\\By... (tag)',
 					'Group by tags\\By... (tag)',
-					'Select by query...\Select by... (query)',
+					'Select by query...\\Select by... (query)',
 					'Select...\\Select random track',
 					'Expand...\\By... (tags)',
 					'Select...\\Select random track',
@@ -112,10 +117,10 @@
 						let macroName = macro.name || '';
 						macroName = macroName.length > 40 ? macroName.substring(0,40) + ' ...' : macroName;
 						if (entryNames.has(macroName)) {
-							fb.ShowPopupMessage('There is an entry with duplicated name:\t' + macroName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
+							fb.ShowPopupMessage('There is an entry with duplicated name:\t' + macroName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(macro, null, '\t'), scriptName + ': ' + name);
 							return;
 						} else {entryNames.add(macroName);}
-						const bAsync = macro.hasOwnProperty('bAsync') && macro.bAsync ? true : false;
+						const bAsync = Object.hasOwn(macro, 'bAsync') && macro.bAsync ? true : false;
 						menu.newEntry({menuName, entryText: macroName + (bAsync ? '\t(async)' : ''), func: () => {
 							Macros.run(macro);
 						}});
@@ -131,7 +136,7 @@
 						Macros.save();
 						menu_properties['macros'][1] = JSON.stringify(Macros.get());
 						// Presets
-						if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
+						if (!Object.hasOwn(presets, 'macros')) {presets.macros = [];}
 						presets.macros.push(macro);
 						menu_properties['presets'][1] = JSON.stringify(presets);
 						overwriteMenuProperties(); // Updates panel
@@ -144,7 +149,7 @@
 					if (!macro) {console.popup('No actions recorded. Macro will not be saved.', scriptName + ': ' + name); return;}
 					menu_properties['macros'][1] = JSON.stringify(Macros.get());
 					// Presets
-					if (!presets.hasOwnProperty('macros')) {presets.macros = [];}
+					if (!Object.hasOwn(presets, 'macros')) {presets.macros = [];}
 					presets.macros.push(macro);
 					menu_properties['presets'][1] = JSON.stringify(presets);
 					overwriteMenuProperties(); // Updates panel
@@ -153,9 +158,9 @@
 				{	// Add / Remove
 					createSubMenuEditEntries(menuName, {
 						name,
-						list: propMacros, 
-						propName: 'macros', 
-						defaults: macrosDefaults, 
+						list: propMacros,
+						propName: 'macros',
+						defaults: macrosDefaults,
 						defaultPreset: null,
 						input: null,
 						bAdd: false,
@@ -165,5 +170,5 @@
 			}});
 			menu.newEntry({entryText: 'sep'});
 		}
-	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});}
+	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});} // NOSONAR
 }

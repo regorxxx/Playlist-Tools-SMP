@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/12/22
+//24/12/23
 
 /*
 	Save tags
@@ -12,16 +12,18 @@
 	- Utility will report not matched files and files with differences.
 	- Tags from source A may be applied to Source B if desired, for those files which have differences.
  */
- 
+
+/* exported saveTags, compareTags */
+
 include('..\\..\\helpers\\helpers_xxx.js');
-include('..\\..\\helpers\\helpers_xxx_tags.js');
-include('..\\..\\helpers\\helpers_xxx_properties.js');
+/* global folders:readable, popup:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
+/* global WshShell:readable, _jsonParseFileCheck:readable, utf8:readable, _isFolder:readable, _createFolder:readable, _save:readable,  */
 
 function saveTags({
-					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
-					file = folders.temp + 'tags.json',
-					} = {}) {
+	selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+	file = folders.temp + 'tags.json',
+} = {}) {
 	let tags = [];
 	let handleInfo = {};
 	let handleTags = {};
@@ -34,9 +36,6 @@ function saveTags({
 		const handle = selItemsArr[i];
 		const fileInfo = handle.GetFileInfo();
 		const metaCount = fileInfo.MetaCount;
-		// const file = fso.GetFile(selItemsArr[i].Path).OpenAsTextStream(1, -2).ReadAll();
-		// const crc = crc32(file);
-		// handleInfo.crc = crc;
 		const md5Idx = fileInfo.InfoFind('md5');
 		handleInfo.rawPath = handle.RawPath;
 		handleInfo.subSong = handle.SubSong;
@@ -50,23 +49,23 @@ function saveTags({
 					handleTags[name].push(fileInfo.MetaValue(j, h));
 				}
 			} else {
-					handleTags[name] = fileInfo.MetaValue(j, 0);
+				handleTags[name] = fileInfo.MetaValue(j, 0);
 			}
 		}
 		handleInfo.handleTags = handleTags;
 		tags.push(handleInfo);
 	}
-	if (!_isFolder(folders.data)) {_createFolder(folders.data);}
+	if (!_isFolder(folders.data)) { _createFolder(folders.data); }
 	_save(file, JSON.stringify(tags, null, '\t'));
 }
 
 function compareTags({
-					selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
-					selItemsFolder = 'H:\\',
-					toTags = _jsonParseFileCheck(folders.temp + 'tags.json', 'Tags json', 'Compare tags', utf8),
-					toTagsFolder = 'H:\\',
-					} = {}) {
-	if (!toTags || !selItems || !selItemsFolder || !toTagsFolder) {return;}
+	selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+	selItemsFolder = 'H:\\',
+	toTags = _jsonParseFileCheck(folders.temp + 'tags.json', 'Tags json', 'Compare tags', utf8),
+	toTagsFolder = 'H:\\',
+} = {}) {
+	if (!toTags || !selItems || !selItemsFolder || !toTagsFolder) { return; }
 	let tags = [];
 	let handleInfo = {};
 	let handleTags = {};
@@ -92,7 +91,7 @@ function compareTags({
 					handleTags[name].push(fileInfo.MetaValue(j, h));
 				}
 			} else {
-					handleTags[name] = fileInfo.MetaValue(j, 0);
+				handleTags[name] = fileInfo.MetaValue(j, 0);
 			}
 		}
 		handleInfo.handleTags = handleTags;
@@ -104,7 +103,7 @@ function compareTags({
 	const toReportNoMatch = [];
 	tags.forEach((fileInfo, i) => {
 		const idx = toTags.findIndex((fileInfoRef) => {
-			return fileInfoRef.rawPath.replace(toTagsFolder, '') === fileInfo.rawPath.replace(selItemsFolder, '') && fileInfoRef.subSong === fileInfo.subSong &&  fileInfoRef.md5 === fileInfo.md5
+			return fileInfoRef.rawPath.replace(toTagsFolder, '') === fileInfo.rawPath.replace(selItemsFolder, '') && fileInfoRef.subSong === fileInfo.subSong && fileInfoRef.md5 === fileInfo.md5;
 		});
 		if (idx !== -1) {
 			if (JSON.stringify(fileInfo.handleTags) !== JSON.stringify(toTags[idx].handleTags)) {
@@ -117,14 +116,14 @@ function compareTags({
 		}
 	});
 	if (toReportNoMatch.length) {
-		fb.ShowPopupMessage(toReportNoMatch.join('\n'), 'Files without match')
+		fb.ShowPopupMessage(toReportNoMatch.join('\n'), 'Files without match');
 	}
 	if (toReport.length) {
-		fb.ShowPopupMessage(toReport.join('\n'), 'Report')
+		fb.ShowPopupMessage(toReport.join('\n'), 'Report');
 		const answer = WshShell.Popup('Do you want to apply reference tags to the currently selected tracks?\n(Only matched reported tracks will be edited)', 0, 'Edit tags', popup.question + popup.yes_no);
 		if (answer === popup.yes) {
 			const handleList = new FbMetadbHandleList(toEditHandles);
 			handleList.UpdateFileInfoFromJSON(JSON.stringify(toEditTags));
 		}
-	} else {fb.ShowPopupMessage('All matched tracks\' tags are equal to the source tracks\' tags.\n(There may be files wihout match, look for other poppups)', 'Report')}
+	} else { fb.ShowPopupMessage('All matched tracks\' tags are equal to the source tracks\' tags.\n(There may be files wihout match, look for other poppups)', 'Report'); }
 }

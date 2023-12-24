@@ -1,10 +1,14 @@
 ﻿'use strict';
-//12/06/23
+//24/12/23
+
+/* global menusEnabled:readable, readmes:readable, menu:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, lastActionEntry:readable , newReadmeSep:readable */
+
+/* global MF_GRAYED:readable, folders:readable */
 
 // Last action
 {
 	const name = 'Last action';
-	if (!menusEnabled.hasOwnProperty(name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 		readmes[newReadmeSep()] = 'sep';
 		readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_last_action.txt';
 		menu.newEntry({entryText: 'sep'});
@@ -16,12 +20,12 @@
 		}});
 	// This part changes compared to the other files due to being a cond entry...
 	} else {menuDisabled.push({entryText: name, condFunc: true, subMenuFrom: menu.getMainMenuName(), index: menu.getEntries().filter((entry) => {
-		return (entry.bIsMenu 
+		return (entry.bIsMenu
 			? menuAltAllowed.has(entry.subMenuFrom) // menu
-			: (entry.hasOwnProperty('condFunc')
+			: (Object.hasOwn(entry, 'condFunc')
 				? entry.condFunc !== null && menuAltAllowed.has(entry.entryText) // Conditional entry
 				: entry.entryText !== 'sep' && (entry.func !== null) && menuAltAllowed.has(entry.menuName) // Standard entry
 			)
 		);
-	}).length + disabledCount++});}
+	}).length + disabledCount++});} // NOSONAR
 }

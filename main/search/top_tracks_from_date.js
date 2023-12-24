@@ -1,63 +1,71 @@
 ﻿'use strict';
-//05/12/23
+//24/12/23
 
-/* 
+/*
 	Top X Tracks From Date
 	Search n most played tracks from a given year on library. Sorting is done by play count by default.
 	Duplicates by title - album artist - date are removed, so it doesn't output the same tracks
 	multiple times like an auto-playlist does (if you have multiple versions of the same track).
  */
 
-include('..\\..\\helpers\\helpers_xxx_playlists.js');
-include('..\\filter_and_query\\remove_duplicates.js');
-if (!isPlayCount) {fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.');}
+/* exported topTracksFromDate */
 
-const timeKeys = {Days: daysBetween, Weeks: weeksBetween};
+include('..\\..\\helpers\\helpers_xxx.js');
+/* global globTags:readable, globQuery:readable, isEnhPlayCount:readable,  isPlayCount:readable */
+include('..\\..\\helpers\\helpers_xxx_prototypes.js');
+/* global _p:readable, _bt:readable, _b:readable */
+include('..\\..\\helpers\\helpers_xxx_playlists.js');
+/* global sendToPlaylist:readable */
+include('..\\filter_and_query\\remove_duplicates.js');
+/* global removeDuplicatesV2:readable */
+if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.'); }
+
+const timeKeys = { Days: daysBetween, Weeks: weeksBetween };
 
 // Most played n Tracks from date
 function topTracksFromDate({
-						playlistLength = 25, 
-						sortBy = globTags.sortPlayCount, 
-						checkDuplicatesBy = globTags.remDupl,
-						checkDuplicatesBias = globQuery.remDuplBias,
-						bAdvTitle = true,
-						year =  new Date().getFullYear() - 1, // Previous year
-						last = '1 WEEKS',
-						bUseLast = false,
-						forcedQuery = globQuery.notLowRating,
-						bSendToPls = true,
-						bProfile = false
-						} = {}) {
+	playlistLength = 25,
+	sortBy = globTags.sortPlayCount,
+	checkDuplicatesBy = globTags.remDupl,
+	checkDuplicatesBias = globQuery.remDuplBias,
+	bAdvTitle = true,
+	year = new Date().getFullYear() - 1, // Previous year
+	last = '1 WEEKS',
+	bUseLast = false,
+	forcedQuery = globQuery.notLowRating,
+	bSendToPls = true,
+	bProfile = false
+} = {}) {
 	// Sanity checks
-	if (!isEnhPlayCount)  {fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', 'topTracksFromDate'); return;}
-	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) {console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return;}
-	try {fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery);}
-	catch (e) {fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return;}
+	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', 'topTracksFromDate'); return; }
+	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return; }
+	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; }
 	let timeKey, timePeriod;
 	if (bUseLast) {
-		if (last && typeof last === 'string') {last = last.trim();}
-		else {last = '';}
-		if (!last.length) {fb.ShowPopupMessage('Time period string is empty:\n' + last, 'topTracksFromDate'); return;}
+		if (last && typeof last === 'string') { last = last.trim(); }
+		else { last = ''; }
+		if (!last.length) { fb.ShowPopupMessage('Time period string is empty:\n' + last, 'topTracksFromDate'); return; }
 		// Find time-unit
 		timeKey = '';
 		timePeriod = Number(last.split(' ')[0]);
-		if (!Number.isSafeInteger(timePeriod)) {fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'topTracksFromDate'); return;}
-		if (!Object.keys(timeKeys).some( (key) => {if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) {timeKey = key; return true;} else {return false;}})) {
+		if (!Number.isSafeInteger(timePeriod)) { fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'topTracksFromDate'); return; }
+		if (!Object.keys(timeKeys).some((key) => { if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) { timeKey = key; return true; } else { return false; } })) {
 			fb.ShowPopupMessage('Time-unit not valid (must be ' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'topTracksFromDate');
 			return;
 		}
 	}
-	if (bProfile) {var test = new FbProfiler('topTracksFromDate');}
+	const test = bProfile ? new FbProfiler('topTracksFromDate') : null;
 	// Load query
-	const query = bUseLast 
+	const query = bUseLast
 		? '%LAST_PLAYED_ENHANCED% DURING LAST ' + last.toUpperCase()
 		: '%LAST_PLAYED_ENHANCED% AFTER ' + year + '-01-01 AND NOT %FIRST_PLAYED_ENHANCED% AFTER ' + (year + 1) + '-01-01';
 	let outputHandleList;
-	try {outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query));} // Sanity check
-	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return;}
+	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query)); } // Sanity check
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return; }
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle});
+		outputHandleList = removeDuplicatesV2({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle });
 	}
 	// Filter Play counts by date
 	const datesArray = fb.TitleFormat(_bt('PLAYED_TIMES')).EvalWithMetadbs(outputHandleList);
@@ -69,76 +77,76 @@ function topTracksFromDate({
 	let dataPool = [];
 	let pool = [];
 	if (bUseLast) { // During X time...
-		const currentDate = new Date();	
+		const currentDate = new Date();
 		for (let i = 0; i < datesArrayLength; i++) {
-		let count = 0;
-			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i])); 
+			let count = 0;
+			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i]));
 			if (dateArray_i.length) { // Every entry is also an array of dates
-				dateArray_i.forEach( (date) => {
+				dateArray_i.forEach((date) => {
 					const temp = date.substring(0, 10).split('-');
-					if (temp.length === 3 && timeKeys[timeKey](new Date(temp[0],temp[1],temp[2]), currentDate) <= timePeriod) {count++;}
+					if (temp.length === 3 && timeKeys[timeKey](new Date(temp[0], temp[1], temp[2]), currentDate) <= timePeriod) { count++; }
 				});
 			} else { // For tracks without advanced statistics
 				const tempFirst = firstPlayedArray[i].substring(0, 10).split('-');
-				if (tempFirst.length !== 3) {continue;}
-				const diffFirst = timeKeys[timeKey](new Date(tempFirst[0],tempFirst[1],tempFirst[2], currentDate));
+				if (tempFirst.length !== 3) { continue; }
+				const diffFirst = timeKeys[timeKey](new Date(tempFirst[0], tempFirst[1], tempFirst[2], currentDate));
 				const tempLast = lastPlayedArray[i].substring(0, 10).split('-');
-				if (tempLast.length !== 3) {continue;}
-				const diffLast = timeKeys[timeKey](new Date(tempLast[0],tempLast[1],tempLast[2], currentDate));
+				if (tempLast.length !== 3) { continue; }
+				const diffLast = timeKeys[timeKey](new Date(tempLast[0], tempLast[1], tempLast[2], currentDate));
 				// If first and last plays were from selected period, then all play counts too
-				if (diffFirst <= timePeriod && diffLast <= timePeriod) {count += playCountArray[i];}
+				if (diffFirst <= timePeriod && diffLast <= timePeriod) { count += playCountArray[i]; }
 				// Or the first play
-				else if (diffFirst <= timePeriod) {count++;}
+				else if (diffFirst <= timePeriod) { count++; }
 				// Or the last play
-				else if (diffLast <= timePeriod) {count++;}
+				else if (diffLast <= timePeriod) { count++; }
 				// Note any track known to have been played at selected period will be added to the pool, and since the handle List is already
 				// sorted by play Count, it will output tracks with higher total counts when they have not advanced statistics
 				// being almost equivalent to 'top_tracks.js' in that case
 			}
 			if (count) {
-				dataPool.push({idx: i, playCount: count});
+				dataPool.push({ idx: i, playCount: count });
 			}
 		}
 	} else {// Equal to year..
 		for (let i = 0; i < datesArrayLength; i++) {
 			let count = 0;
-			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i])); 
+			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i]));
 			if (dateArray_i.length) { // Every entry is also an array of dates
-				dateArray_i.forEach( (date) => {
-					if (Number(date.substring(0, 4)) === year) {count++;}
+				dateArray_i.forEach((date) => {
+					if (Number(date.substring(0, 4)) === year) { count++; }
 				});
 			} else { // For tracks without advanced statistics
 				// If first and last plays were from selected year, then all play counts too
-				if (Number(firstPlayedArray[i].substring(0, 4)) === year && Number(lastPlayedArray[i].substring(0, 4)) === year) {count += playCountArray[i];}
+				if (Number(firstPlayedArray[i].substring(0, 4)) === year && Number(lastPlayedArray[i].substring(0, 4)) === year) { count += playCountArray[i]; }
 				// Or the first play
-				else if (Number(firstPlayedArray[i].substring(0, 4)) === year) {count++;}
+				else if (Number(firstPlayedArray[i].substring(0, 4)) === year) { count++; }
 				// Or the last play
-				else if (Number(lastPlayedArray[i].substring(0, 4)) === year) {count++;}
+				else if (Number(lastPlayedArray[i].substring(0, 4)) === year) { count++; }
 				// Note any track known to have been played at selected year will be added to the pool, and since the handle List is already
 				// sorted by play Count, it will output tracks with higher total counts when they have not advanced statistics
 				// being almost equivalent to 'top_tracks.js' in that case
 			}
 			if (count) {
-				dataPool.push({idx: i, playCount: count});
+				dataPool.push({ idx: i, playCount: count });
 			}
-		}	
+		}
 	}
 	// Order by Play Count
-	dataPool.sort(function (a, b) {return b.playCount - a.playCount;});
+	dataPool.sort(function (a, b) { return b.playCount - a.playCount; });
 	dataPool.forEach((item) => pool.push(outputHandleList[item.idx]));
 	outputHandleList = new FbMetadbHandleList(pool);
 	// Output n tracks
-	if (playlistLength < outputHandleList.Count) {outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);}
+	if (playlistLength < outputHandleList.Count) { outputHandleList.RemoveRange(playlistLength, outputHandleList.Count); }
 	const playlistName = bUseLast ? 'Top ' + (playlistLength !== Infinity ? playlistLength + ' ' : '') + 'Tracks from last ' + timePeriod + ' ' + timeKey : 'Top ' + playlistLength + ' Tracks ' + year;
-	if (bSendToPls) {sendToPlaylist(outputHandleList, playlistName);}
-	if (bProfile) {test.Print('Task #1: Top tracks from date', false);}
+	if (bSendToPls) { sendToPlaylist(outputHandleList, playlistName); }
+	if (bProfile) { test.Print('Task #1: Top tracks from date', false); }
 	return [outputHandleList, dataPool];
 }
 
 function weeksBetween(d1, d2) { // d1 and d2 are Dates objects
-    return Math.round((d2 - d1) / (7 * 24 * 60 * 60 * 1000));
+	return Math.round((d2 - d1) / (7 * 24 * 60 * 60 * 1000));
 }
 
 function daysBetween(d1, d2) { // d1 and d2 are Dates objects
-    return Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
+	return Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
 }

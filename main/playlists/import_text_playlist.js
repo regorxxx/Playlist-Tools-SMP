@@ -1,12 +1,19 @@
 ﻿'use strict';
-//29/07/23
+//24/12/23
+
+/* exported importTextPlaylist, extractTagsV2 */
 
 include('..\\..\\helpers\\helpers_xxx.js');
+/* global folders:readable, globTags:readable, globQuery:readable  */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
+/* global sanitizeTagTfo:readable, query_join:readable, queryCache:readable, checkQuery:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
+/* global capitalize:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
+/* global _isFile:readable, _open:readable, checkCodePage:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
 include('..\\filter_and_query\\remove_duplicates.js');
+/* global removeDuplicatesV2:readable */
 
 // queryFilters will apply different conditions to the possible matches, and the ones which satisfy more will be selected
 // duplicatesMask will filter the matches allowing only 1 track with same tags (no duplicates)
@@ -21,12 +28,12 @@ include('..\\filter_and_query\\remove_duplicates.js');
 // ...
 // Track A by Artist B
 function importTextPlaylist({
-		path = folders.data + 'playlistImport.txt',
-		formatMask = ['', '. ', '%TITLE%', ' - ', globTags.artist],
-		duplicatesMask = [globTags.title, globTags.artist],
-		bAdvTitle = true,
-		queryFilters = [globQuery.noLiveNone, globQuery.notLowRating]
-	} = {}) {
+	path = folders.data + 'playlistImport.txt',
+	formatMask = ['', '. ', '%TITLE%', ' - ', globTags.artist],
+	duplicatesMask = [globTags.title, globTags.artist],
+	bAdvTitle = true,
+	queryFilters = [globQuery.noLiveNone, globQuery.notLowRating]
+} = {}) {
 	if (!path || !path.length) {
 		console.log('importTextPlaylist(): no file was provided');
 		return -1;
@@ -34,9 +41,9 @@ function importTextPlaylist({
 	let text = '';
 	if (_isFile(path)) {
 		text = _open(path);
-		if (!text.length) {return -1;}
+		if (!text.length) { return -1; }
 		const codePage = checkCodePage(text.split(/\r\n|\n\r|\n|\r/), '.' + path.split('.').pop(), true);
-		if (codePage !== -1) {text = _open(path, codePage); if (!text.length) {return -1;}}
+		if (codePage !== -1) { text = _open(path, codePage); if (!text.length) { return -1; } }
 		return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters, bAdvTitle);
 	} else if (path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1) {
 		let request = new ActiveXObject('Microsoft.XMLHTTP');
@@ -45,32 +52,32 @@ function importTextPlaylist({
 		request.onreadystatechange = function () {
 			if (request.readyState === 4) {
 				if (request.status === 200) {
-					var type = request.getResponseHeader('Content-Type');
+					const type = request.getResponseHeader('Content-Type');
 					if (type.indexOf('text') !== 1) {
 						text = request.responseText;
 						return createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters, bAdvTitle);
-					} else {console.log('importTextPlaylist(): could not retrieve any text from ' + path); return -1;}
-				} else {console.log('HTTP error: ' + request.status);}
+					} else { console.log('importTextPlaylist(): could not retrieve any text from ' + path); return -1; }
+				} else { console.log('HTTP error: ' + request.status); }
 			}
-		}
-	} else {console.log('importTextPlaylist(): file does not exist. ' + path); return -1;}
+		};
+	} else { console.log('importTextPlaylist(): file does not exist. ' + path); return -1; }
 }
 
 function createPlaylistFromText(text, path, formatMask, duplicatesMask, queryFilters, bAdvTitle) {
-	let {handlePlaylist, notFound} = getHandlesFromText(text, formatMask, queryFilters);
+	let { handlePlaylist, notFound } = getHandlesFromText(text, formatMask, queryFilters);
 	if (notFound && notFound.length) {
-		const report = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '')+ 'Line ' + line.idx + '-> ' + Object.keys(line.tags).map((key) => {return capitalize(key) + ': ' + line.tags[key]}).join(', ');}, '');
-		const reportPls = notFound.reduce((acc, line) => {return acc + (acc.length ? '\n' : '') + Object.keys(line.tags).map((key) => {return line.tags[key]}).join(' - ');}, '');
+		const report = notFound.reduce((acc, line) => { return acc + (acc.length ? '\n' : '') + 'Line ' + line.idx + '-> ' + Object.keys(line.tags).map((key) => { return capitalize(key) + ': ' + line.tags[key]; }).join(', '); }, '');
+		const reportPls = notFound.reduce((acc, line) => { return acc + (acc.length ? '\n' : '') + Object.keys(line.tags).map((key) => { return line.tags[key]; }).join(' - '); }, '');
 		fb.ShowPopupMessage(reportPls, 'Not found list');
 		fb.ShowPopupMessage(report, 'Tracks not found at source');
 	}
 	if (handlePlaylist) {
-		if (duplicatesMask && duplicatesMask.length) {handlePlaylist = removeDuplicatesV2({handleList: handlePlaylist, checkKeys: duplicatesMask.filter((n) => n), sortBias: globQuery.remDuplBias, bPreserveSort: true, bAdvTitle});}
+		if (duplicatesMask && duplicatesMask.length) { handlePlaylist = removeDuplicatesV2({ handleList: handlePlaylist, checkKeys: duplicatesMask.filter((n) => n), sortBias: globQuery.remDuplBias, bPreserveSort: true, bAdvTitle }); }
 		const idx = plman.PlaylistCount;
 		plman.InsertPlaylistItems(plman.CreatePlaylist(idx, 'Import'), 0, handlePlaylist);
-		if (!handlePlaylist.Count) {console.log('importTextPlaylist(): could not find any track with the given text');}
+		if (!handlePlaylist.Count) { console.log('importTextPlaylist(): could not find any track with the given text'); }
 		return idx;
-	} else {return -1;}
+	} else { return -1; }
 }
 
 function getHandlesFromText(text, formatMask, queryFilters) {
@@ -78,12 +85,12 @@ function getHandlesFromText(text, formatMask, queryFilters) {
 	if (text && text.length) {
 		const tags = extractTags(text.split(/\r\n|\n\r|\n|\r/), formatMask);
 		if (tags && tags.length) {
-			const {matches, notFound} = getQueryMatches(tags, queryFilters);
-			if (matches && matches.Count) {handlePlaylist.AddRange(matches);}
-			return {handlePlaylist, notFound};
-		} else {console.log('getHandlesFromText(): no tags retrieved');}
-	} else {console.log('getHandlesFromText(): text file is empty');}
-	return {handlePlaylist, notFound: []};
+			const { matches, notFound } = getQueryMatches(tags, queryFilters);
+			if (matches && matches.Count) { handlePlaylist.AddRange(matches); }
+			return { handlePlaylist, notFound };
+		} else { console.log('getHandlesFromText(): no tags retrieved'); }
+	} else { console.log('getHandlesFromText(): text file is empty'); }
+	return { handlePlaylist, notFound: [] };
 }
 
 function extractTags(text, formatMask) {
@@ -100,7 +107,7 @@ function extractTags(text, formatMask) {
 				if (mask.length) { // It's a string to extract
 					const nextIdx = line.indexOf(mask, prevIdx);
 					if (mask.indexOf('%') === -1) { // It's breakpoint
-						if (nextIdx !== -1 && bPrevTag) {breakPoint.push(nextIdx);};
+						if (nextIdx !== -1 && bPrevTag) { breakPoint.push(nextIdx); }
 						bPrevTag = false;
 					} else if (index === 0) { // Or fist value is a tag, so extract from start
 						breakPoint.push(0);
@@ -112,25 +119,25 @@ function extractTags(text, formatMask) {
 						breakPoint.push(prevIdx + formatMask[index - 1].length);
 						bPrevTag = true;
 					}
-					if (nextIdx !== -1) {prevIdx = nextIdx;}
+					if (nextIdx !== -1) { prevIdx = nextIdx; }
 				}
 			});
 			let lineTags = {};
 			if (breakPoint.length) {
 				let idx = 0;
-				formatMask.forEach((tag, i) => {
+				formatMask.forEach((tag) => {
 					if (tag.length) { // It's a string to extract
 						if (tag.indexOf('%') !== -1) { // It's a tag to extract
-							lineTags[tag.replace(/%/g,'').toLowerCase()] = line.slice(breakPoint[idx], breakPoint[idx + 1]).toLowerCase();
+							lineTags[tag.replace(/%/g, '').toLowerCase()] = line.slice(breakPoint[idx], breakPoint[idx + 1]).toLowerCase();
 							idx += 2;
 						}
 					}
 				});
 			}
-			if (!Object.keys(lineTags).length) {console.log('extractTags(): line ' + (j + 1)+ ' does not have tags matched by mask');}
+			if (!Object.keys(lineTags).length) { console.log('extractTags(): line ' + (j + 1) + ' does not have tags matched by mask'); }
 			tags.push(lineTags);
 		}
-	} else {console.log('extractTags(): no text was provided.')}
+	} else { console.log('extractTags(): no text was provided.'); }
 	return tags.length ? tags : null;
 }
 
@@ -167,16 +174,16 @@ function extractTagsV2(text, formatMask) {
 				formatMask.forEach((tag) => {
 					if (tag.length) { // It's a string to extract
 						if (tag.indexOf('%') !== -1) { // It's a tag to extract
-							lineTags[tag.replace(/%/g,'').toLowerCase()] = line.slice(breakPoint[idx], breakPoint[idx + 1]).toLowerCase();
+							lineTags[tag.replace(/%/g, '').toLowerCase()] = line.slice(breakPoint[idx], breakPoint[idx + 1]).toLowerCase();
 							idx += 2;
 						}
 					}
 				});
 			}
-			if (!Object.keys(lineTags).length) {console.log('extractTags(): line ' + (j + 1)+ ' does not have tags matched by mask');}
+			if (!Object.keys(lineTags).length) { console.log('extractTags(): line ' + (j + 1) + ' does not have tags matched by mask'); }
 			tags.push(lineTags);
 		}
-	} else {console.log('extractTags(): no text was provided.')}
+	} else { console.log('extractTags(): no text was provided.'); }
 	return tags.length ? tags : null;
 }
 
@@ -190,35 +197,35 @@ function getQueryMatches(tags, queryFilters) {
 			const queryTags = Object.keys(handleTags).map((key) => {
 				const query = key + ' IS ' + handleTags[key];
 				if (key === 'artist' || key === 'album artist' || key === 'title') {
-					const tfoKey = '"$stripprefix(%' +  key + '%,' + stripPrefix.join(',') + ')"';
+					const tfoKey = '"$stripprefix(%' + key + '%,' + stripPrefix.join(',') + ')"';
 					const tagVal = sanitizeTagTfo(handleTags[key]); // Quote special chars
-					const tfo = '$stripprefix(' +  tagVal + ',' + stripPrefix.join(',') + ')';
+					const tfo = '$stripprefix(' + tagVal + ',' + stripPrefix.join(',') + ')';
 					const tfoKeyVal = fb.TitleFormat(tfo).Eval(true);
-					if (!tfoKeyVal.length) {console.log('Error creating query: ' + tfo);}
+					if (!tfoKeyVal.length) { console.log('Error creating query: ' + tfo); }
 					const tfoQuery = tfoKey + ' IS ' + tfoKeyVal;
 					let extraQuery = [];
 					extraQuery.push('"$stricmp($ascii(%' + key + '%),$ascii(' + handleTags[key] + '))" IS 1');
 					if ((key === 'artist' || key === 'album artist') && !handleTags[key].startsWith('the')) {
-						extraQuery.push(key + ' IS the ' + handleTags[key]); // Done to match multivalued tags with 'the' on any item
+						extraQuery.push(key + ' IS the ' + handleTags[key]); // Done to match multi-valued tags with 'the' on any item
 						extraQuery.push('"$stricmp($ascii(%' + key + '%),$ascii(the ' + handleTags[key] + '))" IS 1');
 					} else if (key === 'title') {
 						if (handleTags[key].indexOf(',') !== -1) {
-							const val = handleTags[key].replace(/,/g,'');
+							const val = handleTags[key].replace(/,/g, '');
 							extraQuery.push(key + ' IS ' + val);
 							extraQuery.push('"$stricmp($ascii(%' + key + '%),$ascii(' + val + '))" IS 1');
 						}
 						extraQuery.push('"$replace(%' + key + '%,\',\',)" IS ' + handleTags[key]);
 						extraQuery.push('"$stricmp($ascii($replace(%' + key + '%,\',\',)),$ascii(' + handleTags[key] + '))" IS 1');
 					}
-					if (extraQuery.length) {extraQuery = query_join(extraQuery, 'OR');}
+					if (extraQuery.length) { extraQuery = query_join(extraQuery, 'OR'); }
 					return query + ' OR ' + tfoQuery + (extraQuery.length ? ' OR ' + extraQuery : '');
 				} else {
 					return query;
 				}
 			});
 			const query = query_join(queryTags, 'AND');
-			const handles =  queryCache.has(query) ? queryCache.get(query) : (checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null);
-			if (!queryCache.has(query)) {queryCache.set(query, handles);}
+			const handles = queryCache.has(query) ? queryCache.get(query) : (checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null);
+			if (!queryCache.has(query)) { queryCache.set(query, handles); }
 			let bDone = false;
 			if (handles && handles.Count) { // Filter the results step by step to see which ones satisfy more conditions
 				if (queryFiltersLength) {
@@ -228,20 +235,20 @@ function getQueryMatches(tags, queryFilters) {
 						const prevResult = handlesFilter[i ? i - 1 : 0];
 						const bEmpty = prevResult.Count ? false : true;
 						handlesFilter[i] = bEmpty ? new FbMetadbHandleList() : fb.GetQueryItems(prevResult, queryFilter);
-						if (i !== queryFiltersLength - 1) {handlesFilter[i + 1] = bEmpty ? new FbMetadbHandleList() : handlesFilter[i].Clone();}
+						if (i !== queryFiltersLength - 1) { handlesFilter[i + 1] = bEmpty ? new FbMetadbHandleList() : handlesFilter[i].Clone(); }
 					});
 					for (let i = queryFiltersLength - 1; i >= 0; i--) { // The last results are the handles which passed all the filters successfully, are the preferred results
-						if (handlesFilter[i].Count) {matches.AddRange(handlesFilter[i]); bDone = true; break;}
+						if (handlesFilter[i].Count) { matches.AddRange(handlesFilter[i]); bDone = true; break; }
 					}
 				}
-				if (!bDone) {matches.AddRange(handles); bDone = true;}
+				if (!bDone) { matches.AddRange(handles); bDone = true; }
 			}
 			if (!bDone) {
 				const tags = {};
-				Object.keys(handleTags).forEach((key) => {tags[key] = handleTags[key];});
-				notFound.push({idx, tags});
+				Object.keys(handleTags).forEach((key) => { tags[key] = handleTags[key]; });
+				notFound.push({ idx, tags });
 			}
 		}
 	});
-	return {matches, notFound};
+	return { matches, notFound };
 }

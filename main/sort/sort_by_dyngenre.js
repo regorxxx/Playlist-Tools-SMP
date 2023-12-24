@@ -17,7 +17,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getTagsValuesV3:readable, sanitizeTagTfo:readable */
 
-const [,, genreStyleMap] = dyngenreMap();
+const [, , genreStyleMap] = dyngenreMap();
 
 
 function sortByDyngenre({
@@ -29,10 +29,10 @@ function sortByDyngenre({
 	bDebug = false
 } = {}) {
 	// Safety checks
-	if (!styleGenreTag.length) {return false;}
-	if (playlistIdx >= plman.PlaylistCount) {return false;}
-	if (!plman.PlaylistItemCount(playlistIdx)) {return false;}
-	if (bSelection && !plman.GetPlaylistSelectedItems(playlistIdx).Count) {return false;}
+	if (!styleGenreTag.length) { return false; }
+	if (playlistIdx >= plman.PlaylistCount) { return false; }
+	if (!plman.PlaylistItemCount(playlistIdx)) { return false; }
+	if (bSelection && !plman.GetPlaylistSelectedItems(playlistIdx).Count) { return false; }
 	// List
 	const handleList = bSelection ? plman.GetPlaylistSelectedItems(playlistIdx) : plman.GetPlaylistItems(playlistIdx);
 	const count = handleList.Count;
@@ -52,7 +52,7 @@ function sortByDyngenre({
 					let k;
 					let dyngenre_j_length = dyngenre_j.length;
 					for (k = 0; k < dyngenre_j_length; k++) {
-						if (!dyngenre[i]) {dyngenre[i] = [];}
+						if (!dyngenre[i]) { dyngenre[i] = []; }
 						dyngenre[i].push(dyngenre_j[k]);
 					}
 				}
@@ -60,7 +60,7 @@ function sortByDyngenre({
 			dyngenreNum = dyngenre[i] ? dyngenre[i].length : 0;
 		}
 		if (dyngenreNum) {
-			dyngenre[i] = dyngenre[i].reduce((prev, next) => {return prev + next;}) / dyngenreNum;
+			dyngenre[i] = dyngenre[i].reduce((prev, next) => { return prev + next; }) / dyngenreNum;
 		} else {
 			dyngenre[i] = Infinity; // Not matched tracks are put at the end
 		}
@@ -73,10 +73,10 @@ function sortByDyngenre({
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)
 	dyngenre.forEach((val, index) => {
 		const sortVal = -(sortOrder === -1 ? 999999999 - dyngenre[index] : dyngenre[index]);
-		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g,'\',\'') + '),' + sortVal + ',';
+		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g, '\',\'') + '),' + sortVal + ',';
 	});
-	dyngenre.forEach ( () => {tfo += ')';}); // Add closures!
-	if (bDebug) {console.log(tfo);}
+	dyngenre.forEach(() => { tfo += ')'; }); // Add closures!
+	if (bDebug) { console.log(tfo); }
 	plman.UndoBackup(plman.ActivePlaylist);
 	return plman.SortByFormat(playlistIdx, tfo, bSelection);
 }
