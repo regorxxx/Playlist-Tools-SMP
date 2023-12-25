@@ -1,5 +1,7 @@
 ﻿'use strict';
-//23/11/21
+//25/12/23
+
+/* exported chromaPrintUtils */
 
 // TODO: optimize offset correlation checking if previously calculated correlations follow a trend
 // stop looking in a given direction if correlation decreases. Should improve processing time
@@ -15,7 +17,7 @@ const chromaPrintUtils = {
 	/*
 		Main
 	*/
-	// Returns max correlation between two fingerprint chromaprint arrays (int), trying all positions with offsets from -span to span 
+	// Returns max correlation between two fingerprint ChromaPrint arrays (int), trying all positions with offsets from -span to span
 	correlate: function correlate(fpSource, fpTarget) {
 		const corr = this.compare(fpSource, fpTarget, this.span, this.step, this.maxThreshold, this.minThreshold);
 		const maxCorr = this.getMaxCorr(corr, 'source', 'target', this.span, this.step);
@@ -28,7 +30,7 @@ const chromaPrintUtils = {
 	// Restore default config
 	restoreDefault: function restoreDefault() {
 		this.span = 50;
-		this.step = 1, 
+		this.step = 1;
 		this.min_overlap = 20;
 		this.threshold = 0.5;
 		this.minThreshold = 0.5;
@@ -67,13 +69,13 @@ const chromaPrintUtils = {
 		}
 		return corrXY;
 	},
-	// Return cross correlation, with b offset from listx
+	// Return cross correlation, with b offset from list
 	crossCorrelation: function crossCorrelation(a, b, offset) {
 		if (offset > 0) {
 			a = a.slice(offset);
 			b = b.slice(0, a.length);
 		} else if (offset < 0) {
-			offset = -offset
+			offset = -offset;
 			b = b.slice(offset);
 			a = a.slice(0, b.length);
 		}
@@ -96,8 +98,8 @@ const chromaPrintUtils = {
 			totalBits = longest;
 		}
 		let covariance = 0;
-		const meanA = a.reduce((total, current) => {return total + current}, 0) / aLen;
-		const meanB = b.reduce((total, current) => {return total + current}, 0) / bLen;
+		const meanA = a.reduce((total, current) => {return total + current;}, 0) / aLen;
+		const meanB = b.reduce((total, current) => {return total + current;}, 0) / bLen;
 		for (let i = 0; i < aLen; i++) {
 			covariance += Math.abs((a[i] - meanA) * (b[i] - meanB));
 		}
@@ -106,7 +108,7 @@ const chromaPrintUtils = {
 		return covariance;
 	},
 	// returns variance of list
-	variance: function variance(a, aLen = a.length, meanA = a.reduce((total, current) => {return total + current}, 0) / aLen) {
+	variance: function variance(a, aLen = a.length, meanA = a.reduce((total, current) => {return total + current;}, 0) / aLen) {
 		// # get mean of x^2
 		let meanA_sqr = 0;
 		a.forEach((x) => {meanA_sqr += x ** 2;});
@@ -125,16 +127,16 @@ const chromaPrintUtils = {
 		});
 		return maxIdx;
 	}
-}
+};
 
 // Helpers
 if (typeof round === 'undefined') {
-	var round = function round(floatnum, decimals){
+	var round = function round(floatNum, decimals){
 		let result;
 		if (decimals > 0) {
-			if (decimals === 15) {result = floatnum;}
-			else {result = Math.round(floatnum * Math.pow(10, decimals)) / Math.pow(10, decimals);}
-		} else {result =  Math.round(floatnum);}
+			if (decimals === 15) {result = floatNum;}
+			else {result = Math.round(floatNum * Math.pow(10, decimals)) / Math.pow(10, decimals);}
+		} else {result =  Math.round(floatNum);}
 		return result;
 	};
 }
