@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//25/12/23
 
 /*
 	Playlist Tools Menu
@@ -25,7 +25,7 @@
 	});
 */
 
-/* exported menu_propertiesBack, menu_prefix_panel, menu_panelPropertiesBack, defaultArgs, readmes, configMenu, forcedQueryMenusEnabled, presets, shortcutsPath, menuTooltip */
+/* exported menu_propertiesBack, menu_prefix_panel, menu_panelPropertiesBack, defaultArgs, readmes, configMenu, forcedQueryMenusEnabled, presets, shortcutsPath, menuTooltip, defaultArgsClean */
 
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global checkCompatible:readable, folders:readable, globQuery:readable, globTags:readable, MF_GRAYED:readable, MF_STRING:readable, MF_MENUBARBREAK:readable, VK_SHIFT:readable, VK_CONTROL:readable, */
@@ -114,6 +114,9 @@ const defaultArgs = {
 	bAdvTitle: menu_properties.bAdvTitle[1],
 	sortBias: menu_properties.sortBias[1],
 	parent: null
+};
+const defaultArgsClean = () => {
+	return Object.fromEntries(Object.keys(defaultArgs).filter((key) => key !== 'parent').map((key) => [key, defaultArgs[key]]));
 };
 const newReadmeSep = (() => { let i = 0; return (bFull = false) => { return (bFull ? { ['sep' + ++i]: 'sep' } : ['sep' + ++i]); }; })();
 // {scriptName: path} or {arbitraryKey: 'sep'}

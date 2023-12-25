@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//25/12/23
 
 /* exported _pools */
 
@@ -390,7 +390,7 @@ function _pools({
 		// Harmonic mix
 		const bHarmonic = Object.hasOwn(pool, 'harmonicMix') && pool.harmonicMix;
 		if (bHarmonic) {
-			const handleListMix = harmonicMixing({ selItems: handleListTo, keyTag: this.keyTag, bSendToPls: false, bDoublePass: true, bDebug: this.bDebug });
+			const handleListMix = harmonicMixing({ selItems: handleListTo, keyTag: this.keyTag, bShuffleInput: true, bSendToPls: false, bDoublePass: true, bDebug: this.bDebug });
 			const newCount = handleListMix ? handleListMix.Count : 0;
 			const oriCount = handleListTo.Count;
 			if (!newCount) { // For ex. without key tags

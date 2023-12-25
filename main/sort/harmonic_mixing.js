@@ -1,7 +1,7 @@
 ﻿'use strict';
-//20/12/23
+//25/12/23
 
-/* exported harmonicMixing, queryReplaceKeys */
+/* exported harmonicMixing, queryReplaceKeys, harmonicMixingCycle */
 /* global globTags:readable */
 
 /*
@@ -28,6 +28,8 @@ function harmonicMixing({
 	playlistLength = selItems.Count,
 	playlistName = 'Harmonic mix from ' + plman.GetPlaylistName(plman.ActivePlaylist),
 	keyTag = typeof globTags !== 'undefined' ? globTags.key : 'KEY',
+	patternOptions = {},
+	bShuffleInput = true,
 	bSendToPls = true,
 	bDoublePass = false,
 	bDebug = false,
@@ -38,12 +40,12 @@ function harmonicMixing({
 	if (!selItems || !selItems.Count) { return; }
 	if (selItems.Count < playlistLength) { playlistLength = selItems.Count; }
 	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
-	const pattern = camelotWheel.createHarmonicMixingPattern(playlistLength); // On camelot_wheel_xxx.js
+	const pattern = camelotWheel.createHarmonicMixingPattern(playlistLength, patternOptions); // On camelot_wheel_xxx.js
 	if (bDebug) {
 		console.log('Original pattern:');
 		console.log(pattern);
 	}
-	const { selectedHandlesArray, error } = findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bDoublePass, bDebug });
+	const { selectedHandlesArray, error } = findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bShuffleInput, bDoublePass, bDebug });
 	if (!error) {
 		const handleList = new FbMetadbHandleList(selectedHandlesArray);
 		if (bSendToPls) { return sendToPlaylist(handleList, playlistName); }
@@ -56,8 +58,37 @@ function harmonicMixing({
 	}
 }
 
-function findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bDoublePass = false, bDebug = false }) {
+function harmonicMixingCycle({
+	selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
+	cycleLength = 30,
+	playlistName = 'Harmonic cycle from ' + plman.GetPlaylistName(plman.ActivePlaylist),
+	keyTag = typeof globTags !== 'undefined' ? globTags.key : 'KEY',
+	patternOptions = {},
+	bShuffleInput = true,
+	bSendToPls = true,
+	bDebug = false,
+} = {}) {
+	// Safety checks
+	if (!keyTag.length) { return; }
+	if (!Number.isSafeInteger(cycleLength) || cycleLength <= 0) { console.log('harmonicMixingCycle: cycleLength (' + cycleLength + ') must be an integer greater than zero'); return false; }
+	if (!selItems || !selItems.Count) { return; }
+	if (selItems.Count < cycleLength) { cycleLength = selItems.Count; }
+	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
+	let pool = selItems.Clone();
+	let handleList = new FbMetadbHandleList();
+	while (pool.Count > 0) {
+		const newCycle = harmonicMixing({keyTag, patternOptions, bShuffleInput, bDoublePass: false, bDebug, bSendToPls: false, playlistLength: cycleLength, selItems: pool});
+		if (!newCycle) {break;}
+		newCycle.Convert().forEach((handle) => pool.Remove(handle));
+		handleList.InsertRange(handleList.Count, newCycle);
+	}
+	if (bSendToPls) { return sendToPlaylist(handleList, playlistName); }
+	else { return handleList; }
+}
+
+function findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bShuffleInput = false, bDoublePass = false, bDebug = false }) {
 	// Tags and constants
+	if (bShuffleInput) {selItems = new FbMetadbHandleList(selItems.Convert().shuffle());}
 	const keyHandle = getTagsValuesV3(selItems, [keyTag], true);
 	const poolLength = selItems.Count;
 	let nextKeyObj;

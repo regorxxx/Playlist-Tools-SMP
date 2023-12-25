@@ -1,7 +1,7 @@
 ﻿'use strict';
-//24/12/23
+//25/12/23
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, multipleSelectedFlagsReorder:readable, isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, playlistCountFlags:readable, selectedFlagsAddRem:readable, _p:readable, _q:readable, range:readable, focusInPlaylist:readable, isInt:readable, addLock:readable, selectedFlagsReorder:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, selectedFlags:readable, playlistCountFlagsRem:readable, isFunction:readable, selectedFlagsRem:readable */
 
@@ -151,53 +151,104 @@
 				}
 				{
 					const scriptPath = folders.xxx + 'main\\sort\\harmonic_mixing.js';
-					/* global harmonicMixing:readable */
+					/* global harmonicMixing:readable, harmonicMixingCycle:readable */
 					if (_isFile(scriptPath)) {
 						if (!Object.hasOwn(menu_properties, 'bHarmonicMixDoublePass')) { menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true]; }
 						include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 						readmes[name + '\\' + 'Harmonic mix'] = folders.xxx + 'helpers\\readme\\harmonic_mixing.txt';
+						const applyHarmonicMix = (args) => {
+							const ap = plman.ActivePlaylist;
+							args.selItems = plman.GetPlaylistSelectedItems(ap);
+							args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1];
+							args.bDebug = defaultArgs.bDebug;
+							// Apply harmonic mix on selection
+							const profiler = defaultArgs.bProfile ? new FbProfiler('harmonicMixing') : null;
+							const handleList = args.isCycle ? harmonicMixingCycle(args) : harmonicMixing(args);
+							if (!handleList) { return; }
+							// Find items which were not mixed
+							const plsList = plman.GetPlaylistItems(ap).Convert();
+							const total = plsList.length;
+							const restList = [];
+							args.selItems.Convert().forEach((handle) => {
+								if (handleList.Find(handle) === -1) {
+									restList.push(handle);
+								}
+							});
+							restList.shuffle(); // To avoid non-random clusters
+							// Insert back at selected indexes (in case it's not a contiguous selection)
+							let i = 0;
+							const selectionIdx = [];
+							(handleList.Convert().concat(restList)).forEach((handle) => {
+								while (i < total) {
+									if (plman.IsPlaylistItemSelected(ap, i)) {
+										selectionIdx.push(i);
+										plsList[i] = handle;
+										i++;
+										break;
+									}
+									i++;
+								}
+							});
+							// Rebuilt the entire playlist with the changes
+							plman.UndoBackup(ap);
+							plman.ClearPlaylist(ap);
+							plman.InsertPlaylistItems(ap, 0, new FbMetadbHandleList(plsList));
+							plman.SetPlaylistSelection(ap, selectionIdx, true);
+							if (defaultArgs.bProfile) { profiler.Print(); }
+						};
 						if (selArgs.length) { selArgs.push({ name: 'sep' }); }
 						selArgs.push({
-							name: 'Harmonic mix (Camelot Wheel)', func: (args) => {
-								const ap = plman.ActivePlaylist;
-								args.selItems = plman.GetPlaylistSelectedItems(ap);
-								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1];
-								args.bDebug = defaultArgs.bDebug;
-								// Apply harmonic mix on selection
-								const profiler = defaultArgs.bProfile ? new FbProfiler('harmonicMixing') : null;
-								const handleList = harmonicMixing(args);
-								if (!handleList) { return; }
-								// Find items which were not mixed
-								const plsList = plman.GetPlaylistItems(ap).Convert();
-								const total = plsList.length;
-								const restList = [];
-								args.selItems.Convert().forEach((handle) => {
-									if (handleList.Find(handle) === -1) {
-										restList.push(handle);
-									}
-								});
-								restList.shuffle(); // To avoid non-random clusters
-								// Insert back at selected indexes (in case it's not a contiguous selection)
-								let i = 0;
-								const selectionIdx = [];
-								(handleList.Convert().concat(restList)).forEach((handle) => {
-									while (i < total) {
-										if (plman.IsPlaylistItemSelected(ap, i)) {
-											selectionIdx.push(i);
-											plsList[i] = handle;
-											i++;
-											break;
-										}
-										i++;
-									}
-								});
-								// Rebuilt the entire playlist with the changes
-								plman.UndoBackup(ap);
-								plman.ClearPlaylist(ap);
-								plman.InsertPlaylistItems(ap, 0, new FbMetadbHandleList(plsList));
-								plman.SetPlaylistSelection(ap, selectionIdx, true);
-								if (defaultArgs.bProfile) { profiler.Print(); }
-							}, args: { bSendToPls: false }
+							name: 'Harmonic mix (Camelot Wheel)', func: applyHarmonicMix, args: { bSendToPls: false }
+						});
+						selArgs.push({
+							name: 'Random mix (Camelot Wheel)', func: applyHarmonicMix, args: {
+								bSendToPls: false,
+								patternOptions: {
+									bRandomize: true,
+									bFillPerfectMatch: true
+								}
+							}
+						});
+						selArgs.push({
+							name: 'Harmonic cycle (Camelot Wheel)', func: applyHarmonicMix, args: {
+								bSendToPls: false,
+								isCycle: true,
+								patternOptions: {
+									movements: { // Values are percentages of the total sum
+										perfectMatch: 30, // perfectMatch (=)
+										energyBoost: 15, // energyBoost (+1)
+										energyDrop: 15, // energyDrop (-1)
+										energySwitch: 10, // energySwitch (B/A)
+										moodBoost: 5, // moodBoost (+3)
+										moodDrop: 5, // moodDrop (-3)
+										energyRaise: 0, // energyRaise (+7)
+										domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+										subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+									},
+									bFillPerfectMatch: true
+								}
+							}
+						});
+						selArgs.push({
+							name: 'Random cycle (Camelot Wheel)', func: applyHarmonicMix, args: {
+								bSendToPls: false,
+								isCycle: true,
+								patternOptions: {
+									movements: { // Values are percentages of the total sum
+										perfectMatch: 40, // perfectMatch (=)
+										energyBoost: 9, // energyBoost (+1)
+										energyDrop: 9, // energyDrop (-1)
+										energySwitch: 10, // energySwitch (B/A)
+										moodBoost: 5, // moodBoost (+3)
+										moodDrop: 4, // moodDrop (-3)
+										energyRaise: 3, // energyRaise (+7)
+										domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+										subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+									},
+									bRandomize: true,
+									bFillPerfectMatch: true
+								}
+							}
 						});
 						if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 							const subMenuName = 'Harmonic mixing';
@@ -238,7 +289,7 @@
 						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					} else {
 						let entryText = selArg.name;
-						menu.newEntry({ menuName: subMenuName, entryText, func: (args = { ...defaultArgs, ...selArg.args }) => { selArg.func(args); }, flags: multipleSelectedFlagsReorder });
+						menu.newEntry({ menuName: subMenuName, entryText, func: (args = { ...defaultArgsClean(), ...selArg.args }) => { selArg.func(args); }, flags: multipleSelectedFlagsReorder });
 					}
 				});
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }

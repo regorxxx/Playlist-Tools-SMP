@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//25/12/23
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -253,7 +253,7 @@
 		}
 		{	// Create harmonic mix from playlist
 			const scriptPath = folders.xxx + 'main\\sort\\harmonic_mixing.js';
-			/* global harmonicMixing:readable */
+			/* global harmonicMixing:readable, harmonicMixingCycle:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Harmonic mix';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -262,7 +262,106 @@
 					const subMenuName = menu.newMenu(name, menuName);
 					const selArgs = [
 						{ name: 'Harmonic mix from playlist', args: { selItems: () => { return plman.GetPlaylistItems(plman.ActivePlaylist); } }, flags: playlistCountFlags },
+						{
+							name: 'Random mix from playlist', args: {
+								selItems: () => { return plman.GetPlaylistItems(plman.ActivePlaylist); }, patternOptions: {
+									bRandomize: true,
+									bFillPerfectMatch: true
+								}
+							}, flags: playlistCountFlags
+						},
+						{
+							name: 'Harmonic cycle from playlist', args: {
+								selItems: () => { return plman.GetPlaylistItems(plman.ActivePlaylist); },
+								isCycle: true,
+								patternOptions: {
+									movements: { // Values are percentages of the total sum
+										perfectMatch: 30, // perfectMatch (=)
+										energyBoost: 15, // energyBoost (+1)
+										energyDrop: 15, // energyDrop (-1)
+										energySwitch: 10, // energySwitch (B/A)
+										moodBoost: 5, // moodBoost (+3)
+										moodDrop: 5, // moodDrop (-3)
+										energyRaise: 0, // energyRaise (+7)
+										domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+										subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+									},
+									bFillPerfectMatch: true
+								}
+							}, flags: playlistCountFlags
+						},
+						{
+							name: 'Random cycle from selection', args: {
+								selItems: () => { return plman.GetPlaylistItems(plman.ActivePlaylist); },
+								isCycle: true,
+								patternOptions: {
+									movements: { // Values are percentages of the total sum
+										perfectMatch: 40, // perfectMatch (=)
+										energyBoost: 9, // energyBoost (+1)
+										energyDrop: 9, // energyDrop (-1)
+										energySwitch: 10, // energySwitch (B/A)
+										moodBoost: 5, // moodBoost (+3)
+										moodDrop: 4, // moodDrop (-3)
+										energyRaise: 3, // energyRaise (+7)
+										domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+										subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+									},
+									bRandomize: true,
+									bFillPerfectMatch: true
+								}
+							}, flags: playlistCountFlags
+						},
+						{ name: 'sep' },
 						{ name: 'Harmonic mix from selection', args: { selItems: () => { return plman.GetPlaylistSelectedItems(plman.ActivePlaylist); } }, flags: multipleSelectedFlags },
+						{
+							name: 'Random mix from selection', args: {
+								selItems: () => { return plman.GetPlaylistSelectedItems(plman.ActivePlaylist); }, patternOptions: {
+									bRandomize: true,
+									bFillPerfectMatch: true
+								}
+							}, flags: multipleSelectedFlags
+						},
+						{
+							name: 'Harmonic cycle from selection', args: {
+								selItems: () => { return plman.GetPlaylistSelectedItems(plman.ActivePlaylist); },
+								isCycle: true,
+								patternOptions: {
+									movements: { // Values are percentages of the total sum
+										perfectMatch: 30, // perfectMatch (=)
+										energyBoost: 15, // energyBoost (+1)
+										energyDrop: 15, // energyDrop (-1)
+										energySwitch: 10, // energySwitch (B/A)
+										moodBoost: 5, // moodBoost (+3)
+										moodDrop: 5, // moodDrop (-3)
+										energyRaise: 0, // energyRaise (+7)
+										domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+										subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+									},
+									bFillPerfectMatch: true
+								}
+							}, flags: multipleSelectedFlags
+						},
+						{
+							name: 'Random cycle from selection', args: {
+								selItems: () => { return plman.GetPlaylistSelectedItems(plman.ActivePlaylist); },
+								isCycle: true,
+								patternOptions: {
+									movements: { // Values are percentages of the total sum
+										perfectMatch: 40, // perfectMatch (=)
+										energyBoost: 9, // energyBoost (+1)
+										energyDrop: 9, // energyDrop (-1)
+										energySwitch: 10, // energySwitch (B/A)
+										moodBoost: 5, // moodBoost (+3)
+										moodDrop: 4, // moodDrop (-3)
+										energyRaise: 3, // energyRaise (+7)
+										domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+										subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+									},
+									bRandomize: true,
+									bFillPerfectMatch: true
+								}
+							}, flags: multipleSelectedFlags
+						},
 					];
 					if (!Object.hasOwn(menu_properties, 'bHarmonicMixDoublePass')) { menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true]; }
 					// Menus
@@ -279,7 +378,8 @@
 									args.playlistLength = args.selItems.Count; // Max allowed
 									args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
 									const profiler = defaultArgs.bProfile ? new FbProfiler('harmonicMixing') : null;
-									harmonicMixing(args);
+									if (args.isCycle) { harmonicMixingCycle(args); }
+									else { harmonicMixing(args); }
 									if (defaultArgs.bProfile) { profiler.Print(); }
 								}, flags: selArg.flags ? selArg.flags : undefined
 							});
