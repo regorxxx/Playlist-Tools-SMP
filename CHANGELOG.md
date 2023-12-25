@@ -57,6 +57,11 @@
 
 ## [Unreleased][]
 ### Added
+- Selection manipulation\Advanced sort...: new harmonic mixing entries to repeat patterns in small cycles (30 tracks) instead of applying a pattern for the entire selection (which results in too many consecutive tracks with same key for big selections).
+- Playlist manipulation\Harmonic mix: new harmonic mixing entries to repeat patterns in small cycles. See above.
+- Selection manipulation\Advanced sort...: new harmonic mixing entry to apply a semi-random pattern.
+- Playlist manipulation\Harmonic mix: new harmonic mixing entry. See above.
+- Added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 ### Changed
 - Helpers: updated helpers.
 - Code cleanup.
@@ -453,8 +458,8 @@
 - Buttons: added 'main_menu_shortcut' button which allows to call [multiple] native main menus (dynamically generated ones too). Some kind of automation is allowed by configuring states and unloading actions. For ex. to easily switch playback statistics monitoring on demand for multiple components (database, ListenBrainz, Last.Fm, ...) with a single click, and also ensure they are enabled back when closing Foobar200. Before every menu action a custom timeout can be added (for asynchronous actions).
 - Buttons: added 'search_by_tags_queries' button which is a generic version of the old 'search_same_style' button, but applicable to any tag. An arbitrary num of tags may be used to create queries.
 - Buttons: added 'quicksearch' button which is a shortcut to the "dynamic queries" functionality, more in line with [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu). Allows searching for tracks with same tag values, beginning with them or by partial matching (i.e. adds a lot of more functionality than the original one). Results may be sent to a playlist, Autoplaylist or search window.
-- Advanced sort: decremental sort by DynGenre entry added.
-- Advanced sort: harmonic mix entry added (in place, not new playlist).
+- Selection manipulation\Advanced sort...: decremental sort by DynGenre entry added.
+- Selection manipulation\Advanced sort...: harmonic mix entry added (in place, not new playlist).
 - Tags: menu entries to -only- reset tag remapping.
 - Readmes: new 'allowedKeys.txt' file explaining pools presets, variables used, sources, etc.
 - Fingerprinting: added compare selection entry by FooId (previously only ChromaPrint was available).
