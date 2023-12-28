@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//27/12/23
 
 /*
 	Find/Remove From Playlist(s)
@@ -26,7 +26,7 @@ function findInPlaylists(selList = fb.GetFocusItem(), lockType = []) {
 	if (!selList) { return []; }
 	let inPlaylist = [];
 	let inPlaylistSet = new Set();
-	const bAll = lockType.length ? true : false;
+	const bAll = !!lockType.length;
 	for (const sel of selList.Convert()) {
 		for (let i = 0; i < plman.PlaylistCount; i++) {
 			if (plman.GetPlaylistItems(i).Find(sel) !== -1) {

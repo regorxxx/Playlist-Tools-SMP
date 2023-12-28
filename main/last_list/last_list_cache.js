@@ -1,5 +1,7 @@
 'use strict';
-//06/03/23
+//27/12/23
+
+/* exported LastListCache */
 
 class LastListCache {
 
@@ -10,7 +12,7 @@ class LastListCache {
 			'w': 604800000,
 			'm': 2592000000,
 			'y': 31536000000
-		}
+		};
 	}
 	static compressCache(cacheObject) {
 		let artistCounts = {};
@@ -36,7 +38,7 @@ class LastListCache {
 			}
 
 			return [
-				track.youtube,
+				track.youTube,
 				track.title,
 				track.artist,
 				track.coverArt,
@@ -98,10 +100,10 @@ class LastListCache {
 			}
 
 			return {
-				'youtube': track[0],
-				'title': track[1],
-				'artist': track[2],
-				'coverArt': track[3]
+				youTube: track[0],
+				title: track[1],
+				artist: track[2],
+				coverArt: track[3]
 			};
 		});
 

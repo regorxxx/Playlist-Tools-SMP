@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/23
+//27/12/23
 
 /* exported savePlaylist, addHandleToPlaylist, precacheLibraryRelPaths, precacheLibraryPathsAsync, loadTracksFromPlaylist, arePathsInMediaLibrary, loadPlaylists */
 
@@ -13,7 +13,7 @@ include('helpers_xxx_file.js');
 include('helpers_xxx_tags.js');
 /* global checkQuery:readable, getSortObj:readable, getTagsValuesV4:readable */
 include('helpers_xxx_playlists.js');
-/* global getHandleFromUIPlaylists:readable */
+/* global getHandlesFromUIPlaylists:readable */
 include('helpers_xxx_playlists_files_xspf.js');
 /* global XSPF:readable*/
 include('helpers_xxx_playlists_files_xsp.js');
@@ -570,7 +570,7 @@ function getRelPath(itemPath, relPathSplit) {
 
 // Loading m3u, m3u8 & pls playlist files is really slow when there are many files
 // Better to find matches on the library (by path) and use those! A query or addLocation approach is easily 100x times slower
-function loadTracksFromPlaylist(playlistPath, playlistIndex, relPath = '', remDupl = []/*['title','artist','date']*/) {
+function loadTracksFromPlaylist(playlistPath, playlistIndex, relPath = '', remDupl = []/*['title','artist','date']*/, bAdvTitle = true) {
 	let bDone = false;
 	if (!playlistPath || !playlistPath.length) {
 		console.log('getFilePathsFromPlaylist(): no playlist path was provided');
@@ -589,7 +589,7 @@ function loadTracksFromPlaylist(playlistPath, playlistIndex, relPath = '', remDu
 		plman.AddLocations(playlistIndex, [playlistPath], true);
 		bDone = true;
 	} else {
-		const { handlePlaylist, pathsNotFound } = getHandlesFromPlaylist(playlistPath, relPath, void (0), remDupl, true);
+		const { handlePlaylist, pathsNotFound } = getHandlesFromPlaylist(playlistPath, relPath, void (0), remDupl, true, bAdvTitle);
 		if (handlePlaylist) {
 			if (pathsNotFound && pathsNotFound.length) {
 				if (extension === '.xspf') {
@@ -634,10 +634,10 @@ function getHandlesFromPlaylist(playlistPath, relPath = '', bOmitNotFound = fals
 			// From playlist manager or loaded playlists
 			const toIncludeHandle = typeof list !== 'undefined'
 				? list.getHandleFromPlaylists(queryPlaylists.is) // eslint-disable-line no-undef
-				: getHandleFromUIPlaylists(queryPlaylists.is);
+				: getHandlesFromUIPlaylists(queryPlaylists.is);
 			const toExcludeHandle = typeof list !== 'undefined'
 				? list.getHandleFromPlaylists(queryPlaylists.isnot) // eslint-disable-line no-undef
-				: getHandleFromUIPlaylists(queryPlaylists.isnot);
+				: getHandlesFromUIPlaylists(queryPlaylists.isnot);
 			// Difference
 			toIncludeHandle.Sort();
 			toExcludeHandle.Sort();

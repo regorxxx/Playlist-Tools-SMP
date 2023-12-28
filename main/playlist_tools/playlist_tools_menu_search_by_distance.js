@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//27/12/23
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -10,7 +10,7 @@
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
 	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraph:readable, testGraphV2:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
-		if (!Object.prototype.hasOwnProperty.call(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
+		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes['Search similar by... (main)'] = folders.xxx + 'helpers\\readme\\search_by_distance.txt';
@@ -42,10 +42,10 @@
 			// And merge
 			menu_properties = { ...menu_properties, ...toMerge }; // NOSONAR [global]
 			// Other properties
-			if (!Object.prototype.hasOwnProperty.call(menu_properties, 'bSmartShuffleAdvc')) {
+			if (!Object.hasOwn(menu_properties, 'bSmartShuffleAdvc')) {
 				menu_properties['bSmartShuffleAdvc'] = ['Smart shuffle extra conditions', true, { func: isBoolean }, true];
 			}
-			if (!Object.prototype.hasOwnProperty.call(menu_properties, 'smartShuffleSortBias')) {
+			if (!Object.hasOwn(menu_properties, 'smartShuffleSortBias')) {
 				menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', { func: isStringWeak }, 'random'];
 			}
 			// Set default args
@@ -54,7 +54,7 @@
 			const loadMenus = (menuName, selArgs, entryArgs = []) => {
 				selArgs.forEach((selArg) => {
 					if (selArg.name === 'sep') {
-						let entryMenuName = Object.prototype.hasOwnProperty.call(selArg, 'menu') ? selArg.menu : menuName;
+						let entryMenuName = Object.hasOwn(selArg, 'menu') ? selArg.menu : menuName;
 						menu.newEntry({ menuName: entryMenuName, entryText: 'sep' });
 					} else {
 						const entryArg = entryArgs.find((item) => { return item.name === selArg.name; }) || {};
@@ -62,7 +62,7 @@
 						menu.newEntry({
 							menuName, entryText, func: (args = { ...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args }) => {
 								const globQuery = args.properties['forcedQuery'][1];
-								if (Object.prototype.hasOwnProperty.call(args, 'forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
+								if (Object.hasOwn(args, 'forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
 									args['forcedQuery'] = globQuery + ' AND ' + args['forcedQuery'];
 								}
 								// Set default values for tags
@@ -137,7 +137,7 @@
 				loadMenus(specialMenu, selArgs);
 			}
 			{	// -> Config menu
-				if (!Object.prototype.hasOwnProperty.call(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
+				if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 					{
 						const submenu = menu.newMenu('Search by Distance', configMenu);
 						{ 	// Find genre/styles not on graph
@@ -218,7 +218,7 @@
 															const example = '["GENRE","LASTFM_GENRE","GENRE2"]';
 															const input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s): (JSON)\n\nFor example:\n' + example, 'Search by distance', example, void (0), true);
 															if (input === null) { return; }
-															if (Object.prototype.hasOwnProperty.call(defaultArgs, key)) { defaultArgs[key] = input; }
+															if (Object.hasOwn(defaultArgs, key)) { defaultArgs[key] = input; }
 															tag.tf = input;
 															menu_properties.tags[1] = JSON.stringify(tags);
 															overwriteMenuProperties(); // Updates panel
@@ -242,7 +242,7 @@
 												options.forEach((key) => {
 													const propObj = key === 'bTagsCache' ? sbd.panelProperties : menu_properties;
 													const keyText = propObj[key][0];
-													const entryText = (keyText.substr(keyText.indexOf('.') + 1) + (key === 'bTagsCache' && !isFoobarV2 ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ', '');
+													const entryText = (keyText.substring(keyText.indexOf('.') + 1) + (key === 'bTagsCache' && !isFoobarV2 ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ', '');
 													menu.newEntry({
 														menuName: sm, entryText, func: () => {
 															propObj[key][1] = !propObj[key][1];

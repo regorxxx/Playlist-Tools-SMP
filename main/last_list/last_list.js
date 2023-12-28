@@ -1,8 +1,8 @@
 'use strict';
-//05/10/23
+//27/12/23
 
-/* 
-	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp 
+/*
+	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp
 	- Proper argument support on run method (allows caching).
 	- Better library matching of extra chars (for ex. in original script '.38 Special' would not match '38 Special')
 	- Better library matching removing unwanted title words (remastered, ...)
@@ -10,14 +10,19 @@
 	- Minor fixes
 */
 
+/* exported LastList */
 
+/* global isYouTube:readable */
 include('last_list_input_error.js');
+/* global InputError:readable */
 include('last_list_helpers.js');
+/* global LastListHelpers:readable */
 include('last_list_cache.js');
+/* global LastListCache:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes_smp.js');
 
 class LastList {
-	constructor({ url = '', pages = 1, playlistName = 'Last List', cacheTime = 86400000, forcedQuery = ''} = {}) {
+	constructor({ url = '', pages = 1, playlistName = 'Last List', cacheTime = 86400000, forcedQuery = '' } = {}) {
 		this.url = url;
 		this.pages = pages;
 		this.playlistName = playlistName;
@@ -25,7 +30,7 @@ class LastList {
 		this.forcedQuery = forcedQuery;
 	}
 
-	run({url = this.url, pages = this.pages, playlistName = this.playlistName, cacheTime = this.cacheTime, forcedQuery = this.forcedQuery} = {}) {
+	run({ url = this.url, pages = this.pages, playlistName = this.playlistName, cacheTime = this.cacheTime, forcedQuery = this.forcedQuery } = {}) {
 		try { // In case an argument is set to null or '', the default value at constructor is used
 			if (!url) {
 				try {
@@ -89,46 +94,40 @@ class LastList {
 			}
 			return Promise.resolve(e);
 		}
-	};
+	}
 
 	log(msg) {
 		console.log('Last List: ' + msg);
-	};
+	}
 
 	scrapeUrl(url, startPage, pages, playlistName, cacheTime, forcedQuery = '') {
 		// create an index of the library
 		let indexedLibrary = {};
 		let libItems;
 		if (forcedQuery.length) {
-			try {libItems = fb.GetQueryItems(fb.GetLibraryItems(), forcedQuery).Convert();} // Sanity check
-			catch (e) {libItems = fb.GetLibraryItems().Convert();}
-		} else {libItems = fb.GetLibraryItems().Convert();}
-		libItems.every((item) => {
+			try { libItems = fb.GetQueryItems(fb.GetLibraryItems(), forcedQuery).Convert(); } // Sanity check
+			catch (e) { libItems = fb.GetLibraryItems().Convert(); }
+		} else { libItems = fb.GetLibraryItems().Convert(); }
+		libItems.forEach((item) => {
 			let fileInfo = item.GetFileInfo();
 			const titleIdx = fileInfo.MetaFind('TITLE');
 			const artistIdx = fileInfo.MetaFind('ARTIST');
-
-			if (titleIdx == -1 || artistIdx == -1) {
-				return true;
-			}
+			if (titleIdx == -1 || artistIdx == -1) {return;}
 
 			let titleLib = LastListHelpers.cleanId(fileInfo.MetaValue(titleIdx, 0)).toLowerCase().trim();
 			let artistLib = LastListHelpers.cleanId(fileInfo.MetaValue(artistIdx, 0)).toLowerCase().trim();
-
 			if (titleLib.length && artistLib.length) {
 				indexedLibrary[`${artistLib} - ${titleLib}`] = item;
 			}
-
-			return true;
 		});
 
 		// regex patterns to match
 		let regexElement = /<tr\s((.|\n)*?)chartlist-love-button((.|\n)*?)<\/tr>/gmi;
-		let regexYoutube = /data-youtube-id=\"(.*?)\"/gmi;
-		let regexTitle = /data-track-name=\"(.*?)\"/gmi;
-		let regexArtist = /data-artist-name=\"(.*?)\"/gmi;
-		let regexCover = /\"cover-art\">\s*<img\s+src=\"(.*?)\"/gmi;
-		let regexFallBack = /href=\"\/music\/([^\/]+)\/_\/([^\"]+)\"/gmi;
+		let regexYoutube = /data-youtube-id="(.*?)"/gmi;
+		let regexTitle = /data-track-name="(.*?)"/gmi;
+		let regexArtist = /data-artist-name="(.*?)"/gmi;
+		let regexCover = /"cover-art">\s*<img\s+src="(.*?)"/gmi;
+		let regexFallBack = /href="\/music\/([^/]+)\/_\/([^"]+)"/gmi;
 
 		// create playlist
 		let playlist = plman.FindOrCreatePlaylist(playlistName, false);
@@ -139,7 +138,7 @@ class LastList {
 
 		let promises = [];
 		for (let i = startPage; i < (startPage + pages); i++) {
-			promises.push(new Promise((resolve, reject) => {
+			promises.push(new Promise((resolve) => {
 				let xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
 				let urlAppend = url.includes('?') ? '&' : '?';
 
@@ -162,27 +161,21 @@ class LastList {
 							// TODO refactor duplicate code
 							cachedResult.trackItems.forEach((track) => {
 								// if no title or artist, skip
-								if (!track.title || !track.artist) {
-									return true;
-								}
-
+								if (!track.title || !track.artist) {return;}
 								// get file from library
 								let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
-								// if no file and no youtube link or no foo_youtube, skip
-								if (!file && (!track.youtube || !hasYoutubeComponent)) {
-									return true;
-								}
-
+								// if no file and no youTube link or no foo_youtube, skip
+								if (!file && (!track.youTube || !hasYoutubeComponent)) {return;}
 								// add to items to add
 								itemsToAdd.push({
-									youtube: track.youtube,
+									youTube: track.youTube,
 									title: track.title,
 									artist: track.artist,
 									cover: track.coverArt,
 									file: file
 								});
 							});
-							this.log(`Cached Used`);
+							this.log('Cached Used');
 							resolve();
 							return;
 						}
@@ -194,7 +187,7 @@ class LastList {
 				xmlhttp.open('GET', urlToUse, true);
 				xmlhttp.onreadystatechange = () => {
 					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-						this.log(`Cached Not Used`);
+						this.log('Cached Not Used');
 						this.log(`searching page ${i}...`);
 						let content = xmlhttp.responseText;
 						// check if content is json
@@ -209,19 +202,15 @@ class LastList {
 									resolve();
 									return;
 								}
-								json.playlist.every((track) => {
+								json.playlist.forEach((track) => {
 									// check everthing needed is present
-									if (!track.name || !track.artists || !track.artists.length || !track.playlinks || !track.playlinks.length) {
-										return true;
-									}
-
+									if (!track.name || !track.artists || !track.artists.length || !track.playlinks || !track.playlinks.length) {return;}
 									trackItems.push({
-										youtube: track.playlinks[0].id,
+										youTube: track.playlinks[0].id,
 										title: track.name,
 										artist: track.artists[0].name,
 										coverArt: null
 									});
-									return true;
 								});
 							} catch (e) {
 								this.log(`Error - ${e.message}`);
@@ -231,9 +220,9 @@ class LastList {
 						} else {
 							let matches = [...content.matchAll(regexElement)];
 							this.log(`${matches.length} matches found`);
-							matches.every((match) => {
-								// get track info from youtube data element
-								let youtube = [...match[0].matchAll(regexYoutube)];
+							matches.forEach((match) => {
+								// get track info from youTube data element
+								let youTube = [...match[0].matchAll(regexYoutube)];
 								let title = [...match[0].matchAll(regexTitle)];
 								let artist = [...match[0].matchAll(regexArtist)];
 								let coverArt = [...match[0].matchAll(regexCover)];
@@ -242,24 +231,19 @@ class LastList {
 									// clean strings
 									title = LastListHelpers.cleanString(decodeURI(title[0][1]));
 									artist = LastListHelpers.cleanString(decodeURI(artist[0][1]));
-								} else { // fallback to href if youtube data element is not available
+								} else { // fallback to href if youTube data element is not available
 									let fallbackData = [...match[0].matchAll(regexFallBack)];
-									if (!fallbackData.length) {
-										return true;
-									}
+									if (!fallbackData.length) {return;}
 									// clean strings
 									artist = decodeURIComponent(fallbackData[0][1]).replace(/\+/g, ' ');
 									title = decodeURIComponent(fallbackData[0][2]).replace(/\+/g, ' ');
 								}
-
 								trackItems.push({
-									youtube: youtube.length ? youtube[0][1] : null,
+									youTube: youTube.length ? youTube[0][1] : null,
 									title: title,
 									artist: artist,
 									coverArt: coverArt.length && !coverArt[0][1].includes('4128a6eb29f94943c9d206c08e625904.jpg') ? coverArt[0][1] : null
 								});
-
-								return true;
 							});
 						}
 
@@ -280,27 +264,20 @@ class LastList {
 
 						trackItems.forEach((track) => {
 							// if no title or artist, skip
-							if (!track.title || !track.artist) {
-								return true;
-							}
-
+							if (!track.title || !track.artist) {return;}
 							// get file from library
 							let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
-							// if no file and no youtube link or no foo_youtube, skip
-							if (!file && (!track.youtube || !hasYoutubeComponent)) {
-								return true;
-							}
-
+							// if no file and no youTube link or no foo_youtube, skip
+							if (!file && (!track.youTube || !hasYoutubeComponent)) {return;}
 							// add to items to add
 							itemsToAdd.push({
-								youtube: track.youtube,
+								youTube: track.youTube,
 								title: track.title,
 								artist: track.artist,
 								cover: track.coverArt,
 								file: file
 							});
 						});
-
 						resolve();
 					}
 
@@ -321,8 +298,8 @@ class LastList {
 			plman.ActivePlaylist = playlist;
 			this.log('finished');
 		});
-	};
-	
+	}
+
 	buildItemList(items) {
 		return [...new Set(items)]
 			.map((item) => {
@@ -334,12 +311,12 @@ class LastList {
 					if (item.cover) {
 						// upscale cover art link
 						item.cover = item.cover.replace(/\/64s\//g, '/300x300/');
-						// append cover url to youtube url
+						// append cover url to youTube url
 						newItem += `&fb2kx_thumbnail_url=${encodeURIComponent(item.cover)}`;
 						newItem += `&fb2k_last_list_thumbnail_url=${encodeURIComponent(item.cover)}`;
 					}
 				}
 				return newItem;
 			});
-	};
+	}
 }
