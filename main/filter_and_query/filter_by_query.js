@@ -1,16 +1,18 @@
 ﻿'use strict';
-//29/09/23
+//28/12/23
+
+/* exported filterByQuery, selectByQuery */
 
 /*
 	Filter by Query
 	Filters handle list or playlist using query
-*/	
+*/
 
 function filterByQuery(handleList = null, query = 'ALL') {
 	if (!query || !query.length || query === 'ALL') {
 		return handleList;
 	}
-	
+
 	let items; // Active playlist or input list?
 	let bActivePlaylist = false;
 	if (handleList === null) {
@@ -20,7 +22,7 @@ function filterByQuery(handleList = null, query = 'ALL') {
 
 	items = handleList.Clone();
 	items = fb.GetQueryItems(items, query);
-	
+
 	if (bActivePlaylist) {
 		let removedCount = handleList.Count - items.Count;
 		if (removedCount) { // Send to active playlist if there was no input list and changes were made
@@ -39,7 +41,7 @@ function selectByQuery(handleList = null, query = 'ALL') {
 	if (!query || !query.length || query === 'ALL') {
 		return handleList;
 	}
-	
+
 	let items; // Active playlist or input list?
 	let bActivePlaylist = false;
 	if (handleList === null) {
@@ -49,7 +51,7 @@ function selectByQuery(handleList = null, query = 'ALL') {
 
 	items = handleList.Clone();
 	items = fb.GetQueryItems(items, query);
-	
+
 	if (bActivePlaylist) {
 		let selCount = items.Count;
 		if (selCount) { // Send to active playlist if there was no input list and changes were made

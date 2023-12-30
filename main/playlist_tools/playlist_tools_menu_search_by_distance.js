@@ -1,14 +1,14 @@
 ﻿'use strict';
-//27/12/23
+//28/12/23
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable,  isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, doOnce:readable, debounce:readable, globQuery:readable, globQuery:readable, _deleteFile:readable, capitalize:readable, capitalizeAll:readable, focusFlags:readable, popup:readable, WshShell:readable, isFoobarV2:readable, isArrayEqual:readable, _explorer:readable, _run:readable, _copyFile:readable, _open:readable, utf8:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable,  isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, doOnce:readable, debounce:readable, globQuery:readable, globQuery:readable, _deleteFile:readable, capitalize:readable, capitalizeAll:readable, focusFlags:readable, popup:readable, WshShell:readable, isFoobarV2:readable, isArrayEqual:readable, _explorer:readable, _run:readable, _copyFile:readable, _open:readable, utf8:readable, _p:readable */
 
 // Similar by...Graph\Dyngenre\Weight
 {
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
-	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraph:readable, testGraphV2:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
+	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
 		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
@@ -165,8 +165,10 @@
 							menu.newEntry({
 								menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('testGraph') : null;
-									testGraph(sbd.allMusicGraph);
-									testGraphV2(sbd.allMusicGraph);
+									[testGraphNodes, testGraphNodeSets, music_graph_descriptors_culture.distanceDebug].forEach((f, i) => {
+										console.log('-'.repeat(60) + '-> Test ' + _p(i + 1));
+										f(sbd.allMusicGraph);
+									});
 									if (defaultArgs.bProfile) { profiler.Print(); }
 								}
 							});

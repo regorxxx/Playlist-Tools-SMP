@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//28/12/23
 
 /* exported onMainMenuEntries, bindDynamicMenus */
 
@@ -29,7 +29,7 @@ function deleteMainMenuDynamic(parent) {
 			if (onMainMenuDynamicEntries[i].parent === parent) {idx.push(i);}
 		}
 		if (idx.length) {
-			idx.reverse().forEach(i => onMainMenuDynamicEntries.splice(i, 1));
+			idx.reverse().forEach(i => onMainMenuDynamicEntries.splice(i, 1)); // NOSONAR
 		}
 	}
 }
