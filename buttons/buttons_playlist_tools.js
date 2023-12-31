@@ -17,7 +17,7 @@ var version = '3.7.0'; // NOSONAR [shared on files]
 /* global globFonts:readable, MK_SHIFT:readable, doOnce:readable, debounce:readable, MK_CONTROL:readable */
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
 /* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
-try {window.DefineScript('Playlist Tools: Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Playlist Tools: Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) { /* May be loaded along other buttons */ }
 
 {
 	const dependencies = [

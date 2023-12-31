@@ -30,7 +30,7 @@ include('..\\main\\tags\\tags_automation.js');
 var prefix = 'ta'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Automate Tags', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {/* console.log('Automate Tags Button loaded.'); */ } //May be loaded along other buttons
+try { window.DefineScript('Automate Tags', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 

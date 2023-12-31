@@ -1,7 +1,7 @@
 ﻿'use strict';
-//24/11/23
+//31/12/23
 
-/* 
+/*
 	Main Menu shortcut
 	----------------
 	Runs multiple main menus with one single click, on order.
@@ -9,20 +9,32 @@
 	Button state may be saved between sessions and will change when clicking on the button.
  */
 
+/* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
+/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, MF_GRAYED:readable, clone:readable, MF_STRING:readable */
 include('..\\helpers\\buttons_xxx.js');
-include('..\\helpers\\helpers_xxx_file.js');
-include('..\\helpers\\helpers_xxx_input.js');
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
 include('..\\helpers\\menu_xxx.js');
+/* global _menu:readable  */
 include('..\\helpers\\menu_xxx_extras.js');
-var prefix = 'mms';
-var version = getButtonVersion('Playlist-Tools-SMP');
+/* global _createSubMenuEditEntries:readable */
+include('..\\helpers\\helpers_xxx_prototypes.js');
+/* global isBoolean:readable, isJSON:readable, isString:readable, _p:readable, isStringWeak:readable */
+include('..\\helpers\\helpers_xxx_UI.js');
+/* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
+include('..\\helpers\\helpers_xxx_properties.js');
+/* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
+include('..\\helpers\\helpers_xxx_input.js');
+/* global Input:readable */
 
-try {window.DefineScript('Main Menu Shortcut Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Main Menu Shortcut Button loaded.'); */} //May be loaded along other buttons
+var prefix = 'mms'; // NOSONAR[global]
+var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
+
+try {window.DefineScript('Main Menu Shortcut Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) { /* May be loaded along other buttons */ }
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
-var newButtonsProperties = { //You can simply add new properties here
+var newButtonsProperties = { // NOSONAR[global]
 	customName:		['Name for the custom UI button', 'Main Menu', {func: isStringWeak}, 'Main Menu'],
 	entries:		['Main menu entries', JSON.stringify([]), {func: isJSON}],
 	unloadCall: 	['Call menus on unload options', JSON.stringify({enabled: false, disabled: false}), {func: isJSON}],
@@ -40,7 +52,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 {
-	var newButton = {
+	const newButton = {
 		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, newButtonsProperties.customName[1], function (mask) {
 			const list = JSON.parse(this.buttonsProperties.entries[1]);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
@@ -52,10 +64,10 @@ buttonsBar.list.push(newButtonsProperties);
 				menu.newEntry({entryText: 'sep'});
 				_createSubMenuEditEntries(menu, void(0), {
 					name: 'Main Menu Shortcut',
-					list, 
-					defaults: JSON.parse(this.buttonsProperties.entries[3]), 
+					list,
+					defaults: JSON.parse(this.buttonsProperties.entries[3]),
 					input : () => {
-						entry = {
+						const entry = {
 							command : Input.string('string', '', 'Enter complete menu name:\nEx: Library/Playback Statistics/Monitor playing tracks', window.Name + 'Main Menu Shortcut' , 'Library/Playback Statistics/Monitor playing tracks', void(0), true),
 							timeOut : Input.number('int positive', 0, 'Time (ms) to wait before running command:', window.Name + 'Main Menu Shortcut' , 10) || 0,
 						};
@@ -112,7 +124,7 @@ buttonsBar.list.push(newButtonsProperties);
 							list.length = 0;
 							clone(option.entries).forEach(e => list.push(e));
 							fb.ShowPopupMessage(list.reduce((total, curr, i) => {
-								const extra = specialKeys.map(k => {return curr.hasOwnProperty(k) ? k + ':' + curr[k] : null;}).filter(Boolean).join(', ');
+								const extra = specialKeys.map(k => {return Object.hasOwn(curr, k) ? k + ':' + curr[k] : null;}).filter(Boolean).join(', ');
 								return total + (total ? '\n' : '') + (i + 1) + '. ' + curr.name + ' -> ' + curr.command + (extra ? ' ' + _p(extra) : '');
 							}, ''), 'Main Menu Shortcut');
 							// Rename
@@ -122,13 +134,13 @@ buttonsBar.list.push(newButtonsProperties);
 							this.w *= buttonsBar.config.scale;
 							this.changeScale(buttonsBar.config.scale);
 							// Other config
-							if (option.hasOwnProperty('indicator')) {
+							if (Object.hasOwn(option, 'indicator')) {
 								for (let key in option.indicator) {
 									indicator[key] = option.indicator[key];
 								}
 								this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
 							}
-							if (option.hasOwnProperty('unloadCall')) {
+							if (Object.hasOwn(option, 'unloadCall')) {
 								for (let key in option.unloadCall) {
 									unloadCall[key] = option.unloadCall[key];
 								}
@@ -204,25 +216,25 @@ buttonsBar.list.push(newButtonsProperties);
 					funcs.reduce((promise, func) =>
 						promise.then(result => func().then(Array.prototype.concat.bind(result))), Promise.resolve([]));
 				const step = (entry) => {
-					const extra = specialKeys.map(k => {return entry.hasOwnProperty(k) ? k + ':' + entry[k] : null;}).filter(Boolean).join(', ');
+					const extra = specialKeys.map(k => {return Object.hasOwn(entry, k) ? k + ':' + entry[k] : null;}).filter(Boolean).join(', ');
 					console.log(entry.name + ' -> ' + entry.command + (extra ? ' ' + _p(extra) : ''));
 					let cache = {};
-					if (entry.hasOwnProperty('PlaybackFollowCursor') && entry.PlaybackFollowCursor !== fb.PlaybackFollowCursor) {
+					if (Object.hasOwn(entry, 'PlaybackFollowCursor') && entry.PlaybackFollowCursor !== fb.PlaybackFollowCursor) {
 						cache.PlaybackFollowCursor = fb.PlaybackFollowCursor;
-						fb.PlaybackFollowCursor = entry.PlaybackFollowCursor; 
+						fb.PlaybackFollowCursor = entry.PlaybackFollowCursor;
 					}
-					if (entry.hasOwnProperty('CursorFollowPlayback') && entry.CursorFollowPlayback !== fb.CursorFollowPlayback) {
+					if (Object.hasOwn(entry, 'CursorFollowPlayback') && entry.CursorFollowPlayback !== fb.CursorFollowPlayback) {
 						cache.CursorFollowPlayback = fb.CursorFollowPlayback;
 						fb.CursorFollowPlayback = entry.CursorFollowPlayback;
 					}
-					if (entry.hasOwnProperty('idx')) {
+					if (Object.hasOwn(entry, 'idx')) {
 						plman.SetPlaylistFocusItem(plman.ActivePlaylist, entry.idx);
 					}
-					try {fb.RunMainMenuCommand(entry.command)} catch (e) {console.log(e);}
+					try {fb.RunMainMenuCommand(entry.command);} catch (e) {console.log(e);}
 					setTimeout(() => {
 						for (let key in cache) {fb[key] = cache[key];}
 					}, 1000);
-				}
+				};
 				const funcs = list.map((entry) => {
 					return () => new Promise((resolve) => {
 						if (entry.timeout) {setTimeout(() => {step(entry); resolve();}, entry.timeout);} else {step(entry); resolve();}
@@ -256,10 +268,9 @@ buttonsBar.list.push(newButtonsProperties);
 				// Properties are not saved on unload
 				// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205
 				const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);
-				const indicator = JSON.parse(parent.buttonsProperties.indicator[1]);
 				if (unloadCall.disabled && !parent.active || unloadCall.enabled && parent.active) {
 					parent.onClick();
-				} 
+				}
 			}
 		},
 		(parent) => { // Default state on init
@@ -278,6 +289,6 @@ buttonsBar.list.push(newButtonsProperties);
 			overwriteProperties(parent.buttonsProperties);
 		},
 		{scriptName: 'Playlist-Tools-SMP', version}
-	)};
+		)};
 	addButton(newButton);
 }

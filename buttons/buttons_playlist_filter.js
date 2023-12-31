@@ -1,31 +1,42 @@
 ﻿'use strict';
-//24/11/23
+//30/12/23
 
-/* 
-	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date, 
+/*
+	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
 	that means that any track matching those will be considered a duplicate.
-	
-	But it can be set as a playlist filter too just by removing or adding tags. 
+
+	But it can be set as a playlist filter too just by removing or adding tags.
 	You have 3 possible checks, you can delete any of them.
 	i.e. Checking artist/date, effectively outputs only 1 track per year for every artist.
-		
+
 	Configurable number of duplicates allowed:
 	number of final duplicates is always nAllowed + 1, since you allow n duplicates and the 'main' copy.
-	
+
 	Tooltip texts are changed according to the variables set!
 */
 
+/* global menu_panelProperties:readable */
+include('..\\helpers\\helpers_xxx.js');
+/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, VK_CONTROL:readable, MK_CONTROL:readable, globRegExp:readable*/
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\filter_and_query\\remove_duplicates.js');
-include('..\\helpers\\helpers_xxx_properties.js');
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
-var prefix = 'fpl';
-var version = getButtonVersion('Playlist-Tools-SMP');
+/* global settingsMenu:readable  */
+include('..\\helpers\\helpers_xxx_prototypes.js');
+/* global isBoolean:readable, isStringWeak:readable , isInt:readable */
+include('..\\helpers\\helpers_xxx_UI.js');
+/* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
+include('..\\helpers\\helpers_xxx_properties.js');
+/* global setProperties:readable, getPropertiesPairs:readable */
+include('..\\main\\filter_and_query\\remove_duplicates.js');
+/* global showDuplicates:readable, removeDuplicates:readable */
+var prefix = 'fpl'; // NOSONAR[global]
+var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try {window.DefineScript('Filter Playlist Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Filter Playlist Button loaded.'); */} //May be loaded along other buttons
+try {window.DefineScript('Filter Playlist Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) { /* May be loaded along other buttons */ }
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
-var newButtonsProperties = { //You can simply add new properties here
+var newButtonsProperties = { // NOSONAR[global]
 	checkInputA:	['Tag or TitleFormat expression to check (1)', globTags.title, {func: isStringWeak}, globTags.title],
 	checkInputB:	['Tag or TitleFormat expression to check (2)', globTags.artist, {func: isStringWeak}, globTags.artist],
 	checkInputC:	['Tag or TitleFormat expression to check (3)', globTags.date, {func: isStringWeak}, globTags.date],
@@ -43,7 +54,7 @@ addButton({
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true, ['buttons_playlist_filter.js'], {bAdvTitle: {popup: globRegExp.title.desc}}).btn_up(this.currX, this.currY + this.currH);
 		} else {
-			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => {return key.startsWith('check')})
+			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => {return key.startsWith('check');})
 				.map((key) => {return this.buttonsProperties[key][1];}).filter((n) => n); //Filter the holes, since they can appear at any place!
 			const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
 			const nAllowed = this.buttonsProperties.nAllowed[1];

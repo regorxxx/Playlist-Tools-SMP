@@ -34,7 +34,7 @@ include('..\\main\\main_menu\\main_menu_custom.js');
 var prefix = 'qs'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Quicksearch button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {/* console.log('Quicksearch Button loaded.'); */ } //May be loaded along other buttons
+try { window.DefineScript('Quicksearch button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {  /* May be loaded along other buttons */ }
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]

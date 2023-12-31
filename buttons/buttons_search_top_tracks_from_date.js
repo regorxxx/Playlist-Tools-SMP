@@ -28,7 +28,7 @@ include('..\\main\\search\\top_tracks_from_date.js');
 var prefix = 'ttd'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Top Tracks Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {/* console.log('Top Tracks from Date Button loaded.'); */ } //May be loaded along other buttons
+try { window.DefineScript('Top Tracks Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]

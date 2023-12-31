@@ -23,7 +23,7 @@ include('..\\main\\tags\\save_tags.js');
 var prefix = 'st_'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Save tags button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {/* console.log('Sace Tags Buttons loaded.'); */ } //May be loaded along other buttons
+try { window.DefineScript('Save tags button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { // NOSONAR[global]

@@ -31,7 +31,7 @@ include('..\\main\\filter_and_query\\remove_duplicates.js');
 var prefix = 'sd'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Show Duplicates Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {/* console.log('Show Duplicates Button loaded.'); */ } //May be loaded along other buttons
+try { window.DefineScript('Show Duplicates Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
