@@ -1,7 +1,7 @@
 ﻿'use strict';
-//17/12/23
+//30/12/23
 
-/* 
+/*
 	Playlist Tools Menu
 	-------------------
 	Merges different playlist tools in one menu, called when pressing the button.
@@ -10,28 +10,37 @@
 
 	NOTE: 'on_mouse_lbtn_up(x, y)' is simply replaced with a button to call the menu.
  */
- 
-var version = '3.7.0';
 
+var version = '3.7.0'; // NOSONAR [shared on files]
+
+/* global menu_panelProperties:readable */
+/* global globFonts:readable, MK_SHIFT:readable, doOnce:readable, debounce:readable, MK_CONTROL:readable */
 try {include('..\\helpers\\buttons_xxx.js');} catch (e) {include('helpers\\buttons_xxx.js');}
+/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
 try {window.DefineScript('Playlist Tools: Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Playlist Tools Menu Button loaded.'); */} //May be loaded along other buttons
 
 {
 	const dependencies = [
 		'helpers\\helpers_xxx_properties.js',
+		/* global setProperties:readable, getPropertiesPairs:readable */
 		'helpers\\helpers_xxx_clipboard.js',
+		/* global _setClipboardData:readable*/
 		'main\\playlist_tools\\playlist_tools_menu.js'];
+		/* global menu_prefix:writable, menu:readable, menuAlt:readable, defaultArgs:readable, menu_prefix_panel:readable, updateMenuProperties:readable, menu_properties:readable , menuTooltip:readable */
+		/* global isBoolean:readable */
+		/* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
+		/* global updateCache:readable */
 	let bIncludeRel = true;
 	try {include('..\\helpers\\helpers_xxx_dummy.js');} catch(e) {bIncludeRel = false;}
 	if (bIncludeRel) {dependencies.forEach((file) => {include('..\\' + file);});}
 	else {dependencies.forEach((file) => {include(file);});}
 }
 
-var prefix = menu_prefix;
+var prefix = menu_prefix; // NOSONAR [shared on files]
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
-menu_prefix = prefix; // update var for internal use of playlist_tools_menu
+menu_prefix = prefix; // NOSONAR [update var for internal use of playlist_tools_menu]
 
-var newButtonsProperties = {
+var newButtonsProperties = { // NOSONAR [shared on files]
 	...menu_properties,
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
 };

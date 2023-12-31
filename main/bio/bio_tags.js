@@ -1,21 +1,23 @@
 'use strict';
-//04/03/23
+//30/12/23
 
-/* 
+/* exported lastfmListeners */
+
+/*
 	Callbacks for integration with other scripts
 */
- // When used along WilB's Biography script (on other panel), data may be fetched automatically
+// When used along WilB's Biography script (on other panel), data may be fetched automatically
 const lastfmListeners = {
 	'on_notify_data' : (parent, name, info) => {
 		if (name === 'bio_imgChange' || name === 'bio_chkTrackRev' || name === 'xxx-scripts: panel name reply') {return;}
 		// Follow WilB's Biography script selection mode
 		if (name === 'Biography notifySelectionProperty') { // Biography 1.1.3
-			if (info.hasOwnProperty('property') && info.hasOwnProperty('val')) {
+			if (Object.hasOwn(info, 'property') && Object.hasOwn(info, 'val')) {
 				parent.bioSelectionMode = info.val ? 'Follow selected track (playlist)' : 'Prefer nowplaying';
 			}
 		}// Follow WilB's Biography script selection mode
 		if (name === 'biographyTags') { // Biography 1.2.0
-			if (info.hasOwnProperty('selectionMode')) {
+			if (Object.hasOwn(info, 'selectionMode')) {
 				parent.bioSelectionMode = info.selectionMode;
 			}
 		}
@@ -24,11 +26,11 @@ const lastfmListeners = {
 		// If both panels don't have the same selection mode, it will not work
 		if (name === 'biographyTags') {
 			parent.bioTags = {};
-			if (info.hasOwnProperty('handle') && info.hasOwnProperty('tags')) {
+			if (Object.hasOwn(info, 'handle') && Object.hasOwn(info, 'tags')) {
 				// Find the biography track on the entire selection, since it may not be just the first track of the sel list
-				const bioSel = parent.bioSelectionMode === 'Prefer nowplaying' 
-					? fb.IsPlaying 
-						? new FbMetadbHandleList(fb.GetNowPlaying()) 
+				const bioSel = parent.bioSelectionMode === 'Prefer nowplaying'
+					? fb.IsPlaying
+						? new FbMetadbHandleList(fb.GetNowPlaying())
 						: fb.GetFocusItem()
 					: fb.GetFocusItem();
 				const sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
