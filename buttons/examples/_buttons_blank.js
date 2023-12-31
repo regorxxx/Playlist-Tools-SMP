@@ -1,30 +1,35 @@
 ﻿'use strict';
-//17/02/22
+//31/12/23
 
-/* 
+/*
 	-> EDIT
  */
- 
+
+// Adjust paths as needed
+include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\buttons_xxx.js');
-// include('EDIT.js');
+/* global addButton:readable, themedButton:readable, getUniquePrefix:readable */
 include('..\\..\\helpers\\helpers_xxx_properties.js');
-var prefix = 'EDIT';
- 
-try {window.DefinePanel('EDIT', {author:'xxx'});} catch (e) {console.log('Remove EDIT loaded.');}  //May be loaded along other buttons
+/* global setProperties:readable, getPropertiesValues:readable */
+include('..\\..\\helpers\\helpers_xxx_UI.js');
+/* global _gdiFont:readable */
+var prefix = 'EDIT'; // NOSONAR[global]
+
+try { window.DefinePanel('EDIT', { author: 'xxx' }); } catch (e) { console.log('Remove EDIT loaded.'); }  //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 
-var newButtonsProperties = { //You can simply add new properties here
+//You can simply add new properties here
+var newButtonsProperties = {  // NOSONAR[global]
 	EDIT: ['EDIT', 0],
 };
-// newButtonsProperties = {...defaultProperties, ...newButtonsProperties}; // Add default properties at the beginning to be sure they work 
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 addButton({
-	OneButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'EDIT', function () {
+	OneButton: new themedButton({ x: 0, y: 0, w: 98, h: 22 }, 'EDIT', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [EDIT] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
-		// EDIT();
+		console.log(EDIT);
 		t1 = Date.now();
 		console.log('Call to EDIT took ' + (t1 - t0) + ' milliseconds.');
 	}, null, _gdiFont('Segoe UI', 12), 'EDIT', prefix, newButtonsProperties),
