@@ -1,24 +1,37 @@
 ﻿'use strict';
-//26/11/23
+//30/12/23
 
-/* 
+/*
 	Top Tracks
 	Search n most played tracks on library. You can configure the number of tracks at properties panel.
 	Button name and tooltip text is changed according to that value!
  */
 
+/* global menu_panelProperties:readable */
+include('..\\helpers\\helpers_xxx.js');
+/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globQuery:readable */
 include('..\\helpers\\buttons_xxx.js');
-include('..\\main\\search\\top_tracks.js');
-include('..\\helpers\\helpers_xxx_properties.js');
-include('..\\helpers\\helpers_xxx_tags.js');
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
-var prefix = 'tt';
-var version = getButtonVersion('Playlist-Tools-SMP');
+/* global settingsMenu:readable  */
+include('..\\helpers\\helpers_xxx_prototypes.js');
+/* global isBoolean:readable, isInt:readable */
+include('..\\helpers\\helpers_xxx_UI.js');
+/* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
+include('..\\helpers\\helpers_xxx_properties.js');
+/* global setProperties:readable, getPropertiesPairs:readable */
+include('..\\helpers\\helpers_xxx_tags.js');
+/* global checkQuery:readable  */
+include('..\\main\\search\\top_tracks.js');
+/* global topTracks:readable  */
+
+var prefix = 'tt'; // NOSONAR[global]
+var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
 try {window.DefineScript('Top Tracks Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) {/* console.log('Top Tracks Button loaded.'); */} //May be loaded along other buttons
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
-var newButtonsProperties = { //You can simply add new properties here
+var newButtonsProperties = { // NOSONAR[global]
 	playlistLength:	['Length of playlist', 25, {greater: 0, func: isInt}, 25],
 	forcedQuery: 	['Forced query to pre-filter database', globQuery.notLowRating, {func: (query) => {return checkQuery(query, true);}}, globQuery.notLowRating],
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
@@ -28,7 +41,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Top Tracks': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks'}, function (mask) {
+	'Top Tracks': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks';}, function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true, ['buttons_search_top_tracks.js']).btn_up(this.currX, this.currY + this.currH);
 		} else {
