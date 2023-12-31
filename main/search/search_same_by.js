@@ -62,10 +62,6 @@
 	3 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
 	2 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 2 styles.
 	1 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 1 style.
-
-	TODO:
-		-Use always TF instead of .MetaFind(), that would allow to execute arbitrary checks like $year(time), etc. (?)
-		 but there is now way if output is a number, a string, ...
  */
 
 /* exported searchSameByCombs, searchSameByQueries */
