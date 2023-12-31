@@ -61,15 +61,18 @@
 - Playlist manipulation\Harmonic mix: new harmonic mixing entries to repeat patterns in small cycles. See above.
 - Selection manipulation\Advanced sort...: new harmonic mixing entry to apply a semi-random pattern.
 - Playlist manipulation\Harmonic mix: new harmonic mixing entry. See above.
-- Added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
+- Macros: custom macro button now has a menu entry to edit the button name (which was previously only editable on first init).
+- Buttons: added more icons to Playlist Tools submenu custom button.
 - Toolbar: new settings for text (or icon) position: left, right (default), top and bottom. These settings mimic CUI options at the buttons bar.
 - Toolbar: new settings for text scale (now independent of button and icon scale).
 - Toolbar: new settings for icon scale (now independent of button and text scale).
+- Added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 ### Changed
 - Helpers: updated helpers.
 - Code cleanup.
 ### Removed
 ### Fixed
+- Macros: fixed macros button and custom macro button to work with the latest changes to macros on [3.7.0](#370---2023-12-17).
 - Other tools\Import track list: error setting custom path.
 - Toolbar: buttons' size not restored back to normal height after disabling 'Full size buttons' without reloading the panel.
 - Minor fixes.
