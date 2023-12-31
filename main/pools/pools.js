@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/23
+//31/12/23
 
 /* exported _pools */
 
@@ -139,7 +139,8 @@ function _pools({
 			});
 		}
 	};
-	this.processPool = async (pool, properties) => {
+	this.processPool = async (pool, properties, options = {toPls: true}) => {
+		const defaults = {toPls: true};
 		const profiler = this.bProfile ? new FbProfiler('processPool') : null;
 		const libItems = Object.keys(pool.fromPls).some((key) => key.startsWith('_LIBRARY_') || key.startsWith('_GROUP_'))
 			? fb.GetLibraryItems()
@@ -426,15 +427,21 @@ function _pools({
 			handleListTo.AddRange(shuffle.handleList);
 			console.log(scriptName + ': smart shuffle -> ' + pool.smartShuffle + ' tag');
 		}
-		plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
 		// Legacy sorting only when not applying special sorting
 		if (!bHarmonic && !bShuffle && typeof pool.sort !== 'undefined') {
-			plman.SortByFormat(idxTo, pool.sort);
+			if (pool.sort.toUpperCase !== '%PLAYLIST_INDEX%') {
+				if (pool.sort.length) {handleListTo.OrderByFormat(fb.TitleFormat(pool.sort), 1);}
+				else {handleListTo =  new FbMetadbHandleList(handleListTo.Convert().shuffle());}
+			}
 			console.log(scriptName + ': sorting ' + _p(pool.sort.length ? pool.sort : 'random'));
 		}
-		plman.ActivePlaylist = idxTo;
-		console.log(scriptName + ': playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks');
+		if ({...defaults, ...options}.toPls) {
+			plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
+			plman.ActivePlaylist = idxTo;
+			console.log(scriptName + ': playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks');
+		}
 		if (this.bProfile) { profiler.Print(); }
+		return handleListTo;
 	};
 	this.inputPool = (last = { fromPls: { _LIBRARY_0: 15, _LIBRARY_1: 15, _LIBRARY_2: 15 } }) => {
 		// Sources
@@ -525,8 +532,6 @@ function _pools({
 		let sort = '';
 		try { sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', (this.title ? this.title + ': ' : '') + 'Pools', '%PLAYLIST_INDEX%', true); }
 		catch (e) { return; }
-		// TODO: Test sorting
-		// Object
 		return { pool: { fromPls, query, toPls, sort, pickMethod } };
 	};
 
