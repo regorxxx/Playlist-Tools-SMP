@@ -1,5 +1,5 @@
 'use strict';
-//31/12/23
+//03/01/24
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -9,11 +9,11 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, doOnce:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isStringWeak:readable, _t:readable, _b:readable */
+/* global isBoolean:readable, isStringWeak:readable, _t:readable, _b:readable, isInt:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
@@ -37,39 +37,41 @@ try {window.DefineScript('Last.fm Tools Button', {author:'regorxxx', version, fe
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	lastURL:		['Last.fm url cache', '', {func: isStringWeak}, ''],
-	lastArtist:		['Last.fm artist cache', '', {func: isStringWeak}, ''],
-	lastDate:		['Last.fm date cache', '', {func: isStringWeak}, ''],
-	lastTag:		['Last.fm tag cache', '', {func: isStringWeak}, ''],
-	lastUser:		['Last.fm user cache', '', {func: isStringWeak}, ''],
-	lastAlbum:		['Last.fm album cache', '', {func: isStringWeak}, ''],
-	bBioTags:		['Use tags from Bio panel?', false, {func: isBoolean}, false],
+	lastURL:		['Url custom input', '', {func: isStringWeak}, ''],
+	lastArtist:		['Artist custom input', '', {func: isStringWeak}, ''],
+	lastDate:		['Date custom input', '', {func: isStringWeak}, ''],
+	lastTag:		['Tag custom input', '', {func: isStringWeak}, ''],
+	lastUser:		['User custom input', '', {func: isStringWeak}, ''],
+	lastAlbum:		['Album custom input', '', {func: isStringWeak}, ''],
+	bBioTags:		['Use tags from Bio panel', true, {func: isBoolean}, true],
 	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false],
 	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false],
 	forcedQuery: 	['Forced query to pre-filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
 	tags: 			['Tags remap for lookups', JSON.stringify([
-		{name: 'Artist top tracks',		tf: ['ARTIST', 'ALBUM ARTIST'], type: 'ARTIST'},
-		{name: 'Artist shuffle',		tf: ['ARTIST', 'ALBUM ARTIST'], type: 'ARTIST_RADIO'},
-		{name: 'Similar artists to',	tf: ['ARTIST', 'ALBUM ARTIST'], type: 'SIMILAR'},
-		{name: 'Similar artists',		tf: ['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'], type: 'ARTIST'},
-		// {name: 'Similar tracks',		tf: ['TITLE', 'ARTIST', 'ALBUM'], type: 'TITLE'},
-		{name: 'Album tracks',			tf: ['ALBUM', 'ARTIST'], type: 'ALBUM_TRACKS'},
-		{name: 'Genre & Style(s)',		tf: ['GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'], type: 'TAG'},
-		{name: 'Folksonomy & Date(s)',	tf: ['FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'], type: 'TAG'},
-		{name: 'Mood & Theme(s)',	tf: ['MOOD','THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'], type: 'TAG'},
+		{name: 'Artist top tracks',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST'},
+		{name: 'Artist shuffle',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST_RADIO'},
+		{name: 'Similar artists to',	tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'SIMILAR'},
+		{name: 'Similar artists',		tf: [...new Set(['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'])], type: 'ARTIST'},
+		// {name: 'Similar tracks',		tf: [...new Set(['TITLE', 'ARTIST', 'ALBUM'])], type: 'TITLE'},
+		{name: 'Album tracks',			tf: [...new Set(['ALBUM', globTags.artistRaw])], type: 'ALBUM_TRACKS'},
+		{ name: 'Genre & Style(s)', tf: [...new Set([globTags.genre, globTags.style, 'GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'])], type: 'TAG'},
+		{name: 'Folksonomy & Date(s)',	tf: [...new Set([globTags.folksonomy, 'FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', globTags.locale, 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'])], type: 'TAG'},
+		{name: 'Mood & Theme(s)',	tf: [...new Set([globTags.mood, 'MOOD','THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'])], type: 'TAG'},
 	])],
+	cacheTime:		['YouTube lookups cache expiration', 86400000, {func: isInt}, 86400000],
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Last.fm Tools': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Last.fm', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22}, 'Last.fm', function (mask) {
-		doOnce('Last.fm Tools Cache', () => { // Add url cache on internal format
-			if (this.buttonsProperties.lastURL[1].length) {this.lastList.url = this.buttonsProperties.lastURL[1];}
-		})();
-		// Retrieve cache
+	'Last.fm Tools': new ThemedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Last.fm', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22}, 'Last.fm', function (mask) {
 		const properties = this.buttonsProperties;
+		// Retrieve cache
+		doOnce('Last.fm Tools Cache', () => { // Add url cache on internal format
+			if (properties.lastURL[1].length) {this.lastList.url = properties.lastURL[1];}
+		})();
+		this.lastList.cacheTime = properties.cacheTime[1];
 		if (mask === MK_SHIFT) {
 			settingsMenu(
 				this, true, ['buttons_lastfm_tools.js'],

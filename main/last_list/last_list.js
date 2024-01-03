@@ -1,5 +1,5 @@
 'use strict';
-//27/12/23
+//03/01/23
 
 /*
 	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp
@@ -112,7 +112,7 @@ class LastList {
 			let fileInfo = item.GetFileInfo();
 			const titleIdx = fileInfo.MetaFind('TITLE');
 			const artistIdx = fileInfo.MetaFind('ARTIST');
-			if (titleIdx == -1 || artistIdx == -1) {return;}
+			if (titleIdx == -1 || artistIdx == -1) { return; }
 
 			let titleLib = LastListHelpers.cleanId(fileInfo.MetaValue(titleIdx, 0)).toLowerCase().trim();
 			let artistLib = LastListHelpers.cleanId(fileInfo.MetaValue(artistIdx, 0)).toLowerCase().trim();
@@ -137,6 +137,26 @@ class LastList {
 		let hasYoutubeComponent = typeof isYouTube !== 'undefined' ? isYouTube : utils.CheckComponent('foo_youtube', true);
 
 		let promises = [];
+
+		const addItems = (trackItems) => {
+			trackItems.forEach((track) => {
+				// if no title or artist, skip
+				if (!track.title || !track.artist) { return; }
+				// get file from library
+				let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
+				// if no file and no youTube link or no foo_youtube, skip
+				if (!file && (!track.youTube || !hasYoutubeComponent)) { return; }
+				// add to items to add
+				itemsToAdd.push({
+					youTube: track.youTube,
+					title: track.title,
+					artist: track.artist,
+					cover: track.coverArt,
+					file: file
+				});
+			});
+		};
+
 		for (let i = startPage; i < (startPage + pages); i++) {
 			promises.push(new Promise((resolve) => {
 				let xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
@@ -158,23 +178,7 @@ class LastList {
 							if (!cachedResult.trackItems.length) {
 								throw new Error('No tracks in cache');
 							}
-							// TODO refactor duplicate code
-							cachedResult.trackItems.forEach((track) => {
-								// if no title or artist, skip
-								if (!track.title || !track.artist) {return;}
-								// get file from library
-								let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
-								// if no file and no youTube link or no foo_youtube, skip
-								if (!file && (!track.youTube || !hasYoutubeComponent)) {return;}
-								// add to items to add
-								itemsToAdd.push({
-									youTube: track.youTube,
-									title: track.title,
-									artist: track.artist,
-									cover: track.coverArt,
-									file: file
-								});
-							});
+							addItems(cachedResult.trackItems);
 							this.log('Cached Used');
 							resolve();
 							return;
@@ -204,7 +208,7 @@ class LastList {
 								}
 								json.playlist.forEach((track) => {
 									// check everthing needed is present
-									if (!track.name || !track.artists || !track.artists.length || !track.playlinks || !track.playlinks.length) {return;}
+									if (!track.name || !track.artists || !track.artists.length || !track.playlinks || !track.playlinks.length) { return; }
 									trackItems.push({
 										youTube: track.playlinks[0].id,
 										title: track.name,
@@ -233,7 +237,7 @@ class LastList {
 									artist = LastListHelpers.cleanString(decodeURI(artist[0][1]));
 								} else { // fallback to href if youTube data element is not available
 									let fallbackData = [...match[0].matchAll(regexFallBack)];
-									if (!fallbackData.length) {return;}
+									if (!fallbackData.length) { return; }
 									// clean strings
 									artist = decodeURIComponent(fallbackData[0][1]).replace(/\+/g, ' ');
 									title = decodeURIComponent(fallbackData[0][2]).replace(/\+/g, ' ');
@@ -262,22 +266,7 @@ class LastList {
 							}
 						}
 
-						trackItems.forEach((track) => {
-							// if no title or artist, skip
-							if (!track.title || !track.artist) {return;}
-							// get file from library
-							let file = indexedLibrary[`${LastListHelpers.cleanId(track.artist).toLowerCase()} - ${LastListHelpers.cleanId(track.title).toLowerCase()}`];
-							// if no file and no youTube link or no foo_youtube, skip
-							if (!file && (!track.youTube || !hasYoutubeComponent)) {return;}
-							// add to items to add
-							itemsToAdd.push({
-								youTube: track.youTube,
-								title: track.title,
-								artist: track.artist,
-								cover: track.coverArt,
-								file: file
-							});
-						});
+						addItems(trackItems);
 						resolve();
 					}
 
