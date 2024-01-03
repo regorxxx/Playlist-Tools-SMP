@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Playlist Tools Macro custom
@@ -11,7 +11,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -33,7 +33,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0); // A
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Macros (CUSTOM)': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
+	'Playlist Tools Macros (CUSTOM)': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			if (mask === MK_SHIFT) {
 				const configMenu = new _menu();
@@ -74,21 +74,23 @@ addButton({
 						});
 						if (!propMacros.length) { configMenu.newEntry({ entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
 						configMenu.newEntry({ entryText: 'sep' });
-						configMenu.newEntry({ entryText: 'Button name...', func: () => {
-							const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();
-							if (!newName.length) {
-								return;
-							} else {
-								this.buttonsProperties.customName[1] = newName;
-								overwriteProperties(this.buttonsProperties); // Force overwriting
-								this.adjustNameWidth(newName);
+						configMenu.newEntry({
+							entryText: 'Button name...', func: () => {
+								const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();
+								if (!newName.length) {
+									return;
+								} else {
+									this.buttonsProperties.customName[1] = newName;
+									overwriteProperties(this.buttonsProperties); // Force overwriting
+									this.adjustNameWidth(newName);
+								}
 							}
-						}});
+						});
 					}
 				});
 				configMenu.btn_up(this.currX, this.currY + this.currH);
 			} else {
-				if (this.buttonsProperties['customName'][1] === 'Customize!') {
+				if (this.buttonsProperties['customName'][1] === 'Customize!') { // NOSONAR
 					const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button').toString();
 					if (!newName.length) {
 						return;
