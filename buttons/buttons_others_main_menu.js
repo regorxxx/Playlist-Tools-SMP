@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//03/01/24
 
 /*
 	Main Menu shortcut
@@ -13,7 +13,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, MF_GRAYED:readable, clone:readable, MF_STRING:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\menu_xxx.js');
 /* global _menu:readable  */
 include('..\\helpers\\menu_xxx_extras.js');
@@ -53,7 +53,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	const newButton = {
-		'Main Menu': new themedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, newButtonsProperties.customName[1], function (mask) {
+		'Main Menu': new ThemedButton({x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, newButtonsProperties.customName[1], function (mask) {
 			const list = JSON.parse(this.buttonsProperties.entries[1]);
 			const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 			const indicator = JSON.parse(this.buttonsProperties.indicator[1]);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//03/01/24
 
 /*
 	Output device selector
@@ -10,7 +10,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MF_GRAYED:readable, checkCompatible:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable, getButtonVersion:readable */
+/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, getButtonVersion:readable */
 include('..\\helpers\\menu_xxx.js');
 /* global _menu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -37,7 +37,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Output device selector': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Devices', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Devices', function () {
+	'Output device selector': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Devices', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Devices', function () {
 		const menu = new _menu();
 		menu.newEntry({ entryText: 'Select output:', func: null, flags: MF_GRAYED });
 		menu.newEntry({ entryText: 'sep' });
