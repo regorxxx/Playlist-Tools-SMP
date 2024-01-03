@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//03/01/24
 
 /*
 	Check Library Tags
@@ -52,9 +52,9 @@
 /* exported checkTags, addTagsToExclusion, addTagsToExclusionPopup */
 
 include('..\\..\\helpers\\helpers_xxx.js');
-/* global folders:readable, iStepsLibrary:readable, iDelayLibrary:readable, popup:readable, _save:readable */
+/* global folders:readable, iStepsLibrary:readable, iDelayLibrary:readable, popup:readable, globTags:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
-/* global _isFile:readable, utf8:readable, _open:readable, WshShell:readable, _jsonParseFileCheck:readable */
+/* global _isFile:readable, utf8:readable, _open:readable, WshShell:readable, _jsonParseFileCheck:readable, _save:readable */
 include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable, overwriteProperties:readable, */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
@@ -67,10 +67,10 @@ include('..\\..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https:
 /* global Typo:readable */
 
 const checkTags_properties = {
-	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', 'genre,style,mood,composer,involvedpeople,title'],
-	tagsToCompare: ['Tags to compare against (\'tag name,...\')', 'genre,style;composer,involvedpeople,artist'],
+	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE'].join(',')],
+	tagsToCompare: ['Tags to compare against (\'tag name,...\')', [[globTags.genre, globTags.style].join(','), [...new Set([globTags.composer, globTags.artistRaw, 'ARTIST', 'INVOLVEDPEOPLE'])]].join(';')],
 	tagValuesExcludedPath: ['File listing tag values to be excluded', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'check_library_tags_exclusion.json'],
-	tagNamesExcludedDic: ['Tags to be excluded at dictionary checking (\'tag name,...\')', 'album,composer,involvedpeople,artist,title'],
+	tagNamesExcludedDic: ['Tags to be excluded at dictionary checking (\'tag name,...\')', [...new Set([globTags.composer, globTags.titleRaw, globTags.artistRaw, 'INVOLVEDPEOPLE', 'ARTIST', 'ALBUM'])].join(',')],
 	bAskForConfigTags: ['Enables popup asking to config excluded tags', false],
 	bUseDic: ['Enables dictionary checking for every tag value (slow!)', false],
 	dictName: ['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
@@ -145,12 +145,12 @@ function checkTags({
 	// Skipped values at pre-filter
 	const tagValuesExcluded = loadTagsExcluded(properties['tagValuesExcludedPath'][1]); // i x k sets
 
-	const tagsToCheck = [...new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean))]; // i, filter holes and remove duplicates
+	const tagsToCheck = [...new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean))].map((s) => s.toLowerCase()); // i, filter holes and remove duplicates
 	if (!tagsToCheck.length) {
 		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
 		return (bAsync ? Promise.resolve(false) : false);
 	}
-	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((tag) => { return [...new Set(tag.split(',').filter(Boolean))]; }); // filter holes and remove duplicates
+	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((tag) => { return [...new Set(tag.toLowerCase().split(',').filter(Boolean))]; }); // filter holes and remove duplicates
 	const tagsToCompareMap = new Map();
 	if (tagsToCompare.length) {
 		tagsToCompare.forEach((arr) => {
@@ -170,7 +170,7 @@ function checkTags({
 		const [countArray, countArrayFiltered] = checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, maxSizePerTag);
 		// Find possible alternatives (misplacing and misspelling) or other errors to report
 		let alternativesMap = new Map();
-		const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(','); // Don't check these against dictionary
+		const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(',').map((s) => s.toLowerCase()); // Don't check these against dictionary
 		if (countArray.length && countArrayFiltered.length) {
 			tagsToCheck.forEach((tagA, indexA) => {
 				const bCompare = tagsToCompareMap.has(tagA);
@@ -326,10 +326,12 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 				else if (!tagValue[0].trim().length) { bError = true; } // NOSONAR
 				else if (tagValue[0].trim().length !== tagValue[0].length) { bError = true; } // NOSONAR
 				else if (tagValue[0] === '?') { bError = true; } // NOSONAR
-				else if (tagValue[0].indexOf('  ') !== -1 && tag.toLowerCase() !== 'title') { bError = true; } // NOSONAR
-				else if (tagValue[0].indexOf(';') !== -1 && tag.toLowerCase() !== 'title') { bError = true; } // NOSONAR
-				else if (tagValue[0].indexOf(',') !== -1 && tag.toLowerCase() !== 'title') { bError = true; } // NOSONAR
-				else if (tagValue[0].indexOf('/') !== -1 && tag.toLowerCase() !== 'title') { bError = true; } // NOSONAR
+				else if (tag !== 'title') {
+					if (tagValue[0].indexOf('  ') !== -1) { bError = true; } // NOSONAR
+					else if (tagValue[0].indexOf(';') !== -1) { bError = true; } // NOSONAR
+					else if (tagValue[0].indexOf(',') !== -1) { bError = true; } // NOSONAR
+					else if (tagValue[0].indexOf('/') !== -1) { bError = true; } // NOSONAR
+				}
 				if (bError) { countArrayFiltered[index].push(tagValue); }
 			});
 			// Then all tags according to freq. filter (excluding previously added ones)
@@ -360,11 +362,12 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 	else if (!tagValueA[0].trim().length) { alternativesMap.set(tagKey, 'Tag set to blank space(s)'); }
 	else if (tagValueA[0].trim().length !== tagValueA[0].length) { alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes'); }
 	else if (tagValueA[0] === '?') { alternativesMap.set(tagKey, 'Tag not set'); }
-	else if (tagValueA[0].indexOf('  ') !== -1 && tagA.toLowerCase() !== 'title') { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
-	else if (tagValueA[0].indexOf(';') !== -1 && tagA.toLowerCase() !== 'title') { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (tagValueA[0].indexOf(',') !== -1 && tagA.toLowerCase() !== 'title') { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (tagValueA[0].indexOf('/') !== -1 && tagA.toLowerCase() !== 'title') { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (bCompare) { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
+	else if (tagA !== 'title') {
+		if (tagValueA[0].indexOf('  ') !== -1) { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
+		else if (tagValueA[0].indexOf(';') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+		else if (tagValueA[0].indexOf(',') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+		else if (tagValueA[0].indexOf('/') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	} else if (bCompare) { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
 		let similValues = [];
 		tagsToCheck.forEach((tagB, indexB) => {
 			if (toCompareWith.has(tagB)) {
@@ -425,7 +428,7 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 		'(3) Any other identified error, it\'s shown at right too (-->)\n\n';
 	tagsToCheck.forEach((tag, index) => {
 		textA += '------------------\n';
-		textA += tag + ':\n';
+		textA += tag.toUpperCase() + ':\n';
 		textA += '------------------\n';
 		if (countArrayFiltered.length) {
 			countArrayFiltered[index].forEach((pair) => {
@@ -448,16 +451,16 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 		'In any case you must check them one by one, and only add those needed.\n\n';
 	let rightTagsText = '', reportTagsText = '';
 	tagsToCheck.forEach((tag, index) => {
-		rightTagsText += tag + ':\n';
-		reportTagsText += tag + ':\n';
+		rightTagsText += tag.toUpperCase() + ':\n';
+		reportTagsText += tag.toUpperCase() + ':\n';
 		let rightPairsText = '', reportPairsText = '';
 		if (countArrayFiltered.length) {
 			countArrayFiltered[index].forEach((pair) => {
 				const tagKey = tag + keySplit + pair[0];
 				if (alternativesMap.has(tagKey)) {
-					reportPairsText += (reportPairsText.length ? ';' : '') + tag + ',' + pair[0];
+					reportPairsText += (reportPairsText.length ? ';' : '') + tag.toUpperCase() + ',' + pair[0];
 				} else {
-					rightPairsText += (rightPairsText.length ? ';' : '') + tag + ',' + pair[0];
+					rightPairsText += (rightPairsText.length ? ';' : '') + tag.toUpperCase() + ',' + pair[0];
 				}
 			});
 		}
@@ -476,9 +479,9 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 	alternativesMap.forEach((val, key) => { // keys are pairs of: tagName(separator)tagValue
 		const [tagName, tagVal] = key.split(keySplit);
 		if (tagVal === '?') {
-			queryText += tagName + ' - ' + tagVal + ' --> ' + 'NOT ' + tagName.toUpperCase() + ' PRESENT\n';
+			queryText += tagName.toUpperCase() + ' - ' + tagVal + ' --> ' + 'NOT ' + tagName.toUpperCase() + ' PRESENT\n';
 		} else {
-			queryText += tagName + ' - ' + tagVal + ' --> ' + tagName.toUpperCase() + ' IS ' + '"' + tagVal + '"\n';
+			queryText += tagName.toUpperCase() + ' - ' + tagVal + ' --> ' + tagName.toUpperCase() + ' IS ' + '"' + tagVal + '"\n';
 			if (!tagVal.length && tipsText.indexOf(tagName) === -1) { // Only add the tip once per tag name
 				if (!tipsText.length) { tipsText += 'You can use these TF on facets to differentiate\nbetween empty valued and non set tags on columns:\n\n'; }
 				tipsText += '$if(%' + tagName + '%,$ifgreater($len(%' + tagName + '%),0,%<' + tagName + '>%,\'(Empty)\'),\'(\'Unknown\')\')';
