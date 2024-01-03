@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Playlist Tools Submenu Custom
@@ -11,7 +11,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, MK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -33,7 +33,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And 
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools SubMenu (CUSTOM)': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
+	'Playlist Tools SubMenu (CUSTOM)': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
 		if (isPlaylistToolsLoaded()) {
 			const buttonMenu = new _menu();
 			const mainMenu = menu.getMenus()[0];

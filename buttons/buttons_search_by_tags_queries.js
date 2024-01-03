@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -10,7 +10,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, globRegExp:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -45,7 +45,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Search Same By Tags (Queries)': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
+	'Search Same By Tags (Queries)': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
 		if (mask === MK_SHIFT) {
 			const oldName = this.buttonsProperties.customName[1].toString();
 			settingsMenu(this, true, ['buttons_search_by_tags_queries.js'], { bAdvTitle: { popup: globRegExp.title.desc } }).btn_up(this.currX, this.currY + this.currH);

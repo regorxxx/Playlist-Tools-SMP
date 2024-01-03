@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Quicksearch for same....
@@ -11,7 +11,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globQuery:readable, globTags:readable, MF_STRING:readable, MF_GRAYED:readable, VK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\menu_xxx.js');
 /* global _menu:readable  */
 include('..\\helpers\\menu_xxx_extras.js');
@@ -128,7 +128,7 @@ if (newButtonsProperties.bDynamicMenus[1]) {
 }
 
 addButton({
-	'Quicksearch': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Quicksearch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Quicksearch', function (mask) {
+	'Quicksearch': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Quicksearch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Quicksearch', function (mask) {
 		if (mask === MK_SHIFT) {
 			const menu = settingsMenu(
 				this, true, ['buttons_search_quicksearch.js'],
@@ -242,7 +242,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								dynamicQuery({ query, sort: { tfo: sortTF }, handleList: this.selItems, playlistName });
 							}
 						} else {
-							if (bShift || bCtrl) {
+							if (bShift || bCtrl) { // NOSONAR
 								query = dynamicQueryProcess({ query });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
@@ -327,7 +327,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 									dynamicQuery({ query, sort: queryObj.sort || { tfo: sortTF }, handleList: this.selItems, playlistName });
 								}
 							} else {
-								if (bShift || bCtrl) {
+								if (bShift || bCtrl) { // NOSONAR
 									query = dynamicQueryProcess({ query });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
@@ -392,7 +392,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								dynamicQuery({ query, sort: queryObj.sort || { tfo: sortTF }, handleList: this.selItems, playlistName });
 							}
 						} else {
-							if (bShift || bCtrl) {
+							if (bShift || bCtrl) { // NOSONAR
 								query = dynamicQueryProcess({ query });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
