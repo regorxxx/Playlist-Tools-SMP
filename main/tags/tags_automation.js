@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//03/01/24
 
 /*
 	Automatic tagging...
@@ -11,7 +11,7 @@
 	are delayed to the end so the user can press OK on those popups without blocking processing.
  */
 
-/* exported tagAutomation */
+/* exported TagAutomation */
 
 /* global chromaPrintUtils:readable, ffmpeg:readable, folksonomyUtils:readable, essentia:readable */
 include('..\\..\\helpers\\helpers_xxx.js');
@@ -23,7 +23,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getTagsValuesV3:readable */
 
-function tagAutomation({
+function TagAutomation({
 	toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/,
 	bOutputTools = false,
 	bOutputDefTools = false,
@@ -111,11 +111,11 @@ function tagAutomation({
 	if (toolsByKey) {
 		Object.keys(toolsByKey).forEach((key) => {
 			if (Object.hasOwn(this.toolsByKey, key)) { this.toolsByKey[key] = toolsByKey[key]; }
-			else { console.log('tagAutomation: tool key not recognized ' + key); }
+			else { console.log('TagAutomation: tool key not recognized ' + key); }
 		});
 	}
 	if (bOutputTools || bOutputDefTools) {
-		if (bOutputDefTools) { this.tools.forEach((tool) => { this.toolsByKey[tool.key] = tool.bAvailable ? true : false; }); }
+		if (bOutputDefTools) { this.tools.forEach((tool) => { this.toolsByKey[tool.key] = tool.bAvailable; }); }
 		else { this.tools.forEach((tool) => { this.toolsByKey[tool.key] = tool.bAvailable ? tool.bDefault : false; }); }
 		this.incompatibleTools.uniValues().forEach((tool) => { this.toolsByKey[tool] = false; });
 		return this.toolsByKey;
@@ -412,7 +412,7 @@ function tagAutomation({
 					const tag = this.tools[idx].tag;
 					const itemTags = getTagsValuesV3(handleList, tag, true).flat(Infinity).filter(Boolean);
 					if (i === 0 && itemTags.length) { return false; } // Only at first step it checks for no tags!
-					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) { return false; }
+					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) { return false; } // NOSONAR
 				}
 				return true;
 			};
