@@ -1,9 +1,9 @@
 ﻿'use strict';
-//24/12/23
+//03/01/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, convertObjectToString:readable, isString:readable, WshShell:readable, popup:readable, convertStringToObject:readable, capitalize:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, convertObjectToString:readable, isString:readable, WshShell:readable, popup:readable, convertStringToObject:readable, capitalize:readable, globTags:readable */
 
 // Same by...
 {
@@ -19,10 +19,14 @@
 			const menuName = menu.newMenu(name);
 			{	// Dynamic menu
 				let sameByQueries = [
-					{ args: { sameBy: { mood: 6 } } }, { args: { sameBy: { genre: 2 } } }, { args: { sameBy: { style: 2 } } },
-					{ args: { sameBy: { composer: 2 } } }, { args: { sameBy: { key: 1 } } },
+					{ args: { sameBy: { [globTags.mood.toLowerCase()]: 6 } } },
+					{ args: { sameBy: { [globTags.genre.toLowerCase()]: 2 } } },
+					{ args: { sameBy: { [globTags.style.toLowerCase()]: 2 } } },
+					{ args: { sameBy: { [globTags.composer.toLowerCase()]: 2 } } },
+					{ args: { sameBy: { [globTags.key.toLowerCase()]: 1 } } },
 					{ name: 'sep' },
-					{ args: { sameBy: { style: 2, mood: 6 } } }, { args: { sameBy: { style: 2, date: 10 } } },
+					{ args: { sameBy: { [globTags.style.toLowerCase()]: 2, [globTags.mood.toLowerCase()]: 6 } } },
+					{ args: { sameBy: { [globTags.style.toLowerCase()]: 2, [globTags.date.toLowerCase()]: 10 } } },
 				];
 				let selArg = { ...sameByQueries[0] };
 				const sameByQueriesDefaults = [...sameByQueries];
@@ -82,8 +86,10 @@
 								let queryName = queryObj.name || '';
 								if (!queryName.length) {
 									Object.keys(queryObj.args.sameBy).forEach((key, index, array) => {
+										// Reuse the original key if tag matches a global tag
+										const keyText = (Object.entries(globTags).find((pair) => pair[1].toLowerCase() === key) || [key])[0];
 										queryName += (!queryName.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
-										queryName += capitalize(key) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
+										queryName += capitalize(keyText) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
 									});
 								} else { queryName = queryObj.name; }
 								queryName = queryName.length > 40 ? queryName.substring(0, 40) + ' ...' : queryName;
@@ -138,11 +144,36 @@
 			{	// Static menus: Special playlist (at other menu)
 				if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
 					menu.newEntry({ menuName: specialMenu, entryText: 'Based on Queries:', func: null, flags: MF_GRAYED }); // Jumps just before special playlists
+					const artist = [globTags.artistRaw.toLowerCase()];
+					const composer = [globTags.composer.toLowerCase()];
 					const selArgs = [
 						{ title: 'sep', menu: specialMenu },
-						{ title: 'Same artist(s) or featured artist(s)', menu: specialMenu, args: { sameBy: { artist: 1, involvedpeople: 1 }, remapTags: { artist: ['involvedpeople'], involvedpeople: ['artist'] }, bOnlyRemap: false, logic: 'OR' } },  // Finds tracks where artist or involved people matches any from selection
-						{ title: 'Find collaborations along other artists', menu: specialMenu, args: { sameBy: { artist: 1 }, remapTags: { artist: ['involvedpeople'] }, bOnlyRemap: true, logic: 'OR' } },  // Finds tracks where involved people matches artist from selection (remap)
-						{ title: 'Music by same composer(s) as artist(s)', menu: specialMenu, args: { sameBy: { composer: 1 }, remapTags: { composer: ['involvedpeople', 'artist'] }, bOnlyRemap: true, logic: 'OR' } }, // Finds tracks where artist or involvedpeople matches composer from selection (remap)
+						{ // Finds tracks where artist or involved people matches any from selection
+							title: 'Same artist(s) or featured artist(s)', menu: specialMenu,
+							args: {
+								sameBy: { [artist]: 1, 'artist': 1, involvedpeople: 1 },
+								remapTags: { [artist]: ['involvedpeople'], artist: ['involvedpeople'], involvedpeople: [...new Set([artist, 'artist'])] },
+								bOnlyRemap: false, logic: 'OR'
+							}
+						},
+						{ // Finds tracks where involved people matches artist from selection (remap)
+							title: 'Find collaborations along other artists', menu: specialMenu,
+							args: {
+								sameBy: { [artist]: 1, 'artist': 1 },
+								remapTags: { [artist]: ['involvedpeople'], artist: ['involvedpeople'] },
+								bOnlyRemap: true,
+								logic: 'OR'
+							}
+						},
+						{ // Finds tracks where artist or involvedpeople matches composer from selection (remap)
+							title: 'Music by same composer(s) as artist(s)', menu: specialMenu,
+							args: {
+								sameBy: { [composer]: 1 },
+								remapTags: { [composer]: [...new Set(['involvedpeople', 'artist', 'album artist', artist])] },
+								bOnlyRemap: true,
+								logic: 'OR'
+							}
+						},
 						{ title: 'sep', menu: specialMenu },
 					];
 					selArgs.forEach((selArg) => {
