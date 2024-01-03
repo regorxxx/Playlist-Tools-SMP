@@ -1,10 +1,10 @@
 'use strict';
-//21/12/23
+//03/01/24
 
 /* exported _lastListMenu */
 
 include('..\\..\\helpers\\helpers_xxx.js');
-/* global folders:readable, MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable,  */
+/* global folders:readable, MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable, VK_SHIFT:readable */
 include('..\\..\\helpers\\menu_xxx.js');
 /* global _menu:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
@@ -191,7 +191,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 		return name;
 	}
 	{
-		menu.newEntry({ entryText: 'Search on Last.fm:', flags: MF_GRAYED });
+		menu.newEntry({ entryText: 'Shift + Click to bypass cache:', flags: MF_GRAYED });
 		menu.newEntry({ entryText: 'sep' });
 		if (bDynamicMenu) {
 			tags.forEach((tag) => {
@@ -204,11 +204,12 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 						if (url) {
 							parent.url = url;
 							parent.playlistName = playlistName(tag, val);
-							parent.cacheTime = 0;
 							parent.pages = 1;
+							const bShift = utils.IsKeyPressed(VK_SHIFT);
 							console.log('Searching at: ' + url);
 							this.switchAnimation('Last.fm data retrieval', true);
-							parent.run({ url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0 })
+							// Setting it to a 1 sec, will refresh the cache without using it
+							parent.run({ cacheTime: bShift ? 1 : void (0) })
 								.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
 						}
 					}, flags: val ? MF_STRING : MF_GRAYED, data: { bDynamicMenu: true }
@@ -226,11 +227,11 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 							if (url) {
 								parent.url = url;
 								parent.playlistName = playlistName(tag, val);
-								parent.cacheTime = 0;
 								parent.pages = 1;
+								const bShift = utils.IsKeyPressed(VK_SHIFT);
 								console.log('Searching at: ' + url);
 								this.switchAnimation('Last.fm data retrieval', true);
-								parent.run({ url, pages: 1, playlistName: playlistName(tag, val), cacheTime: 0 })
+								parent.run({ cacheTime: bShift ? 1 : void (0) })
 									.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
 							}
 						}, flags: (val ? MF_STRING : MF_GRAYED) | (!bSingle && i % 8 === 0 ? MF_MENUBREAK : MF_STRING)
@@ -336,10 +337,10 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 						parent.url = url[0];
 						parent.playlistName = url[1];
 						parent.pages = url[2] || 1;
-						parent.cacheTime = 0;
+						const bShift = utils.IsKeyPressed(VK_SHIFT);
 						console.log('Searching at: ' + url[0]);
 						this.switchAnimation('Last.fm data retrieval', true);
-						parent.run({ url: url[0], pages: url[2] || 1, playlistName: url[1], cacheTime: 0 })
+						parent.run({ cacheTime: bShift ? 1 : void (0) })
 							.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
 					}
 				}, data: { bDynamicMenu: true }
@@ -350,10 +351,10 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			menuName: subMenuCustom, entryText: 'By url...', func: () => {
 				parent.url = cache.lastURL;
 				parent.playlistName = 'Last.fm';
-				parent.cacheTime = 0;
 				parent.pages = 1;
+				const bShift = utils.IsKeyPressed(VK_SHIFT);
 				this.switchAnimation('Last.fm data retrieval', true);
-				parent.run({ url: null, pages: 1, playlistName: 'Last.fm', cacheTime: 0 })
+				parent.run({ url: null, cacheTime: bShift ? 1 : void (0) })
 					.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
 			}, data: { bDynamicMenu: true }
 		});
@@ -373,11 +374,11 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 					if (url) {
 						parent.url = url;
 						parent.playlistName = 'Last.fm: ' + entry.name;
-						parent.cacheTime = 0;
 						parent.pages = 1;
+						const bShift = utils.IsKeyPressed(VK_SHIFT);
 						console.log('Searching at: ' + url);
 						this.switchAnimation('Last.fm data retrieval', true);
-						parent.run()
+						parent.run({ cacheTime: bShift ? 1 : void (0) })
 							.finally(() => { this.switchAnimation('Last.fm data retrieval', false); });
 					}
 				}, data: { bDynamicMenu: true }
