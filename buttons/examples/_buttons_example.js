@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//03/01/24
 
 /*
 	Button example. Just configure the -things commented-.
@@ -30,7 +30,7 @@
 // Adjust paths as needed
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\buttons_xxx.js');
-/* global addButton:readable, themedButton:readable, getUniquePrefix:readable */
+/* global addButton:readable, ThemedButton:readable, getUniquePrefix:readable */
 include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesValues:readable */
 include('..\\..\\helpers\\helpers_xxx_UI.js');
@@ -61,7 +61,7 @@ setProperties(newButtonsProperties, prefix); //This sets all the panel propertie
 
 // THIS IS ALSO THE SAME STRUCTURE FOR ALL BUTTONS FILES, YOU JUST CHANGE THE NAMES...
 addButton({ // -EDIT You can add here as many buttons as you want-
-	OneButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'BUTTON NAME 1', function () {  // -EDIT HERE BUTTON NAME-
+	OneButton: new ThemedButton({x: 0, y: 0, w: 98, h: 22}, 'BUTTON NAME 1', function () {  // -EDIT HERE BUTTON NAME-
 		let t0 = Date.now();
 		let t1 = 0;
 		let [textA] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
@@ -71,7 +71,7 @@ addButton({ // -EDIT You can add here as many buttons as you want-
 		console.log('Call to yourFunctionHere took ' + (t1 - t0) + ' milliseconds.');  // -EDIT HERE CONSOLE OUTPUT-
 	}, null, _gdiFont('Segoe UI', 12), 'TOOLTIP TEXT', prefix, newButtonsProperties),  // -EDIT TOOLTIP TEXT-
 
-	TwoButton: new themedButton({x: 0, y: 0, w: 98, h: 22}, 'BUTTON NAME 2', function () {  // -EDIT HERE BUTTON NAME-
+	TwoButton: new ThemedButton({x: 0, y: 0, w: 98, h: 22}, 'BUTTON NAME 2', function () {  // -EDIT HERE BUTTON NAME-
 		let t0 = Date.now();
 		let t1 = 0;
 		let [ , textB] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once

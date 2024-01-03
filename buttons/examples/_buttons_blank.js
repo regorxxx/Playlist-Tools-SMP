@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//03/01/24
 
 /*
 	-> EDIT
@@ -8,7 +8,7 @@
 // Adjust paths as needed
 include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\buttons_xxx.js');
-/* global addButton:readable, themedButton:readable, getUniquePrefix:readable */
+/* global addButton:readable, ThemedButton:readable, getUniquePrefix:readable */
 include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesValues:readable */
 include('..\\..\\helpers\\helpers_xxx_UI.js');
@@ -25,7 +25,7 @@ var newButtonsProperties = {  // NOSONAR[global]
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 addButton({
-	OneButton: new themedButton({ x: 0, y: 0, w: 98, h: 22 }, 'EDIT', function () {
+	OneButton: new ThemedButton({ x: 0, y: 0, w: 98, h: 22 }, 'EDIT', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [EDIT] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
