@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Playlist History
@@ -11,7 +11,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
 /* global isBoolean:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
@@ -37,7 +37,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools History': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Prev. Playlist', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Prev. Playlist', function (mask) {
+	'Playlist Tools History': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Prev. Playlist', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Prev. Playlist', function (mask) {
 		if (mask === MK_SHIFT) {
 			this.plsHistory.menu().btn_up(this.currX, this.currY + this.currH);
 		} else {
