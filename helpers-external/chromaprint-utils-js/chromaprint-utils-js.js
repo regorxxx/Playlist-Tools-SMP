@@ -1,9 +1,9 @@
 ﻿'use strict';
-//25/12/23
+//03/01/24
 
 /* exported chromaPrintUtils */
 
-// TODO: optimize offset correlation checking if previously calculated correlations follow a trend
+// TODO optimize offset correlation checking if previously calculated correlations follow a trend
 // stop looking in a given direction if correlation decreases. Should improve processing time
 // while allowing higher span to be set.
 
@@ -131,7 +131,7 @@ const chromaPrintUtils = {
 
 // Helpers
 if (typeof round === 'undefined') {
-	var round = function round(floatNum, decimals){
+	var round = function round(floatNum, decimals){ // NOSONAR [global]
 		let result;
 		if (decimals > 0) {
 			if (decimals === 15) {result = floatNum;}
