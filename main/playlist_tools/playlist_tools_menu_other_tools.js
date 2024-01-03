@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//03/01/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -36,11 +36,11 @@
 						{ tag: globTags.genre, name: 'Genre (+ dictionary)', bUseDic: true },
 						{ tag: globTags.style, name: 'Style (+ dictionary)', bUseDic: true },
 						{ tag: globTags.mood, name: 'Mood (+ dictionary)', bUseDic: true },
-						{ tag: 'COMPOSER', name: 'Composer', bUseDic: false },
-						{ tag: 'TITLE', name: 'Title', bUseDic: false },
+						{ tag: globTags.composer, name: 'Composer', bUseDic: false },
+						{ tag: globTags.titleRaw, name: 'Title', bUseDic: false },
 						'sep',
 						{ tag: [globTags.genre, globTags.style].join(','), name: 'Genre + Style (+ dictionary)', bUseDic: true },
-						{ tag: 'COMPOSER,ARTIST,ALBUM ARTIST', name: 'Composer + Artist', bUseDic: false },
+						{ tag: [...new Set([globTags.composer, globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])].join(','), name: 'Composer + Artist', bUseDic: false },
 					];
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED });
@@ -163,13 +163,13 @@
 		}
 		{	// Automate tags
 			const scriptPath = folders.xxx + 'main\\tags\\tags_automation.js';
-			/* global tagAutomation:readable */
+			/* global TagAutomation:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Write tags';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tags_automation.txt';
-					const tAut = new tagAutomation();
+					const tAut = new TagAutomation();
 					menu_properties['toolsByKey'] = ['\'Other tools\\Write tags\' tools enabled', JSON.stringify(tAut.toolsByKey)];
 					const subMenuName = menu.newMenu(name, menuName);
 					const firedFlags = () => { return tAut.isRunning() ? MF_STRING : MF_GRAYED; };
@@ -223,7 +223,7 @@
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
 						menu.newEntry({
 							menuName: subMenuTools, entryText: entryText, func: () => {
-								tAut.tools.forEach((tool) => { tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable ? true : false; });
+								tAut.tools.forEach((tool) => { tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable; });
 								tAut.incompatibleTools.uniValues().forEach((tool) => { tAut.toolsByKey[tool] = false; });
 								menu_properties['toolsByKey'][1] = JSON.stringify(tAut.toolsByKey);
 								overwriteMenuProperties(); // Updates panel
