@@ -57,6 +57,7 @@
 
 ## [Unreleased][]
 ### Added
+- Last.fm: added caching to YouTube links lookup, which can now be configured by date (or disabled setting it to zero). Pressing Shift + Click on any menu entry will also bypass the cache.
 - Selection manipulation\Advanced sort...: new harmonic mixing entries to repeat patterns in small cycles (30 tracks) instead of applying a pattern for the entire selection (which results in too many consecutive tracks with same key for big selections).
 - Playlist manipulation\Harmonic mix: new harmonic mixing entries to repeat patterns in small cycles. See above.
 - Selection manipulation\Advanced sort...: new harmonic mixing entry to apply a semi-random pattern.
@@ -66,8 +67,13 @@
 - Toolbar: new settings for text (or icon) position: left, right (default), top and bottom. These settings mimic CUI options at the buttons bar.
 - Toolbar: new settings for text scale (now independent of button and icon scale).
 - Toolbar: new settings for icon scale (now independent of button and text scale).
-- Added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
+- Configuration: added COMPOSER to the list of global tags.
+- Configuration: added LOCALE LAST.FM to the list of global tags.
+- Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 ### Changed
+- Search same by: default entries now use the global tags set.
+- Search same by: if an entry tag matches one at global tags, the entry is named as its key (instead of using the TF expression). For ex. using '$year(%DATE%)' as TF, will be shown as 'Date' on the menu entries.
+- 'Other tools\Check tags': composer check now uses the vale at global tags.
 - Helpers: updated helpers.
 - Code cleanup.
 ### Removed
