@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Automatic tagging...
@@ -17,7 +17,7 @@ include('..\\helpers\\menu_xxx.js');
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, soFeat:readable, MK_SHIFT:readable, MF_STRING:readable, MF_GRAYED:readable, VK_SHIFT:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable,  */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable,  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
 /* global isBoolean:readable, isJSON:readable, isString:readable,  */
 include('..\\helpers\\helpers_xxx_UI.js');
@@ -25,7 +25,7 @@ include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\main\\tags\\tags_automation.js');
-/* global tagAutomation:readable  */
+/* global TagAutomation:readable  */
 
 var prefix = 'ta'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
@@ -35,7 +35,7 @@ try { window.DefineScript('Automate Tags', { author: 'regorxxx', version, featur
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	toolsByKey: ['Tools enabled', JSON.stringify(new tagAutomation({ bOutputDefTools: true }))],
+	toolsByKey: ['Tools enabled', JSON.stringify(new TagAutomation({ bOutputDefTools: true }))],
 	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false],
 	bWineBug: ['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup],
 	bFormatPopups: ['Show format warning popups', true, { func: isBoolean }, true],
@@ -48,7 +48,7 @@ buttonsBar.list.push(newButtonsProperties);
 
 {
 	const newButton = {
-		'Automate Tags': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Auto. Tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Auto. Tags', function (mask) {
+		'Automate Tags': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Auto. Tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Auto. Tags', function (mask) {
 			const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 			if (mask === MK_SHIFT) {
 				if (!this.tAut.isRunning() && handleList.Count) { this.tAut.run(); }
@@ -108,7 +108,7 @@ buttonsBar.list.push(newButtonsProperties);
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
 						menu.newEntry({
 							menuName: subMenu, entryText, func: () => {
-								this.tAut.tools.forEach((tool) => { this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault ? true : false; });
+								this.tAut.tools.forEach((tool) => { this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault; });
 								this.tAut.incompatibleTools.uniValues().forEach((tool) => { this.tAut.toolsByKey[tool] = false; });
 								this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 								overwriteProperties(this.buttonsProperties); // Force overwriting
@@ -173,7 +173,7 @@ buttonsBar.list.push(newButtonsProperties);
 			return info;
 		}, prefix, newButtonsProperties, chars.tags, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
 	};
-	newButton['Automate Tags'].tAut = new tagAutomation({
+	newButton['Automate Tags'].tAut = new TagAutomation({
 		toolsByKey: JSON.parse(newButtonsProperties.toolsByKey[1]),
 		bWineBug: newButtonsProperties.bWineBug[1],
 		bFormatPopups: newButtonsProperties.bFormatPopups[1],

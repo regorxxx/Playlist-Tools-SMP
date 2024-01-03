@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	-> EDIT
@@ -8,7 +8,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, folders:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\helpers_xxx_file.js');
 /* global _open:readable, utf8:readable, _jsonParseFileCheck:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -34,7 +34,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Save tags': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Save tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Save tags', function () {
+	'Save tags': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Save tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Save tags', function () {
 		const readmePath = folders.xxx + 'helpers\\readme\\save_tags.txt';
 		const readme = _open(readmePath, utf8);
 		if (readme.length) { fb.ShowPopupMessage(readme, 'Save tags and comparison'); }
@@ -44,7 +44,7 @@ addButton({
 		if (!file.length) { return; }
 		saveTags({ file });
 	}, null, void (0), 'Save all tags from selected tracks to json', prefix, newButtonsProperties, chars.save),
-	'Compare tags': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Compare tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Compare tags', function () {
+	'Compare tags': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Compare tags', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Compare tags', function () {
 		let file;
 		try { file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true); }
 		catch (e) { return; }

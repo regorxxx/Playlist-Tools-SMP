@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/12/23
+//03/01/24
 
 /*
 	Top Tracks
@@ -11,7 +11,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globQuery:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, themedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -42,7 +42,7 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Top Tracks from Date': new themedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks ' + (newButtonsProperties.year[1] || (new Date().getFullYear() - 1)), _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, (parent) => { return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1)); }, function (mask) {
+	'Top Tracks from Date': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks ' + (newButtonsProperties.year[1] || (new Date().getFullYear() - 1)), _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, (parent) => { return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks ' + (parent.buttonsProperties.year[1] || (new Date().getFullYear() - 1)); }, function (mask) {
 		if (mask === MK_SHIFT) {
 			settingsMenu(this, true, ['buttons_search_top_tracks_from_date.js']).btn_up(this.currX, this.currY + this.currH);
 		} else {
