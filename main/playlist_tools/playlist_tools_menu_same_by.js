@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//04/01/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -87,7 +87,7 @@
 								if (!queryName.length) {
 									Object.keys(queryObj.args.sameBy).forEach((key, index, array) => {
 										// Reuse the original key if tag matches a global tag
-										const keyText = (Object.entries(globTags).find((pair) => pair[1].toLowerCase() === key) || [key])[0];
+										const keyText = (Object.entries(globTags).find((pair) => isString(pair[1]) && pair[1].toLowerCase() === key) || [key])[0];
 										queryName += (!queryName.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
 										queryName += capitalize(keyText) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
 									});
