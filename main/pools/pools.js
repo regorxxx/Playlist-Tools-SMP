@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//04/01/24
 
 /* exported _pools */
 
@@ -131,7 +131,6 @@ function _pools({
 			}
 		});
 		if (matches.length) {
-			console.log(matches);
 			matches.reverse().forEach((match) => { // Delete from origin at inverse order
 				handleListTo.RemoveById(match.toIdx);
 				handleListTo.Insert(match.toIdx, handleListFrom[match.fromIdx]);
@@ -156,18 +155,18 @@ function _pools({
 			switch (true) {
 				case plsName.startsWith('_LIBRARY_'): { // Library Source
 					handleListFrom = libItems;
-					console.log(scriptName + ': source -> Library');
+					console.log(scriptName + ': source -> Library'); // DEBUG
 					break;
 				}
 				case plsName.startsWith('_GROUP_'): { // Library Source grouping by TF
-					console.log(scriptName + ': source -> TF Group');
+					console.log(scriptName + ': source -> TF Group'); // DEBUG
 					// Pre-Filter with query
 					handleListFrom = libItems;
 					const query = typeof pool.query !== 'undefined' ? pool.query[plsName] : '';
 					if (query.length && query.toUpperCase() !== 'ALL') {
 						const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
 						if (checkQuery(processedQuery, false)) {
-							console.log(scriptName + ': filter -> ' + processedQuery);
+							console.log(scriptName + ': filter -> ' + processedQuery); // DEBUG
 							handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
 						} else { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); return; }
 					}
@@ -206,7 +205,7 @@ function _pools({
 					// Join all tracks
 					handleListFrom = new FbMetadbHandleList();
 					handleListsGroups.forEach((handleList) => { handleListFrom.AddRange(handleList); });
-					console.log(scriptName + ': group -> ' + limit + ' track(s) per ' + (group.length ? group : 'entire library'));
+					console.log(scriptName + ': group -> ' + limit + ' track(s) per ' + (group.length ? group : 'entire library')); // DEBUG
 					break;
 				}
 				case plsName.startsWith('_SEARCHBYGRAPH_'): { // Search by GRAPH
@@ -221,7 +220,7 @@ function _pools({
 						let bDone = true;
 						checks.forEach((key) => {
 							if (!Object.hasOwn(recipe, key)) {
-								console.log(scriptName + ': source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+								console.log(scriptName + ': source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
 								bDone = false;
 							}
 						});
@@ -235,9 +234,9 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray] = await searchByDistance({ properties, theme, recipe });
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
-						console.log(scriptName + ': source -> Search by GRAPH');
+						console.log(scriptName + ': source -> Search by GRAPH'); // DEBUG
 					} else {
-						console.log(scriptName + ': source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+						console.log(scriptName + ': source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
 						return;
 					}
 					break;
@@ -261,9 +260,9 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray] = await searchByDistance({ properties, theme, recipe });
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
-						console.log(scriptName + ': source -> Search by WEIGHT');
+						console.log(scriptName + ': source -> Search by WEIGHT'); // DEBUG
 					} else {
-						console.log(scriptName + ': source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+						console.log(scriptName + ': source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
 						return;
 					}
 					break;
@@ -280,7 +279,7 @@ function _pools({
 						let bDone = true;
 						checks.forEach((key) => {
 							if (!Object.hasOwn(recipe, key)) {
-								console.log(scriptName + ': source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+								console.log(scriptName + ': source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
 								bDone = false;
 							}
 						});
@@ -294,9 +293,9 @@ function _pools({
 						// Apply
 						const [selectedHandlesArray] = await searchByDistance({ properties, theme, recipe });
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
-						console.log(scriptName + ': source -> Search by DYNGENRE');
+						console.log(scriptName + ': source -> Search by DYNGENRE'); // DEBUG
 					} else {
-						console.log(scriptName + ': source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')');
+						console.log(scriptName + ': source requires a script not loaded or disabled (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
 						return;
 					}
 					break;
@@ -333,7 +332,7 @@ function _pools({
 						if (!bDone) { console.log(scriptName + ': source -> Not found - ' + plsName); }
 						else { console.log(scriptName + ': source -> ' + plsName + ' (' + plsMatch.path + ')'); }
 					} else { // Loaded playlist
-						console.log(scriptName + ': source -> ' + plsName);
+						console.log(scriptName + ': source -> ' + plsName); // DEBUG
 						handleListFrom = plman.GetPlaylistItems(idxFrom);
 					}
 				}
@@ -346,7 +345,7 @@ function _pools({
 				if (query.length && query.toUpperCase() !== 'ALL') {
 					const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
 					if (checkQuery(processedQuery, false)) {
-						console.log(scriptName + ': filter -> ' + processedQuery);
+						console.log(scriptName + ': filter -> ' + processedQuery); // DEBUG
 						handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
 					} else { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); return; }
 				}
@@ -375,7 +374,7 @@ function _pools({
 				if (count !== 1) {
 					handleListFrom = this.pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
 				}
-				console.log(scriptName + ': pool size -> ' + handleListFrom.Count + ' tracks (from ' + count + ' deduplicated / ' + sourceCount + ' total)');
+				console.log(scriptName + ': pool size -> ' + handleListFrom.Count + ' tracks (from ' + count + ' deduplicated / ' + sourceCount + ' total)'); // DEBUG
 			} else { console.log(scriptName + ': pool size -> ' + handleListFrom.Count + ' tracks from ' + num + ' groups'); }
 			// Insert
 			if (Object.hasOwn(pool, 'insertMethod')) {
@@ -410,7 +409,7 @@ function _pools({
 			}
 			handleListTo.RemoveAll();
 			handleListTo.AddRange(handleListMix);
-			console.log(scriptName + ': harmonic mix -> ' + newCount + ' ' + _p('+' + (oriCount - newCount)) + ' tracks');
+			console.log(scriptName + ': harmonic mix -> ' + newCount + ' ' + _p('+' + (oriCount - newCount)) + ' tracks'); // DEBUG
 		}
 		// Smart shuffle
 		const bShuffle = Object.hasOwn(pool, 'smartShuffle') && pool.smartShuffle.length;
@@ -425,7 +424,7 @@ function _pools({
 			});
 			handleListTo.RemoveAll();
 			handleListTo.AddRange(shuffle.handleList);
-			console.log(scriptName + ': smart shuffle -> ' + pool.smartShuffle + ' tag');
+			console.log(scriptName + ': smart shuffle -> ' + pool.smartShuffle + ' tag'); // DEBUG
 		}
 		// Legacy sorting only when not applying special sorting
 		if (!bHarmonic && !bShuffle && typeof pool.sort !== 'undefined') {
@@ -433,12 +432,12 @@ function _pools({
 				if (pool.sort.length) {handleListTo.OrderByFormat(fb.TitleFormat(pool.sort), 1);}
 				else {handleListTo =  new FbMetadbHandleList(handleListTo.Convert().shuffle());}
 			}
-			console.log(scriptName + ': sorting ' + _p(pool.sort.length ? pool.sort : 'random'));
+			console.log(scriptName + ': sorting ' + _p(pool.sort.length ? pool.sort : 'random')); // DEBUG
 		}
 		if ({...defaults, ...options}.toPls) {
 			plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
 			plman.ActivePlaylist = idxTo;
-			console.log(scriptName + ': playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks');
+			console.log(scriptName + ': playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks'); // DEBUG
 		}
 		if (this.bProfile) { profiler.Print(); }
 		return handleListTo;

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//04/01/24
 
 /*
 	Playlist Revive
@@ -321,11 +321,11 @@ function findDeadItems() {
 	}
 	if (deadItems.length) {
 		const header = 'Found playlist(s) with dead items:';
-		console.log(header);
+		console.log(header); // DEBUG
 		let list = '';
 		deadItems.forEach((playlistObj) => {
 			list += playlistObj.name + ': ' + playlistObj.items + '\n';
-			console.log(playlistObj.name + ': ' + playlistObj.items);
+			console.log(playlistObj.name + ': ' + playlistObj.items); // DEBUG
 		});
 		fb.ShowPopupMessage(header + '\n' + list, 'Dead Playlists');
 	} else {

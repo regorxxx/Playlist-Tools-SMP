@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//04/01/24
 
 /* exported chromaPrintUtils */
 
@@ -48,7 +48,7 @@ const chromaPrintUtils = {
 		// console.log("maxCorrIdx = ", maxCorrIdx, "maxCorrOffset = ", maxCorrOffset);
 		// Report matches
 		// if (corr[maxCorrIdx] > this.threshold) {
-			// console.log(source,' and ', target, ' match with correlation of ',corr[maxCorrIdx],' at offset ', maxCorrOffset);
+			// console.log(source,' and ', target, ' match with correlation of ',corr[maxCorrIdx],' at offset ', maxCorrOffset); // DEBUG
 		// }
 		return corr[maxCorrIdx];
 	},

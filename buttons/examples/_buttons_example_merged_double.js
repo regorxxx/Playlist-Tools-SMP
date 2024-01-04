@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//04/01/24
 /*
 	You can merge sets of merged buttons too, mix them with individual buttons files, etc.
 	The same than buttons, you can include multiple times the same merged bar.
@@ -29,7 +29,7 @@ buttonsBar.config.toolbarColor = RGB(211, 218, 237);
 		if (utils.IsFile(path)) {
 			include(path, { always_evaluate: true });
 		} else {
-			console.log(path + ' not loaded');
+			console.log(path + ' not loaded'); // DEBUG
 		}
 	}
 

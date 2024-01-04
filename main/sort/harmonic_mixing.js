@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/23
+//04/01/24
 
 /* exported harmonicMixing, queryReplaceKeys, harmonicMixingCycle */
 /* global globTags:readable */
@@ -42,8 +42,8 @@ function harmonicMixing({
 	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
 	const pattern = camelotWheel.createHarmonicMixingPattern(playlistLength, patternOptions); // On camelot_wheel_xxx.js
 	if (bDebug) {
-		console.log('Original pattern:');
-		console.log(pattern);
+		console.log('Original pattern:'); // DEBUG
+		console.log(pattern); // DEBUG
 	}
 	const { selectedHandlesArray, error } = findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bShuffleInput, bDoublePass, bDebug });
 	if (!error) {
@@ -52,8 +52,8 @@ function harmonicMixing({
 		else { return handleList; }
 
 	} else {
-		console.log('harmonicMixing: ' + error);
-		console.log(pattern);
+		console.log('harmonicMixing: ' + error); // DEBUG
+		console.log(pattern); // DEBUG
 		return null;
 	}
 }
@@ -185,8 +185,8 @@ function findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bShu
 	// Debug console
 	if (bDebug) {
 		console.log('Keys from selection:');
-		console.log(keyDebug);
-		console.log(keySharpDebug);
+		console.log(keyDebug); // DEBUG
+		console.log(keySharpDebug); // DEBUG
 		console.log('Pattern applied:');
 		console.log(patternDebug); // Always has one item less than key arrays
 	}

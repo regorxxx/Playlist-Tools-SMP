@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//04/01/24
 
 // Adjust paths as needed
 include('..\\..\\helpers\\helpers_xxx.js');
@@ -30,7 +30,7 @@ addButton({
 		let t0 = Date.now();
 		let t1 = 0;
 		let [EDIT] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
-		console.log(EDIT);
+		console.log(EDIT); // DEBUG
 		t1 = Date.now();
 		console.log('Call to EDIT took ' + (t1 - t0) + ' milliseconds.');
 	}, null, _gdiFont('Segoe UI', 12), 'EDIT', prefix, newButtonsProperties),

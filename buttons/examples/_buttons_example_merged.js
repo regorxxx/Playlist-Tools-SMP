@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/12/23
+//04/01/24
 
 /*
 	This is an example of how merging buttons works. Just include them...
@@ -47,7 +47,7 @@ buttonsBar.config.toolbarColor = RGB(211, 218, 237);
 		if (utils.IsFile(path)) {
 			include(path, { always_evaluate: true });
 		} else {
-			console.log(path + ' not loaded');
+			console.log(path + ' not loaded'); // DEBUG
 		}
 	}
 

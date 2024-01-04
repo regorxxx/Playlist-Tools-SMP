@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/11/21
+//04/01/24
 
 // Requires struct to be loaded
 // var struct = require("struct");
@@ -50,7 +50,7 @@ const fooidUtils = {
 		// console.log("maxCorrIdx = ", maxCorrIdx, "maxCorrOffset = ", maxCorrOffset);
 		// Report matches
 		// if (corr[maxCorrIdx] > this.threshold) {
-			// console.log(source,' and ', target, ' match with correlation of ',corr[maxCorrIdx],' at offset ', maxCorrOffset);
+			// console.log(source,' and ', target, ' match with correlation of ',corr[maxCorrIdx],' at offset ', maxCorrOffset); // DEBUG
 		// }
 		return corr[maxCorrIdx];
 	},

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//04/01/24
 
 /*
 	Main Menu shortcut
@@ -217,7 +217,7 @@ buttonsBar.list.push(newButtonsProperties);
 						promise.then(result => func().then(Array.prototype.concat.bind(result))), Promise.resolve([]));
 				const step = (entry) => {
 					const extra = specialKeys.map(k => {return Object.hasOwn(entry, k) ? k + ':' + entry[k] : null;}).filter(Boolean).join(', ');
-					console.log(entry.name + ' -> ' + entry.command + (extra ? ' ' + _p(extra) : ''));
+					console.log(entry.name + ' -> ' + entry.command + (extra ? ' ' + _p(extra) : '')); // DEBUG
 					let cache = {};
 					if (Object.hasOwn(entry, 'PlaybackFollowCursor') && entry.PlaybackFollowCursor !== fb.PlaybackFollowCursor) {
 						cache.PlaybackFollowCursor = fb.PlaybackFollowCursor;
