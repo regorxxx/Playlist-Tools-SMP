@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/01/23
+//07/01/23
 
 /* exported dynamicQuery */
 
@@ -11,7 +11,7 @@
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global queryReplaceWithCurrent:readable, query_join:readable */
+/* global queryReplaceWithCurrent:readable, queryJoin:readable */
 include('..\\sort\\harmonic_mixing.js');
 /* global queryReplaceKeys:readable */
 
@@ -37,7 +37,7 @@ function dynamicQueryProcess({ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocu
 					? queryReplaceWithCurrent(queryReplaceKeys(query, handle), handle)
 					: queryReplaceWithCurrent(query, handle);
 			}))];
-			query = query_join(queries, 'OR');
+			query = queryJoin(queries, 'OR');
 		} else if (handle) {
 			if (/#NEXTKEY#|#PREVKEY#/.test(query)) { query = queryReplaceKeys(query, handle); }
 			query = queryReplaceWithCurrent(query, handle);

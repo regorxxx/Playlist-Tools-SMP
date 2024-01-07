@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//07/01/24
 
 /*
 	Quickmatch same....
@@ -29,7 +29,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 include('..\\helpers\\helpers_xxx_input.js');
 /* global Input:readable */
 include('..\\helpers\\helpers_xxx_tags.js');
-/* global query_join:readable */
+/* global queryJoin:readable */
 include('..\\main\\filter_and_query\\dynamic_query.js');
 /* global dynamicQueryProcess:readable, dynamicQuery:readable */
 include('..\\main\\bio\\bio_tags.js');
@@ -274,7 +274,7 @@ function quickmatchMenu() {
 				[...queryObj.valSet].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })).forEach((tagVal, i) => {
 					menu.newEntry({
 						menuName, entryText: bSingle ? queryObj.name + '\t[' + (tagVal.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : tagVal.cut(25), func: () => {
-							let query = query_join(queryObj.tf.map((key) => _t(key) + ' IS ' + tagVal), 'OR');
+							let query = queryJoin(queryObj.tf.map((key) => _t(key) + ' IS ' + tagVal), 'OR');
 							// Search by Distance tags
 							if (queryObj.tf.some((tag) => tag.toUpperCase().indexOf('LOCALE') !== -1)) {
 								// World map tags
@@ -293,7 +293,7 @@ function quickmatchMenu() {
 											});
 										}
 										if (worldMapData.size) {
-											query = _p(query) + ' OR ' + _p(query_join([...worldMapData].map((locTag) => _t(dataId) + ' IS ' + locTag), 'OR'));
+											query = _p(query) + ' OR ' + _p(queryJoin([...worldMapData].map((locTag) => _t(dataId) + ' IS ' + locTag), 'OR'));
 										}
 									}
 								}
