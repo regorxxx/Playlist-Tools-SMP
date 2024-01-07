@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/23
+//07/01/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -105,7 +105,7 @@
 		}
 		{	// Filter by Query
 			const scriptPath = folders.xxx + 'main\\filter_and_query\\filter_by_query.js';
-			/* global queryReplaceWithCurrent:readable, query_join:readable, filterByQuery:readable */
+			/* global queryReplaceWithCurrent:readable, queryJoin:readable, filterByQuery:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Query filtering';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -178,7 +178,7 @@
 											if (focusHandle && query.indexOf('#') !== -1) {
 												if (bEvalSel) {
 													const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => { return queryReplaceWithCurrent(query, handle); }))];
-													query = query_join(queries, 'OR');
+													query = queryJoin(queries, 'OR');
 												} else {
 													query = queryReplaceWithCurrent(query, focusHandle);
 												}
@@ -220,7 +220,7 @@
 									if (focusHandle && query.indexOf('#') !== -1) {
 										if (bEvalSel) {
 											const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => { return queryReplaceWithCurrent(query, handle); }))];
-											query = query_join(queries, 'OR');
+											query = queryJoin(queries, 'OR');
 										} else {
 											query = queryReplaceWithCurrent(query, focusHandle);
 										}

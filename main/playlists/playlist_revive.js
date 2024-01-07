@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/01/24
+//07/01/24
 
 /*
 	Playlist Revive
@@ -23,7 +23,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
 /* global similarity:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV4:readable, query_combinations:readable, query_join:readable */
+/* global getTagsValuesV4:readable, queryCombinations:readable, queryJoin:readable */
 
 function playlistRevive({
 	playlist = plman.ActivePlaylist, // Set to -1 to create a clone of selItems and output the revived list
@@ -76,13 +76,13 @@ function playlistRevive({
 			});
 		});
 		queryArr.push(tagsArr.length // Don't report missing tags for items without tags...
-			? query_combinations(tagsArr, tagName, 'OR')
+			? queryCombinations(tagsArr, tagName, 'OR')
 			: ''
 		);
 	});
 	// instead of using this, which would combine the different tags too
-	// const query =  query_join(query_combinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');
-	const query = query_join(queryArr.filter(Boolean), 'OR');
+	// const query =  queryJoin(queryCombinations(tags, tagsToCheck, 'OR', 'OR'), 'OR');
+	const query = queryJoin(queryArr.filter(Boolean), 'OR');
 	if (!bSilent && bSimulate) { console.log('Filtered library by: ' + query); }
 	try { fb.GetQueryItems(fb.GetLibraryItems(), query); } // Sanity check
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return; }
