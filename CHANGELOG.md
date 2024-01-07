@@ -70,11 +70,11 @@
 - Configuration: added COMPOSER to the list of global tags.
 - Configuration: added LOCALE LAST.FM to the list of global tags.
 - Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
-- Pools: .xspf playlists now follow the complete specification, allowing multiple locations per track. In case one is not found, the next one is used. Previously only one location per track was allowed. Content resolution via tags has not changed since that was already implemented.
 ### Changed
 - Search same by: default entries now use the global tags set.
 - Search same by: if an entry tag matches one at global tags, the entry is named as its key (instead of using the TF expression). For ex. using '$year(%DATE%)' as TF, will be shown as 'Date' on the menu entries.
 - 'Other tools\Check tags': composer check now uses the vale at global tags.
+- Pools: .xspf playlists now follow the complete specification, allowing multiple locations per track. In case one is not found, the next one is used. Previously only one location per track was allowed. Content resolution via tags has not changed since that was already implemented.
 - Helpers: updated helpers.
 - Code cleanup.
 ### Removed
@@ -82,7 +82,7 @@
 - Macros: fixed macros button and custom macro button to work with the latest changes to macros on [3.7.0](#370---2023-12-17).
 - Other tools\Import track list: error setting custom path.
 - Toolbar: buttons' size not restored back to normal height after disabling 'Full size buttons' without reloading the panel.
-- Pools: in .xspf playlists, identifier was tag not working properly at the content resolution step (usually used for MUSICBRAINZ_TRACKID).
+- Pools: in .xspf playlists, identifier tag was not working properly at the content resolution step (usually used for MUSICBRAINZ_TRACKID).
 - Pools: .xspf playlists not loading properly when content resolution was used in some cases.
 - Minor fixes.
 
