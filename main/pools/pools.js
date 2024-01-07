@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/01/24
+//05/01/24
 
 /* exported _pools */
 
@@ -313,7 +313,7 @@ function _pools({
 								plsArr.forEach((plsObj) => {
 									if (bDone) { return; }
 									if (plsObj.name === plsName) {
-										handleListFrom = getHandlesFromPlaylist(plsObj.path, path, true); // Load found handles, omit the rest instead of nothing
+										handleListFrom = getHandlesFromPlaylist({playlistPath: plsObj.path, relPath: path, bOmitNotFound: true}); // Load found handles, omit the rest instead of nothing
 										plsMatch = plsObj;
 										bDone = true;
 									}
@@ -322,7 +322,7 @@ function _pools({
 								plsArr.forEach((plsObj) => {
 									if (bDone) { return; }
 									if (plsObj.path.replace(path, '').startsWith(plsName)) {
-										handleListFrom = getHandlesFromPlaylist(plsObj.path, path, true); // Load found handles, omit the rest instead of nothing
+										handleListFrom = getHandlesFromPlaylist({playlistPath: plsObj.path, relPath: path, bOmitNotFound: true}); // Load found handles, omit the rest instead of nothing
 										plsMatch = plsObj;
 										bDone = true;
 									}
