@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//07/01/24
 
 /*
 	Search same by
@@ -78,7 +78,7 @@ include('..\\..\\helpers\\helpers_xxx_playlists.js');
 include('..\\filter_and_query\\remove_duplicates.js');
 /* global removeDuplicatesV2:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global dynamicTags:readable, numericTags:readable, cyclicTags:readable, cyclicTagsDescriptor:readable, query_join:readable, query_combinations:readable, logicDic:readable */
+/* global dynamicTags:readable, numericTags:readable, cyclicTags:readable, cyclicTagsDescriptor:readable, queryJoin:readable, queryCombinations:readable, logicDic:readable */
 include('..\\..\\helpers\\helpers_xxx_math.js');
 /* global k_combinations:readable */
 
@@ -187,7 +187,7 @@ function searchSameByCombs({
 					} else { // (x - y ... x .... x + y)
 						tempQuery[0] = tagName + ' GREATER ' + valueLower + ' AND ' + tagName + ' LESS ' + valueUpper; // (x - y , x + y)
 					}
-					query[ql] += query_join(tempQuery, 'OR');
+					query[ql] += queryJoin(tempQuery, 'OR');
 				} else { query[ql] += tagName + ' EQUAL ' + tagValue; }
 			} else { // or a string one
 				let tagValues = [];
@@ -228,13 +228,13 @@ function searchSameByCombs({
 				if (Object.keys(remapTags).length > 0 && Object.hasOwn(remapTags, tagName)) {
 					let subQuery = [];
 					if (!bOnlyRemap) { // When only mixing, don't use the query for the original tag... just remap
-						subQuery.push(query_combinations(tagQuery, tagName, 'OR', 'AND'));
+						subQuery.push(queryCombinations(tagQuery, tagName, 'OR', 'AND'));
 					}
 					remapTags[tagName].forEach((tag) => {
-						subQuery.push(query_combinations(tagQuery, tag, 'OR', 'AND'));
+						subQuery.push(queryCombinations(tagQuery, tag, 'OR', 'AND'));
 					});
-					query[ql] += query_join(subQuery, 'OR');
-				} else { query[ql] += query_combinations(tagQuery, tagName, 'OR', 'AND'); }
+					query[ql] += queryJoin(subQuery, 'OR');
+				} else { query[ql] += queryCombinations(tagQuery, tagName, 'OR', 'AND'); }
 			}
 		}
 		i++;
@@ -243,7 +243,7 @@ function searchSameByCombs({
 	// Query
 	ql = query.length;
 	if (!ql) { return null; }
-	query[ql] = query_join(query, logic); //join previous query's
+	query[ql] = queryJoin(query, logic); //join previous query's
 	if (forcedQuery) {
 		query[ql] = '(' + query[ql] + ') AND (' + forcedQuery + ')';
 	}
@@ -318,9 +318,9 @@ function searchSameByQueries({
 	// Query
 	let query = [];
 	tagVal.forEach((tagsArr, i) => {
-		if (tagsArr.length) { query[i] = query_join(query_combinations(tagsArr, sameBy[i], 'AND'), 'OR'); }
+		if (tagsArr.length) { query[i] = queryJoin(queryCombinations(tagsArr, sameBy[i], 'AND'), 'OR'); }
 	});
-	query = query_join(query, 'AND');
+	query = queryJoin(query, 'AND');
 	if (forcedQuery) {
 		query = _p(query) + ' AND ' + forcedQuery;
 	}
