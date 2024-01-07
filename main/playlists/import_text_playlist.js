@@ -1,12 +1,12 @@
 ﻿'use strict';
-//24/12/23
+//07/01/24
 
 /* exported importTextPlaylist, extractTagsV2 */
 
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, globTags:readable, globQuery:readable  */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global sanitizeTagTfo:readable, query_join:readable, queryCache:readable, checkQuery:readable */
+/* global sanitizeTagTfo:readable, queryJoin:readable, queryCache:readable, checkQuery:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global capitalize:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
@@ -217,13 +217,13 @@ function getQueryMatches(tags, queryFilters) {
 						extraQuery.push('"$replace(%' + key + '%,\',\',)" IS ' + handleTags[key]);
 						extraQuery.push('"$stricmp($ascii($replace(%' + key + '%,\',\',)),$ascii(' + handleTags[key] + '))" IS 1');
 					}
-					if (extraQuery.length) { extraQuery = query_join(extraQuery, 'OR'); }
+					if (extraQuery.length) { extraQuery = queryJoin(extraQuery, 'OR'); }
 					return query + ' OR ' + tfoQuery + (extraQuery.length ? ' OR ' + extraQuery : '');
 				} else {
 					return query;
 				}
 			});
-			const query = query_join(queryTags, 'AND');
+			const query = queryJoin(queryTags, 'AND');
 			const handles = queryCache.has(query) ? queryCache.get(query) : (checkQuery(query, true) ? fb.GetQueryItems(fb.GetLibraryItems(), query) : null);
 			if (!queryCache.has(query)) { queryCache.set(query, handles); }
 			let bDone = false;
