@@ -1,16 +1,12 @@
 ﻿'use strict';
-//04/01/24
+//08/01/24
 
 /* exported chromaPrintUtils */
-
-// TODO optimize offset correlation checking if previously calculated correlations follow a trend
-// stop looking in a given direction if correlation decreases. Should improve processing time
-// while allowing higher span to be set.
 
 const chromaPrintUtils = {
 	span: 50, // number of points to scan cross correlation over. 0 -> correlate = simpleCorrelate
 	step: 1, // step size (in points) of cross correlation
-	min_overlap: 20, // minimum number of points that must overlap in cross correlation
+	minOverlap: 20, // minimum number of points that must overlap in cross correlation
 	threshold: 0.5, // report match when cross correlation has a peak exceeding threshold
 	minThreshold: 0.5, // stop looking to different offsets when cross correlation has a peak below threshold
 	maxThreshold: 1, // stop looking to different offsets when cross correlation has a peak exceeding threshold
@@ -31,7 +27,7 @@ const chromaPrintUtils = {
 	restoreDefault: function restoreDefault() {
 		this.span = 50;
 		this.step = 1;
-		this.min_overlap = 20;
+		this.minOverlap = 20;
 		this.threshold = 0.5;
 		this.minThreshold = 0.5;
 		this.maxThreshold = 1;
@@ -40,16 +36,8 @@ const chromaPrintUtils = {
 		Helpers
 	*/
 	// Returns the max correlation from the entire correlation array previously calculated
-	getMaxCorr: function getMaxCorr(corr, source, target, span, step) {
+	getMaxCorr: function getMaxCorr(corr) {
 		const maxCorrIdx = this.maxIndex(corr);
-		// First index is offset = 0, then it goes from -Span to + Span
-		// const maxCorrOffset = (maxCorrIdx === 0 ? 0 : - span + maxCorrIdx * (maxCorrIdx >= span + step ? step + 1 : step - 1));
-		// const maxCorrOffset = -span + maxCorrIdx * step;
-		// console.log("maxCorrIdx = ", maxCorrIdx, "maxCorrOffset = ", maxCorrOffset);
-		// Report matches
-		// if (corr[maxCorrIdx] > this.threshold) {
-			// console.log(source,' and ', target, ' match with correlation of ',corr[maxCorrIdx],' at offset ', maxCorrOffset); // DEBUG
-		// }
 		return corr[maxCorrIdx];
 	},
 	// Cross correlate a and b with offsets from -span to span
@@ -63,6 +51,8 @@ const chromaPrintUtils = {
 			for (let offset = -span; offset <= span; offset += step) {
 				if (!offset) {continue;}
 				const val = this.crossCorrelation(a, b, offset);
+				// Stop looking in a given direction if correlation decreases
+				if (corrXY.slice(-10).reduce((acc, curr) => acc + (curr < val ? 0 : 1), 0) > 5) {break;}
 				corrXY.push(val);
 				if (val === 1 || val > maxThreshold || val < minThreshold) {break;}
 			}
@@ -79,7 +69,7 @@ const chromaPrintUtils = {
 			b = b.slice(offset);
 			a = a.slice(0, b.length);
 		}
-		if (Math.min(a.length, b.length) < this.min_overlap) {return;}
+		if (Math.min(a.length, b.length) < this.minOverlap) {return;}
 		return this.correlation(a, b);
 	},
 	// Returns correlation between lists at given position

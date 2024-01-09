@@ -1,25 +1,40 @@
-﻿Button for all Fingerprint Tools: fingerprint search and tagging.
+﻿Button for all Fingerprint Tools, fingerprint search and tagging.
+There different options are explained below:
 
-	-Search: Search the entire Foobar2000 library for tracks with
-	similar fingerprint to the currently selected tracks. 
+	-Compare: Compares the fingerprint of the currently selected
+	tracks and reports the similarity between them (in pairs).
 
-	-Tag: Tag the currently selected tracks with fingerprints.
+	-Search: Searches the entire Foobar2000 library for tracks
+	with similar fingerprint to the currently selected tracks.
+
+	-Tag: Tags the currently selected tracks with fingerprints.
 	For Chromaprint, the raw fingerprint is saved, not the
 	encoded version provided by default by fpcalc.exe or other
 	software like MusisBrainz Picard. Also the entire file
 	is fingerprinted, not just the first 120 secs.
-	
-	-Chromaprint database: Creates a reverse indexed database
+
+	-ChromaPrint database: Creates a reverse indexed database
 	for faster lookups. Specially useful for large libraries.
 	Requires to be recreated on library changes (automatically
-	checked).
-	
-	-FooID tagging: requires 'foo_biometric' to be installed 
-	on Foobar2000, 	along its 'Fooid.dll'. All files required
+	checked). In large libraries, searches without database
+	may take +30 secs or even minutes, while using the database
+	will be pretty instant.
+
+	-Read from files: To retrieve the fingerprint tags within
+	foobar2000, the tags must be either cached or read from
+	files. Caching requires RAM usage which may be beyond
+	the limits of x32 binaries. Use x64 foobar2000 or the
+	'Read from files' option, which will read the tags without
+	caching with ffprobe. This option is slower than caching
+	to create the database though (but almost equal as fast
+	for searching and comparing).
+
+	-FooID tagging: requires 'foo_biometric' to be installed
+	on Foobar2000, 	along its 'Fooid.dll'. All required files
 	can be found at '_resources', along installation notes.
 
-FooID or Chromaprint versions available.
+FooID or ChromaPrint versions available.
 
-MOST CHROMAPRINT TOOLS ARE GREYED OUT DUE TO LIMITATIONS ON CURRENT
-FOOBAR2000 AND SMP ENGINE.
+CHROMAPRINT TOOLS MAY HAVE LIMITATIONS ON x32 FOOBAR2000 AND
+SMP ENGINE. SEE:
 https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036
