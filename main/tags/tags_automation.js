@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//10/01/24
 
 /*
 	Automatic tagging...
@@ -21,7 +21,7 @@ include('..\\..\\helpers\\helpers_xxx_file.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV3:readable */
+/* global getHandleListTags:readable */
 
 function TagAutomation({
 	toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/,
@@ -410,7 +410,7 @@ function TagAutomation({
 				if (this.toolsByKey[key] && handleList.Count) {
 					const idx = this.tools.findIndex((tool) => { return tool.key === key; });
 					const tag = this.tools[idx].tag;
-					const itemTags = getTagsValuesV3(handleList, tag, true).flat(Infinity).filter(Boolean);
+					const itemTags = getHandleListTags(handleList, tag, { bMerged: true }).flat(Infinity).filter(Boolean);
 					if (i === 0 && itemTags.length) { return false; } // Only at first step it checks for no tags!
 					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) { return false; } // NOSONAR
 				}

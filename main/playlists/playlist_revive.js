@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/01/24
+//10/01/24
 
 /*
 	Playlist Revive
@@ -23,7 +23,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
 /* global similarity:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV4:readable, queryCombinations:readable, queryJoin:readable */
+/* global getHandleListTagsV2:readable, queryCombinations:readable, queryJoin:readable */
 
 function playlistRevive({
 	playlist = plman.ActivePlaylist, // Set to -1 to create a clone of selItems and output the revived list
@@ -64,7 +64,7 @@ function playlistRevive({
 	// First tag is considered the main one -> Exact Match: first tag + length + size OR first tag is a requisite to match by similarity
 	// The other tags are considered crc checks -> Exact Match: any crc tag is matched. Otherwise, continue checking the other tags (See above).
 	const tagsToCheck = ['TITLE', 'AUDIOMD5', 'MD5', 'ACOUSTID_ID', 'MUSICBRAINZ_TRACKID', '%DIRECTORYNAME%', '%FILENAME%', (bFindAlternative || simThreshold < 1) ? '"$directory(%PATH%,2)"' : null].filter(Boolean);
-	const tags = getTagsValuesV4(items, tagsToCheck.map((tag) => { return tag.replace(/(^%)|(%$)/g, ''); }), void (0), void (0), null);
+	const tags = getHandleListTagsV2(items, tagsToCheck.map((tag) => { return tag.replace(/(^%)|(%$)/g, ''); }), { splitBy: null });
 	if (tags === null || Object.prototype.toString.call(tags) !== '[object Array]' || tags.length === null || tags.length === 0) { return; }
 	let queryArr = [];
 	tagsToCheck.forEach((tagName, index) => {
@@ -87,7 +87,7 @@ function playlistRevive({
 	try { fb.GetQueryItems(fb.GetLibraryItems(), query); } // Sanity check
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return; }
 	const libraryItems = fb.GetQueryItems(fb.GetLibraryItems(), query);
-	const tagsLibrary = getTagsValuesV4(libraryItems, tagsToCheck.slice(0, 5), void (0), void (0), null);  // discard path related tags
+	const tagsLibrary = getHandleListTagsV2(libraryItems, tagsToCheck.slice(0, 5), { splitBy: null });  // discard path related tags
 	const libraryItemsArr = libraryItems.Convert();
 	// Find coincidences in library
 	// Checks all tags from reference track and compares to all tags from library tracks that passed the filter

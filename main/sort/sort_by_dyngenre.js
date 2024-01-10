@@ -15,7 +15,7 @@ include('..\\..\\helpers\\dyngenre_map_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global _asciify:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV3:readable, sanitizeTagTfo:readable */
+/* global getHandleListTags:readable, sanitizeTagTfo:readable */
 
 const [, , genreStyleMap] = dyngenreMap();
 
@@ -39,7 +39,7 @@ function sortByDyngenre({
 	// Tags
 	const idTfo = '[%PATH%]-[%SUBSONG%]';
 	const ids = fb.TitleFormat(idTfo).EvalWithMetadbs(handleList);
-	const styleGenre = getTagsValuesV3(handleList, styleGenreTag, true);
+	const styleGenre = getHandleListTags(handleList, styleGenreTag, { bMerged: true });
 	let dyngenre = [[]];
 	for (let i = 0; i < count; i++) {
 		const styleGenre_i = [...(new Set((styleGenre[i] ? styleGenre[i].filter(Boolean) : [])))];

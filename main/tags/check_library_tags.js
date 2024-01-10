@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//10/01/24
 
 /*
 	Check Library Tags
@@ -60,7 +60,7 @@ include('..\\..\\helpers\\helpers_xxx_properties.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global isString:readable, isArray:readable, isStringWeak:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV4:readable */
+/* global getHandleListTagsV2:readable */
 include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
 /* global similarity:readable */
 include('..\\..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
@@ -276,7 +276,7 @@ function checkTags({
 	Sync code
 */
 function checkTagsRetrieve(items, tagsToCheck, tags) {
-	const newTags = getTagsValuesV4(items, tagsToCheck, false, true);
+	const newTags = getHandleListTagsV2(items, tagsToCheck, { bEmptyVal: true });
 	tags = tags.map((arr, i) => { return arr.concat(newTags[i]); });
 	return tags;
 }

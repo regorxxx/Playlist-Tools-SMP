@@ -9,7 +9,7 @@ include('..\\..\\helpers\\helpers_xxx_file.js');
 /* global _isFile:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV3:readable */
+/* global getHandleListTags:readable */
 
 const folksonomyUtils = {
 	calculateFolksonomy: function calculateFolksonomy({
@@ -35,7 +35,7 @@ const folksonomyUtils = {
 			handleListArr.slice(count * numTracks, currMax).forEach((handle, i) => {
 				const path = handle.Path;
 				if (_isFile(path)) {
-					const itemTags = getTagsValuesV3(new FbMetadbHandleList(handle), fromTags, true).flat(Infinity).filter(Boolean);
+					const itemTags = getHandleListTags(new FbMetadbHandleList(handle), fromTags, { bMerged: true }).flat(Infinity).filter(Boolean);
 					if (itemTags.length) {
 						const tag = this.getFolksonomyFrom(itemTags);
 						if (tag.length) {

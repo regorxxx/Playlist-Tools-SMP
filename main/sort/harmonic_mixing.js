@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/01/24
+//10/01/24
 
 /* exported harmonicMixing, queryReplaceKeys, harmonicMixingCycle */
 /* global globTags:readable */
@@ -21,7 +21,7 @@ include('..\\..\\helpers\\helpers_xxx_playlists.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global _bt:readable, _p:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV3:readable */
+/* global getHandleListTags:readable */
 
 function harmonicMixing({
 	selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
@@ -77,8 +77,8 @@ function harmonicMixingCycle({
 	let pool = selItems.Clone();
 	let handleList = new FbMetadbHandleList();
 	while (pool.Count > 0) {
-		const newCycle = harmonicMixing({keyTag, patternOptions, bShuffleInput, bDoublePass: false, bDebug, bSendToPls: false, playlistLength: cycleLength, selItems: pool});
-		if (!newCycle) {break;}
+		const newCycle = harmonicMixing({ keyTag, patternOptions, bShuffleInput, bDoublePass: false, bDebug, bSendToPls: false, playlistLength: cycleLength, selItems: pool });
+		if (!newCycle) { break; }
 		newCycle.Convert().forEach((handle) => pool.Remove(handle));
 		handleList.InsertRange(handleList.Count, newCycle);
 	}
@@ -88,8 +88,8 @@ function harmonicMixingCycle({
 
 function findTracksWithPattern({ selItems, pattern, keyTag, playlistLength, bShuffleInput = false, bDoublePass = false, bDebug = false }) {
 	// Tags and constants
-	if (bShuffleInput) {selItems = new FbMetadbHandleList(selItems.Convert().shuffle());}
-	const keyHandle = getTagsValuesV3(selItems, [keyTag], true);
+	if (bShuffleInput) { selItems = new FbMetadbHandleList(selItems.Convert().shuffle()); }
+	const keyHandle = getHandleListTags(selItems, [keyTag], { bMerged: true });
 	const poolLength = selItems.Count;
 	let nextKeyObj;
 	let keyCache = new Map();

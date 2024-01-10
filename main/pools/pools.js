@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/01/24
+//10/01/24
 
 /* exported _pools */
 
@@ -13,7 +13,7 @@ include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global addLock:readable, removeLock:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global queryReplaceWithCurrent:readable, getTagsValuesV4:readable, checkQuery:readable, sanitizeQueryVal:readable */
+/* global queryReplaceWithCurrent:readable, getHandleListTagsV2:readable, checkQuery:readable, sanitizeQueryVal:readable */
 // Sorting and filter functions
 include('..\\sort\\harmonic_mixing.js');
 /* global shuffleByTags:readable */
@@ -138,8 +138,8 @@ function _pools({
 			});
 		}
 	};
-	this.processPool = async (pool, properties, options = {toPls: true}) => {
-		const defaults = {toPls: true};
+	this.processPool = async (pool, properties, options = { toPls: true }) => {
+		options = { toPls: true, ...(options || {}) };
 		const profiler = this.bProfile ? new FbProfiler('processPool') : null;
 		const libItems = Object.keys(pool.fromPls).some((key) => key.startsWith('_LIBRARY_') || key.startsWith('_GROUP_'))
 			? fb.GetLibraryItems()
@@ -172,7 +172,12 @@ function _pools({
 					}
 					// Retrieve all possible groups
 					const group = typeof pool.group !== 'undefined' ? pool.group[plsName] : '';
-					const tagSet = [...new Set(getTagsValuesV4(handleListFrom, [group], void (0), void (0), '|').flat(Infinity).map((_) => { return sanitizeQueryVal(_.toString().toLowerCase()); }))].filter(Boolean).shuffle();
+					const tagSet = [
+						...new Set(getHandleListTagsV2(handleListFrom, [group], { splitBy: '|' })
+							.flat(Infinity)
+							.map((_) => { return sanitizeQueryVal(_.toString().toLowerCase()); })
+						)
+					].filter(Boolean).shuffle();
 					// Retrieve n random groups
 					const num = Math.min(pool.fromPls[plsName] || Infinity, tagSet.length) - 1;
 					const limit = typeof pool.limit !== 'undefined' ? pool.limit[plsName] : Infinity;
@@ -313,7 +318,7 @@ function _pools({
 								plsArr.forEach((plsObj) => {
 									if (bDone) { return; }
 									if (plsObj.name === plsName) {
-										handleListFrom = getHandlesFromPlaylist({playlistPath: plsObj.path, relPath: path, bOmitNotFound: true}); // Load found handles, omit the rest instead of nothing
+										handleListFrom = getHandlesFromPlaylist({ playlistPath: plsObj.path, relPath: path, bOmitNotFound: true }); // Load found handles, omit the rest instead of nothing
 										plsMatch = plsObj;
 										bDone = true;
 									}
@@ -322,7 +327,7 @@ function _pools({
 								plsArr.forEach((plsObj) => {
 									if (bDone) { return; }
 									if (plsObj.path.replace(path, '').startsWith(plsName)) {
-										handleListFrom = getHandlesFromPlaylist({playlistPath: plsObj.path, relPath: path, bOmitNotFound: true}); // Load found handles, omit the rest instead of nothing
+										handleListFrom = getHandlesFromPlaylist({ playlistPath: plsObj.path, relPath: path, bOmitNotFound: true }); // Load found handles, omit the rest instead of nothing
 										plsMatch = plsObj;
 										bDone = true;
 									}
@@ -429,12 +434,12 @@ function _pools({
 		// Legacy sorting only when not applying special sorting
 		if (!bHarmonic && !bShuffle && typeof pool.sort !== 'undefined') {
 			if (pool.sort.toUpperCase !== '%PLAYLIST_INDEX%') {
-				if (pool.sort.length) {handleListTo.OrderByFormat(fb.TitleFormat(pool.sort), 1);}
-				else {handleListTo =  new FbMetadbHandleList(handleListTo.Convert().shuffle());}
+				if (pool.sort.length) { handleListTo.OrderByFormat(fb.TitleFormat(pool.sort), 1); }
+				else { handleListTo = new FbMetadbHandleList(handleListTo.Convert().shuffle()); }
 			}
 			console.log(scriptName + ': sorting ' + _p(pool.sort.length ? pool.sort : 'random')); // DEBUG
 		}
-		if ({...defaults, ...options}.toPls) {
+		if (options.toPls) {
 			plman.InsertPlaylistItems(idxTo, 0, handleListTo, true);
 			plman.ActivePlaylist = idxTo;
 			console.log(scriptName + ': playlist -> ' + pool.toPls + ': ' + handleListTo.Count + ' tracks'); // DEBUG

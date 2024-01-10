@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/12/23
+//10/01/24
 
 /* exported groupByTags */
 
@@ -7,7 +7,7 @@ include('..\\..\\helpers\\helpers_xxx_basic_js.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global range:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getTagsValuesV3:readable */
+/* global getHandleListTags:readable */
 
 /*
 	groupByTags
@@ -29,7 +29,7 @@ function groupByTags({
 	const totalTracks = selItems.Count;
 	let selItemsArray = selItems.Clone().Convert();
 	// Get tag values
-	const tagValues = getTagsValuesV3(selItems, tagName, true);
+	const tagValues = getHandleListTags(selItems, tagName, { bMerged: true });
 	const valuesMap = new Map();
 	for (let i = 0; i < totalTracks; i++) {
 		const tagValue_i = tagValues[i].filter(Boolean).map((item) => { return item.toLowerCase(); }).join(', ');
