@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/01/23
+//14/01/24
 
 /* exported dynamicQuery */
 
@@ -19,7 +19,7 @@ function dynamicQuery({ query = 'ARTIST IS #ARTIST#', sort = { tfo: null, direct
 	query = dynamicQueryProcess({ query, handle, handleList });
 	if (!query) { return null; }
 	let outputHandleList = fb.GetQueryItems(source || fb.GetLibraryItems(), query);
-	if (sort && sort.tfo !== null && sort.tf.length) { outputHandleList.OrderByFormat(fb.TitleFormat(sort.tfo), sort.direction || 1); }
+	if (sort && sort.tfo !== null && sort.tfo.length) { outputHandleList.OrderByFormat(fb.TitleFormat(sort.tfo), sort.direction || 1); }
 	if (bSendToPls) {
 		console.log('Query: ' + query);
 		sendToPlaylist(outputHandleList, playlistName);
