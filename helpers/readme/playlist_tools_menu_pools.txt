@@ -33,7 +33,7 @@ examples there too.
 Playlist Manager panels. Playlist A would match first a playlist within
 foobar with same name, then a playlist file with matching 
 '#PLAYLIST:Playlist A' tag and finally any playlist file named 
-'Playlist A.m3u8'. Autoplaylists are excluded (use queries instead)
+'Playlist A.m3u8'. AutoPlaylists are excluded (use queries instead)
 and fpl files too.
 
 (**) Output from 'Search by (method)' as source, setting source name as 

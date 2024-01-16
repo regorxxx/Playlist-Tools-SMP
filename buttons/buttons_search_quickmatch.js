@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/01/24
+//14/01/24
 
 /*
 	Quickmatch same....
@@ -257,7 +257,7 @@ function quickmatchMenu() {
 	const bOmitSortPls = this.buttonsProperties.bOmitSortPls[1];
 	// Menu
 	const menu = new _menu();
-	menu.newEntry({ entryText: 'Shift to search / Ctrl for Autoplaylist:', flags: MF_GRAYED });
+	menu.newEntry({ entryText: 'Shift to search / Ctrl for AutoPlaylist:', flags: MF_GRAYED });
 	menu.newEntry({ entryText: 'sep' });
 	{	// Same...
 		entries.forEach((queryObj) => {
