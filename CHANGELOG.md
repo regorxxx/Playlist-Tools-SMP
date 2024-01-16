@@ -67,6 +67,7 @@
 - Toolbar: new settings for text (or icon) position: left, right (default), top and bottom. These settings mimic CUI options at the buttons bar.
 - Toolbar: new settings for text scale (now independent of button and icon scale).
 - Toolbar: new settings for icon scale (now independent of button and text scale).
+- Quicksearch: added new option 'Partially includes' which uses 'HAS' instead of 'IS' to find matches at any place of a tag.
 - Configuration: added COMPOSER to the list of global tags.
 - Configuration: added LOCALE LAST.FM to the list of global tags.
 - Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
@@ -75,6 +76,7 @@
 - Search same by: if an entry tag matches one at global tags, the entry is named as its key (instead of using the TF expression). For ex. using '$year(%DATE%)' as TF, will be shown as 'Date' on the menu entries.
 - 'Other tools\Check tags': composer check now uses the vale at global tags.
 - Pools: .xspf playlists now follow the complete specification, allowing multiple locations per track. In case one is not found, the next one is used. Previously only one location per track was allowed. Content resolution via tags has not changed since that was already implemented.
+- Quicksearch: 'Partial match' and 'Begins with' options now formats the tag values with lower case to retrieve more matches.
 - Helpers: updated helpers.
 - Code cleanup.
 ### Removed
