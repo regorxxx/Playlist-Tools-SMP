@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//28/01/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -13,7 +13,7 @@
 		let menuName = menu.newMenu(name);
 		{	// Check tags
 			const scriptPath = folders.xxx + 'main\\tags\\check_library_tags.js';
-			/* global checkTags_properties:readable, checkTags:readable, addTagsToExclusionPopup:readable */
+			/* global checkTags_properties:readable, checkTags:readable, addTagsToExclusion:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Check tags';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -122,7 +122,7 @@
 					});
 					menu.newEntry({
 						menuName: subMenuName, entryText: 'Configure excluded tag values...', func: () => {
-							addTagsToExclusionPopup({ properties: menu_properties });
+							addTagsToExclusion({ properties: menu_properties });
 						}
 					});
 					{
@@ -158,6 +158,14 @@
 							}
 						});
 					}
+					menu.newEntry({
+						menuName: subMenuName, entryText: 'Check genre/styles at Music Graph', func: () => {
+							menu_properties['bUseGraphGenres'][1] = !menu_properties['bUseGraphGenres'][1];
+							overwriteMenuProperties(); // Updates panel
+						}
+						, flags: typeof music_graph_descriptors === 'undefined' ? MF_GRAYED : MF_STRING
+					});
+					menu.newCheckMenuLast(() => menu_properties['bUseGraphGenres'][1]);
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 			}
 		}

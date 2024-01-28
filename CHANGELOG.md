@@ -62,6 +62,7 @@
 - Playlist manipulation\Harmonic mix: new harmonic mixing entries to repeat patterns in small cycles. See above.
 - Selection manipulation\Advanced sort...: new harmonic mixing entry to apply a semi-random pattern.
 - Playlist manipulation\Harmonic mix: new harmonic mixing entry. See above.
+- Other Tools\Check tags: new option to also check if genre/styles exist at the Music Graph from [Search-By-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP).
 - Macros: custom macro button now has a menu entry to edit the button name (which was previously only editable on first init).
 - Buttons: added more icons to Playlist Tools submenu custom button.
 - Toolbar: new settings for text (or icon) position: left, right (default), top and bottom. These settings mimic CUI options at the buttons bar.
@@ -73,6 +74,7 @@
 - Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 ### Changed
 - Other Tools\Write tags: checks now if the tracks exist (as file) before processing and will skip those being a link or dead. This should have been handled by the external tools but it produced errors on some cases.
+- Other Tools\Check tags: list of excluded values is now checked after using and rewritten in case there are duplicate tag keys with different casing (STYLE vs style) or duplicated tag values.
 - Search same by: default entries now use the global tags set.
 - Search same by: if an entry tag matches one at global tags, the entry is named as its key (instead of using the TF expression). For ex. using '$year(%DATE%)' as TF, will be shown as 'Date' on the menu entries.
 - 'Other tools\Check tags': composer check now uses the vale at global tags.
@@ -84,6 +86,7 @@
 ### Fixed
 - Macros: fixed macros button and custom macro button to work with the latest changes to macros on [3.7.0](#370---2023-12-17).
 - Other tools\Import track list: error setting custom path.
+- Other Tools\Check tags: fixed regression with value comparison not working in some cases.
 - Toolbar: buttons' size not restored back to normal height after disabling 'Full size buttons' without reloading the panel.
 - Pools: in .xspf playlists, identifier tag was not working properly at the content resolution step (usually used for MUSICBRAINZ_TRACKID).
 - Pools: .xspf playlists not loading properly when content resolution was used in some cases.

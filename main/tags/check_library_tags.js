@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/01/24
+//28/01/24
 
 /*
 	Check Library Tags
@@ -49,22 +49,23 @@
 		easy to add up to 90% of tags/tag values to the list, greatly speeding up future reports (less tags to check).
  */
 
-/* exported checkTags, addTagsToExclusion, addTagsToExclusionPopup */
+/* exported checkTags, addTagsToExclusion */
 
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, iStepsLibrary:readable, iDelayLibrary:readable, popup:readable, globTags:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
 /* global _isFile:readable, utf8:readable, _open:readable, WshShell:readable, _jsonParseFileCheck:readable, _save:readable */
 include('..\\..\\helpers\\helpers_xxx_properties.js');
-/* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable, overwriteProperties:readable, */
+/* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global isString:readable, isArray:readable, isStringWeak:readable */
+/* global isString:readable, isArray:readable, isStringWeak:readable, isBoolean:readable, _asciify:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTagsV2:readable */
 include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
 /* global similarity:readable */
 include('..\\..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https://github.com/cfinke/Typo.js
 /* global Typo:readable */
+/* global music_graph_descriptors:readable */
 
 const checkTags_properties = {
 	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE'].join(',')],
@@ -75,6 +76,7 @@ const checkTags_properties = {
 	bUseDic: ['Enables dictionary checking for every tag value (slow!)', false],
 	dictName: ['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
 	dictPath: ['Path to all dictionaries', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? folders.xxx.replace(fb.ProfilePath, '.\\profile\\') : folders.xxx) + 'helpers-external\\typo\\dictionaries'],
+	bUseGraphGenres: ['Use genre checking on Graph', false],
 };
 checkTags_properties['tagNamesToCheck'].push({ func: isString }, checkTags_properties['tagNamesToCheck'][1]);
 checkTags_properties['tagsToCompare'].push({ func: isStringWeak }, checkTags_properties['tagsToCompare'][1]);
@@ -82,6 +84,7 @@ checkTags_properties['tagValuesExcludedPath'].push({ func: isString, portable: t
 checkTags_properties['tagNamesExcludedDic'].push({ func: isStringWeak }, checkTags_properties['tagNamesExcludedDic'][1]);
 checkTags_properties['dictName'].push({ func: isString }, checkTags_properties['dictName'][1]);
 checkTags_properties['dictPath'].push({ func: isString, portable: true }, checkTags_properties['dictPath'][1]); // No need for a popup since the default dic will always be there
+checkTags_properties['bUseGraphGenres'].push({ func: isBoolean }, checkTags_properties['bUseGraphGenres'][1]);
 var checkTags_prefix = 'ct_'; // NOSONAR
 
 // Load dictionary
@@ -112,6 +115,7 @@ function checkTags({
 	maxSizePerTag = 30, // From the previous pool, only the first X values are shown
 	stringSimilThreshold = 0.85, // How much tag values must be similar to be considered as alternative values
 	bUseDic = properties['bUseDic'][1],
+	bUseGraphGenres = properties['bUseGraphGenres'][1],
 	iSteps = iStepsLibrary, iDelay = iDelayLibrary, // Async processing ~ x1.4 time required
 	bDeDup = true, // Changes original handleList
 	bAsync = true,
@@ -125,6 +129,7 @@ function checkTags({
 	if (freqThreshold > 1 || freqThreshold < 0) { freqThreshold = 1; }
 	if (stringSimilThreshold > 1 || stringSimilThreshold < 0) { stringSimilThreshold = 1; }
 	if (maxSizePerTag < 0) { maxSizePerTag = Infinity; }
+	if (typeof music_graph_descriptors === 'undefined') { bUseGraphGenres = false; }
 	// Load dictionary if required (and not loaded previously)
 	if (bUseDic) {
 		if (dictionary.dictionary !== properties['dictName'][1]) {
@@ -238,6 +243,10 @@ function checkTags({
 					let alternativesMap = new Map();
 					const tagNamesExcludedDic = properties['tagNamesExcludedDic'][1].split(','); // Don't check these against dictionary
 					const promises = [];
+					// Get node list (+ weak substitutions + substitutions + style cluster)
+					const nodeList = bUseGraphGenres
+						? new Set(music_graph_descriptors.style_supergenre.flat(Infinity)).union(new Set(music_graph_descriptors.style_weak_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_substitutions.flat(Infinity))).union(new Set(music_graph_descriptors.style_cluster.flat(Infinity))).union(music_graph_descriptors.map_distance_exclusions)
+						: null;
 					if (countArray.length && countArrayFiltered.length) {
 						const total = tagsToCheck.length - 1;
 						let prevProgress = -1;
@@ -246,10 +255,11 @@ function checkTags({
 							const toCompareWith = bCompare ? tagsToCompareMap.get(tagA) : null;
 							const totalA = countArrayFiltered[indexA].length - 1;
 							const delay = bCompare ? (totalA + 1) * (toCompareWith.size ** 2) / 150 * iDelay / 100 : (totalA + 1) / 1000 * iDelay / 100;
+							const isGenre = /.*(genre|style).*/i;
 							countArrayFiltered[indexA].forEach((tagValueA, i) => {
 								promises.push(new Promise(resolve => {
 									setTimeout(() => {
-										checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary);
+										checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary, isGenre.test(tagA) ? nodeList : null);
 										const progress = Math.round(((totalA ? i : 1) * (total ? indexA : 1)) / ((total || 1) * (totalA || 1)) * 10) * 10;
 										if (progress > prevProgress) { prevProgress = progress; console.log('Checking tags ' + progress + '%.'); }
 										resolve();
@@ -355,19 +365,19 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 	return [countArray, countArrayFiltered];
 }
 
-function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary) {
+function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary, nodeList = null) {
 	// Identified errors first (same checks at freq. filtering step)
 	const tagKey = tagA + keySplit + tagValueA[0];
 	if (!tagValueA[0].length) { alternativesMap.set(tagKey, 'Tag set to empty value (breaks queries!)'); }
 	else if (!tagValueA[0].trim().length) { alternativesMap.set(tagKey, 'Tag set to blank space(s)'); }
 	else if (tagValueA[0].trim().length !== tagValueA[0].length) { alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes'); }
 	else if (tagValueA[0] === '?') { alternativesMap.set(tagKey, 'Tag not set'); }
-	else if (tagA !== 'title') {
-		if (tagValueA[0].indexOf('  ') !== -1) { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
-		else if (tagValueA[0].indexOf(';') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-		else if (tagValueA[0].indexOf(',') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-		else if (tagValueA[0].indexOf('/') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	} else if (bCompare) { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
+	else if (tagA !== 'title' && tagValueA[0].indexOf('  ') !== -1) { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
+	else if (tagA !== 'title' && tagValueA[0].indexOf(';') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].indexOf(',') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].indexOf('/') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (nodeList !== null && !nodeList.has(_asciify(tagValueA[0]))) { alternativesMap.set(tagKey, 'Missing tag on Music Graph descriptors'); }
+	else if (bCompare) { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
 		let similValues = [];
 		tagsToCheck.forEach((tagB, indexB) => {
 			if (toCompareWith.has(tagB)) {
@@ -390,9 +400,9 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 		if (bUseDic && tagNamesExcludedDic.indexOf(tagA) === -1 && !similValues.length) {
 			tagValueA[0].split(' ').forEach((word, index, array) => {
 				if (!dictionary.check(word)) {
-					const dicSugggest = dictionary.suggest(word);
-					if (dicSugggest.length) {
-						dicSugggest.forEach((suggestion) => { // Filter suggestions with similarity threshold
+					const dicSuggest = dictionary.suggest(word);
+					if (dicSuggest.length) {
+						dicSuggest.forEach((suggestion) => { // Filter suggestions with similarity threshold
 							if (similarity(word, suggestion) >= stringSimilThreshold) {
 								// Reconstruct tag value with new suggestion
 								const numTerms = array.length;
@@ -533,34 +543,20 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 */
 
 function addTagsToExclusion({
-	tagsPairs = '',
-	properties = getPropertiesPairs(checkTags_properties, checkTags_prefix),
-} = {}) {
-	if (tagsPairs.length) {
-		// Skipped values at pre-filter
-		const propertyTags = properties['tagValuesExcluded'][1].split(';'); // filter holes and remove duplicates
-		tagsPairs = tagsPairs.split(';');
-		const newTags = [...new Set([...propertyTags, ...tagsPairs].filter(Boolean))];
-		if (propertyTags !== newTags) {
-			properties['tagValuesExcluded'][1] = newTags.join(';');
-			overwriteProperties(properties);
-		}
-	}
-}
-
-function addTagsToExclusionPopup({
+	newTags = '',
 	properties = getPropertiesPairs(checkTags_properties, checkTags_prefix),
 } = {}) {
 	// Skipped values at pre-filter
-	const propertyTagsObj = _isFile(properties['tagValuesExcludedPath'][1]) ? _jsonParseFileCheck(properties['tagValuesExcludedPath'][1], 'Exclusion list json', window.Name, utf8) || {} : {}; // filter holes and remove duplicates
-	const propertyTags = objectToPairs(propertyTagsObj);
-	let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, propertyTags);
-	if (inputTags.length) {
-		const inputTagsObj = pairsToObj(inputTags);
-		const inputTagsObjStr = JSON.stringify(inputTagsObj, null, '\t');
-		const propertyTagsStr = JSON.stringify(propertyTagsObj, null, '\t');
-		if (propertyTagsStr !== inputTagsObjStr) {
-			_save(properties['tagValuesExcludedPath'][1], inputTagsObjStr);
+	const oldTags = loadTagsExcluded(properties['tagValuesExcludedPath'][1]);
+	if (!newTags || !newTags.length) {
+		newTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports.\n Pairs \'tagName,value\' separated by \';\' :\n\nList can also be edited at:\n' + properties['tagValuesExcludedPath'][1], window.Name, objectToPairs(oldTags));
+	} else {
+		newTags = newTags + ';' + objectToPairs(oldTags);
+	}
+	if (newTags.length) {
+		newTags = JSON.stringify(pairsToObj(newTags), null, '\t');
+		if (JSON.stringify(oldTags, null, '\t') !== newTags) {
+			_save(properties['tagValuesExcludedPath'][1], newTags);
 		}
 	}
 }
@@ -569,9 +565,12 @@ function objectToPairs(inputObj) { // {A:[x,y],B:[z], ...} -> A,x;A,y;B,z;...
 	let outputStr = '';
 	let outputSet = new Set();
 	for (const key in inputObj) {
-		const arr = Array.isArray(inputObj[key]) ? inputObj[key].sort() : [...inputObj[key]].sort();
+		const arr = (Array.isArray(inputObj[key]) 
+			? inputObj[key]
+			: [...inputObj[key]]
+		).sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'}));
 		for (let value of arr) {
-			if (value) { outputSet.add(key + ',' + value); }
+			if (value) { outputSet.add(key.toLowerCase() + ',' + value); }
 		}
 	}
 	outputStr = [...outputSet].join(';');
@@ -582,17 +581,35 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 	const inputArr = [...new Set(inputStr.split(';').filter(Boolean))]; // filter holes and remove duplicates
 	let outputObj = {};
 	inputArr.forEach((pair) => {
-		const [key, value] = pair.split(',');
+		let [key, value] = pair.split(',');
+		key = key.toLowerCase();
 		if (!Object.hasOwn(outputObj, key)) { outputObj[key] = bSet ? new Set() : []; }
 		if (!bSet) { outputObj[key].push(value); }
 		else { outputObj[key].add(value); }
 	});
-	if (!bSet) { for (const key in outputObj) { outputObj[key].sort(); } }
+	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})); } }
 	return outputObj;
 }
 
 function loadTagsExcluded(path) { // filter holes and remove duplicates
-	let obj = _isFile(path) ? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, utf8) || {} : {};
+	const bFromFile = _isFile(path);
+	let obj = bFromFile
+		? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, utf8) || {}
+		: {};
+	// Ensure data consistency
+	let bSave = false;
+	for (const key in obj) {
+		if (key !== key.toLowerCase()) {
+			obj[key.toLowerCase()] = [...new Set([...obj[key], ...(obj[key.toLowerCase()] || [])])]
+				.sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'}));
+			delete obj[key];
+			bSave = true;
+		}
+	}
+	if (bFromFile && bSave) { 
+		_save(path, JSON.stringify(obj, null, '\t'));
+		console.log('loadTagsExcluded: overwrote file after fixing keys.\n\t' + path);
+	}
 	for (const key in obj) { obj[key] = new Set(obj[key].filter(Boolean)); }
 	return obj;
 }
