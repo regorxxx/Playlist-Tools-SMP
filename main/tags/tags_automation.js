@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/01/24
+//28/01/24
 
 /*
 	Automatic tagging...
@@ -17,7 +17,7 @@
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global globTags:readable, folders:readable, soFeat:readable, isFoobarV2:readable, popup:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
-/* global WshShell:readable, _isFile:readable */
+/* global WshShell:readable, _isFile:readable, testPath:readable, _isLink:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -154,10 +154,15 @@ function TagAutomation({
 		this.selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 		if (typeof this.selItems !== 'undefined' && this.selItems !== null) {
 			this.selItems.Sort();
+			const inputCount = this.selItems.Count;
+			this.selItems = new FbMetadbHandleList(this.selItems.Convert().filter((handle) => testPath(handle.Path) && !_isLink(handle.Path)));
 			this.countItems = this.selItems.Count;
+			const skippedCount = inputCount - this.countItems;
 			if (this.countItems === 0) {
-				console.log('No tracks selected.');
+				console.log('No tracks selected (or all items were dead/links).');
 				return;
+			} else if (skippedCount !== 0) {
+				console.popup('Skipped ' + skippedCount + ' dead or link items.' , window.Name);
 			}
 		} else { return; }
 		// Safety check for accidental button pressing

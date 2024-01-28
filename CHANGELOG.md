@@ -72,6 +72,7 @@
 - Configuration: added LOCALE LAST.FM to the list of global tags.
 - Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 ### Changed
+- Other Tools\Write tags: checks now if the tracks exist (as file) before processing and will skip those being a link or dead. This should have been handled by the external tools but it produced errors on some cases.
 - Search same by: default entries now use the global tags set.
 - Search same by: if an entry tag matches one at global tags, the entry is named as its key (instead of using the TF expression). For ex. using '$year(%DATE%)' as TF, will be shown as 'Date' on the menu entries.
 - 'Other tools\Check tags': composer check now uses the vale at global tags.
