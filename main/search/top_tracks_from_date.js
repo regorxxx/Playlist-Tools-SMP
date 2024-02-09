@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/01/24
+//30/01/24
 
 /*
 	Top X Tracks From Date
@@ -91,7 +91,7 @@ function daysBetween(d1, d2) { // d1 and d2 are Dates objects
 	return Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
 }
 
-function getPlayCount(handleList, timePeriod, timeKey) {
+function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Date()) {
 	if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.', window.Name); return []; }
 	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name); return []; }
 	const datesArray = fb.TitleFormat(_bt('PLAYED_TIMES')).EvalWithMetadbs(handleList);
@@ -102,54 +102,91 @@ function getPlayCount(handleList, timePeriod, timeKey) {
 	const datesArrayLength = datesArray.length;
 	let dataPool = [];
 	if (timePeriod && timeKey) { // During X time...
-		const currentDate = new Date();
 		for (let i = 0; i < datesArrayLength; i++) {
 			let count = 0;
+			let listens = [];
 			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i]));
 			if (dateArray_i.length) { // Every entry is also an array of dates
 				dateArray_i.forEach((date) => {
 					const temp = date.substring(0, 10).split('-');
-					if (temp.length === 3 && timeKeys[timeKey](new Date(temp[0], temp[1], temp[2]), currentDate) <= timePeriod) { count++; }
+					const listen = new Date(temp[0], temp[1], temp[2]);
+					if (temp.length === 3 && timeKeys[timeKey](listen, fromDate) <= timePeriod) {
+						count++;
+						listens.push(listen);
+					}
 				});
 			} else { // For tracks without advanced statistics
 				const tempFirst = firstPlayedArray[i].substring(0, 10).split('-');
 				if (tempFirst.length !== 3) { continue; }
-				const diffFirst = timeKeys[timeKey](new Date(tempFirst[0], tempFirst[1], tempFirst[2], currentDate));
+				const firstListen = new Date(tempFirst[0], tempFirst[1], tempFirst[2]);
+				const diffFirst = timeKeys[timeKey](firstListen, fromDate);
 				const tempLast = lastPlayedArray[i].substring(0, 10).split('-');
 				if (tempLast.length !== 3) { continue; }
-				const diffLast = timeKeys[timeKey](new Date(tempLast[0], tempLast[1], tempLast[2], currentDate));
+				const lastListen = new Date(tempLast[0], tempLast[1], tempLast[2]);
+				const diffLast = timeKeys[timeKey](lastListen, fromDate);
 				// If first and last plays were from selected period, then all play counts too
-				if (diffFirst <= timePeriod && diffLast <= timePeriod) { count += playCountArray[i]; }
+				if (diffFirst <= timePeriod && diffLast <= timePeriod) {
+					const total = playCountArray[i];
+					count += total;
+					listens.push(firstListen);
+					if (total >= 2) {
+						if (total > 2) {
+							for (let i = 2; i < total; i++) { listens.push(firstListen); }
+						}
+						listens.push(lastListen);
+					}
+				}
 				// Or the first play
-				else if (diffFirst <= timePeriod) { count++; }
+				else if (diffFirst <= timePeriod) { count++; listens.push(firstListen); }
 				// Or the last play
-				else if (diffLast <= timePeriod) { count++; }
+				else if (diffLast <= timePeriod) { count++; listens.push(lastListen); }
 				// Note any track known to have been played at selected period will be added to the pool, and since the handle List is already
 				// sorted by play Count, it will output tracks with higher total counts when they have not advanced statistics
 				// being almost equivalent to 'top_tracks.js' in that case
 			}
-			dataPool.push({ idx: i, playCount: count });
+			dataPool.push({ idx: i, playCount: count, listens });
 		}
 	} else {// Equal to year..
 		for (let i = 0; i < datesArrayLength; i++) {
 			let count = 0;
+			let listens = [];
 			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i]));
 			if (dateArray_i.length) { // Every entry is also an array of dates
 				dateArray_i.forEach((date) => {
-					if (Number(date.substring(0, 4)) === timePeriod) { count++; }
+					if (Number(date.substring(0, 4)) === timePeriod) {
+						count++;
+						listens.push(new Date(...date.substring(0, 10).split('-', 3)));
+					}
 				});
 			} else { // For tracks without advanced statistics
 				// If first and last plays were from selected year, then all play counts too
-				if (Number(firstPlayedArray[i].substring(0, 4)) === timePeriod && Number(lastPlayedArray[i].substring(0, 4)) === timePeriod) { count += playCountArray[i]; }
+				if (Number(firstPlayedArray[i].substring(0, 4)) === timePeriod && Number(lastPlayedArray[i].substring(0, 4)) === timePeriod) {
+					const total = playCountArray[i];
+					count += total;
+					const firstListen = new Date(...firstPlayedArray[i].substring(0, 10).split('-', 3));
+					listens.push(firstListen);
+					if (total >= 2) {
+						if (total > 2) {
+							for (let i = 2; i < total; i++) { listens.push(firstListen); }
+						}
+						listens.push(new Date(...lastPlayedArray[i].substring(0, 10).split('-', 3)));
+					}
+				}
 				// Or the first play
-				else if (Number(firstPlayedArray[i].substring(0, 4)) === timePeriod) { count++; }
+				else if (Number(firstPlayedArray[i].substring(0, 4)) === timePeriod) {
+					count++;
+					listens.push(new Date(...firstPlayedArray[i].substring(0, 10).split('-', 3)));
+				}
 				// Or the last play
-				else if (Number(lastPlayedArray[i].substring(0, 4)) === timePeriod) { count++; }
+				else if (Number(lastPlayedArray[i].substring(0, 4)) === timePeriod) {
+					count++;
+					listens.push(new Date(...lastPlayedArray[i].substring(0, 10).split('-', 3)));
+				}
 				// Note any track known to have been played at selected year will be added to the pool, and since the handle List is already
 				// sorted by play Count, it will output tracks with higher total counts when they have not advanced statistics
 				// being almost equivalent to 'top_tracks.js' in that case
 			}
-			dataPool.push({ idx: i, playCount: count });
+			dataPool.push({ idx: i, playCount: count, listens });
 		}
 	}
 	return dataPool;
