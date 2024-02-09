@@ -80,6 +80,7 @@
 - 'Other tools\Check tags': composer check now uses the vale at global tags.
 - Pools: .xspf playlists now follow the complete specification, allowing multiple locations per track. In case one is not found, the next one is used. Previously only one location per track was allowed. Content resolution via tags has not changed since that was already implemented.
 - Quicksearch: 'Partial match' and 'Begins with' options now formats the tag values with lower case to retrieve more matches.
+- Configuration: changed the remove duplicates bias to prefer tracks with higher play-counts and positive feedback tag (love/hate).
 - Helpers: updated helpers.
 - Code cleanup.
 ### Removed
