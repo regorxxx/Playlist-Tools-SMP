@@ -82,6 +82,7 @@
 - Quicksearch: 'Partial match' and 'Begins with' options now formats the tag values with lower case to retrieve more matches.
 - Configuration: changed the remove duplicates bias to prefer tracks with higher play-counts and positive feedback tag (love/hate).
 - Helpers: updated helpers.
+- Console: improved log file formatting on windows text editors which parse new lines only with CR+LF instead of LF.
 - Code cleanup.
 ### Removed
 ### Fixed
