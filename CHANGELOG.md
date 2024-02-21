@@ -93,6 +93,7 @@
 - Toolbar: buttons' size not restored back to normal height after disabling 'Full size buttons' without reloading the panel.
 - Pools: in .xspf playlists, identifier tag was not working properly at the content resolution step (usually used for MUSICBRAINZ_TRACKID).
 - Pools: .xspf playlists not loading properly when content resolution was used in some cases.
+- UI: wrong parsing of png masks on unix systems (currently, it only affected the ListenBrainz icon when changing the font color).
 - Minor fixes.
 
 ## [3.7.0] - 2023-12-17
