@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/01/24
+//21/02/24
 
 /*
 	Top X Tracks From Date
@@ -100,13 +100,35 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 	const firstPlayedArray = fb.TitleFormat(_bt('FIRST_PLAYED_ENHANCED')).EvalWithMetadbs(handleList);
 	const playCountArray = fb.TitleFormat(_b(globTags.playCount)).EvalWithMetadbs(handleList);
 	const datesArrayLength = datesArray.length;
+	const deDup = (dateArray) => { // Listens may be duplicated with a second offset
+		const dateMap = Object.create(null);
+		let i = dateArray.length;
+		while (i--) {
+			const date = dateArray[i];
+			const day = date.substring(0, 10);
+			const seconds = parseInt(date.substring(11, 13) * 3600 + date.substring(14, 16) * 60 + date.substring(17));
+			const dayArr = dateMap[day];
+			if (!dayArr) { dateMap[day] = [seconds]; }
+			else {
+				if (dayArr.every((listen) => Math.abs(seconds - listen) >= 3)) {
+					dayArr.push(seconds);
+				} else { dateArray.splice(i, 1); }
+			}
+		}
+		return dateArray;
+	};
 	let dataPool = [];
 	if (timePeriod && timeKey) { // During X time...
 		for (let i = 0; i < datesArrayLength; i++) {
 			let count = 0;
-			let listens = [];
-			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i]));
-			if (dateArray_i.length) { // Every entry is also an array of dates
+			const listens = [];
+			const dateArray_i = [...new Set(
+				JSON.parse(datesArray[i])
+					.concat(JSON.parse(datesLastFMArray[i]))
+			)];
+			const lastLen = datesLastFMArray.length;
+			if (lastLen) { deDup(dateArray_i); }
+			if (lastLen || dateArray_i.length) { // Every entry is also an array of dates
 				dateArray_i.forEach((date) => {
 					const temp = date.substring(0, 10).split('-');
 					const listen = new Date(temp[0], temp[1], temp[2]);
@@ -149,9 +171,14 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 	} else {// Equal to year..
 		for (let i = 0; i < datesArrayLength; i++) {
 			let count = 0;
-			let listens = [];
-			let dateArray_i = JSON.parse(datesArray[i]).concat(JSON.parse(datesLastFMArray[i]));
-			if (dateArray_i.length) { // Every entry is also an array of dates
+			const listens = [];
+			const dateArray_i = [...new Set(
+				JSON.parse(datesArray[i])
+					.concat(JSON.parse(datesLastFMArray[i]))
+			)];
+			const lastLen = datesLastFMArray.length;
+			if (lastLen) { deDup(dateArray_i); }
+			if (lastLen || dateArray_i.length) { // Every entry is also an array of dates
 				dateArray_i.forEach((date) => {
 					if (Number(date.substring(0, 4)) === timePeriod) {
 						count++;
