@@ -64,6 +64,7 @@
 - Playlist manipulation\Harmonic mix: new harmonic mixing entry. See above.
 - Selection manipulation\Expand...: added 'By Album Artist', 'By Decade', 'By Protocol' and 'By File/Url' entries.
 - Selection manipulation\Jump...: added 'By Album Artist', 'By Decade', 'By Protocol' and 'By File/Url' entries.
+- Playlist manipulation\Query filtering:  added 'Not links' and 'Same decade' entries.
 - Other Tools\Check tags: new option to also check if genre/styles exist at the Music Graph from [Search-By-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP).
 - Macros: custom macro button now has a menu entry to edit the button name (which was previously only editable on first init).
 - Buttons: added more icons to Playlist Tools submenu custom button.

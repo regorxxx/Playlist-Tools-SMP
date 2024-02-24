@@ -1,9 +1,9 @@
 ﻿'use strict';
-//07/01/24
+//24/02/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, isInt:readable, addLock:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, playlistCountFlagsRem:readable, isString:readable, globQuery:readable, checkQuery:readable, _q:readable, _p:readable, playlistCountFlags:readable, multipleSelectedFlags:readable, MF_STRING:readable, MF_CHECKED:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, isInt:readable, addLock:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, playlistCountFlagsRem:readable, isString:readable, globQuery:readable, checkQuery:readable, _q:readable, _p:readable, playlistCountFlags:readable, multipleSelectedFlags:readable, MF_STRING:readable, MF_CHECKED:readable, _t:readable */
 
 // Playlist manipulation...
 {
@@ -120,6 +120,7 @@
 						{ name: 'Not live (except Hi-Fi)', query: globQuery.noLive },
 						{ name: 'Not multichannel', query: globQuery.stereo },
 						{ name: 'Not SACD or DVD', query: globQuery.noSACD },
+						{ name: 'Not Links', query: '"$strstr(%_PATH_RAW%,file:)" PRESENT' },
 						{ name: 'Global forced query', query: defaultArgs['forcedQuery'] },
 						{ name: 'sep' },
 						{ name: 'Same title than sel', query: globQuery.compareTitle },
@@ -127,6 +128,7 @@
 						{ name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#' },
 						{ name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#' },
+						{ name: 'Same decade than sel', query: '"$right($div(' + _t(globTags.date) + ',10)0s,3)" IS #$right($div(' + _t(globTags.date) + ',10)0s,3)#' },
 						{ name: 'sep' },
 						{ name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#' }
