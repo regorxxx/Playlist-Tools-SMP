@@ -1594,7 +1594,7 @@
 								(isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
 									const tags = fb.TitleFormat(tf).EvalWithMetadbs(plsItems);
 									const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
-									selTags.forEach((selTag) => {
+									new Set(selTags).forEach((selTag) => {
 										tags.forEach((tag, idx) => {
 											if (tag === selTag) { selIdx.add(idx); }
 										});
