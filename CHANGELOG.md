@@ -62,6 +62,8 @@
 - Playlist manipulation\Harmonic mix: new harmonic mixing entries to repeat patterns in small cycles. See above.
 - Selection manipulation\Advanced sort...: new harmonic mixing entry to apply a semi-random pattern.
 - Playlist manipulation\Harmonic mix: new harmonic mixing entry. See above.
+- Selection manipulation\Expand...: added 'By Album Artist', 'By Decade', 'By Protocol' and 'By File/Url' entries.
+- Selection manipulation\Jump...: added 'By Album Artist', 'By Decade', 'By Protocol' and 'By File/Url' entries.
 - Other Tools\Check tags: new option to also check if genre/styles exist at the Music Graph from [Search-By-Distance-SMP](https://github.com/regorxxx/Search-by-Distance-SMP).
 - Macros: custom macro button now has a menu entry to edit the button name (which was previously only editable on first init).
 - Buttons: added more icons to Playlist Tools submenu custom button.
@@ -74,6 +76,8 @@
 - Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 - Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting to output to console profiling logs at script init. They work globally. Disabled by default.
 ### Changed
+- Selection manipulation\Expand...: greatly enhanced performance for large selections.
+- Selection manipulation\Jump...: greatly enhanced performance for large selections.
 - Other Tools\Write tags: checks now if the tracks exist (as file) before processing and will skip those being a link or dead. This should have been handled by the external tools but it produced errors on some cases.
 - Other Tools\Check tags: list of excluded values is now checked after using and rewritten in case there are duplicate tag keys with different casing (STYLE vs style) or duplicated tag values.
 - Search same by: default entries now use the global tags set.

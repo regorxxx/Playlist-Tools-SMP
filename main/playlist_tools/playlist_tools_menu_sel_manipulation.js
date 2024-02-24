@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/01/24
+//24/02/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1566,7 +1566,7 @@
 					{ name: 'By Decade', args: ['$right($div(' + _t(globTags.date) + ',10)0s,3)'] },
 					{ name: 'By Genre', args: ['%' + globTags.genre + '%'] },
 					{ name: 'By Style', args: ['%' + globTags.style + '%'] },
-					{ name: 'By Key', args: ['%' + globTags.key + '%'] },
+					{ name: 'By Key', args: [defaultArgs.keyTag] },
 					{ name: 'By Mood', args: ['%' + globTags.mood + '%'] },
 					{ name: 'By Rating', args: [globTags.rating] },
 					{ name: 'sep' },
@@ -1598,6 +1598,7 @@
 								const plsItems = plman.GetPlaylistItems(ap);
 								const selIdx = new Set();
 								(isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
+									tf = _t(tf); // Add % to tag names if missing
 									const tags = fb.TitleFormat(tf).EvalWithMetadbs(plsItems);
 									const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
 									new Set(selTags).forEach((selTag) => {
@@ -1624,15 +1625,21 @@
 					menu.newMenu('Previous', subMenuName)
 				];
 				const selArgs = [
-					{ name: 'By Artist', args: [globTags.artist] },
+					{ name: 'By Artist', args: ['%ARTIST%'] },
+					{ name: 'By Album Artist', args: ['%ALBUM ARTIST%'] },
 					{ name: 'By Album', args: ['%ALBUM%'] },
-					{ name: 'By Directory', args: ['%DIRECTORYNAME%'] },
+					{ name: 'sep' },
 					{ name: 'By Date', args: [globTags.date] },
+					{ name: 'By Decade', args: ['$right($div(' + _t(globTags.date) + ',10)0s,3)'] },
 					{ name: 'By Genre', args: ['%' + globTags.genre + '%'] },
 					{ name: 'By Style', args: ['%' + globTags.style + '%'] },
 					{ name: 'By Key', args: [defaultArgs.keyTag] }, // Uses remapped tag. Probably missing %, fixed later.
 					{ name: 'By Mood', args: ['%' + globTags.mood + '%'] },
 					{ name: 'By Rating', args: [globTags.rating] },
+					{ name: 'sep' },
+					{ name: 'By Directory', args: ['%DIRECTORYNAME%'] },
+					{ name: 'By Protocol', args: ['$left(%_PATH_RAW%,$strstr(%_PATH_RAW%,://))'] },
+					{ name: 'By File/Url', args: ['$strstr(%_PATH_RAW%,file:)'] },
 					{ name: 'sep' },
 					{
 						name: 'By... (tags)', args: () => {
@@ -1665,12 +1672,12 @@
 									let bDone = false;
 									(isFunction(selArg.args) ? selArg.args() : selArg.args).forEach((tf) => {
 										if (bDone) { return; }
-										if (tf.indexOf('$') === -1 && tf.indexOf('%') === -1) { tf = '%' + tf + '%'; } // Add % to tag names if missing
+										tf = _t(tf); // Add % to tag names if missing
 										const selTags = fb.TitleFormat(tf).EvalWithMetadbs(selItems);
 										for (let i = subMenu === 'Next' ? focusIdx + 1 : focusIdx - 1; i >= 0 && i < count; subMenu === 'Next' ? i++ : i--) {
 											if (plman.IsPlaylistItemSelected(ap, i)) { continue; }
 											const tag = fb.TitleFormat(tf).EvalWithMetadb(plsItems[i]);
-											selTags.forEach((selTag) => {
+											new Set(selTags).forEach((selTag) => {
 												if (bDone) { return; }
 												if (tag !== selTag) { selIdx = i; bDone = true; }
 											});
