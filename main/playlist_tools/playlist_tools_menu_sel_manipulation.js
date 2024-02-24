@@ -3,7 +3,7 @@
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, multipleSelectedFlagsReorder:readable, isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, playlistCountFlags:readable, selectedFlagsAddRem:readable, _p:readable, _q:readable, range:readable, focusInPlaylist:readable, isInt:readable, addLock:readable, selectedFlagsReorder:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, selectedFlags:readable, playlistCountFlagsRem:readable, isFunction:readable, selectedFlagsRem:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, multipleSelectedFlagsReorder:readable, isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, playlistCountFlags:readable, selectedFlagsAddRem:readable, _p:readable, _q:readable, range:readable, focusInPlaylist:readable, isInt:readable, addLock:readable, selectedFlagsReorder:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, selectedFlags:readable, playlistCountFlagsRem:readable, isFunction:readable, selectedFlagsRem:readable, _t:readable */
 
 // Selection manipulation...
 {
@@ -1558,15 +1558,21 @@
 				menu.newEntry({ menuName: subMenuName, entryText: 'Expand selection by:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 				const selArgs = [
-					{ name: 'By Artist', args: [globTags.artist] },
+					{ name: 'By Artist', args: ['%ARTIST%'] },
+					{ name: 'By Album Artist', args: ['%ALBUM ARTIST%'] },
 					{ name: 'By Album', args: ['%ALBUM%'] },
-					{ name: 'By Directory', args: ['%DIRECTORYNAME%'] },
+					{ name: 'sep' },
 					{ name: 'By Date', args: [globTags.date] },
+					{ name: 'By Decade', args: ['$right($div(' + _t(globTags.date) + ',10)0s,3)'] },
 					{ name: 'By Genre', args: ['%' + globTags.genre + '%'] },
 					{ name: 'By Style', args: ['%' + globTags.style + '%'] },
 					{ name: 'By Key', args: ['%' + globTags.key + '%'] },
 					{ name: 'By Mood', args: ['%' + globTags.mood + '%'] },
 					{ name: 'By Rating', args: [globTags.rating] },
+					{ name: 'sep' },
+					{ name: 'By Directory', args: ['%DIRECTORYNAME%'] },
+					{ name: 'By Protocol', args: ['$left(%_PATH_RAW%,$strstr(%_PATH_RAW%,://))'] },
+					{ name: 'By File/Url', args: ['$strstr(%_PATH_RAW%,file:)'] },
 					{ name: 'sep' },
 					{
 						name: 'By... (tags)', args: () => {
