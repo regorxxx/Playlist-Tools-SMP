@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/02/24
+//26/02/24
 
 /*
 	Top X Tracks From Date
@@ -20,7 +20,25 @@ include('..\\filter_and_query\\remove_duplicates.js');
 /* global removeDuplicatesV2:readable */
 const timeKeys = { Days: daysBetween, Weeks: weeksBetween };
 
-// Most played n Tracks from date
+/**
+ * Most played n Tracks from date (may be a single year or a period using 'last x weeks')
+ *
+ * @function
+ * @name topTracksFromDate
+ * @kind function
+ * @param {Object} [o={}] - Arguments
+ * @param {number} [o.playlistLength=25] - N tracks to retrieve
+ * @param {string} [o.sortBy=globTags.sortPlayCount] - TF expression to sort FbMetadbHandleList
+ * @param {string[]} [o.checkDuplicatesBy=globTags.remDupl] - Duplication removal tags
+ * @param {string} [o.checkDuplicatesBias=globQuery.remDuplBias] - Duplication removal bias
+ * @param {boolean} [o.bAdvTitle=true] - Duplication removal by RegExp
+ * @param {number} [o.year=new Date().getFullYear() - 1] - Year for lookup
+ * @param {string} [o.last='1 WEEKS'] - Time period for lookup (bUseLast must be true)
+ * @param {boolean} [o.bUseLast=false] - Use the period method instead of year
+ * @param {string} [o.forcedQuery=globQuery.notLowRating] - Query filter
+ * @param {boolean} [o.bSendToPls=true] - Send FbMetadbHandleList to new playlist
+ * @param {boolean} [o.bProfile=false] - Enable profiling log
+ */
 function topTracksFromDate({
 	playlistLength = 25,
 	sortBy = globTags.sortPlayCount,
@@ -83,15 +101,96 @@ function topTracksFromDate({
 	return [outputHandleList, dataPool];
 }
 
-function weeksBetween(d1, d2) { // d1 and d2 are Dates objects
-	return Math.round((d2 - d1) / (7 * 24 * 60 * 60 * 1000));
+/**
+ * Calculates the number of weeks between the two dates.
+ *
+ * @function
+ * @name weeksBetween
+ * @kind function
+ * @param {Date} d1
+ * @param {Date} d2
+ * @returns {number}
+ */
+function weeksBetween(d1, d2) {
+	return Math.round((d2.getTime() - d1.getTime()) / (7 * 24 * 60 * 60 * 1000));
 }
 
-function daysBetween(d1, d2) { // d1 and d2 are Dates objects
-	return Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
+/**
+ * Calculates the number of days between the two dates.
+ *
+ * @function
+ * @name daysBetween
+ * @kind function
+ * @param {Date} d1
+ * @param {Date} d2
+ * @returns {number}
+ */
+function daysBetween(d1, d2) {
+	return Math.round((d2.getTime() - d1.getTime()) / (24 * 60 * 60 * 1000));
 }
 
-function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Date()) {
+/**
+ * Creates an arrays of listens between firstListen and lastListen
+ *
+ * @function
+ * @name fakeListens
+ * @kind function
+ * @param {Date} firstListen
+ * @param {Date} lastListen
+ * @param {number} total
+ * @returns {Date[]}
+ */
+function fakeListens(firstListen, lastListen, total) {
+	const listens = [];
+	if (total >= 2) {
+		if (total > 2) {
+			const diffDays = daysBetween(firstListen, lastListen);
+			if (diffDays > 1) {
+				let added = 0;
+				let listen;
+				const range = total > diffDays
+					? Math.min(Math.round(total / diffDays), diffDays)
+					: Math.min(Math.round(diffDays / total), total);
+				const offset = total > diffDays ? 1 : range;
+				while (added < (total - range)) {
+					for (let i = 0; i <= (diffDays - 1); i++) {
+						listen = new Date(firstListen);
+						listen.setDate(firstListen.getDate() + Math.min(offset * i, diffDays));
+						listens.push(listen);
+						added++;
+						if (added === (total - range)) { break; }
+					}
+				}
+				while (added < total) { listens.push(new Date(lastListen)); added++; }
+			} else {
+				for (let i = 0; i <= Math.round(total / 2); i++) { listens.push(new Date(firstListen)); }
+				for (let i = Math.round(total / 2) + 1; i <= total; i++) { listens.push(new Date(lastListen)); }
+			}
+		} else {
+			listens.push(firstListen);
+			listens.push(lastListen);
+		}
+		listens.sort((a, b) => a.getTime() - b.getTime());
+	} else {
+		listens.push(lastListen);
+	}
+	return listens;
+}
+
+/**
+ * Retrieves the play count on a time period, which may be a single year or a time unit number (days, weeks) from a reference date
+ *
+ * @function
+ * @name getPlayCount
+ * @kind function
+ * @param {FbMetadbHandleList} handleList
+ * @param {number} timePeriod - Single year or number of time units
+ * @param {string} timeKey? - Time units: Days|Weeks
+ * @param {Date} fromDate? - Reference date for usage with time periods based on time units
+ * @param {boolean} bFakeListens? - Fill listens when there is no play times available
+ * @returns {{ idx: number; playCount: number; listens: Date[]; }[]}
+ */
+function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Date(), bFakeListens = true) {
 	if (!isPlayCount) { fb.ShowPopupMessage('getPlayCount: foo_playcount component is not installed.', window.Name); return []; }
 	if (!isEnhPlayCount) { fb.ShowPopupMessage('getPlayCount: foo_enhanced_playcount is not installed.', window.Name); return []; }
 	const datesArray = fb.TitleFormat(_bt('PLAYED_TIMES')).EvalWithMetadbs(handleList);
@@ -150,12 +249,16 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 				if (diffFirst <= timePeriod && diffLast <= timePeriod) {
 					const total = playCountArray[i];
 					count += total;
-					listens.push(firstListen);
-					if (total >= 2) {
-						if (total > 2) {
-							for (let i = 2; i < total; i++) { listens.push(firstListen); }
+					if (bFakeListens) {
+						fakeListens(firstListen, lastListen, total).forEach((listen) => listens.push(listen));
+					} else {
+						listens.push(firstListen);
+						if (total >= 2) {
+							if (total > 2) {
+								for (let i = 2; i < total; i++) { listens.push(new Date(firstListen)); }
+							}
+							listens.push(lastListen);
 						}
-						listens.push(lastListen);
 					}
 				}
 				// Or the first play
@@ -196,13 +299,18 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 					const firstListen = new Date(tempFirst[0], tempFirst[1] - 1, tempFirst[2]);
 					const tempLast = lastPlayedArray[i].substring(0, 10).split('-').map(Number);
 					if (tempLast.length !== 3) { continue; }
+					const lastListen = new Date(tempLast[0], tempLast[1] - 1, tempLast[2]);
 					count += total;
-					listens.push(firstListen);
-					if (total >= 2) {
-						if (total > 2) {
-							for (let i = 2; i < total; i++) { listens.push(firstListen); }
+					if (bFakeListens) {
+						fakeListens(firstListen, lastListen, total).forEach((listen) => listens.push(listen));
+					} else {
+						listens.push(firstListen);
+						if (total >= 2) {
+							if (total > 2) {
+								for (let i = 2; i < total; i++) { listens.push(new Date(firstListen)); }
+							}
+							listens.push(lastListen);
 						}
-						listens.push(new Date(tempLast[0], tempLast[1] - 1, tempLast[2]));
 					}
 				}
 				// Or the first play
@@ -229,6 +337,18 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 	return dataPool;
 }
 
+/**
+ * Retrieves the skip count on a time period, which may be a single year or a time unit number (days, weeks) from a reference date
+ *
+ * @function
+ * @name getSkipCount
+ * @kind function
+ * @param {FbMetadbHandleList} handleList
+ * @param {number} timePeriod - Single year or number of time units
+ * @param {string} timeKey? - Time units: Days|Weeks
+ * @param {Date} fromDate? - Reference date for usage with time periods based on time units
+ * @returns {{ idx: number; skipCount: number; skips: Date[]; }[]}
+ */
 function getSkipCount(handleList, timePeriod, timeKey = null, fromDate = new Date()) {
 	if (!isSkipCount) { fb.ShowPopupMessage('getSkipCount: foo_skipcount is not installed.', window.Name); return []; }
 	const datesArray = fb.TitleFormat(_bt('SKIP_TIMES_JS')).EvalWithMetadbs(handleList);
