@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/02/24
+//28/02/24
 
 /* Playlist Tools: Buttons Toolbar
 	Loads any button found on the buttons folder. Just load this file and add your desired buttons via R. Click.
@@ -171,9 +171,9 @@ function loadButtonsFile(bStartup = false) {
 					['buttons_playlist_remove_duplicates.js', 'buttons_playlist_filter.js', 'buttons_playlist_filter.js', 'buttons_playlist_history.js']
 			},
 			{
-				name: 'Device priority', files: _isFile(folders.xxx + 'buttons\\buttons_others_device_selector.js')
-					? ['buttons_others_device_priority.js', 'buttons_others_device_selector.js']
-					: ['buttons_others_device_priority.js']
+				name: 'Device priority', files: _isFile(folders.xxx + 'buttons\\buttons_device_selector.js')
+					? ['buttons_device_priority.js', 'buttons_device_selector.js']
+					: ['buttons_device_priority.js']
 			},
 			{
 				name: 'ListenBrainz & Last.fm', files:

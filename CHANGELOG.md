@@ -89,6 +89,7 @@
 - Configuration: changed the remove duplicates bias to prefer tracks with higher play-counts and positive feedback tag (love/hate).
 - Helpers: updated helpers.
 - Console: improved log file formatting on windows text editors which parse new lines only with CR+LF instead of LF.
+- Buttons: changed filename for 'buttons_others_device_selector.js' to 'buttons_device_selector.js' and 'buttons_others_main_menu.js' to 'buttons_utils_main_menu.js'. Before updating, rename all instances of these names at '[foobar2000 profile]\js_data\buttons_XXX.json' with the new names. 'buttons_XXXXX.json' are all json button toolbar files.
 - Code cleanup.
 ### Removed
 ### Fixed
