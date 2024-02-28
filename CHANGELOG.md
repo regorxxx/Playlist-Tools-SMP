@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [4.0.0](#400---2024-02-28)
 - [3.7.0](#370---2023-12-17)
 - [3.6.0](#360---2023-12-08)
 - [3.5.0](#350---2023-11-28)
@@ -56,6 +57,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [4.0.0] - 2024-02-28
 ### Added
 - Last.fm: added caching to YouTube links lookup, which can now be configured by date (or disabled setting it to zero). Pressing Shift + Click on any menu entry will also bypass the cache.
 - Selection manipulation\Advanced sort...: new harmonic mixing entries to repeat patterns in small cycles (30 tracks) instead of applying a pattern for the entire selection (which results in too many consecutive tracks with same key for big selections).
@@ -1187,7 +1194,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.7.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.7.0...v4.0.0
 [3.7.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.4.1...v3.5.0
