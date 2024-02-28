@@ -107,7 +107,7 @@
 - Pools: in .xspf playlists, identifier tag was not working properly at the content resolution step (usually used for MUSICBRAINZ_TRACKID).
 - Pools: .xspf playlists not loading properly when content resolution was used in some cases.
 - UI: wrong parsing of png masks on unix systems (currently, it only affected the ListenBrainz icon when changing the font color).
-- Most played tracks at: last.fm listens are now deduplicated within a 3 seconds range to ensure tracks are not counted twice in some cases where the timestamp differs by some second.
+- Most played tracks at: last.fm listens are now deduplicated within a 30 seconds range to ensure tracks are not counted twice in some cases where the timestamp differs by some second.
 - Minor fixes.
 
 ## [3.7.0] - 2023-12-17
@@ -131,7 +131,7 @@
 - Macros: more tests added to the default macros.
 ### Changed
 - Pools: now indicate the total and deduplicated size of the source.
-- Renamed 'Most played tracks from' tool to 'Most played tracks at', along its entries, so there is no confusion about the tracks selected, those which were listened at an specific year (or perior), and not related to a %DATE% tag.
+- Renamed 'Most played tracks from' tool to 'Most played tracks at', along its entries, so there is no confusion about the tracks selected, those which were listened at an specific year (or period), and not related to a %DATE% tag.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
