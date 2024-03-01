@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/01/24
+//01/03/24
 
 /*
 	Automatic tagging...
@@ -379,9 +379,13 @@ function TagAutomation({
 						setTimeout(function () {
 							if (bSubSong) {
 								if (cacheSelItemsNoSubSong.Count) {
-									bSucess = fb.RunContextCommandWithMetadb('Utilities/Create Audio MD5 checksum', cacheSelItemsNoSubSong, 8);
+									bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
+										.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
 								}
-							} else { bSucess = fb.RunContextCommandWithMetadb('Utilities/Create Audio MD5 checksum', cacheSelItems, 8); }
+							} else {
+								bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
+									.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+							}
 						}, this.currentTime); // Takes 170 ms / track
 						this.currentTime += 200 * this.countItems; // But we give them some time to run before firing the next one
 					}

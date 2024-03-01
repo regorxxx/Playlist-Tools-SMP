@@ -63,6 +63,7 @@
 - UI: Improved panel repaint routines to minimize resources usage.
 ### Removed
 ### Fixed
+- Other Tools\Write tags: Audio MD5 tagging not working due to menu name change on [v0.6.5](https://foobar.hyv.fi/?view=foo_audiomd5).
 - Presets: fixed LUFS TitleFormat CUI preset.
 
 ## [4.0.0] - 2024-02-28
