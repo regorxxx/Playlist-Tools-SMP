@@ -22,3 +22,8 @@ to be installed first by the user. Some may be available by default.
 After (un)installing a dependency, a panel reload will be required.
 
 This was meant as a private tool, no further support provided.
+
+Processing order:
+Remove ReplayGain -> FooId -> Masstager MD5 -> DR -> ChromaPrint 
+-> ffmpeg LRA -> Folksonomy -> Essentia (fast) -> Essentia (rest)
+-> AudioMD5 -> ReplayGain
