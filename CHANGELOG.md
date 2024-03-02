@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [4.0.1](#401---2024-03-02)
 - [4.0.0](#400---2024-02-28)
 - [3.7.0](#370---2023-12-17)
 - [3.6.0](#360---2023-12-08)
@@ -57,6 +58,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [4.0.1] - 2024-03-02
 ### Added
 - Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting for panel repaint debugging purpose. Disabled by default.
 ### Changed
@@ -1198,7 +1205,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.7.0...v4.0.0
 [3.7.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.5.0...v3.6.0
