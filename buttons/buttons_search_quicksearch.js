@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/01/24
+//03/03/24
 
 /*
 	Quicksearch for same....
@@ -408,8 +408,8 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 					return {
 						name: queryObj.name.replace('Same', 'By'),
 						query: /DATE/i.test(queryObj.query) !== true
-							? '"$puts(val,' + dynTF + ')$puts(min,$min($len($get(val)),$len(' + statTF + ')))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
-							: '"$puts(val,' + dynTF + ')$puts(min,$sub($min($len($get(val)),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1' // Reduce length in 1 for dates, so it matches the same decade!
+							? '"$puts(val,' + dynTF + ')$puts(vallen,$len($get(val)))$puts(min,$min($get(vallen),$if2($strchr($get(val),\'(\'),$get(vallen)),$if2($strchr($get(val),\'[\'),$get(vallen)),$len(' + statTF + ')))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
+							: '"$puts(val,' + dynTF + ')$puts(min,$sub($min($get(vallen),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1' // Reduce length in 1 for dates, so it matches the same decade!
 					};
 				}
 			}

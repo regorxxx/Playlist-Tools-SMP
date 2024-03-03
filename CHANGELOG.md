@@ -60,6 +60,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Quicksearch: 'Partial match' option now also checks for tag values matching everythinb but words within parentheses or brackets. For ex. "Eric's trip (live)" also matches "Eric's trip (home demo)" and "Eric's trip". Previously it only matched the last one (which matched both if used as reference).
 ### Removed
 ### Fixed
 
