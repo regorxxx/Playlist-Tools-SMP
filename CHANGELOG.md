@@ -60,7 +60,9 @@
 ## [Unreleased][]
 ### Added
 ### Changed
-- Quicksearch: 'Partial match' option now also checks for tag values matching everythinb but words within parentheses or brackets. For ex. "Eric's trip (live)" also matches "Eric's trip (home demo)" and "Eric's trip". Previously it only matched the last one (which matched both if used as reference).
+- Quicksearch: 'Partial match' option now also checks for tag values matching everything but words within parentheses or brackets. For ex. "Eric's trip (live)" also matches "Eric's trip (home demo)" and "Eric's trip". Previously it only matched the last one (which matched both if used as reference).
+- Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting to check OS features on every panel startup. Enabled by default. This has been the default behavior since OS' features check was implemented, but it can now be disabled to improve init performance a bit, specially at foobar2000 startup (since it seems to hang in some cases when running it on slow HDDs or systems).
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 
