@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [4.1.1](#410---2024-03-15)
 - [4.0.1](#401---2024-03-02)
 - [4.0.0](#400---2024-02-28)
 - [3.7.0](#370---2023-12-17)
@@ -58,6 +59,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [4.1.0] - 2024-03-15
 ### Added
 ### Changed
 - Quicksearch: 'Partial match' option now also checks for tag values matching everything but words within parentheses or brackets. For ex. "Eric's trip (live)" also matches "Eric's trip (home demo)" and "Eric's trip". Previously it only matched the last one (which matched both if used as reference).
@@ -1208,7 +1215,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.1...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.1.0...HEAD
+[4.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.1...v4.1.0
 [4.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.7.0...v4.0.0
 [3.7.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.6.0...v3.7.0
