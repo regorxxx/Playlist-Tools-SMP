@@ -2,7 +2,8 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [4.1.1](#410---2024-03-15)
+- [4.2.0](#420---2024-03-21)
+- [4.1.0](#410---2024-03-15)
 - [4.0.1](#401---2024-03-02)
 - [4.0.0](#400---2024-02-28)
 - [3.7.0](#370---2023-12-17)
@@ -61,6 +62,13 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [4.2.0] - 2024-03-21
+### Added
+### Changed
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 
@@ -1215,7 +1223,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.2.0...HEAD
+[4.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.1...v4.1.0
 [4.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v3.7.0...v4.0.0
