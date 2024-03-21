@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/02/24
+//20/03/24
 
 /*
 	Top X Tracks From Date
@@ -373,8 +373,10 @@ function getSkipCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 	} else { // Equal to year...
 		for (let i = 0; i < datesArrayLength; i++) {
 			let count = 0;
+			const values = datesArray[i];
 			const skips = [];
-			const dateArray_i = JSON.parse(datesArray[i]);
+			const dateArray_i = JSON.parse(values.startsWith('[') ? values : _b(values));
+			if (!Array.isArray(dateArray_i)) { console.log(dateArray_i, i, handleList[i]); continue;}
 			if (dateArray_i.length) { // Every entry is also an array of dates
 				dateArray_i.forEach((date) => {
 					const skip = new Date(date);
