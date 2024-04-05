@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/01/24
+//05/04/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -260,7 +260,7 @@
 		}
 		{	// Playlist revive
 			const scriptPath = folders.xxx + 'main\\playlists\\playlist_revive.js';
-			/* global findDeadItems:readable, playlistReviveAll:readable, playlistRevive:readable,selectDeadItems:readable */
+			/* global findDeadItems:readable, playlistReviveAll:readable, playlistRevive:readable, selectDeadItems:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Playlist Revive';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
