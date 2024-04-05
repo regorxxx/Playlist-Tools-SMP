@@ -63,6 +63,8 @@
 ### Added
 - Other tools\Write Tags:  added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
 ### Changed
+- Helpers: json button files are now saved with Windows EOL for compatibility improvements with Windows text editors.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 - Other tools\Write Tags: tool not processing next step automatically after Chromaprint tagging in some cases.
