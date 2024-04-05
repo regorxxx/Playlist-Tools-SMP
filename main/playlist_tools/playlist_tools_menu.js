@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/12/23
+//21/03/24
 
 /*
 	Playlist Tools Menu
@@ -501,7 +501,7 @@ function createMainMenuDynamic() {
 					dynamicMenuList.push({ ...entry, onMainMenuEntries: true });
 					if (Object.hasOwn(entry, 'path') && entry.path.length) {
 						try { include(entry.path.replace('.\\', folders.xxx)); entry.path = ''; }
-						catch (e) { console.popup(e.message.split('\n').join('\n'), scriptName + ': SMP Dynamic menu'); }
+						catch (e) { console.popup(e.message.split(/\r\n|\n\r|\n|\r/).join('\n\t'), scriptName + ': SMP Dynamic menu'); }
 					}
 				}
 			});

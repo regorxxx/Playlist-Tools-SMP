@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/12/23
+//21/03/24
 
 /* exported onMainMenuEntries, bindDynamicMenus */
 
@@ -66,7 +66,7 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 			if (Object.hasOwn(entry, 'path')) {
 				if (entry.path.length) {
 					try {include(entry.path.replace('.\\', folders.xxx));}
-					catch (e) {console.popup(e.message.split('\n').join('\n\t '), 'SMP Dynamic menu');}
+					catch (e) {console.popup(e.message.split(/\r\n|\n\r|\n|\r/).join('\n\t '), 'SMP Dynamic menu');}
 					entry.path = '';
 				}
 				try {eval(entry.funcName)();}
