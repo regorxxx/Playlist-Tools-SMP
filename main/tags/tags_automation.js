@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/03/24
+//04/04/24
 
 /*
 	Automatic tagging...
@@ -24,7 +24,7 @@ include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable */
 
 function TagAutomation({
-	toolsByKey = null /*{biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, dynamicRange: true, LRA: true, KEY: true}*/,
+	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: true, LRA: true, KEY: true} */,
 	bOutputTools = false,
 	bOutputDefTools = false,
 	bWineBug = false,
@@ -70,6 +70,10 @@ function TagAutomation({
 		{
 			key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'],
 			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true), bDefault: true
+		},
+		{
+			key: 'tpScan', tag: ['TRUEPEAK_SCANNER_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_TRUE_PEAK', 'TRUEPEAK_SCANNER_TRACK_GAIN', 'REPLAYGAIN_TRACK_TRUE_PEAK','TRUEPEAK_SCANNER_PEAK_POSITION','TRUEPEAK_SCANNER_CLIPPED_SAMPLES','TRUEPEAK_SCANNER_CLIPPED_SAMPLES_ALBUM'],
+			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true), bDefault: false
 		},
 		{
 			key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
@@ -148,6 +152,9 @@ function TagAutomation({
 			if (this.toolsByKey.essentiaFastKey) {
 				console.popup('Essentia (fast) is being used to calculate Key tag, along Essentia (full extractor) for other tag(s); in such case it\'s recommended to disable the former and retrieve the key tag with the full extractor instead. Results will be the same.\n\nCalculation time will decrease since Essentia (full extractor) computes all low level data even when retrieving only a single tag, thus skipping an additional step.', 'Tags Automation');
 			}
+		}
+		if (this.bToolPopups && this.toolsByKey.rgScan && this.toolsByKey.tpScan) {
+			console.popup('True Peak Scanner is being used along ReplayGain. Note some custom settings may duplicate file scanning or tagging unnecesarily, so it may be desirable to only use one of them. Check their original documentation for more usage info.', 'Tags Automation');
 		}
 		this.countItems = 0;
 		this.currentTime = 0;
@@ -289,7 +296,7 @@ function TagAutomation({
 		this.debouncedStep(this.iStep);
 	};
 
-	const orderKeys = ['rgScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
+	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 	if (orderKeys.flat(Infinity).some((k) => !Object.hasOwn(this.toolsByKey, k))) { throw new Error('Key not associated to any tool'); }
 	this.stepTag = (i) => {
 		let bSucess = false;
@@ -300,12 +307,17 @@ function TagAutomation({
 					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', this.selItems, 8);
 				} else { bSucess = false; }
 				break;
-			case 1:  // Takes 260 ms / track
+			case 1: // Less than 100 ms / track?
+				if (this.toolsByKey.tpScan) { // True Peak info may use custom tags this way...
+					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove True Peak information from files', this.selItems, 8);
+				} else { bSucess = false; }
+				break;
+			case 2:  // Takes 260 ms / track
 				if (this.toolsByKey.biometric) {
 					bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', this.selItems, 8);
 				} else { bSucess = false; }
 				break;
-			case 2: // Less than 170 ms / track?
+			case 3: // Less than 170 ms / track?
 				if (this.toolsByKey.massTag) {
 					if (this.check.subSong || this.check.md5) {
 						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) {
@@ -317,13 +329,13 @@ function TagAutomation({
 					} else { bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItems, 8); }
 				} else { bSucess = false; }
 				break;
-			case 3: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
+			case 4: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
 				if (this.toolsByKey.dynamicRange) {
 					bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);
 				}
 				else { bSucess = false; }
 				break;
-			case 4:
+			case 5:
 				if (this.toolsByKey.chromaPrint) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -332,7 +344,7 @@ function TagAutomation({
 					} else { bSucess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItems }); }
 				} else { bSucess = false; }
 				break;
-			case 5:
+			case 6:
 				if (this.toolsByKey.ffmpegLRA) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -341,7 +353,7 @@ function TagAutomation({
 					} else { bSucess = ffmpeg.calculateLoudness({ fromHandleList: this.selItems, bWineBug: this.bWineBug }); }
 				} else { bSucess = false; }
 				break;
-			case 6:
+			case 7:
 				if (this.toolsByKey.folksonomy) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -350,7 +362,7 @@ function TagAutomation({
 					} else { bSucess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItems }); }
 				} else { bSucess = false; }
 				break;
-			case 7:
+			case 8:
 				if (this.toolsByKey.essentiaFastKey) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -359,7 +371,7 @@ function TagAutomation({
 					} else { bSucess = essentia.calculateKey({ fromHandleList: this.selItems }); }
 				} else { bSucess = false; }
 				break;
-			case 8:
+			case 9:
 				if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
 					const tagName = ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA'].map((key) => { return this.toolsByKey[key] ? this.tagsByKey[key][0] : null; }).filter(Boolean);
 					if (this.check.subSong) {
@@ -369,8 +381,8 @@ function TagAutomation({
 					} else { bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName }); }
 				} else { bSucess = false; }
 				break;
-			case 9: // These require user input before saving, so they are read only operations and can be done at the same time
-				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan) {
+			case 10: // These require user input before saving, so they are read only operations and can be done at the same time
+				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan ) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
@@ -393,7 +405,13 @@ function TagAutomation({
 						setTimeout(function () {
 							bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSelItems, 8);
 						}, this.currentTime); // Takes ~500 ms / track
-						this.currentTime += 510 * this.countItems; // But we give them some time to run before firing the next one
+						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
+					}
+					if (this.toolsByKey.tpScan) {
+						setTimeout(function () {
+							bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan True Peaks and Positions (as albums)', cacheSelItems, 8);
+						}, this.currentTime); // Takes ~500 ms / track
+						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
 					}
 				} else { bSucess = false; }
 				break;
@@ -415,13 +433,16 @@ function TagAutomation({
 			// Compare tags
 			const check = (checkKey, key, i) => {
 				if (isArrayStrings(key)) { return key.every((k) => check(k)); } // Some steps have multiple tags...
+				const mergeTags = new Set(['chromaPrint', 'folksonomy']);
 				const handleList = this.notAllowedTools.has(key) ? this.selItemsByCheck[checkKey].missing : this.selItems;
 				if (this.toolsByKey[key] && handleList.Count) {
 					const idx = this.tools.findIndex((tool) => { return tool.key === key; });
 					const tag = this.tools[idx].tag;
-					const itemTags = getHandleListTags(handleList, tag, { bMerged: true }).flat(Infinity).filter(Boolean);
-					if (i === 0 && itemTags.length) { return false; } // Only at first step it checks for no tags!
-					else if (i !== 0 && itemTags.length / tag.length !== handleList.Count) { return false; } // NOSONAR
+					const itemTags = getHandleListTags(handleList, tag, { bMerged: true })
+						.map((tagArr) => mergeTags.has(key) ? tagArr.join(', ') : tagArr)
+						.flat(Infinity).filter(Boolean);
+					if (i <= 1 && itemTags.length) { return false; } // Only at first steps it checks for no tags!
+					else if (i > 1 && itemTags.length / tag.length !== handleList.Count) { return false; } // NOSONAR
 				}
 				return true;
 			};
