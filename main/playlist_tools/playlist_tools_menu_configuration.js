@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//05/04/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -121,7 +121,7 @@
 								menu.newEntry({ menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED });
 								menu.newEntry({
 									menuName: subMenuNameThree, entryText: 'Edit entries...' + (bFile ? '' : '\t(new file)'), func: () => {
-										if (!bFile) { _save(file, JSON.stringify(options, null, '\t')); }
+										if (!bFile) { _save(file, JSON.stringify(options, null, '\t').replace(/\n/g,'\r\n')); }
 										_explorer(file);
 									}
 								});
@@ -321,7 +321,7 @@
 						const path = folders.data + 'playlistTools_presets.json';
 						_recycleFile(path);
 						const readme = 'Backup ' + new Date().toString();
-						if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t'))) {
+						if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g,'\r\n'))) {
 							_explorer(path);
 							console.log('Playlist tools: presets backup saved at ' + path);
 						}
@@ -343,8 +343,9 @@
 						} else {
 							_recycleFile(path);
 							const readme = 'Backup ' + new Date().toString();
-							if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t'))) { console.log('Playlist tools: presets backup saved at ' + path); }
-							else { console.log('Playlist tools: failed to create backup of presets at ' + path); }
+							if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g,'\r\n'))) {
+								console.log('Playlist tools: presets backup saved at ' + path);
+							} else { console.log('Playlist tools: failed to create backup of presets at ' + path); }
 							presets = {}; // NOSONAR
 						}
 						// For the current instance
