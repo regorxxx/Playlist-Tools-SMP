@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/01/24
+//05/04/24
 
 /*
 	Playlist Revive
@@ -74,7 +74,7 @@ function playlistRevive({
 				if (values.has(tag)) { return true; }
 				else { values.add(tag); return false; }
 			});
-		});
+		}).flat();
 		queryArr.push(tagsArr.length // Don't report missing tags for items without tags...
 			? queryCombinations(tagsArr, tagName, 'OR')
 			: ''
@@ -336,7 +336,7 @@ function findDeadItems() {
 }
 
 /* exported selectDeadItems */
-function selectDeadItems(playlistIndex) {
+function selectDeadItems(playlistIndex, bUpdateUi = true) {
 	if (playlistIndex === -1 || playlistIndex >= plman.PlaylistCount) { return; }
 	plman.ClearPlaylistSelection(playlistIndex);
 	let deadItems = [];
@@ -350,7 +350,7 @@ function selectDeadItems(playlistIndex) {
 		if (!streamRegEx.test(handle.RawPath)) { cache.add(handle.RawPath); return; } // Exclude streams and title-only tracks
 		deadItems.push({ handle, idx });
 	});
-	if (deadItems.length) {
+	if (bUpdateUi && deadItems.length) {
 		plman.ActivePlaylist = playlistIndex;
 		plman.SetPlaylistSelection(playlistIndex, deadItems.map((_) => _.idx), true);
 		plman.SetPlaylistFocusItem(playlistIndex, deadItems[0].idx);
