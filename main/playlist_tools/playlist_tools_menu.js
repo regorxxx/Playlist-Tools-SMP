@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/03/24
+//05/04/24
 
 /*
 	Playlist Tools Menu
@@ -44,7 +44,7 @@ include('..\\..\\helpers\\callbacks_xxx.js');
 /* global callbacksListener:readable */
 include('..\\..\\helpers\\helpers_xxx_input.js');
 include('playlist_tools_menu_helpers.js');
-/* global loadProperties:readable, overwritePanelProperties:readable */
+/* global loadProperties:readable, overwritePanelProperties:readable, flagsCache:readable */
 
 /* global exportDevices:readable, exportDSP:readable, deleteMainMenuDynamic:readable, onMainMenuDynamicEntries:readable, mainMenuSMP:readable , lastActionEntry:readable */
 
@@ -133,7 +133,14 @@ loadProperties();
 const specialMenu = 'Special Playlists...';
 const configMenu = 'Configuration';
 const scriptName = 'Playlist Tools Menu';
-const menu = new _menu();
+const menu = new _menu({
+	onBtnUp: () => {
+		flagsCache.focus = null;
+		flagsCache.plsItemCount = {};
+		flagsCache.selItems = {};
+		flagsCache.lock = {};
+	}
+});
 
 // Enable/disable menu
 const menuAlt = new _menu();
@@ -575,7 +582,7 @@ function exportMainMenuDynamic({ file = folders.ajquerySMP + 'playlisttoolsentri
 		const data = bToFile ? _jsonParseFile(file, utf8) || {} : {};
 		data[window.Name] = menuList;
 		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !folders.ajqueryCheck()) { return true; }
-		bReturn = bToFile ? _save(file, JSON.stringify(data, null, '\t')) : true;
+		bReturn = bToFile ? _save(file, JSON.stringify(data, null, '\t').replace(/\n/g, '\r\n')) : true;
 	} catch (e) { console.log('exportMainMenuDynamic: unknown error'); console.log(e.message); }
 	return bReturn;
 }

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//05/04/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -120,7 +120,7 @@ function updateShortcutsNames(keys = {}) {
 			shortcuts = data; // NOSONAR
 		}
 	} else {
-		_save(shortcutsPath, JSON.stringify(shortcuts, null, '\t'));
+		_save(shortcutsPath, JSON.stringify(shortcuts, null, '\t').replace(/\n/g, '\r\n'));
 	}
 }
 
@@ -136,7 +136,7 @@ function createDefaultPreset(options /* name, propName, defaultPreset, defaults*
 			if (!compareObjects(data, defaults)) { bSave = true; }
 		} else { bSave = true; }
 	} else { bSave = true; }
-	if (bSave) { _save(options.defaultPreset, JSON.stringify(defaults, null, '\t')); }
+	if (bSave) { _save(options.defaultPreset, JSON.stringify(defaults, null, '\t').replace(/\n/g, '\r\n')); }
 }
 
 function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bImport, bDefaultFile}*/) { // NOSONAR
@@ -254,7 +254,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 					const path = folders.data + options.propName + '_presets.json';
 					_recycleFile(path);
 					const readme = 'Backup ' + new Date().toString();
-					if (_save(path, JSON.stringify({ readme, [options.propName]: presets[options.propName] }, null, '\t'))) {
+					if (_save(path, JSON.stringify({ readme, [options.propName]: presets[options.propName] }, null, '\t').replace(/\n/g, '\r\n'))) {
 						_explorer(path);
 						console.log('Playlist tools: presets backup saved at ' + path);
 					}
@@ -334,23 +334,46 @@ function lastActionEntry() {
 /*
 	Flags
 */
+const flagsCache = {};
+flagsCache.focus = null;
+flagsCache.plsItemCount = {};
+flagsCache.selItems = {};
+flagsCache.getFocus = () => {
+	return flagsCache.focus || (flagsCache.focus = fb.GetFocusItem(true));
+};flagsCache.getPlsItemCount = (idx) => {
+	return flagsCache.plsItemCount[idx] || (flagsCache.plsItemCount[idx] = plman.PlaylistItemCount(idx));
+};
+flagsCache.getSelItemsCount = (idx) => {
+	return flagsCache.selItems[idx] || (flagsCache.selItems[idx] = plman.GetPlaylistSelectedItems(idx).Count);
+};
+function focusFlags() { return (flagsCache.getFocus() ? MF_STRING : MF_GRAYED); }
 
-function focusFlags() { return (fb.GetFocusItem(true) ? MF_STRING : MF_GRAYED); }
+function playlistCountFlags(idx = plman.ActivePlaylist) { return (flagsCache.getPlsItemCount(idx) ? MF_STRING : MF_GRAYED); }
+function playlistCountFlagsRem(idx = plman.ActivePlaylist) { return (flagsCache.getPlsItemCount(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
+function playlistCountFlagsAddRem(idx = plman.ActivePlaylist) { return (flagsCache.getPlsItemCount(idx) && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
 
-function playlistCountFlags(idx = plman.ActivePlaylist) { return (plman.PlaylistItemCount(idx) ? MF_STRING : MF_GRAYED); }
-function playlistCountFlagsRem(idx = plman.ActivePlaylist) { return (plman.PlaylistItemCount(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
-function playlistCountFlagsAddRem(idx = plman.ActivePlaylist) { return (plman.PlaylistItemCount(idx) && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
+function multipleSelectedFlags(idx = plman.ActivePlaylist) { return (flagsCache.getSelItemsCount(idx) >= 3 ? MF_STRING : MF_GRAYED); }
+function multipleSelectedFlagsReorder(idx = plman.ActivePlaylist) { return (flagsCache.getSelItemsCount(idx) >= 3 && !reorderLock(idx) ? MF_STRING : MF_GRAYED); }
 
-function multipleSelectedFlags(idx = plman.ActivePlaylist) { return (plman.GetPlaylistSelectedItems(idx).Count >= 3 ? MF_STRING : MF_GRAYED); }
-function multipleSelectedFlagsReorder(idx = plman.ActivePlaylist) { return (plman.GetPlaylistSelectedItems(idx).Count >= 3 && !reorderLock(idx) ? MF_STRING : MF_GRAYED); }
-
-function selectedFlags(idx = plman.ActivePlaylist) { return (plman.GetPlaylistSelectedItems(idx).Count ? MF_STRING : MF_GRAYED); }
-function selectedFlagsReorder(idx = plman.ActivePlaylist) { return (plman.GetPlaylistSelectedItems(idx).Count && !reorderLock(idx) ? MF_STRING : MF_GRAYED); }
-function selectedFlagsRem(idx = plman.ActivePlaylist) { return (plman.GetPlaylistSelectedItems(idx).Count && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
-function selectedFlagsAddRem(idx = plman.ActivePlaylist) { return (plman.GetPlaylistSelectedItems(idx).Count && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
+function selectedFlags(idx = plman.ActivePlaylist) { return (flagsCache.getSelItemsCount(idx) ? MF_STRING : MF_GRAYED); }
+function selectedFlagsReorder(idx = plman.ActivePlaylist) { return (flagsCache.getSelItemsCount(idx) && !reorderLock(idx) ? MF_STRING : MF_GRAYED); }
+function selectedFlagsRem(idx = plman.ActivePlaylist) { return (flagsCache.getSelItemsCount(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
+function selectedFlagsAddRem(idx = plman.ActivePlaylist) { return (flagsCache.getSelItemsCount(idx) && !addLock(idx) && !removeLock(idx) ? MF_STRING : MF_GRAYED); }
 
 // plman.ActivePlaylist must be !== -1 to avoid crashes!
-function reorderLock(idx = plman.ActivePlaylist) { return plman.GetPlaylistLockedActions(idx).indexOf('ReorderItems') !== -1; }
-function addLock(idx = plman.ActivePlaylist) { return plman.GetPlaylistLockedActions(idx).indexOf('AddItems') !== -1; }
-function removeLock(idx = plman.ActivePlaylist) { return plman.GetPlaylistLockedActions(idx).indexOf('RemoveItems') !== -1; }
-function closeLock(idx = plman.ActivePlaylist) { return plman.GetPlaylistLockedActions(idx).indexOf('RemovePlaylist') !== -1; }
+flagsCache.lock = {};
+flagsCache.getLock = (idx) => {
+	return flagsCache.lock[idx] || (flagsCache.lock[idx] = new Set(plman.GetPlaylistLockedActions(idx) || []));
+};
+function reorderLock(idx = plman.ActivePlaylist) {
+	return flagsCache.getLock(idx).has('ReorderItems');
+}
+function addLock(idx = plman.ActivePlaylist) {
+	return flagsCache.getLock(idx).has('AddItems');
+}
+function removeLock(idx = plman.ActivePlaylist) {
+	return flagsCache.getLock(idx).has('RemoveItems');
+}
+function closeLock(idx = plman.ActivePlaylist) {
+	return flagsCache.getLock(idx).has('RemovePlaylist');
+}
