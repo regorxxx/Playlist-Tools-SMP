@@ -1031,7 +1031,7 @@
 							}
 							{	// findRemoveSplitSize ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
-								const options = [100, 250, 500, 1000, 5000, 'Other...'];
+								const options = [5, 10, 20, 30, 'Other...'];
 								const optionsIdx = [...options];
 								options.forEach((val, index) => { // Creates menu entries for all options
 									if (index === 0) {
@@ -1066,7 +1066,7 @@
 							}
 							{	// maxSelCount ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
-								const options = [5, 10, 20, 25, 'Other...'];
+								const options = [100, 250, 500, 1000, 5000, 'Other...'];
 								const optionsIdx = [...options];
 								options.forEach((val, index) => { // Creates menu entries for all options
 									if (index === 0) {
