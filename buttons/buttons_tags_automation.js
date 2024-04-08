@@ -102,7 +102,7 @@ buttonsBar.list.push(newButtonsProperties);
 								this.tAut.loadDependencies();
 							}, flags
 						});
-						menu.newCheckMenu(subMenu, tool.title, void (0), () => { return this.tAut.toolsByKey[key]; });
+						menu.newCheckMenu(subMenu, tool.title, void (0), () => !!this.tAut.toolsByKey[key]);
 					});
 					menu.newEntry({ menuName: subMenu, entryText: 'sep' });
 					['Enable all', 'Disable all'].forEach((entryText, i) => {

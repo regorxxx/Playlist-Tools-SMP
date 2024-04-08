@@ -225,7 +225,7 @@
 								tAut.loadDependencies();
 							}, flags
 						});
-						menu.newCheckMenu(subMenuTools, tool.title, void (0), () => { return tAut.toolsByKey[key]; });
+						menu.newCheckMenu(subMenuTools, tool.title, void (0), () => !!tAut.toolsByKey[key]);
 					});
 					menu.newEntry({ menuName: subMenuTools, entryText: 'sep' });
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
