@@ -4,58 +4,76 @@ Dynamic queries are also allowed in Query filtering and Pools.
 
 For filtering purposes:
 -------------
-- Empty query will try to apply global forced query if enabled, 
+- Empty query will try to apply global forced query if enabled,
 otherwise gets replaced with 'ALL'.
 - 'ALL' will never apply forced query, even if enabled.
 
 Rules:
 -------------
-- Dynamic variables are allowed too, enclosed on '#': #ARTIST#, 
+- Dynamic variables are allowed too, enclosed on '#': #ARTIST#,
 #$year(%date%)#, ...
-- These placeholders will be replaced with focused item\'s TF result on 
+- There are a few special variables, which are not evaluated against
+a track but globally. For ex: #YEAR# -> 2023
+- These placeholders will be replaced with focused item\'s TF result on
 execution.
 - Using tags alone, translates into multivalue tags/queries by default.
-- When using TF expressions ($...), tags are not converted and the 
+- When using TF expressions ($...), tags are not converted and the
 expression is executed 'as is'.
-- Standard queries may be added -only- to the end of a dynamic query 
+- Standard queries may be added -only- to the end of a dynamic query
 expression.
-- Multiple dynamic multivalued variables are allowed, but they must be 
+- Multiple dynamic multivalued variables are allowed, but they must be
 enclosed on parenthesis to work.
-- In any case queries are tested before using it, so errors will be 
+- In any case queries are tested before using it, so errors will be
 shown as a popup.
+
+Special variables:
+-------------
+Don't require a track to be evaluated (i.e. they always work with
+themes):
+	- #DAY# 	-> 14 (current day)
+	- #MONTH#	-> 11 (current month)
+	- #YEAR#	-> 2023 (current year)
 
 Some examples:
 -------------
-For a rock track, 'GENRE IS #GENRE#' would translate into 'GENRE IS Rock'.
+For a rock track:
+GENRE IS #GENRE# -> GENRE IS Rock.
 The entire library would be filtered with tracks from that genre.
 
-For a rock and electronic track, 'GENRE IS #GENRE#' would translate into 
-'(GENRE IS Rock) AND (GENRE IS Electronic) '. Note multi-value tags are
-split and produce multiple query entries by default. (*)
 
-For a Dylan's track, 'COMPOSER IS #ARTIST#' would translate into 
-'COMPOSER IS Bob Dylan'. And the entire library would be filtered with 
-any track written by him.
+For a rock and electronic track, it would translate into:
+GENRE IS #GENRE# -> (GENRE IS Rock) AND (GENRE IS Electronic)
+Note multi-value tags are split and produce multiple query entries
+by default. (*)
 
-Merging standard and dynamic expressions like 'GENRE IS #GENRE# AND NOT
-(%rating% EQUAL 2 OR %rating% EQUAL 1)' would translate into
-'(GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock) AND NOT (%rating%
-EQUAL 2 OR %rating% EQUAL 1)'. Note the standard query expression is
-added at the end.
+It can also be used to remap tags like this (for a Bob Dylan's track):
+COMPOSER IS #ARTIST# -> COMPOSER IS Bob Dylan
 
-Multiple dynamic queries like '((GENRE IS #GENRE#) OR (STYLE IS 
-#STYLE#))' translates into '(((GENRE IS Psychedelic Rock) AND (GENRE IS
- Hard Rock)) OR ((STYLE IS Acid Rock) AND (STYLE IS Live)))'.
-Note how the parenthesis are used to limit dynamic expansion.
+Merging standard and dynamic expressions  is also possible, as long as
+the standard query expression is added at the end, like:
+GENRE IS #GENRE# AND NOT (%RATING% EQUAL 2 OR %RATING% EQUAL 1)
+->
+(GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock) AND NOT (%RATING%
+EQUAL 2 OR %RATING% EQUAL 1).
 
-Multiple dynamic queries like '((DATE IS #DATE#) OR (DATE IS 
-#$add(%DATE%,1)#))' translates into '((DATE IS 1969) OR (DATE IS
- 1970))'. So in fact the parenthesis are redundant in such case.
- 
-Therefore '(DATE IS #DATE# OR DATE IS #$add(%DATE%,1)#) would translate 
-into '(DATE IS 1969 OR DATE IS 1970)' without problems. Note how single
-valued tags don't need extra parenthesis since dynamic expansion does
-not apply here.
+Multiple dynamic queries are also possible. Note how the parenthesis are
+used to limit dynamic expansion.
+((GENRE IS #GENRE#) OR (STYLE IS #STYLE#))
+ ->
+(((GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock)) OR ((STYLE
+IS Acid Rock) AND (STYLE IS Live)))
+
+
+On other cases parenthesis may be redundant (but valid):
+((DATE IS #DATE#) OR (DATE IS #$add(%DATE%,1)#))
+->
+((DATE IS 1969) OR (DATE IS 1970)).
+
+Note how single valued tags don't need extra parenthesis since dynamic
+expansion does not apply here:
+(DATE IS #DATE# OR DATE IS #$add(%DATE%,1)#)
+->
+(DATE IS 1969 OR DATE IS 1970)
 
 Common errors:
 -------------
@@ -75,7 +93,7 @@ Note in these cases there is (usually) no need to add quotes at the
 dynamic term when using a function since the final value must be a
 string/number, not another function (like the last example).
 
-(*) Since '#TAG# IS VALUE' forces tag to be equal to value, muti-value 
+(*) Since '#TAG# IS VALUE' forces tag to be equal to value, muti-value
 tags follow the same rationale. If you want to use another logic (OR,
 combinations, etc.) between different values of the same tag
 then the tool to use would be 'Search Same By'.
