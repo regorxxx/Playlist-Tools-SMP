@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/12/23
+//08/04/24
 
 /*
 	Find/Remove From Playlist(s)
@@ -11,26 +11,39 @@
 
 function removeFromPlaylist(selList, playlistIndex) {
 	if (!selList) { return; }
+	if (!Array.isArray(selList)) {
+		selList = selList instanceof FbMetadbHandleList
+			? selList.Convert()
+			: [selList];
+	}
 	if (plman.PlaylistCount <= playlistIndex) { return; }
 	plman.UndoBackup(playlistIndex);
-	let handle_list = plman.GetPlaylistItems(playlistIndex);
-	if (!handle_list || !handle_list.Count) { return; }
-	for (const sel of selList.Convert()) {
-		handle_list.Remove(sel);
+	let handleList = plman.GetPlaylistItems(playlistIndex);
+	if (!handleList || !handleList.Count) { return; }
+	for (const sel of selList) {
+		handleList.Remove(sel);
 	}
 	plman.ClearPlaylist(playlistIndex);
-	plman.InsertPlaylistItems(playlistIndex, 0, handle_list);
+	plman.InsertPlaylistItems(playlistIndex, 0, handleList);
 }
 
 function findInPlaylists(selList = fb.GetFocusItem(), lockType = []) {
 	if (!selList) { return []; }
+	if (!Array.isArray(selList)) {
+		selList = selList instanceof FbMetadbHandleList
+			? selList.Convert()
+			: [selList];
+	}
 	let inPlaylist = [];
 	let inPlaylistSet = new Set();
 	const bAll = !!lockType.length;
-	for (const sel of selList.Convert()) {
-		for (let i = 0; i < plman.PlaylistCount; i++) {
-			if (plman.GetPlaylistItems(i).Find(sel) !== -1) {
-				if (!inPlaylistSet.has(i)) {
+	const playlists = [];
+	const plsCount = plman.PlaylistCount;
+	for (const sel of selList) {
+		for (let i = 0; i < plsCount; i++) {
+			if (!inPlaylistSet.has(i)) {
+				if (!playlists[i]) { playlists[i] = plman.GetPlaylistItems(i); playlists[i].Sort(); }
+				if (playlists[i].BSearch(sel) !== -1) {
 					const lockActions = plman.GetPlaylistLockedActions(i);
 					const bLocked = bAll ? lockActions.length : new Set(lockActions).isSuperset(new Set(lockType));
 					inPlaylist.push({ index: i, name: plman.GetPlaylistName(i), bLocked });
@@ -44,14 +57,18 @@ function findInPlaylists(selList = fb.GetFocusItem(), lockType = []) {
 
 function focusInPlaylist(selList, playlistIndex) {
 	if (!selList) { return; }
+	if (!Array.isArray(selList)) {
+		selList = selList instanceof FbMetadbHandleList
+			? selList.Convert()
+			: [selList];
+	}
 	if (plman.PlaylistCount <= playlistIndex) { return; }
-	const selListArr = selList.Convert();
 	let idx = -1;
-	const handle_list = plman.GetPlaylistItems(playlistIndex);
+	const handleList = plman.GetPlaylistItems(playlistIndex);
 	plman.ActivePlaylist = playlistIndex;
 	plman.ClearPlaylistSelection(playlistIndex);
-	for (const sel of selListArr) {
-		idx = handle_list.Find(sel);
+	for (const sel of selList) {
+		idx = handleList.Find(sel);
 		if (idx !== -1) { plman.SetPlaylistSelection(plman.ActivePlaylist, [idx], true); }
 	}
 	plman.SetPlaylistFocusItem(plman.ActivePlaylist, idx);

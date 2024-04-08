@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/02/24
+//08/04/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -782,7 +782,7 @@
 					menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in...\' show current playlist?', true];
 					menu_properties['bRemoveShowLocked'] = ['\'Tools\\Remove track(s) from...\' show autoplaylists?', true];
 					menu_properties['findRemoveSplitSize'] = ['\'Tools\\Find track(s) in...\' list submenu size', 10];
-					menu_properties['maxSelCount'] = ['\'Tools\\Find  & Remove track(s)...\' max. track selection', 25];
+					menu_properties['maxSelCount'] = ['\'Tools\\Find  & Remove track(s)...\' max. track selection', 500];
 					// Checks
 					menu_properties['bFindShowCurrent'].push({ func: isBoolean }, menu_properties['bFindShowCurrent'][1]);
 					menu_properties['bRemoveShowLocked'].push({ func: isBoolean }, menu_properties['bRemoveShowLocked'][1]);
@@ -1031,7 +1031,7 @@
 							}
 							{	// findRemoveSplitSize ( Find in / Remove from Playlists)
 								const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
-								const options = [5, 10, 20, 30, 'Other...'];
+								const options = [100, 250, 500, 1000, 5000, 'Other...'];
 								const optionsIdx = [...options];
 								options.forEach((val, index) => { // Creates menu entries for all options
 									if (index === 0) {
