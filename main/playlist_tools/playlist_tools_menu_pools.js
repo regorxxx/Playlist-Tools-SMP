@@ -1,9 +1,9 @@
 ﻿'use strict';
-//24/12/23
+//08/04/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable, clone:readable, MF_STRING:readable, globQuery:readable, isJSON:readable, Input:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable, clone:readable, MF_STRING:readable, globQuery:readable, isJSON:readable, Input:readable, _qCond:readable */
 
 // Pools
 {
@@ -70,6 +70,34 @@
 							insertMethod: 'intercalate',
 							toPls: 'Top tracks mix',
 							sort: '%PLAYLIST_INDEX%',
+						}
+					},
+					{ name: 'sep' },
+					{
+						name: 'Top this year tracks mix', pool: {
+							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
+							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
+							toPls: 'Top last 5 years tracks mix',
+							sort: '',
+						}
+					},
+					{
+						name: 'Top last 5 years tracks mix', pool: {
+							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
+							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
+							toPls: 'Top last 5 years tracks mix',
+							sort: '',
+						}
+					},
+					{
+						name: 'Top last 10 years tracks mix', pool: {
+							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#' },
+							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
+							toPls: 'Top last 10 years tracks mix',
+							sort: '',
 						}
 					},
 					{ name: 'sep' },
