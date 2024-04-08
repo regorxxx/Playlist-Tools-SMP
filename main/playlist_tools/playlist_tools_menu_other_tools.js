@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/04/24
+//08/04/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -273,29 +273,29 @@
 						// Checks
 						menu_properties['simThreshold'].push({ range: [[0, 1]], func: !Number.isNaN }, menu_properties['simThreshold'][1]);
 						// Menus
-						menu.newEntry({ menuName: subMenuName, entryText: 'Replaces dead items with ones in library:', func: null, flags: MF_GRAYED });
+						menu.newEntry({ menuName: subMenuName, entryText: 'Replaces dead items with tracks from library:', func: null, flags: MF_GRAYED });
 						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
-						menu.newEntry({ menuName: subMenuName, entryText: 'Find dead items in all playlists', func: findDeadItems });
-						menu.newEntry({ menuName: subMenuName, entryText: 'Replace dead items in all playlists', func: playlistReviveAll });
+						menu.newEntry({ menuName: subMenuName, entryText: 'Find dead items (all playlists)', func: findDeadItems });
+						menu.newEntry({ menuName: subMenuName, entryText: 'Revive dead items (all playlists)', func: playlistReviveAll });
 						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 						menu.newEntry({
-							menuName: subMenuName, entryText: 'Replace dead items on current playlist', func: () => {
+							menuName: subMenuName, entryText: 'Revive dead items (active playlist)', func: () => {
 								playlistRevive({ selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true });
 							}, flags: playlistCountFlagsAddRem
 						});
 						menu.newEntry({
-							menuName: subMenuName, entryText: 'Select dead items on current playlist', func: () => {
+							menuName: subMenuName, entryText: 'Select dead items (active playlist)', func: () => {
 								selectDeadItems(plman.ActivePlaylist);
 							}, flags: focusFlags
 						});
 						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 						menu.newEntry({
-							menuName: subMenuName, entryText: 'Replace dead items on selection', func: () => {
+							menuName: subMenuName, entryText: 'Revive dead items (on selection)', func: () => {
 								playlistRevive({ selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true });
 							}, flags: () => focusFlags() | playlistCountFlagsAddRem() | selectedFlags()
 						});
 						menu.newEntry({
-							menuName: subMenuName, entryText: 'Simulate on selection (see console)', func: () => {
+							menuName: subMenuName, entryText: 'Simulate (on selection)', func: () => {
 								playlistRevive({ selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true, bSimulate: true });
 							}, flags: () => focusFlags() | selectedFlags()
 						});
