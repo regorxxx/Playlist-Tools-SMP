@@ -61,7 +61,7 @@
 
 ## [Unreleased][]
 ### Added
-- Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression.
+- Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression. Use 'Restore defaults' on Pools submenu to enable them.
 - Other tools\Write Tags:  added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
 ### Changed
 - Selection manipulation\Find & remove: greatly improved performance (~99%) (which affects when clicking the button to show the menu). It should be much faster now if you have tons of playlists or select many tracks to look for, requiring less than 30 ms with 5K tracks at the same time. As result, the default value for selection limit has been raised, up to 250 tracks (and the same for the limit configuration submenu).
