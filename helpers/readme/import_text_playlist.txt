@@ -6,7 +6,9 @@ Specially useful to easily create playlists (with matches from your
 library) from online playlists, charts, etc. (like '100 greatest rock
 songs', ...). Skipping the need to manually add one by one the tracks
 to your own version of the playlist. Not found tracks are reported 
-with a popup.
+with a popup. If you prefer to add missing tracks on library
+as YouTube links, then use the analogue tool found at:
+[Playlist-Manager-SMP](https://github.com/regorxxx/Playlist-Manager-SMP)
 
 A txt file example can be found at: '.\examples\track_list_to_import.txt'
 Patterns may be arbitrary, and can be set at the input box. For ex:
@@ -18,6 +20,9 @@ Would require a pattern like this:
 
 Strings with '%' are considered tags, the rest are breakpoints or 
 parts of the text which will be omitted (before ". " all is omitted).
+
+There is also an additional filter via popups to specify lines which
+should be skipped if they start with an specific string (for ex. #).
 
 For key matching, both the original key and prefix-stripped are used
 at the query (%artist% or %album artist%). For ex:

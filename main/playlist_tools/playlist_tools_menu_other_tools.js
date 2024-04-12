@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/04/24
+//12/04/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -317,7 +317,7 @@
 		}
 		{	// Import track list
 			const scriptPath = folders.xxx + 'main\\playlists\\import_text_playlist.js';
-			/* global importTextPlaylist:readable */
+			/* global ImportTextPlaylist:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Import track list';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -335,15 +335,17 @@
 						menu_properties['importPlaylistFilters'].push({ func: (x) => { return isJSON(x) && JSON.parse(x).every((query) => { return checkQuery(query, true); }); } }, menu_properties['importPlaylistFilters'][1]);
 						// Presets
 						const maskPresets = [
-							{ name: 'Numbered Track list', val: JSON.stringify(['. ', '%TITLE%', ' - ', globTags.artist]) },
-							{ name: 'Track list', val: JSON.stringify(['%TITLE%', ' - ', globTags.artist]) },
-							{ name: 'M3U Extended', val: JSON.stringify(['#EXTINF:', ',', globTags.artist, ' - ', '%TITLE%']) }
+							{ name: 'Numbered Track list', val: JSON.stringify(['. ', '%TITLE%', ' - ', globTags.artist]), discard: '#' },
+							{ name: 'Track list', val: JSON.stringify(['%TITLE%', ' - ', globTags.artist]), discard: '#' },
+							{ name: 'M3U Extended', val: JSON.stringify(['#EXTINF:', ',', globTags.artist, ' - ', '%TITLE%']), discard: '' }
 						];
 						// Menus
 						menu.newEntry({ menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED });
 						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Import from file \\ url...', func: () => {
+								let bPresetUsed = false;
+								let discardMask = '';
 								let path;
 								try { path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true); }
 								catch (e) { return; }
@@ -351,14 +353,22 @@
 									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': ' + name);
 									return;
 								}
-								let formatMask;
-								try { formatMask = utils.InputBox(window.ID, 'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%TITLE%\', \' - \', \'%ALBUM ARTIST%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => { return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val; }).join('\n') : ''), scriptName + ': ' + name, menu_properties.importPlaylistMask[1].replace(/"/g, '\''), true).replace(/'/g, '"'); }
-								catch (e) { return; }
+								let formatMask = Input.string(
+									'string',
+									menu_properties.importPlaylistMask[1].replace(/"/g, '\''),
+									'Enter pattern to retrieve tracks. Mask is saved for future use.\nPresets at bottom may also be loaded by their number ([x]).\n\nTo discard a section, use \'\' or "".\nTo match a section, put the exact chars to match.\nStrings with \'%\' are considered tags to extract.\n\n[\'. \', \'%TITLE%\', \' - \', \'%ALBUM ARTIST%\'] matches something like:\n1. Respect - Aretha Franklin' + (maskPresets.length ? '\n\n' + maskPresets.map((preset, i) => { return '[' + i + ']' + (preset.name.length ? ' ' + preset.name : '') + ': ' + preset.val; }).join('\n') : ''),
+									scriptName + ': ' + name,
+									maskPresets[0].val, void (0), true
+								) || Input.lastInput;
+								if (formatMask === null) { return; }
 								try {
+									formatMask = formatMask.replace(/'/g, '"');
 									// Load preset if possible
 									if (formatMask.search(/^\[\d*\]/g) !== -1) {
 										const idx = formatMask.slice(1, -1);
 										formatMask = idx >= 0 && idx < maskPresets.length ? maskPresets[idx].val : null;
+										discardMask = idx >= 0 && idx < maskPresets.length ? maskPresets[idx].discard : null;
+										bPresetUsed = true;
 										if (!formatMask) { console.log('Playlist Tools: Invalid format mask preset'); return; }
 									}
 									// Parse mask
@@ -366,11 +376,22 @@
 								}
 								catch (e) { console.log('Playlist Tools: Invalid format mask'); return; }
 								if (!formatMask) { return; }
+								if (!bPresetUsed) {
+									discardMask = Input.string(
+										'string',
+										'',
+										'Any line starting with the following string will be skipped:\n(For ex. to skip lines starting with \'#BLABLABLA...\', write \'#\')',
+										window.Name
+									) || Input.lastInput;
+									if (discardMask === null) { return; }
+								}
 								const queryFilters = JSON.parse(menu_properties.importPlaylistFilters[1]);
-								const idx = importTextPlaylist({ path, formatMask, queryFilters });
-								if (idx !== -1) { plman.ActivePlaylist = idx; }
-								menu_properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
-								overwriteMenuProperties(); // Updates panel
+								ImportTextPlaylist.getPlaylist({ path, formatMask, discardMask, queryFilters })
+									.then((data) => {
+										if (data.idx !== -1) { plman.ActivePlaylist = data.idx; }
+										menu_properties.importPlaylistMask[1] = JSON.stringify(formatMask); // Save last mask used
+										overwriteMenuProperties(); // Updates panel
+									});
 							}
 						});
 						menu.newEntry({
@@ -382,7 +403,10 @@
 								}
 								const formatMask = JSON.parse(menu_properties.importPlaylistMask[1]);
 								const queryFilters = JSON.parse(menu_properties.importPlaylistFilters[1]);
-								importTextPlaylist({ path, formatMask, queryFilters });
+								ImportTextPlaylist.getPlaylist({ path, formatMask, queryFilters })
+									.then((data) => {
+										if (data.idx !== -1) { plman.ActivePlaylist = data.idx; }
+									});
 							}
 						});
 						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
