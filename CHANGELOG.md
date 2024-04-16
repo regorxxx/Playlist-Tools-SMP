@@ -63,6 +63,7 @@
 ### Added
 - Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression. Use 'Restore defaults' on Pools submenu to enable them.
 - Other tools\Write Tags:  added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
+- Readmes: added readme for global settings found at 'foobar2000\js_data\presets\global' .json files.
 ### Changed
 - Other tools\Import track list: added setting to skip lines starting with some string.
 - Other tools\Import track list: improved file retrieval from online sources.
@@ -75,7 +76,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
-- Quicksearch: workaround for 'ALBUM ARTIST' not working with multi-value tags in queries. To use the new query, restore defaults on the 'Same Artist(s)' entry, the entire entry list or the button (the last 2 will remove any customized entry too).
+- Quicksearch: workaround for 'ALBUM ARTIST' not working with multi-value tags in queries. It now uses that tag only when it's present on files, and fallbacks to 'ARTIST' otherwise. To use the new query, restore defaults on the 'Same Artist(s)' entry, the entire entry list or the button (the last 2 will remove any customized entry too).
 - Other tools\Write Tags: tool not processing next step automatically after Chromaprint tagging in some cases.
 
 ## [4.2.0] - 2024-03-21

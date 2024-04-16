@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/04/24
+//16/04/24
 
 /*
 	Playlist Tools Menu
@@ -122,9 +122,12 @@ const newReadmeSep = (() => { let i = 0; return (bFull = false) => { return (bFu
 // {scriptName: path} or {arbitraryKey: 'sep'}
 var readmes = { // NOSONAR [global]
 	'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt',
+	...newReadmeSep(true),
 	'Tagging requisites': folders.xxx + 'helpers\\readme\\tags_structure.txt',
 	'Tags sources': folders.xxx + 'helpers\\readme\\tags_sources.txt',
 	'Other tags notes': folders.xxx + 'helpers\\readme\\tags_notes.txt',
+	...newReadmeSep(true),
+	'Global settings': folders.xxx + 'helpers\\readme\\global_settings.txt',
 	'Global tag remapping': folders.xxx + 'helpers\\readme\\tags_global_remap.txt',
 	...newReadmeSep(true),
 };
