@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/03/24
+//16/04/24
 
 /*
 	Quicksearch for same....
@@ -92,15 +92,23 @@ var newButtonsProperties = { // NOSONAR[global]
 		},
 		{
 			name: 'Same Artist(s)',
-			query: globTags.artist + ' IS #' + globTags.artistRaw + '#'
+			query: [
+				'(ALBUM ARTIST PRESENT AND ',
+				'(ALBUM ARTIST HAS #ALBUM ARTIST#)',
+				') OR (',
+				'ALBUM ARTIST MISSING AND ',
+				'(ARTIST IS #ARTIST#)',
+				')'
+			]
+			// query: globTags.artist + ' IS #' + globTags.artistRaw + '#'
 		},
 		{
 			name: 'Same Title and Artist(s)',
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'
+			query: globQuery.compareTitle + ' AND (ARTIST IS #ARTIST#)'
 		},
 		{
 			name: 'Same Title, Artist(s) & Date',
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'
+			query: globQuery.compareTitle + ' AND (ARTIST IS #ARTIST#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'
 		}
 	]), { func: isJSON }],
 	sortTF: ['Sorting TF expression', globTags.artist + '|%ALBUM%|%TRACK%', { func: isStringWeak }, globTags.artist + '|%ALBUM%|%TRACK%'],
@@ -227,7 +235,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				menu.newEntry({
 					entryText: queryObj.name, func: () => {
 						let query = queryObj.query;
-						if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quicksearch'); return; }
+						if ((query.indexOf('#') !== -1 || (Array.isArray(query) && query.some((q) => q.indexOf('#') !== -1))) && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quicksearch'); return; }
 						const bShift = utils.IsKeyPressed(VK_SHIFT);
 						const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 						if (this.buttonsProperties.bEvalSel[1]) {
@@ -308,6 +316,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				// Create names for all entries
 				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
 				// Entries
+				if (Array.isArray(queryObj.query)) { return; }
 				if (queryObj.query.count('#') === 2 && queryObj.query.indexOf('$') === -1) {
 					menu.newEntry({
 						menuName: beginMenu, entryText: queryObj.name, func: () => {
@@ -317,25 +326,25 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 							const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 							if (this.buttonsProperties.bEvalSel[1]) {
 								if (bShift || bCtrl) {
-									query = dynamicQueryProcess({ query, handleList: this.selItems, bToLowerCase: true  });
+									query = dynamicQueryProcess({ query, handleList: this.selItems, bToLowerCase: true });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
 										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
-										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist), bToLowerCase: true  }); }
+										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist), bToLowerCase: true }); }
 									}
 								} else {
 									dynamicQuery({ query, sort: queryObj.sort || { tfo: sortTF }, handleList: this.selItems, playlistName });
 								}
 							} else {
 								if (bShift || bCtrl) { // NOSONAR
-									query = dynamicQueryProcess({ query, bToLowerCase: true  });
+									query = dynamicQueryProcess({ query, bToLowerCase: true });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
 										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
-										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist), bToLowerCase: true  }); }
+										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist), bToLowerCase: true }); }
 									}
 								} else {
-									dynamicQuery({ query, sort: queryObj.sort || { tfo: sortTF }, playlistName, bToLowerCase: true  });
+									dynamicQuery({ query, sort: queryObj.sort || { tfo: sortTF }, playlistName, bToLowerCase: true });
 								}
 							}
 						}, flags, data: { bDynamicMenu: true }
@@ -358,6 +367,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				// Create names for all entries
 				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
 				// Entries
+				if (Array.isArray(queryObj.query)) { return; }
 				if (queryObj.query.count('#') === 2 && queryObj.query.indexOf('$') === -1) {
 					menu.newEntry({
 						menuName: beginMenu, entryText: queryObj.name, func: () => {
@@ -371,7 +381,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
 										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
-										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist), bToLowerCase: true  }); }
+										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist), bToLowerCase: true }); }
 									}
 								} else {
 									dynamicQuery({ query, sort: queryObj.sort || { tfo: sortTF }, handleList: this.selItems, playlistName, bToLowerCase: true });
@@ -400,6 +410,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 		menu.newEntry({ menuName: partialMenu, entryText: 'sep' });
 		// Mutate original queries into partial matches
 		queryFilter.map((queryObj) => {
+			if (Array.isArray(queryObj.query)) { return void (0); }
 			if (Object.hasOwn(queryObj, 'query') && queryObj.query.count('#') === 2) {
 				const dynTF = queryObj.query.match(/#.*#/)[0];
 				if (dynTF && dynTF.length) {

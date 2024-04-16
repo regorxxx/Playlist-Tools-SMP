@@ -75,6 +75,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Quicksearch: workaround for 'ALBUM ARTIST' not working with multi-value tags in queries. To use the new query, restore defaults on the 'Same Artist(s)' entry, the entire entry list or the button (the last 2 will remove any customized entry too).
 - Other tools\Write Tags: tool not processing next step automatically after Chromaprint tagging in some cases.
 
 ## [4.2.0] - 2024-03-21

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/01/24
+//16/04/24
 
 /* exported dynamicQuery */
 
@@ -37,17 +37,21 @@ function dynamicQuery({ query = 'ARTIST IS #ARTIST#', sort = { tfo: null, direct
 }
 
 /**
- * Processes the query string and replaces any placeholders (within #) with actual values from the handleList or handle.
+ * Processes the query string and replaces any placeholders (within #) with actual values from the handleList or handle. If the query is an array, it's processed entry by entry and only the final query (all elements joined) is checked for validity.
  *
  * @function
  * @name dynamicQueryProcess
  * @kind function
- * @param {{ query?: string handle?: FbMetadbHandle handleList?: FbMetadbHandleList bToLowerCase?: boolean }} { query, handle, handleList, bToLowerCase }? [{ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusItem(true), handleList = null, bToLowerCase = false }={}]
+ * @param {{ query?: string handle?: FbMetadbHandle handleList?: FbMetadbHandleList bToLowerCase?: boolean bOmitChecks?: boolean }} { query, handle, handleList, bToLowerCase, bOmitChecks }? [{ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusItem(true), handleList = null, bToLowerCase = false, bOmitChecks = false }={}]
  * @returns {string | null}
  */
-function dynamicQueryProcess({ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusItem(true), handleList = null, bToLowerCase = false } = {}) {
+function dynamicQueryProcess({ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocusItem(true), handleList = null, bToLowerCase = false, bOmitChecks = false } = {}) {
 	if (!query || !query.length) { return null; }
-	if (query.indexOf('#') !== -1) {
+	if (Array.isArray(query)) {
+		query = query.map((q) => dynamicQueryProcess(
+			{query: q, handle, handleList, bToLowerCase, bOmitChecks: true}
+		)).join('');
+	} else if (query.indexOf('#') !== -1) {
 		if (!handle && !handleList) { return null; } // May pass a standard query which doesn't need a handle to evaluate
 		else if (handleList) {
 			const queries = [...new Set(handleList.Convert().map((handle) => {
@@ -61,7 +65,9 @@ function dynamicQueryProcess({ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocu
 			query = queryReplaceWithCurrent(query, handle, null, { bToLowerCase });
 		}
 	}
-	try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'dynamicQuery'); return null; }
+	if (!bOmitChecks) {
+		try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
+		catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'dynamicQuery'); return null; }
+	}
 	return query;
 }
