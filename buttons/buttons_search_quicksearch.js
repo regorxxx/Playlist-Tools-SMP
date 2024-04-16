@@ -434,7 +434,9 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 					};
 				}
 			}
-			return void (0);
+			return Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep'
+				? queryObj
+				: void (0);
 		}).filter(Boolean).forEach((queryObj) => {
 			// Add separators
 			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
