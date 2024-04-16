@@ -94,13 +94,12 @@ var newButtonsProperties = { // NOSONAR[global]
 			name: 'Same Artist(s)',
 			query: [
 				'(ALBUM ARTIST PRESENT AND ',
-				'(ALBUM ARTIST HAS #ALBUM ARTIST#)',
+				'(ALBUM ARTIST IS #ALBUM ARTIST#)',
 				') OR (',
 				'ALBUM ARTIST MISSING AND ',
 				'(ARTIST IS #ARTIST#)',
 				')'
 			]
-			// query: globTags.artist + ' IS #' + globTags.artistRaw + '#'
 		},
 		{
 			name: 'Same Title and Artist(s)',
