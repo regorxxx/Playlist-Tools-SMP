@@ -305,7 +305,10 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 		const beginMenu = menu.newMenu('Begins with...');
 		menu.newEntry({ menuName: beginMenu, entryText: 'Simulates \'%TAG% IS VALUE*\':', flags: MF_GRAYED });
 		menu.newEntry({ menuName: beginMenu, entryText: 'sep' });
-		[{ name: 'Same Title', query: 'TITLE IS #TITLE#' }].concat(queryFilter).forEach((queryObj) => {
+		[
+			...queryFilter,
+			{ name: 'Same Title', query: 'TITLE IS #TITLE#' }
+		].forEach((queryObj) => {
 			// Add separators
 			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
 				if ((menu.getLastEntry() || { entryText: '' }).entryText !== 'sep') {
@@ -356,7 +359,10 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 		const beginMenu = menu.newMenu('Partially includes...');
 		menu.newEntry({ menuName: beginMenu, entryText: 'Simulates \'%TAG% HAS VALUE\':', flags: MF_GRAYED });
 		menu.newEntry({ menuName: beginMenu, entryText: 'sep' });
-		[{ name: 'Same Title', query: 'TITLE HAS #TITLE#' }].concat(queryFilter).forEach((queryObj) => {
+		[
+			...queryFilter,
+			{ name: 'Same Title', query: 'TITLE HAS #TITLE#' }
+		].forEach((queryObj) => {
 			// Add separators
 			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
 				if ((menu.getLastEntry() || { entryText: '' }).entryText !== 'sep') {
@@ -408,7 +414,10 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 		menu.newEntry({ menuName: partialMenu, entryText: 'Matches any value partially equal:', flags: MF_GRAYED });
 		menu.newEntry({ menuName: partialMenu, entryText: 'sep' });
 		// Mutate original queries into partial matches
-		queryFilter.map((queryObj) => {
+		[
+			...queryFilter,
+			{ name: 'By Title and same Artist', query: globQuery.compareTitle, queryPost: ' AND (ARTIST IS #ARTIST#)' }
+		].map((queryObj) => {
 			if (Array.isArray(queryObj.query)) { return void (0); }
 			if (Object.hasOwn(queryObj, 'query') && queryObj.query.count('#') === 2) {
 				const dynTF = queryObj.query.match(/#.*#/)[0];
@@ -417,9 +426,11 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 					const statTF = bIsFunc ? dynTF.replaceAll('#', '') : '%' + dynTF.replaceAll('#', '') + '%';
 					return {
 						name: queryObj.name.replace('Same', 'By'),
-						query: /DATE/i.test(queryObj.query) !== true
+						// Reduce length in 1 for dates, so it matches the same decade!
+						query: (/DATE/i.test(queryObj.query) !== true
 							? '"$puts(val,' + dynTF + ')$puts(vallen,$len($get(val)))$puts(min,$min($get(vallen),$if2($strchr($get(val),\'(\'),$get(vallen)),$if2($strchr($get(val),\'[\'),$get(vallen)),$len(' + statTF + ')))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
-							: '"$puts(val,' + dynTF + ')$puts(min,$sub($min($get(vallen),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1' // Reduce length in 1 for dates, so it matches the same decade!
+							: '"$puts(val,' + dynTF + ')$puts(min,$sub($min($get(vallen),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
+						) + (queryObj.queryPost || '')
 					};
 				}
 			}
