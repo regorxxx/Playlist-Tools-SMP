@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/04/24
+//29/04/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable */
 
@@ -76,9 +76,9 @@
 					{
 						name: 'Top this year tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#' },
 							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top last 5 years tracks mix',
+							toPls: 'Top last year tracks mix',
 							sort: '',
 						}
 					},
@@ -104,7 +104,7 @@
 					{
 						name: 'Top recently played tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND %LAST_PLAYED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND (%LAST_PLAYED_ENHANCED% DURING LAST 1 WEEK OR %LAST_PLAYED% DURING LAST 1 WEEK)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)' },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)' },
 							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
 							toPls: 'Top recently played tracks mix',
 							sort: '',
@@ -113,9 +113,37 @@
 					{
 						name: 'Top recently added tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 3 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS' },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 5 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 5 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS' },
 							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
 							toPls: 'Top recently added tracks mix',
+							sort: '',
+						}
+					},
+					{ name: 'sep' },
+					{
+						name: 'Top not played tracks mix', pool: {
+							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEK OR %LAST_PLAYED% DURING LAST 2 WEEK)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)' },
+							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
+							toPls: 'Top not played tracks mix',
+							sort: '',
+						}
+					},
+					{
+						name: 'Top not played this year tracks mix', pool: {
+							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#' },
+							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
+							toPls: 'Top not played this year tracks mix',
+							sort: '',
+						}
+					},
+					{
+						name: 'Top not played last 5 years tracks mix', pool: {
+							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
+							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
+							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
+							toPls: 'Top not played last 5 years tracks mix',
 							sort: '',
 						}
 					},
