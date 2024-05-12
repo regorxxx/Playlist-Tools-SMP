@@ -1,5 +1,5 @@
 ﻿'use strict';
-///03/01/24
+///09/05/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -26,7 +26,7 @@ include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable */
 include('..\\main\\filter_and_query\\remove_duplicates.js');
-/* global showDuplicates:readable, removeDuplicatesV2:readable */
+/* global showDuplicates:readable, removeDuplicates:readable */
 
 var prefix = 'rd'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
@@ -35,12 +35,13 @@ try { window.DefineScript('Remove Duplicates Button', { author: 'regorxxx', vers
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	checkInputA: ['Tag or TitleFormat expression to check (1)', globTags.title, { func: isStringWeak }, globTags.title],
-	checkInputB: ['Tag or TitleFormat expression to check (2)', globTags.artist, { func: isStringWeak }, globTags.artist],
-	checkInputC: ['Tag or TitleFormat expression to check (3)', globTags.date, { func: isStringWeak }, globTags.date],
-	sortBias: ['Track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
-	bAdvTitle: ['Advanced RegExp title matching?', true, { func: isBoolean }, true],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	checkInputA: 	['Tag or TitleFormat expression to check (1)', globTags.title, { func: isStringWeak }, globTags.title],
+	checkInputB: 	['Tag or TitleFormat expression to check (2)', globTags.artist, { func: isStringWeak }, globTags.artist],
+	checkInputC: 	['Tag or TitleFormat expression to check (3)', globTags.date, { func: isStringWeak }, globTags.date],
+	sortBias: 		['Track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
+	bAdvTitle: 		['Advanced RegExp title matching', true, { func: isBoolean }, true],
+	bMultiple: 		['Partial Multi-value tag matching', true, { func: isBoolean }, true],
+	bIconMode: 		['Icon-only mode?', false, { func: isBoolean }, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -55,10 +56,11 @@ addButton({
 				.map((key) => { return this.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
 			const sortBias = this.buttonsProperties.sortBias[1];
 			const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
+			const bMultiple = this.buttonsProperties.bMultiple[1];
 			if (mask === MK_CONTROL) {
-				showDuplicates({ checkKeys, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+				showDuplicates({ checkKeys, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
 			} else {
-				removeDuplicatesV2({ checkKeys, sortBias, bAdvTitle, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+				removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
 			}
 		}
 	}, null, void (0), (parent) => {
