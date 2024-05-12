@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/04/24
+//09/05/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -34,10 +34,8 @@ function loadProperties() {
 		}
 		setProperties(menu_properties, menu_prefix, 0);
 		updateMenuProperties(getPropertiesPairs(menu_properties, menu_prefix, 0));
-	} else { // With buttons, set these properties only once per panel
-		if (Object.keys(menu_panelProperties).length) {
-			setProperties(menu_panelProperties, menu_prefix_panel, 0);
-		}
+	} else if (Object.keys(menu_panelProperties).length) { // With buttons, set these properties only once per panel
+		setProperties(menu_panelProperties, menu_prefix_panel, 0);
 	}
 }
 
@@ -140,7 +138,7 @@ function createDefaultPreset(options /* name, propName, defaultPreset, defaults*
 }
 
 function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bImport, bDefaultFile}*/) { // NOSONAR
-	const subMenuSecondName = menu.newMenu('Edit entries from list...', menuName);
+	const subMenuSecondName = menu.newMenu('Edit entries from list', menuName);
 	const optionsNames = new Set();
 	options.list.forEach((entry, index) => {
 		const id = entry.name !== 'sep' && optionsNames.has(entry.name) ? '\t' + _b('duplicated: ' + index) : optionsNames.add(entry.name) && ''; // Allow duplicates and mark them

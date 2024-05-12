@@ -1,16 +1,16 @@
 ﻿'use strict';
-//24/12/23
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _q:readable, checkQuery:readable, isJSON:readable*/
 
-// Dynamic queries...
+// Dynamic queries
 {
 	const scriptPath = folders.xxx + 'main\\filter_and_query\\dynamic_query.js';
 	/* global dynamicQuery:readable */
 	if (_isFile(scriptPath)) {
-		const name = 'Dynamic Queries...';
+		const name = 'Dynamic Queries';
 		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\dynamic_query.txt';
@@ -89,7 +89,7 @@
 				menu.newEntry({ menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName, entryText: 'sep' });
 				menu.newCondEntry({
-					entryText: 'Dynamic Queries... (cond)', condFunc: () => {
+					entryText: 'Dynamic Queries (cond)', condFunc: () => {
 						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
 						const bEvalSel = options['Dynamic queries'];
 						// Entry list
