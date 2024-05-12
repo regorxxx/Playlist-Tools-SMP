@@ -1,16 +1,16 @@
 ﻿'use strict';
-//24/12/23
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable*/
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, checkQuery:readable */
 
-// Standard Queries...
+// Standard Queries
 {
 	const scriptPath = folders.xxx + 'main\\filter_and_query\\dynamic_query.js';
 	/* global dynamicQuery:readable */
 	if (_isFile(scriptPath)) {
-		const name = 'Standard Queries...';
+		const name = 'Standard Queries';
 		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
@@ -64,7 +64,7 @@
 				menu.newEntry({ menuName, entryText: 'Standard search with queries:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName, entryText: 'sep' });
 				menu.newCondEntry({
-					entryText: 'Search library... (cond)', condFunc: () => {
+					entryText: 'Search library (cond)', condFunc: () => {
 						// Entry list
 						queryFilter = JSON.parse(menu_properties['searchQueries'][1]);
 						const entryNames = new Set();

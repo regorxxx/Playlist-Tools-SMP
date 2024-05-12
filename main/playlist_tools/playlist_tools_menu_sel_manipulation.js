@@ -1,18 +1,18 @@
 ﻿'use strict';
-//08/04/24
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, multipleSelectedFlagsReorder:readable, isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, playlistCountFlags:readable, selectedFlagsAddRem:readable, _p:readable, _q:readable, range:readable, focusInPlaylist:readable, isInt:readable, addLock:readable, selectedFlagsReorder:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, selectedFlags:readable, playlistCountFlagsRem:readable, isFunction:readable, selectedFlagsRem:readable, _t:readable */
 
-// Selection manipulation...
+// Selection manipulation
 {
 	const name = 'Selection manipulation';
 	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Legacy Sort
-			const name = 'Sort...';
+			const name = 'Sort';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
 				{	// Legacy Sort (for use with macros!!)
@@ -61,7 +61,7 @@
 						}
 					});
 					menu.newCondEntry({
-						entryText: 'Sort selection (legacy)... (cond)', condFunc: () => {
+						entryText: 'Sort selection (legacy) (cond)', condFunc: () => {
 							// Entry list
 							sortLegacy = JSON.parse(menu_properties['sortLegacy'][1]);
 							const entryNames = new Set();
@@ -129,7 +129,7 @@
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 		}
 		{	// Advanced Sort
-			const name = 'Advanced sort...';
+			const name = 'Advanced sort';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				// Menus
 				const subMenuName = menu.newMenu(name, menuName);
@@ -337,7 +337,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Sort dispersing specific value(s):', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Scatter... (cond)', condFunc: () => {
+						entryText: 'Scatter (cond)', condFunc: () => {
 							// Entry list
 							scatter = JSON.parse(menu_properties['scatter'][1]);
 							const entryNames = new Set();
@@ -432,7 +432,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Sort without repeating same tag:', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Intercalate... (cond)', condFunc: () => {
+						entryText: 'Intercalate (cond)', condFunc: () => {
 							// Entry list
 							intercalate = JSON.parse(menu_properties['intercalate'][1]);
 							const entryNames = new Set();
@@ -535,7 +535,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Smart Shuffle (Spotify-like):', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Shuffle... (cond)', condFunc: () => {
+						entryText: 'Shuffle (cond)', condFunc: () => {
 							// Entry list
 							shuffle = JSON.parse(menu_properties['shuffle'][1]);
 							const entryNames = new Set();
@@ -624,7 +624,7 @@
 								});
 								menu.newCheckMenu(subMenuName, 'Enable extra conditions', void (0), () => { return menu_properties.bSmartShuffleAdvc[1]; });
 								{
-									const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
+									const subMenuNameSecond = menu.newMenu('Sorting bias', subMenuName);
 									const options = [
 										{ key: 'Random', flags: MF_STRING },
 										{ key: 'Play count', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount' },
@@ -702,7 +702,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Group by TF (without sorting):', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Group... (cond)', condFunc: () => {
+						entryText: 'Group (cond)', condFunc: () => {
 							// Entry list
 							group = JSON.parse(menu_properties['group'][1]);
 							const entryNames = new Set();
@@ -766,23 +766,23 @@
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
-		['Sort...', 'Advanced sort...', 'Scatter by tags', 'Intercalate by tags', 'Shuffle by tags', 'Group by tags']
+		['Sort', 'Advanced sort', 'Scatter by tags', 'Intercalate by tags', 'Shuffle by tags', 'Group by tags']
 			.some((n) => !Object.hasOwn(menusEnabled, n) || menusEnabled[n] === true) && menu.newEntry({ menuName, entryText: 'sep' });
 		{	// Remove and find in playlists
 			const scriptPath = folders.xxx + 'main\\playlists\\find_remove_from_playlists.js';
 			/* global findInPlaylists:readable, removeFromPlaylist:readable,  */
 			if (_isFile(scriptPath)) {
-				const nameNowFind = 'Find now playing track in...';
-				const nameFind = 'Find track(s) in...';
-				const nameRemove = 'Remove track(s) from...';
+				const nameNowFind = 'Find now playing track in';
+				const nameFind = 'Find track(s) in';
+				const nameRemove = 'Remove track(s) from';
 				if (!Object.hasOwn(menusEnabled, nameNowFind) || !Object.hasOwn(menusEnabled, nameFind) || !Object.hasOwn(menusEnabled, nameRemove) || menusEnabled[nameNowFind] === true || menusEnabled[nameFind] === true || menusEnabled[nameRemove] === true) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + 'Find in and Remove from'] = folders.xxx + 'helpers\\readme\\find_remove_from_playlists.txt';
 					// Add properties
-					menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in...\' show current playlist?', true];
-					menu_properties['bRemoveShowLocked'] = ['\'Tools\\Remove track(s) from...\' show autoplaylists?', true];
-					menu_properties['findRemoveSplitSize'] = ['\'Tools\\Find track(s) in...\' list submenu size', 10];
-					menu_properties['maxSelCount'] = ['\'Tools\\Find  & Remove track(s)...\' max. track selection', 500];
+					menu_properties['bFindShowCurrent'] = ['\'Tools\\Find track(s) in\' show current playlist?', true];
+					menu_properties['bRemoveShowLocked'] = ['\'Tools\\Remove track(s) from\' show autoplaylists?', true];
+					menu_properties['findRemoveSplitSize'] = ['\'Tools\\Find track(s) in\' list submenu size', 10];
+					menu_properties['maxSelCount'] = ['\'Tools\\Find  & Remove track(s)\' max. track selection', 500];
 					// Checks
 					menu_properties['bFindShowCurrent'].push({ func: isBoolean }, menu_properties['bFindShowCurrent'][1]);
 					menu_properties['bRemoveShowLocked'].push({ func: isBoolean }, menu_properties['bRemoveShowLocked'][1]);
@@ -793,7 +793,7 @@
 						if (!Object.hasOwn(menusEnabled, nameNowFind) || menusEnabled[nameNowFind] === true) {
 							const subMenuName = menu.newMenu(nameNowFind, menuName);
 							menu.newCondEntry({
-								entryText: 'Find now playing track in... (cond)', condFunc: () => {
+								entryText: 'Find now playing track in (cond)', condFunc: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('Find now playing in') : null;
 									menu.newEntry({ menuName: subMenuName, entryText: 'Set focus on playlist with now playing track:', func: null, flags: MF_GRAYED });
 									menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
@@ -858,7 +858,7 @@
 						if (!Object.hasOwn(menusEnabled, nameFind) || menusEnabled[nameFind] === true) {
 							const subMenuName = menu.newMenu(nameFind, menuName);
 							menu.newCondEntry({
-								entryText: 'Find track(s) in... (cond)', condFunc: () => {
+								entryText: 'Find track(s) in (cond)', condFunc: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('Find in Playlists') : null;
 									menu.newEntry({ menuName: subMenuName, entryText: 'Set focus on playlist with same track(s):', func: null, flags: MF_GRAYED });
 									menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
@@ -923,7 +923,7 @@
 						if (!Object.hasOwn(menusEnabled, nameRemove) || menusEnabled[nameRemove] === true) {
 							const subMenuName = menu.newMenu(nameRemove, menuName);
 							menu.newCondEntry({
-								entryText: 'Remove track(s) from... (cond)', condFunc: () => {
+								entryText: 'Remove track(s) from (cond)', condFunc: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('Remove from Playlists') : null;
 									menu.newEntry({ menuName: subMenuName, entryText: 'Remove track(s) from selected playlist:', func: null, flags: MF_GRAYED });
 									menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
@@ -986,12 +986,12 @@
 					}
 					{	// Configure properties
 						if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
-							const subMenuName = menu.newMenu('Tools\\Find in and Remove from...', configMenu);
+							const subMenuName = menu.newMenu('Tools\\Find in and Remove from', configMenu);
 							{	// bFindShowCurrent (Find in Playlists)
 								if (!Object.hasOwn(menusEnabled, nameFind) || menusEnabled[nameFind] === true) {
 									const subMenuSecondName = menu.newMenu('Show current playlist?', subMenuName);
 									const options = ['Yes (greyed entry)', 'No (omit it)'];
-									menu.newEntry({ menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in...\':', func: null, flags: MF_GRAYED });
+									menu.newEntry({ menuName: subMenuSecondName, entryText: 'Only on \'Find track(s) in\':', func: null, flags: MF_GRAYED });
 									menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText: options[0], func: () => {
@@ -1012,7 +1012,7 @@
 								if (!Object.hasOwn(menusEnabled, nameRemove) || menusEnabled[nameRemove] === true) {
 									const subMenuSecondName = menu.newMenu('Show locked playlist (autoplaylists, etc.)?', subMenuName);
 									const options = ['Yes (locked, greyed entries)', 'No (omit them)'];
-									menu.newEntry({ menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from...\':', func: null, flags: MF_GRAYED });
+									menu.newEntry({ menuName: subMenuSecondName, entryText: 'Only on \'Remove track(s) from\':', func: null, flags: MF_GRAYED });
 									menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText: options[0], func: () => {
@@ -1030,7 +1030,7 @@
 								}
 							}
 							{	// findRemoveSplitSize ( Find in / Remove from Playlists)
-								const subMenuSecondName = menu.newMenu('Split playlist list submenus at...', subMenuName);
+								const subMenuSecondName = menu.newMenu('Split playlist list submenus at', subMenuName);
 								const options = [5, 10, 20, 30, 'Other...'];
 								const optionsIdx = [...options];
 								options.forEach((val, index) => { // Creates menu entries for all options
@@ -1065,7 +1065,7 @@
 								});
 							}
 							{	// maxSelCount ( Find in / Remove from Playlists)
-								const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than...', subMenuName);
+								const subMenuSecondName = menu.newMenu('Don\'t try to find tracks if selecting more than', subMenuName);
 								const options = [100, 250, 500, 1000, 5000, 'Other...'];
 								const optionsIdx = [...options];
 								options.forEach((val, index) => { // Creates menu entries for all options
@@ -1110,7 +1110,7 @@
 			}
 		}
 		{	// Send Selection to Playlist
-			const name = 'Send selection to...';
+			const name = 'Send selection to';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global playlistCountLocked:readable */
@@ -1126,8 +1126,8 @@
 				menu.newEntry({ menuName: subMenuNameSend, entryText: 'sep' });
 				// Build submenus
 				menu.newCondEntry({
-					entryText: 'Send selection to...', condFunc: () => {
-						const profiler = defaultArgs.bProfile ? new FbProfiler('Send selection to...') : null;
+					entryText: 'Send selection to', condFunc: () => {
+						const profiler = defaultArgs.bProfile ? new FbProfiler('Send selection to') : null;
 						const playlistsNum = plman.PlaylistCount;
 						const playlistsNumNotLocked = playlistsNum - playlistCountLocked(['AddItems']);
 						const ap = plman.ActivePlaylist;
@@ -1198,7 +1198,7 @@
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 		}
 		{	// Move
-			const name = 'Move selection to...';
+			const name = 'Move selection to';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				readmes[menuName + '\\' + 'Move, expand & jump'] = folders.xxx + 'helpers\\readme\\selection_expand_jump.txt';
 				const subMenuName = menu.newMenu(name, menuName);
@@ -1256,7 +1256,7 @@
 			const scriptPath = folders.xxx + 'main\\filter_and_query\\filter_by_query.js';
 			/* global queryReplaceWithCurrent:readable, globQuery:readable, checkQuery:readable, queryJoin:readable, selectByQuery:readable */
 			if (_isFile(scriptPath)) {
-				const name = 'Select by query...';
+				const name = 'Select by query';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 					const subMenuName = menu.newMenu(name, menuName);
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
@@ -1303,7 +1303,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Select from active playlist: (Ctrl + click to invert)', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Selection using queries... (cond)', condFunc: () => {
+						entryText: 'Selection using queries (cond)', condFunc: () => {
 							const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
 							const bEvalSel = options['Dynamic queries'];
 							selQueryFilter = JSON.parse(menu_properties['selQueryFilter'][1]);
@@ -1401,7 +1401,7 @@
 			}
 		}
 		{	// Select (for use with macros!!)
-			const name = 'Select...';
+			const name = 'Select';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED });
@@ -1481,7 +1481,7 @@
 					}, flags: playlistCountFlags
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Select next tracks...', func: () => {
+					menuName: subMenuName, entryText: 'Select next # tracks...', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
 						let input = menu_properties.playlistLength[1];
@@ -1552,7 +1552,7 @@
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 		}
 		{	// Expand
-			const name = 'Expand...';
+			const name = 'Expand';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Expand selection by:', func: null, flags: MF_GRAYED });
@@ -1579,10 +1579,7 @@
 							let input = globTags.artist + ';%ALBUM%';
 							try { input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true); }
 							catch (e) { return []; }
-							if (!input.length) { return []; }
-							input = input.split(';');
-							if (!input.length) { return []; }
-							return input;
+							return input.length ? input.split(';') : [];
 						}
 					},
 				];
@@ -1617,7 +1614,7 @@
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 		}
 		{	// Jump
-			const name = 'Jump...';
+			const name = 'Jump';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
 				const subMenus = [
@@ -1646,10 +1643,7 @@
 							let input = globTags.artist + ';%ALBUM%';
 							try { input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true); }
 							catch (e) { return []; }
-							if (!input.length) { return []; }
-							input = input.split(';');
-							if (!input.length) { return []; }
-							return input;
+							return input.length ? input.split(';') : [];
 						}
 					},
 				];
