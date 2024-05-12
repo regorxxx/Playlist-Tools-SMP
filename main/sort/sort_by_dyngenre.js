@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/12/23
+//07/05/24
 
 /* exported sortByDyngenre */
 /* global globTags:readable */
@@ -60,7 +60,7 @@ function sortByDyngenre({
 			dyngenreNum = dyngenre[i] ? dyngenre[i].length : 0;
 		}
 		if (dyngenreNum) {
-			dyngenre[i] = dyngenre[i].reduce((prev, next) => { return prev + next; }) / dyngenreNum;
+			dyngenre[i] = dyngenre[i].reduce((prev, next) => { return prev + next; }, 0) / dyngenreNum;
 		} else {
 			dyngenre[i] = Infinity; // Not matched tracks are put at the end
 		}

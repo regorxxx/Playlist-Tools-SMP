@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/12/23
+//07/05/24
 
 /*
 	Add Skip Tag From Playback
@@ -27,7 +27,7 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 	let bAppend = utils.IsKeyPressed(0x10); // Append tag instead of replace when pressing shift
 	const currentPlayback = fb.PlaybackTime * 1000;
 	const time = new Date(currentPlayback).toUTCString().substring(20, 25) + '.00'; // doesn't care about ms
-	const bEnd = currentPlayback > selItem[0].Length * 1000 / 2 ? true : false; // skips from start or end
+	const bEnd = currentPlayback > selItem[0].Length * 1000 / 2; // skips from start or end
 	const SKIP = [];
 	if (bAppend) {
 		const fileInfo = selItem[0].GetFileInfo();
