@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/04/24
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -60,7 +60,7 @@
 						}, flags: multipleSelectedFlags
 					});
 					{	// Submenu
-						const subMenuSecondName = menu.newMenu('Check only...', subMenuName);
+						const subMenuSecondName = menu.newMenu('Check only', subMenuName);
 						menu.newEntry({ menuName: subMenuSecondName, entryText: 'Limits comparisons to:', func: null, flags: MF_GRAYED });
 						menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
 						tagsToCheck.forEach((obj) => {
@@ -94,7 +94,7 @@
 						}, flags: multipleSelectedFlags
 					});
 					{	// Submenu
-						const subMenuSecondName = menu.newMenu('Report all from...', subMenuName);
+						const subMenuSecondName = menu.newMenu('Report all from', subMenuName);
 						menu.newEntry({ menuName: subMenuSecondName, entryText: 'Limits comparisons to:', func: null, flags: MF_GRAYED });
 						menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
 						tagsToCheck.forEach((obj) => {
@@ -126,7 +126,7 @@
 						}
 					});
 					{
-						const subMenuSecondName = menu.newMenu('Configure dictionary...', subMenuName);
+						const subMenuSecondName = menu.newMenu('Configure dictionary', subMenuName);
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Configure excluded tags for dictionary...', func: () => {
 								const input = utils.InputBox(window.ID, 'Tag name(s) to not check against dictionary\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, menu_properties['tagNamesExcludedDic'][1]);
@@ -195,7 +195,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: () => { return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)'); }, func: tAut.nextStepTag, flags: firedFlags });
 					menu.newEntry({ menuName: subMenuName, entryText: () => { return 'Stop execution' + (tAut.isRunning() ? '' : ' (not running)'); }, func: tAut.stopStepTag, flags: firedFlags });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
-					const subMenuTools = menu.newMenu('Available tools...', subMenuName);
+					const subMenuTools = menu.newMenu('Available tools', subMenuName);
 					menu.newEntry({ menuName: subMenuTools, entryText: 'Toggle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuTools, entryText: 'sep' });
 					tAut.tools.forEach((tool) => {
@@ -250,7 +250,7 @@
 					});
 					// Refresh settings on startup
 					menu.newCondEntry({
-						entryText: 'Write tags... (cond)', condFunc: (bInit = true) => {
+						entryText: 'Write tags (cond)', condFunc: (bInit = true) => {
 							if (bInit) { tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1])); }
 						}
 					});
@@ -449,7 +449,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newEntry({ menuName: subMenuName, entryText: 'Previous playlist', func: plsHistory.goPrevPls, flags: () => { return (plsHistory.size() >= 2 ? MF_STRING : MF_GRAYED); } });
 					menu.newCondEntry({
-						entryText: 'Playlist History... (cond)', condFunc: () => {
+						entryText: 'Playlist History (cond)', condFunc: () => {
 							const [, ...list] = plsHistory.getAll();
 							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 							if (!list.length) { menu.newEntry({ menuName: subMenuName, entryText: '-None-', func: null, flags: MF_GRAYED }); }

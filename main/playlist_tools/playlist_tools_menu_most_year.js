@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -12,7 +12,7 @@
 	const scriptPathElse = folders.xxx + 'main\\search\\top_tracks.js';
 	/* global topTracks:readable, topRatedTracks:readable,  */
 	if (isEnhPlayCount && _isFile(scriptPath)) {
-		const name = 'Most played Tracks at...';
+		const name = 'Most played Tracks at';
 		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks_from_date.txt';
@@ -111,8 +111,8 @@
 
 // Top played/rated Tracks from year
 {
-	const namePlay = 'Top played Tracks from...';
-	const nameRate = 'Top rated Tracks from...';
+	const namePlay = 'Top played Tracks from';
+	const nameRate = 'Top rated Tracks from';
 	if (isPlayCount) {
 		if ((!Object.hasOwn(menusEnabled, namePlay) || menusEnabled[nameRate] === true) || (!Object.hasOwn(menusEnabled, nameRate) || menusEnabled[nameRate] === true)) {
 			{	// Top played Tracks from year
