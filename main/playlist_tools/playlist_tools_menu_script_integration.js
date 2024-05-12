@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//09/05/24
 
 /* exported mainMenuSMP, executeByName */
 
@@ -45,8 +45,8 @@
 						// Separators are not globally filtered to be able to redraw -at least partially- the tree
 						const tree = {};
 						let menuList = [];
-						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list...', 'Add new query to list...', 'Remove query from list...', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in...', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance', 'Set Global Forced Query...', 'Readmes...', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at...', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist...', 'Go to playlist...', 'Send playlist\'s tracks to...', 'Remove track(s) from...', 'Find now playing track in...', 'Other tools', 'Configure dictionary...', 'By halves', 'By quarters', 'By thirds', 'Send selection to...', 'Don\'t try to find tracks if selecting more than...', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From year...', 'From last...', 'UI', 'Logging', 'Asynchronous processing', 'Tag remapping', 'SMP Dynamic menu', 'Import track list', 'Report all from...', 'Check only...', 'Difference with playlist...', 'Intersect with playlist...', 'Merge with playlist...', 'Tags...', 'By... (tags)', 'Available tools', 'Enable double pass to match more tracks', 'By... (expression)', 'Find or create playlist...', 'To specified position', 'Select next tracks...', 'Available tools...', 'Harmonic mixing', 'Additional pre-defined filters...', 'Set menus...']);
-						const toSkipStarts = ['(Send sel. to)', 'Remove entry from list...', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Tag remapping...', 'Search by Distance...', '(Lock) Playlists', '(Unlock) Playlists'];
+						const toSkip = new Set(['Add new entry to list...', 'Remove entry from list', 'From year...', 'By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Configuration', 'Menu 1', 'Menu 2', 'Menu 3', 'Menu 4', 'Menu 5', 'Menu 6', 'Menu 7', 'Menu 8', 'Menu 9', 'Find track(s) in', 'Check tags', 'Write tags', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Search by Distance', 'Set Global Forced Query...', 'Readmes', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist', 'Go to playlist', 'Send playlist\'s tracks to', 'Remove track(s) from', 'Find now playing track in', 'Other tools', 'Configure dictionary', 'By halves', 'By quarters', 'By thirds', 'Send selection to', 'Don\'t try to find tracks if selecting more than', 'Filter playlist by... (tags)', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'From last...', 'UI', 'Logging', 'Asynchronous processing', 'Tag remapping', 'SMP Dynamic menu', 'Import track list', 'Report all from', 'Check only', 'Difference with playlist', 'Intersect with playlist', 'Merge with playlist', 'Tags...', 'By... (tags)', 'Available tools', 'Enable double pass to match more tracks', 'By... (expression)', 'Find or create playlist...', 'To specified position', 'Select next # tracks...', 'Available tools', 'Harmonic mixing', 'Additional pre-defined filters', 'Set menus']);
+						const toSkipStarts = ['(Send sel. to)', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Tag remapping...', 'Search by Distance...', '(Lock) Playlists', '(Unlock) Playlists'];
 						allEntries.filter((entry) => { return Object.hasOwn(entry, 'entryText') && Object.hasOwn(entry, 'menuName'); }).forEach((entry) => {
 							const entryText = (isFunction(entry.entryText) ? entry.entryText() : entry.entryText).replace(/\t.*/g, '');
 							const menuName = entry.menuName;
@@ -82,7 +82,7 @@
 							? _jsonParseFileCheck(ajQueryFile, 'To execute json', scriptName, utf8)
 							: (_isFile(localFile)
 								? _jsonParseFileCheck(localFile, 'To execute json', scriptName, utf8)
-								: (plsData ? plsData : null)
+								: (plsData || null)
 							)
 						);
 						if (data) {
@@ -142,7 +142,7 @@
 							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 							{	// Add
 								const toolName = name;
-								const subMenuNameTwo = menu.newMenu('Set menus...', subMenuName);
+								const subMenuNameTwo = menu.newMenu('Set menus', subMenuName);
 								const options = [
 									{
 										name: 'Custom menu', func: (idx = onMainMenuEntries.length) => {
@@ -156,13 +156,13 @@
 											if (!name.length) { return false; }
 											let icon = '';
 											// Add icons
-											if (funcName.startsWith('Most played Tracks') || funcName.startsWith('Top rated Tracks from...')) { icon = 'ui-icon ui-icon-heart'; }
-											if (funcName.startsWith('Search same by tags...') || funcName.startsWith('Search similar by') || funcName.startsWith('Special Playlists...')) { icon = 'ui-icon ui-icon-link'; }
-											if (funcName.startsWith('Standard Queries...') || funcName.startsWith('Dynamic Queries...')) { icon = 'ui-icon ui-icon-search'; }
+											if (funcName.startsWith('Most played Tracks') || funcName.startsWith('Top rated Tracks from')) { icon = 'ui-icon ui-icon-heart'; }
+											if (funcName.startsWith('Search same by tags') || funcName.startsWith('Search similar by') || funcName.startsWith('Special Playlists')) { icon = 'ui-icon ui-icon-link'; }
+											if (funcName.startsWith('Standard Queries') || funcName.startsWith('Dynamic Queries')) { icon = 'ui-icon ui-icon-search'; }
 											if (funcName.startsWith('Duplicates and tag filtering')) { icon = 'ui-icon ui-icon-trash'; }
 											if (funcName.startsWith('Query filtering')) { icon = 'ui-icon ui-icon-zoomout'; }
 											if (funcName.startsWith('Harmonic mix')) { icon = 'ui-icon ui-icon-person'; }
-											if (funcName.startsWith('Sort...') || funcName.startsWith('Advanced sort...') || funcName.startsWith('Scatter by tags')) { icon = 'ui-icon ui-icon-carat-2-n-s'; }
+											if (funcName.startsWith('Sort') || funcName.startsWith('Advanced sort') || funcName.startsWith('Scatter by tags')) { icon = 'ui-icon ui-icon-carat-2-n-s'; }
 											if (funcName.startsWith('Check tags')) { icon = 'ui-icon ui-icon-print'; }
 											if (funcName.startsWith('Write tags')) { icon = 'ui-icon ui-icon-pencil'; }
 											if (funcName.startsWith('Playlist Revive')) { icon = 'ui-icon ui-icon-battery-1'; }
@@ -241,7 +241,7 @@
 								});
 							}
 							{	// Remove
-								const subMenuSecondName = menu.newMenu('Remove entry from list...', subMenuName);
+								const subMenuSecondName = menu.newMenu('Remove entry from list', subMenuName);
 								mainMenuSMP.forEach((entry, index) => {
 									if (!entry) { return; }
 									const entryText = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name));
@@ -317,7 +317,7 @@
 									}
 								}, flags
 							});
-							menu.newCheckMenu(subMenuName, 'Create SMP dynamic menus', void (0), () => { return menu_panelProperties.bDynamicMenus[1]; });
+							menu.newCheckMenuLast(() => menu_panelProperties.bDynamicMenus[1]);
 						}
 					});
 				}
@@ -342,7 +342,7 @@
 						overwriteMenuProperties(); // Updates panel
 					}
 				});
-				menu.newCheckMenu(subMenuName, 'Enabled Playlist Names Commands', void (0), () => { return menu_properties.bPlaylistNameCommands[1]; });
+				menu.newCheckMenuLast(() => menu_properties.bPlaylistNameCommands[1]);
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 		}
 		menu.newEntry({ menuName, entryText: 'sep' });
@@ -417,9 +417,9 @@
 								}
 							});
 							{
-								const subMenuSecondName = menu.newMenu('Remove entry from list...', subMenuName);
+								const subMenuSecondName = menu.newMenu('Remove entry from list', subMenuName);
 								scriptIncluded.forEach((queryObj, index) => {
-									const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name));
+									const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ' : queryObj.name));
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText, func: () => {
 											scriptIncluded.splice(index, 1);

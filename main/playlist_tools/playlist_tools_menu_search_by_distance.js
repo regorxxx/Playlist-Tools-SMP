@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/12/23
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -77,7 +77,7 @@
 					}
 				});
 			};
-			{	// -> Special playlists...
+			{	// -> Special playlists
 				menu.newEntry({ menuName: specialMenu, entryText: 'Based on Search by Distance:', func: null, flags: MF_GRAYED });
 				const selArgs = [
 					{ name: 'sep' },
@@ -190,16 +190,16 @@
 						}
 						menu.newEntry({ menuName: submenu, entryText: 'sep' });
 						{
-							const submenuTwo = menu.newMenu('Tag remapping...', submenu);
+							const submenuTwo = menu.newMenu('Tag remapping', submenu);
 							{	// Menu to configure tags
 								menu.newEntry({ menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED });
 								menu.newEntry({ menuName: submenuTwo, entryText: 'sep' });
 								menu.newCondEntry({
-									entryText: 'Tags... (cond)', condFunc: () => {
+									entryText: 'Tags (cond)', condFunc: () => {
 										const tags = JSON.parse(menu_properties.tags[1]);
 										const options = [...Object.keys(tags)];
 										// Create menu on 2 places: tool config submenu and global tag submenu
-										const configMenuTag = menu.findOrNewMenu('Tag remapping...', configMenu);
+										const configMenuTag = menu.findOrNewMenu('Tag remapping', configMenu);
 										menu.newEntry({ menuName: configMenuTag, entryText: 'sep' });
 										const configSubmenu = menu.newMenu(submenu + '...', configMenuTag);
 										options.forEach((key) => {
@@ -374,7 +374,7 @@
 								});
 								menu.newCheckMenu(subMenuName, 'Enable extra conditions', void (0), () => { return menu_properties.bSmartShuffleAdvc[1]; });
 								{
-									const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
+									const subMenuNameSecond = menu.newMenu('Sorting bias', subMenuName);
 									const options = [
 										{ key: 'Random', flags: MF_STRING },
 										{ key: 'Play count', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount' },
