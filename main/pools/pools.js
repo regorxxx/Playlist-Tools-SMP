@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/01/24
+//09/05/24
 
 /* exported _pools */
 
@@ -20,7 +20,7 @@ include('..\\sort\\harmonic_mixing.js');
 include('..\\sort\\scatter_by_tags.js');
 /* global harmonicMixing:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
-/* global removeDuplicatesV2:readable */
+/* global removeDuplicates:readable */
 // include('..\\playlist_manager\\playlist_manager_helpers.js'); // bEnablePlsMan
 /* global loadPlaylistsFromFolder:readable, getHandlesFromPlaylist:readable */
 // include('..\\search_by_distance\\search_by_distance.js'); // bEnableSearchDistance
@@ -30,6 +30,7 @@ function _pools({
 	sortBias = globQuery.remDuplBias,
 	checkDuplicatesBy = globQuery.checkDuplicatesBy,
 	bAdvTitle = true,
+	bMultiple = true,
 	bAdvancedShuffle = true,
 	smartShuffleSortBias,
 	keyTag = globTags.key,
@@ -43,6 +44,7 @@ function _pools({
 	this.sortBias = sortBias;
 	this.checkDuplicatesBy = checkDuplicatesBy;
 	this.bAdvTitle = bAdvTitle;
+	this.bMultiple = bMultiple;
 	this.bAdvancedShuffle = bAdvancedShuffle;
 	this.smartShuffleSortBias = smartShuffleSortBias;
 	this.keyTag = keyTag;
@@ -88,7 +90,7 @@ function _pools({
 		},
 	};
 	this.deDuplicate = ({ handleList, prevListArr, prevListHandle, checkKeys } = {}) => {
-		handleList = removeDuplicatesV2({ handleList, checkKeys, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle });
+		handleList = removeDuplicates({ handleList, checkKeys, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle, bMultiple: this.bMultiple });
 		// Filter against current list
 		if (prevListArr || prevListHandle) {
 			const prevList = prevListHandle
@@ -102,7 +104,7 @@ function _pools({
 				let currList = prevList.Clone();
 				currList.AddRange(handleList);
 				currList.Sort();
-				currList = removeDuplicatesV2({ handleList: currList, checkKeys, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle });
+				currList = removeDuplicates({ handleList: currList, checkKeys, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle, bMultiple: this.bMultiple });
 				currList.Sort();
 				handleList = new FbMetadbHandleList(
 					handleList.Convert().filter((handle) => {
@@ -201,7 +203,7 @@ function _pools({
 						}
 						// Remove duplicates within the group (for ex. when retrieving 2 versions of same album)
 						if (this.checkDuplicatesBy.length) {
-							handleListsGroups[i] = removeDuplicatesV2({ handleList: handleListsGroups[i], checkKeys: this.checkDuplicatesBy, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle });
+							handleListsGroups[i] = removeDuplicates({ handleList: handleListsGroups[i], checkKeys: this.checkDuplicatesBy, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle, bMultiple: this.bMultiple });
 							handleListsGroups[i] = new FbMetadbHandleList(handleListsGroups[i].Convert().shuffle().slice(0, limit));
 						} else {
 							handleListsGroups[i] = new FbMetadbHandleList(handleListsGroups[i].Convert().shuffle().slice(0, limit));
@@ -358,7 +360,7 @@ function _pools({
 				// Remove duplicates
 				// Search by distance output should be already de-duplicated
 				if (this.checkDuplicatesBy.length && !plsName.startsWith('_SEARCHBY')) {
-					handleListFrom = removeDuplicatesV2({ handleList: handleListFrom, checkKeys: this.checkDuplicatesBy, sortBias: this.sortBias, bPreserveSort: true, bAdvTitle: this.bAdvTitle });
+					handleListFrom = removeDuplicates({ handleList: handleListFrom, checkKeys: this.checkDuplicatesBy, sortBias: this.sortBias, bPreserveSort: true, bAdvTitle: this.bAdvTitle, bMultiple: this.bMultiple });
 				}
 			}
 			// Remove tracks on destination list

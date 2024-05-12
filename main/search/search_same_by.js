@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/01/24
+//09/05/24
 
 /*
 	Search same by
@@ -76,7 +76,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
-/* global removeDuplicatesV2:readable */
+/* global removeDuplicates:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global dynamicTags:readable, numericTags:readable, cyclicTags:readable, cyclicTagsDescriptor:readable, queryJoin:readable, queryCombinations:readable, logicDic:readable */
 include('..\\..\\helpers\\helpers_xxx_math.js');
@@ -90,6 +90,7 @@ function searchSameByCombs({
 	checkDuplicatesBy = globTags.remDupl,
 	checkDuplicatesBias = globQuery.remDuplBias,
 	bAdvTitle = true,
+	bMultiple = true,
 	sameBy = { genre: 1, style: 2, mood: 5 },
 	playlistName = 'Search...',
 	logic = 'AND',
@@ -164,7 +165,7 @@ function searchSameByCombs({
 		if (tagNumber === 0 && !dynamicTags.has(tagName)) {
 			console.log('Track selected has no ' + tags[i] + ' tag');
 		} else { // For selected tag
-			if (numericTags.has(tagName)) { // may be a numeric tag
+			if (numericTags.has(tagName)) { // NOSONAR [may be a numeric tag]
 				const tagValue = dynamicTags.has(tagName) ? Number(fb.TitleFormat(tagNameTF).EvalWithMetadb(sel)) : Number(sel_info.MetaValue(tagIdx, 0));
 				const valueRange = k_tagsCombs[i] > 0 ? Math.abs(k_tagsCombs[i]) : 0; // Instead of k comb number, is a range!
 				const valueUpper = tagValue + valueRange;
@@ -214,7 +215,8 @@ function searchSameByCombs({
 						}
 						k = (tagNumber > k_tagsCombs[i]) ? tagNumber - k_tagsNegativeCombs : 1; //on combinations of (tag values - K) or the minimum number possible
 					} else {
-						if (isFloat(k_tagsCombs[i])) { // positive Float number -> match (tagNumber * value) # of tags anything
+						// positive Float number -> match (tagNumber * value) # of tags anything
+						if (isFloat(k_tagsCombs[i])) { // NOSONAR
 							k = round(tagNumber * k_tagsCombs[i], 0);
 							if (k === 0) { k = 1; } // rounded to nearest integer number, but minimum must be 1
 							if (tagNumber < k) { k = tagNumber; } // and maximum must be tagNumber
@@ -257,7 +259,7 @@ function searchSameByCombs({
 
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicatesV2({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle });
+		outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle, bMultiple });
 	}
 	const oldCount = outputHandleList.Count;
 	// Limit n tracks
@@ -278,6 +280,7 @@ function searchSameByQueries({
 	checkDuplicatesBy = globTags.remDupl,
 	checkDuplicatesBias = globQuery.remDuplBias,
 	bAdvTitle = true,
+	bMultiple = true,
 	sameBy = [['STYLE'], ['MOOD']],
 	playlistName = 'Search...',
 	bSendToPls = true,
@@ -334,7 +337,7 @@ function searchSameByQueries({
 
 	//Find and remove duplicates. Sort Random
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicatesV2({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle });
+		outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle, bMultiple });
 	}
 	const oldCount = outputHandleList.Count;
 	//Limit n tracks

@@ -1,11 +1,11 @@
 ﻿'use strict';
-//05/04/24
+//09/05/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, utf8:readable, globQuery:readable, _p:readable, _save:readable, _explorer:readable, isArrayEqual:readable, _jsonParseFileCheck:readable, Input:readable, globRegExp:readable, capitalize:readable, WshShell:readable, popup:readable, MF_STRING:readable, _recycleFile:readable, _open:readable, MF_MENUBREAK:readable */
 
-// Configuration...
+// Configuration
 {
 	if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 		readmes[newReadmeSep()] = 'sep';
@@ -33,7 +33,7 @@
 										overwriteMenuProperties();
 									}
 								});
-								menu.newCheckMenu(subMenuNameTwo, key, void (0), () => { return options[key]; });
+								menu.newCheckMenuLast(() => options[key]);
 							});
 						}
 					});
@@ -58,7 +58,7 @@
 										overwriteMenuProperties(); // Updates panel
 									}
 								});
-								menu.newCheckMenu(subMenuNameTwo, key, void (0), () => { return forcedQueryMenusEnabled[key]; });
+								menu.newCheckMenuLast(() => forcedQueryMenusEnabled[key]);
 							});
 							menu.newEntry({ menuName: subMenuNameTwo, entryText: 'sep' });
 							menu.newEntry({
@@ -73,7 +73,7 @@
 								}
 							});
 							{ // Menu to configure properties: additional filters
-								const subMenuNameThree = menu.newMenu('Additional pre-defined filters...', subMenuNameTwo);
+								const subMenuNameThree = menu.newMenu('Additional pre-defined filters', subMenuNameTwo);
 								let options = [];
 								const file = folders.xxx + 'presets\\Playlist Tools\\filters\\playlist_tools_filters.json';
 								const bFile = _isFile(file);
@@ -116,12 +116,12 @@
 											overwriteMenuProperties(); // Updates panel
 										}
 									});
-									menu.newCheckMenu(subMenuNameThree, entryText, void (0), () => { return menu_properties['forcedQuery'][1].indexOf(input) !== -1; });
+									menu.newCheckMenuLast(() => menu_properties['forcedQuery'][1].indexOf(input) !== -1);
 								});
 								menu.newEntry({ menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED });
 								menu.newEntry({
 									menuName: subMenuNameThree, entryText: 'Edit entries...' + (bFile ? '' : '\t(new file)'), func: () => {
-										if (!bFile) { _save(file, JSON.stringify(options, null, '\t').replace(/\n/g,'\r\n')); }
+										if (!bFile) { _save(file, JSON.stringify(options, null, '\t').replace(/\n/g, '\r\n')); }
 										_explorer(file);
 									}
 								});
@@ -145,7 +145,7 @@
 			});
 		}
 		{	// Menu to configure properties: tags
-			const subMenuName = menu.newMenu('Duplicates handling...', configMenu);
+			const subMenuName = menu.newMenu('Duplicates handling', configMenu);
 			{
 				menu.newEntry({ menuName: subMenuName, entryText: 'Remove duplicates on playlist creation:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
@@ -170,18 +170,27 @@
 					}
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Use RegExp for title matching?', func: () => {
+					menuName: subMenuName, entryText: 'Use RegExp for title matching', func: () => {
 						defaultArgs.bAdvTitle = !defaultArgs.bAdvTitle;
 						menu_properties.bAdvTitle[1] = defaultArgs.bAdvTitle;
 						if (defaultArgs.bAdvTitle) { fb.ShowPopupMessage(globRegExp.title.desc, window.Name); }
 						overwriteMenuProperties();
 					}
 				});
-				menu.newCheckMenu(subMenuName, 'Use RegExp for title matching?', void (0), () => { return menu_properties.bAdvTitle[1]; });
+				menu.newCheckMenuLast(() => menu_properties.bAdvTitle[1]);
+				menu.newEntry({
+					menuName: subMenuName, entryText: 'Partial Multi-value tag matching', func: () => {
+						defaultArgs.bMultiple = !defaultArgs.bMultiple;
+						menu_properties.bMultiple[1] = defaultArgs.bMultiple;
+						if (defaultArgs.bMultiple) { fb.ShowPopupMessage(globRegExp.singleTags.desc, window.Name); }
+						overwriteMenuProperties();
+					}
+				});
+				menu.newCheckMenuLast(() => menu_properties.bMultiple[1]);
 			}
 		}
 		{	// Menu to configure properties: tags
-			const subMenuName = menu.newMenu('Tag remapping...', configMenu);
+			const subMenuName = menu.newMenu('Tag remapping', configMenu);
 			{
 				const options = ['key', 'styleGenre'];
 				menu.newEntry({ menuName: subMenuName, entryText: 'Set the tags used by tools:', func: null, flags: MF_GRAYED });
@@ -248,7 +257,7 @@
 									overwriteMenuProperties(); // Updates panel
 								}, flags: bNotAvailable ? MF_GRAYED : MF_STRING
 							});
-							menu.newCheckMenu(subMenuName, key, void (0), () => { return async[key]; });
+							menu.newCheckMenuLast(() => async[key]);
 						});
 					}
 				});
@@ -267,7 +276,7 @@
 						overwritePanelProperties(); // Updates panel
 					}
 				});
-				menu.newCheckMenu(subMenuName, 'Enabled extended console debug', void (0), () => { return menu_panelProperties.bDebug[1]; });
+				menu.newCheckMenuLast(() => menu_panelProperties.bDebug[1]);
 				// bProfile
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Enabled profiler console log', func: () => {
@@ -276,7 +285,7 @@
 						overwritePanelProperties(); // Updates panel
 					}
 				});
-				menu.newCheckMenu(subMenuName, 'Enabled profiler console log', void (0), () => { return menu_panelProperties.bProfile[1]; });
+				menu.newCheckMenuLast(() => menu_panelProperties.bProfile[1]);
 			}
 		}
 		{	// UI
@@ -290,7 +299,7 @@
 						overwritePanelProperties(); // Updates panel
 					}
 				});
-				menu.newCheckMenu(subMenuName, 'Show mouse shortcuts on tooltip', void (0), () => { return menu_panelProperties.bTooltipInfo[1]; });
+				menu.newCheckMenuLast(() => menu_panelProperties.bTooltipInfo[1]);
 			}
 			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 			{	// Shortcuts
@@ -305,7 +314,7 @@
 						overwriteMenuProperties(); // Updates panel
 					}, flags: () => { return menu_panelProperties.bDynamicMenus[1] ? MF_STRING : MF_GRAYED; }
 				});
-				menu.newCheckMenu(subMenuName, 'Show keyboard shortcuts on entries', void (0), () => { return menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]; });
+				menu.newCheckMenuLast(() => menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => { _explorer(shortcutsPath); } });
 			}
 		}
@@ -321,7 +330,7 @@
 						const path = folders.data + 'playlistTools_presets.json';
 						_recycleFile(path);
 						const readme = 'Backup ' + new Date().toString();
-						if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g,'\r\n'))) {
+						if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g, '\r\n'))) {
 							_explorer(path);
 							console.log('Playlist tools: presets backup saved at ' + path);
 						}
@@ -343,7 +352,7 @@
 						} else {
 							_recycleFile(path);
 							const readme = 'Backup ' + new Date().toString();
-							if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g,'\r\n'))) {
+							if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g, '\r\n'))) {
 								console.log('Playlist tools: presets backup saved at ' + path);
 							} else { console.log('Playlist tools: failed to create backup of presets at ' + path); }
 							presets = {}; // NOSONAR
@@ -382,7 +391,7 @@
 		}
 		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
 		{	// Readmes
-			const subMenuName = menu.newMenu('Readmes...', configMenu);
+			const subMenuName = menu.newMenu('Readmes', configMenu);
 			menu.newEntry({ menuName: subMenuName, entryText: 'Open popup with readme:', func: null, flags: MF_GRAYED });
 			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 			let iCount = 0;

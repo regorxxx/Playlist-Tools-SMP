@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//09/05/24
 
 /*
 	Top Rated Tracks
@@ -15,7 +15,7 @@ include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
-/* global removeDuplicatesV2:readable */
+/* global removeDuplicates:readable */
 if (!isPlayCount) { fb.ShowPopupMessage('top_rated_tracks: foo_playcount component is not installed.'); }
 
 // Top n Rated Tracks
@@ -25,6 +25,7 @@ function topRatedTracks({
 	checkDuplicatesBy = globTags.remDupl,
 	checkDuplicatesBias = globQuery.remDuplBias,
 	bAdvTitle = true,
+	bMultiple = true,
 	forcedQuery = '',
 	ratingLimits = [1, 5],
 	ratingTag = globTags.rating,
@@ -54,7 +55,7 @@ function topRatedTracks({
 		catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return; }
 		//Find and remove duplicates
 		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-			handleList_i = removeDuplicatesV2({ handleList: handleList_i, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle });
+			handleList_i = removeDuplicates({ handleList: handleList_i, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple });
 		}
 		outputHandleList.AddRange(handleList_i);
 		currRating--;

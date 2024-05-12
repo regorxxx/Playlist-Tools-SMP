@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/02/24
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -13,7 +13,7 @@
 		let menuName = menu.newMenu(name);
 		{	// Remove Duplicates / Show Duplicates
 			const scriptPath = folders.xxx + 'main\\filter_and_query\\remove_duplicates.js';
-			/* global removeDuplicates:readable, removeDuplicatesV2:readable, showDuplicates:readable */
+			/* global filterDuplicates:readable, removeDuplicates:readable, showDuplicates:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Duplicates and tag filtering';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -35,20 +35,25 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Remove Duplicates... (cond)', condFunc: () => {
+						entryText: 'Remove Duplicates (cond)', condFunc: () => {
 							// Update args
 							sortInputDuplic = menu_properties.sortInputDuplic[1].split('|');
 							sortInputFilter = menu_properties.sortInputFilter[1].split('|');
 							nAllowed = menu_properties.nAllowed[1];
 							const sortBias = defaultArgs.sortBias;
 							const bAdvTitle = defaultArgs.bAdvTitle;
+							const bMultiple = defaultArgs.bMultiple;
 							// Menus
-							const entryKeysD = sortInputDuplic.join(', ').replace(globTags.title, 'Title').replace(globTags.date, 'Year').toLowerCase();
-							const entryKeysF = sortInputFilter.join(', ').replace(globTags.title, 'Title').replace(globTags.date, 'Year').toLowerCase();
-							menu.newEntry({ menuName: subMenuName, entryText: 'Remove duplicates by ' + entryKeysD, func: () => { removeDuplicatesV2({ checkKeys: sortInputDuplic, sortBias, bAdvTitle }); }, flags: playlistCountFlagsAddRem });
-							menu.newEntry({ menuName: subMenuName, entryText: 'Show duplicates by ' + entryKeysD, func: () => { showDuplicates({ checkKeys: sortInputDuplic, bAdvTitle }); }, flags: playlistCountFlagsAddRem });
+							const entryKeysD = sortInputDuplic.join(', ')
+								.replace(globTags.title, 'Title').replace(globTags.date, 'Year')
+								.toLowerCase();
+							const entryKeysF = sortInputFilter.join(', ')
+								.replace(globTags.title, 'Title').replace(globTags.date, 'Year')
+								.toLowerCase();
+							menu.newEntry({ menuName: subMenuName, entryText: 'Remove duplicates by ' + entryKeysD, func: () => { removeDuplicates({ checkKeys: sortInputDuplic, sortBias, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
+							menu.newEntry({ menuName: subMenuName, entryText: 'Show duplicates by ' + entryKeysD, func: () => { showDuplicates({ checkKeys: sortInputDuplic, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
 							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
-							menu.newEntry({ menuName: subMenuName, entryText: 'Filter playlist by ' + entryKeysF + ' (n = ' + nAllowed + ')', func: () => { removeDuplicates({ checkKeys: sortInputFilter, sortBias, nAllowed, bAdvTitle }); }, flags: playlistCountFlagsAddRem });
+							menu.newEntry({ menuName: subMenuName, entryText: 'Filter playlist by ' + entryKeysF + ' (n = ' + nAllowed + ')', func: () => { filterDuplicates({ checkKeys: sortInputFilter, sortBias, nAllowed, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
 							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Filter playlist by... (tags)', func: () => {
@@ -61,7 +66,7 @@
 									try { n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true)); }
 									catch (e) { return; }
 									if (!Number.isSafeInteger(n)) { return; }
-									removeDuplicates({ checkKeys: tags, sortBias, nAllowed: n, bAdvTitle });
+									filterDuplicates({ checkKeys: tags, sortBias, nAllowed: n, bAdvTitle, bMultiple });
 								}, flags: playlistCountFlagsAddRem
 							});
 							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
@@ -156,7 +161,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Filter active playlist: (Ctrl + click to invert)', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					menu.newCondEntry({
-						entryText: 'Filter playlists using queries... (cond)', condFunc: () => {
+						entryText: 'Filter playlists using queries (cond)', condFunc: () => {
 							const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
 							const bEvalSel = options['Dynamic queries'];
 							queryFilter = JSON.parse(menu_properties['queryFilter'][1]);
@@ -424,7 +429,7 @@
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 		}
 		{	// Crop playlist length (for use with macros!!)
-			const name = 'Cut playlist length to...';
+			const name = 'Cut playlist length to';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global removeNotSelectedTracks:readable */
@@ -465,9 +470,9 @@
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 		}
 		{	// Merge / Intersect / Difference
-			const nameMerge = 'Merge with playlist...';
-			const nameInter = 'Intersect with playlist...';
-			const nameDiff = 'Difference with playlist...';
+			const nameMerge = 'Merge with playlist';
+			const nameInter = 'Intersect with playlist';
+			const nameDiff = 'Difference with playlist';
 			if (!Object.hasOwn(menusEnabled, nameMerge) || !Object.hasOwn(menusEnabled, nameInter) || !Object.hasOwn(menusEnabled, nameDiff) || menusEnabled[nameMerge] === true || menusEnabled[nameInter] === true || menusEnabled[nameDiff] === true) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global closeLock:readable, removeLock:readable */
@@ -502,8 +507,8 @@
 				menu.newEntry({ menuName, entryText: 'sep' });
 				// Build submenus
 				menu.newCondEntry({
-					entryText: 'Merge/Intersect/Difference to Playlists...', condFunc: () => {
-						const profiler = defaultArgs.bProfile ? new FbProfiler('Merge/Intersect/Difference to Playlists...') : null;
+					entryText: 'Merge/Intersect/Difference to Playlists', condFunc: () => {
+						const profiler = defaultArgs.bProfile ? new FbProfiler('Merge/Intersect/Difference to Playlists') : null;
 						const ap = plman.ActivePlaylist;
 						const bPlaylist = ap !== -1;
 						const playlistsNum = plman.PlaylistCount;
@@ -699,9 +704,9 @@
 			}
 		}
 		{	// Send Playlist to Playlist / Close playlist / Go to Playlist
-			const nameSend = 'Send playlist\'s tracks to...';
-			const nameGo = 'Go to playlist...';
-			const nameClose = 'Close playlist...';
+			const nameSend = 'Send playlist\'s tracks to';
+			const nameGo = 'Go to playlist';
+			const nameClose = 'Close playlist';
 			if (!Object.hasOwn(menusEnabled, nameSend) || !Object.hasOwn(menusEnabled, nameGo) || !Object.hasOwn(menusEnabled, nameClose) || menusEnabled[nameSend] === true || menusEnabled[nameGo] === true || menusEnabled[nameClose] === true) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global playlistCountLocked:readable */
@@ -735,8 +740,8 @@
 				}
 				// Build submenus
 				menu.newCondEntry({
-					entryText: 'Send/Go/Close to Playlists...', condFunc: () => {
-						const profiler = defaultArgs.bProfile ? new FbProfiler('Send/Go/Close to Playlists...') : null;
+					entryText: 'Send/Go/Close to Playlists', condFunc: () => {
+						const profiler = defaultArgs.bProfile ? new FbProfiler('Send/Go/Close to Playlists') : null;
 						const playlistsNum = plman.PlaylistCount;
 						const ap = plman.ActivePlaylist;
 						if (playlistsNum && ap !== -1) {
@@ -834,9 +839,9 @@
 			}
 		}
 		{	// Lock / Unlock / Switch lock playlist
-			const nameLock = 'Lock playlist...';
-			const nameUnlock = 'Unlock playlist...';
-			const nameSwitch = 'Switch lock playlist...';
+			const nameLock = 'Lock playlist';
+			const nameUnlock = 'Unlock playlist';
+			const nameSwitch = 'Switch lock playlist';
 			if (!Object.hasOwn(menusEnabled, nameLock) || !Object.hasOwn(menusEnabled, nameUnlock) || !Object.hasOwn(menusEnabled, nameSwitch) || menusEnabled[nameLock] === true || menusEnabled[nameUnlock] === true || menusEnabled[nameSwitch] === true) {
 				if (!Object.hasOwn(menu_properties, 'playlistSplitSize')) {
 					menu_properties['playlistSplitSize'] = ['Playlist lists submenu size', 20];
@@ -873,8 +878,8 @@
 				}
 				// Build submenus
 				menu.newCondEntry({
-					entryText: 'Lock/Unlock/Switch lock Playlists...', condFunc: () => {
-						const profiler = defaultArgs.bProfile ? new FbProfiler('Lock/Unlock/Switch lock  Playlists...') : null;
+					entryText: 'Lock/Unlock/Switch lock Playlists', condFunc: () => {
+						const profiler = defaultArgs.bProfile ? new FbProfiler('Lock/Unlock/Switch lock Playlists') : null;
 						const lockTypes = ['AddItems', 'RemoveItems', 'ReplaceItems', 'ReorderItems', 'RemovePlaylist'];
 						const playlistsNum = plman.PlaylistCount;
 						if (playlistsNum) {

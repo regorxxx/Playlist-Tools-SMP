@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/04/24
+//09/05/24
 
 /*
 	Top X Tracks From Date
@@ -17,7 +17,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
-/* global removeDuplicatesV2:readable */
+/* global removeDuplicates:readable */
 const timeKeys = { Days: daysBetween, Weeks: weeksBetween };
 
 /**
@@ -32,6 +32,7 @@ const timeKeys = { Days: daysBetween, Weeks: weeksBetween };
  * @param {string[]} [o.checkDuplicatesBy=globTags.remDupl] - Duplication removal tags
  * @param {string} [o.checkDuplicatesBias=globQuery.remDuplBias] - Duplication removal bias
  * @param {boolean} [o.bAdvTitle=true] - Duplication removal by RegExp
+ * @param {boolean} [o.bMultiple=true] - Duplication removal with a single Multi-value tag match
  * @param {number} [o.year=new Date().getFullYear() - 1] - Year for lookup
  * @param {string} [o.last='1 WEEKS'] - Time period for lookup (bUseLast must be true)
  * @param {boolean} [o.bUseLast=false] - Use the period method instead of year
@@ -45,6 +46,7 @@ function topTracksFromDate({
 	checkDuplicatesBy = globTags.remDupl,
 	checkDuplicatesBias = globQuery.remDuplBias,
 	bAdvTitle = true,
+	bMultiple = true,
 	year = new Date().getFullYear() - 1, // Previous year
 	last = '1 WEEKS',
 	bUseLast = false,
@@ -82,7 +84,7 @@ function topTracksFromDate({
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return; }
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicatesV2({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle });
+		outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple });
 	}
 	// Filter Play counts by date
 	const dataPool = bUseLast
@@ -209,7 +211,7 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 			const dayArr = dateMap[day];
 			if (!dayArr) { dateMap[day] = [seconds]; }
 			else {
-				if (dayArr.every((listen) => Math.abs(seconds - listen) >= 30)) {
+				if (dayArr.every((listen) => Math.abs(seconds - listen) >= 30)) { // NOSONAR
 					dayArr.push(seconds);
 				} else { dateArray.splice(i, 1); }
 			}
@@ -292,7 +294,7 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
 				});
 			} else { // For tracks without advanced statistics
 				// If first and last plays were from selected year, then all play counts too
-				if (Number(firstPlayedArray[i].substring(0, 4)) === timePeriod && Number(lastPlayedArray[i].substring(0, 4)) === timePeriod) {
+				if (Number(firstPlayedArray[i].substring(0, 4)) === timePeriod && Number(lastPlayedArray[i].substring(0, 4)) === timePeriod) { // NOSONAR
 					const tempFirst = firstPlayedArray[i].substring(0, 10).split('-').map(Number);
 					if (tempFirst.length !== 3) { continue; }
 					const total = playCountArray[i];

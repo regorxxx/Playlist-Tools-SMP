@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//09/05/24
 
 /*
 	Top Tracks
@@ -18,7 +18,7 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
-/* global removeDuplicatesV2:readable */
+/* global removeDuplicates:readable */
 if (!isPlayCount) {fb.ShowPopupMessage('top_tracks: foo_playcount component is not installed.');}
 
 // Top n Tracks
@@ -28,6 +28,7 @@ function topTracks({
 	checkDuplicatesBy = globTags.remDupl,
 	checkDuplicatesBias = globQuery.remDuplBias,
 	bAdvTitle = true,
+	bMultiple = true,
 	forcedQuery = globQuery.notLowRating,
 	playlistName = 'Top ' + playlistLength + ' Tracks',
 	bSendToPls = true,
@@ -45,7 +46,7 @@ function topTracks({
 	catch (e) {fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return;}
 	//Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicatesV2({handleList: outputHandleList, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle});
+		outputHandleList = removeDuplicates({handleList: outputHandleList, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple});
 	}
 	// Output n tracks
 	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);

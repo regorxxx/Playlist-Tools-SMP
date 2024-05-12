@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/04/24
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable */
 
@@ -18,9 +18,9 @@
 			readmes[name + ' (allowed keys)'] = folders.xxx + '\\presets\\Playlist Tools\\pools\\allowedKeys.txt';
 			forcedQueryMenusEnabled[name] = true;
 			let menuName = menu.newMenu(name);
-			const nameGraph = 'Search similar by Graph...';
-			const nameDynGenre = 'Search similar by DynGenre...';
-			const nameWeight = 'Search similar by Weight...';
+			const nameGraph = 'Search similar by Graph';
+			const nameDynGenre = 'Search similar by DynGenre';
+			const nameWeight = 'Search similar by Weight';
 			const bEnableSearchDistance = !Object.hasOwn(menusEnabled, nameGraph) || !Object.hasOwn(menusEnabled, nameDynGenre) || !Object.hasOwn(menusEnabled, nameWeight) || !Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
 			const plsManHelper = folders.xxx + 'main\\playlist_manager\\playlist_manager_helpers.js';
 			if (_isFile(plsManHelper)) { include(plsManHelper.replace(folders.xxx + 'main\\', '..\\')); }
@@ -29,6 +29,7 @@
 				sortBias: defaultArgs.sortBias,
 				checkDuplicatesBy: defaultArgs.checkDuplicatesBy,
 				bAdvTitle: defaultArgs.bAdvTitle,
+				bMultiple: defaultArgs.bMultiple,
 				bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
 				smartShuffleSortBias: menu_properties.smartShuffleSortBias[1],
 				keyTag: defaultArgs.keyTag,
@@ -230,7 +231,7 @@
 				menu.newEntry({ menuName, entryText: 'Use Playlists / Queries as pools:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName, entryText: 'sep' });
 				menu.newCondEntry({
-					entryText: 'Pools... (cond)', condFunc: () => {
+					entryText: 'Pools (cond)', condFunc: () => {
 						// On first execution, must update from property
 						selArg = JSON.parse(menu_properties['poolsCustomArg'][1]);
 						// Entry list
@@ -372,7 +373,7 @@
 						});
 						menu.newCheckMenu(subMenuName, 'Enable extra conditions', void (0), () => { return menu_properties.bSmartShuffleAdvc[1]; });
 						{
-							const subMenuNameSecond = menu.newMenu('Sorting bias...', subMenuName);
+							const subMenuNameSecond = menu.newMenu('Sorting bias', subMenuName);
 							const options = [
 								{ key: 'Random', flags: MF_STRING },
 								{ key: 'Play count', flags: isPlayCount ? MF_STRING : MF_GRAYED, req: 'foo_playcount' },
