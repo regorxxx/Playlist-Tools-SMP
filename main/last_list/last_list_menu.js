@@ -1,5 +1,5 @@
 'use strict';
-//03/01/24
+//07/05/24
 
 /* exported _lastListMenu */
 
@@ -46,7 +46,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 					}
 				} else {
 					// foo_uie_biography
-					if (tf === 'LASTFM_SIMILAR_ARTIST') {
+					if (tf === 'LASTFM_SIMILAR_ARTIST') { // NOSONAR
 						fb.TitleFormat('[%' + tf + '%]')
 							.EvalWithMetadb(sel)
 							.split('; ')

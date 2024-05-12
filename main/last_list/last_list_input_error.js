@@ -1,9 +1,11 @@
 'use strict';
-//06/03/23
+//07/05/24
+
+/* exported InputError */
 
 class InputError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = "InputError";
-    }
+	constructor(message) {
+		super(message);
+		this.name = 'InputError';
+	}
 }
