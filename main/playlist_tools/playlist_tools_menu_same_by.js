@@ -1,16 +1,16 @@
 ﻿'use strict';
-//04/01/24
+//09/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, convertObjectToString:readable, isString:readable, WshShell:readable, popup:readable, convertStringToObject:readable, capitalize:readable, globTags:readable */
 
-// Same by...
+// Same by
 {
 	const scriptPath = folders.xxx + 'main\\search\\search_same_by.js';
 	/* global searchSameByCombs:readable */
 	if (_isFile(scriptPath)) {
-		const name = 'Search same by tags...';
+		const name = 'Search same by tags';
 		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
@@ -72,7 +72,7 @@
 				menu.newEntry({ menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName, entryText: 'sep' });
 				menu.newCondEntry({
-					entryText: 'Search same by tags... (cond)', condFunc: () => {
+					entryText: 'Search same by tags (cond)', condFunc: () => {
 						// Entry list
 						sameByQueries = JSON.parse(menu_properties['sameByQueries'][1]);
 						const entryNames = new Set();
