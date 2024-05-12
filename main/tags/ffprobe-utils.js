@@ -1,5 +1,5 @@
 'use strict';
-//24/12/23
+//07/05/24
 
 /* exported ffprobeUtils */
 
@@ -24,7 +24,7 @@ const ffprobeUtils = {
 				const tags = data && data.format && data.format.tags ? data.format.tags : { [tagName]: undefinedVal };
 				return tags;
 			}, (error) => {
-				return Promise.reject(error);
+				return Promise.reject(error); // NOSONAR
 			});
 	},
 	getTags: function getTags(handleList, tagName = globTags.acoustidFP) {

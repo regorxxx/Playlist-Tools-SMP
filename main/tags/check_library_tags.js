@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/01/24
+//07/05/24
 
 /*
 	Check Library Tags
@@ -365,7 +365,7 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 	return [countArray, countArrayFiltered];
 }
 
-function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary, nodeList = null) {
+function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, tagsToCheck, toCompareWith, countArray, indexA, stringSimilThreshold, bUseDic, tagNamesExcludedDic, dictionary, nodeList = null) { // NOSONAR
 	// Identified errors first (same checks at freq. filtering step)
 	const tagKey = tagA + keySplit + tagValueA[0];
 	if (!tagValueA[0].length) { alternativesMap.set(tagKey, 'Tag set to empty value (breaks queries!)'); }
@@ -409,7 +409,7 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 								if (numTerms === 1) { // may be a tag value with one word
 									// suggestion = suggestion;
 								} else { // or multiple words
-									if (index === 0) {
+									if (index === 0) { // NOSONAR
 										suggestion = suggestion + ' ' + array.slice(index + 1, numTerms);
 									} else if (index < array.length - 1) {
 										suggestion = array.slice(0, index) + ' ' + suggestion + ' ' + array.slice(index + 1, numTerms);
@@ -565,7 +565,7 @@ function objectToPairs(inputObj) { // {A:[x,y],B:[z], ...} -> A,x;A,y;B,z;...
 	let outputStr = '';
 	let outputSet = new Set();
 	for (const key in inputObj) {
-		const arr = (Array.isArray(inputObj[key]) 
+		const arr = (Array.isArray(inputObj[key])
 			? inputObj[key]
 			: [...inputObj[key]]
 		).sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'}));
@@ -606,7 +606,7 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 			bSave = true;
 		}
 	}
-	if (bFromFile && bSave) { 
+	if (bFromFile && bSave) {
 		_save(path, JSON.stringify(obj, null, '\t'));
 		console.log('loadTagsExcluded: overwrote file after fixing keys.\n\t' + path);
 	}

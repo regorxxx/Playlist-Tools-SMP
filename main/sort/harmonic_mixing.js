@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/01/24
+//07/05/24
 
 /* exported harmonicMixing, queryReplaceKeys, harmonicMixingCycle */
 /* global globTags:readable */
@@ -35,9 +35,9 @@ function harmonicMixing({
 	bDebug = false,
 } = {}) {
 	// Safety checks
-	if (!keyTag.length) { return; }
-	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('harmonicMixing: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return false; }
-	if (!selItems || !selItems.Count) { return; }
+	if (!keyTag.length) { return null; }
+	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('harmonicMixing: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return null; }
+	if (!selItems || !selItems.Count) { return null; }
 	if (selItems.Count < playlistLength) { playlistLength = selItems.Count; }
 	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
 	const pattern = camelotWheel.createHarmonicMixingPattern(playlistLength, patternOptions); // On camelot_wheel_xxx.js
@@ -69,9 +69,9 @@ function harmonicMixingCycle({
 	bDebug = false,
 } = {}) {
 	// Safety checks
-	if (!keyTag.length) { return; }
-	if (!Number.isSafeInteger(cycleLength) || cycleLength <= 0) { console.log('harmonicMixingCycle: cycleLength (' + cycleLength + ') must be an integer greater than zero'); return false; }
-	if (!selItems || !selItems.Count) { return; }
+	if (!keyTag.length) { return null; }
+	if (!Number.isSafeInteger(cycleLength) || cycleLength <= 0) { console.log('harmonicMixingCycle: cycleLength (' + cycleLength + ') must be an integer greater than zero'); return null; }
+	if (!selItems || !selItems.Count) { return null; }
 	if (selItems.Count < cycleLength) { cycleLength = selItems.Count; }
 	// Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
 	let pool = selItems.Clone();
