@@ -61,6 +61,8 @@
 
 ## [Unreleased][]
 ### Added
+- Buttons: added presets to Search same by query and Search same by combinations buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu.
+- Buttons: added presets to remove/show duplicates and filter playlist buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu.
 - Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression. Use 'Restore defaults' on Pools submenu to enable them.
 - Pools: added top not played tracks mix presets, which output similar tracks to "top tracks" mixes but only if they were not played on the last 2 weeks (to ensure fresh tracks every time). Use 'Restore defaults' on Pools submenu to enable them.
 - Other tools\Write Tags:  added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
@@ -75,6 +77,7 @@
 - Selection manipulation\Find & remove: greatly improved performance (~99%) (which affects when clicking the button to show the menu). It should be much faster now if you have tons of playlists or select many tracks to look for, requiring less than 30 ms with 5K tracks at the same time. As result, the default value for selection limit has been raised, up to 250 tracks (and the same for the limit configuration submenu).
 - UI: changed wording on menu entries related to Playlist Revive.
 - UI: changed wording on some submenus.
+- Buttons: filter playlist button default tags now use artist and date but not title.
 - Readmes: updated dynamic queries readme with latest additions.
 - Helpers: minor performance improvements caching multiple playlist/selection checks on menu processing.
 - Helpers: most json data files are now saved with Windows EOL for compatibility improvements with Windows text editors.
