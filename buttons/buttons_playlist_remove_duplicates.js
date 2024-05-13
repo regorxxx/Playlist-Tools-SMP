@@ -1,5 +1,5 @@
 ﻿'use strict';
-///09/05/24
+///13/05/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -18,13 +18,17 @@ include('..\\helpers\\helpers_xxx.js');
 include('..\\helpers\\buttons_xxx.js');
 /* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
-/* global settingsMenu:readable  */
+/* global settingsMenu:readable */
+include('..\\helpers\\menu_xxx_extras.js');
+/* global _createSubMenuEditEntries:readable  */
+include('..\\helpers\\helpers_xxx_input.js');
+/* global Input:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isStringWeak:readable */
+/* global isBoolean:readable, isStringWeak:readable, isJSON:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
-/* global setProperties:readable, getPropertiesPairs:readable */
+/* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\main\\filter_and_query\\remove_duplicates.js');
 /* global showDuplicates:readable, removeDuplicates:readable */
 
@@ -35,14 +39,28 @@ try { window.DefineScript('Remove Duplicates Button', { author: 'regorxxx', vers
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	checkInputA: 	['Tag or TitleFormat expression to check (1)', globTags.title, { func: isStringWeak }, globTags.title],
-	checkInputB: 	['Tag or TitleFormat expression to check (2)', globTags.artist, { func: isStringWeak }, globTags.artist],
-	checkInputC: 	['Tag or TitleFormat expression to check (3)', globTags.date, { func: isStringWeak }, globTags.date],
-	sortBias: 		['Track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
-	bAdvTitle: 		['Advanced RegExp title matching', true, { func: isBoolean }, true],
-	bMultiple: 		['Partial Multi-value tag matching', true, { func: isBoolean }, true],
-	bIconMode: 		['Icon-only mode?', false, { func: isBoolean }, false]
+	checkInputA: ['Tag or TitleFormat expression to check (1)', globTags.artist, { func: isStringWeak }, globTags.artist],
+	checkInputB: ['Tag or TitleFormat expression to check (2)', globTags.title, { func: isStringWeak }, globTags.title],
+	checkInputC: ['Tag or TitleFormat expression to check (3)', globTags.date, { func: isStringWeak }, globTags.date],
+	sortBias: ['Track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
+	bAdvTitle: ['Advanced RegExp title matching', true, { func: isBoolean }, true],
+	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
+	presets: ['Presets', JSON.stringify([
+		{ name: 'By Artist', settings: { checkInputA: '', checkInputB: globTags.artist, checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Title', settings: { checkInputA: globTags.title, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Date', settings: { checkInputA: '', checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'sep' },
+		{ name: 'By Artist - Title - Date', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'By MBID', settings: { checkInputA: 'MUSICBRAINZ_TRACKID', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'sep' },
+		{ name: 'By Genre', settings: { checkInputA: globTags.genre, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Style', settings: { checkInputA: globTags.style, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Genre - Date', settings: { checkInputA: globTags.genre, checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Style - Date', settings: { checkInputA: globTags.style, checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+	]), { func: isJSON }],
+	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
 };
+newButtonsProperties.presets.push(newButtonsProperties.presets[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -50,7 +68,62 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Remove Duplicates': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Rmv. duplicates', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Rmv. duplicates', function (mask) {
 		if (mask === MK_SHIFT) {
-			settingsMenu(this, true, ['buttons_playlist_remove_duplicates.js'], { bAdvTitle: { popup: globRegExp.title.desc } }).btn_up(this.currX, this.currY + this.currH);
+			settingsMenu(
+				this, true, ['buttons_playlist_remove_duplicates.js'],
+				{
+					bAdvTitle: { popup: globRegExp.title.desc },
+					bMultiple: { popup: 'Partial Multi-value tag matching when removing duplicates.' }
+				},
+				void (0),
+				(menu) => {
+					menu.newEntry({ entryText: 'sep' });
+					const subMenuName = menu.newMenu('Presets');
+					JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+						// Add separators
+						if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
+							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						} else {
+							menu.newEntry({
+								menuName: subMenuName, entryText: entry.name, func: () => {
+									for (const key in entry.settings) {
+										this.buttonsProperties[key][1] = entry.settings[key];
+									}
+									overwriteProperties(this.buttonsProperties);
+								}
+							});
+							menu.newCheckMenuLast(
+								() => Object.keys(entry.settings).every(
+									(key) => this.buttonsProperties[key][1] === entry.settings[key]
+								)
+							);
+						}
+					});
+					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					_createSubMenuEditEntries(menu, subMenuName, {
+						name: 'Remove Duplicates',
+						list: JSON.parse(this.buttonsProperties.presets[1]),
+						defaults: JSON.parse(this.buttonsProperties.presets[3]),
+						input: () => {
+							const entry = {
+								tf: Input.string('string', 'Current settings', 'Enter preset name:', 'Remove Duplicates', 'My name', void (0), true),
+								settings: {
+									checkInputA: this.buttonsProperties.checkInputA[1],
+									checkInputB: this.buttonsProperties.checkInputB[1],
+									checkInputC: this.buttonsProperties.checkInputC[1],
+									bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+									bMultiple: this.buttonsProperties.bMultiple[1]
+								},
+							};
+							return entry;
+						},
+						bNumbered: true,
+						onBtnUp: (presets) => {
+							this.buttonsProperties.presets[1] = JSON.stringify(presets);
+							overwriteProperties(this.buttonsProperties);
+						}
+					});
+				}
+			).btn_up(this.currX, this.currY + this.currH);
 		} else {
 			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => { return key.startsWith('check'); })
 				.map((key) => { return this.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
