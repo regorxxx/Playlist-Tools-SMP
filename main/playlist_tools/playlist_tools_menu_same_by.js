@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//13/05/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -19,14 +19,14 @@
 			const menuName = menu.newMenu(name);
 			{	// Dynamic menu
 				let sameByQueries = [
-					{ args: { sameBy: { [globTags.mood.toLowerCase()]: 6 } } },
-					{ args: { sameBy: { [globTags.genre.toLowerCase()]: 2 } } },
-					{ args: { sameBy: { [globTags.style.toLowerCase()]: 2 } } },
-					{ args: { sameBy: { [globTags.composer.toLowerCase()]: 2 } } },
-					{ args: { sameBy: { [globTags.key.toLowerCase()]: 1 } } },
+					{ args: { sameBy: { [globTags.mood.toUpperCase()]: 6 } } },
+					{ args: { sameBy: { [globTags.genre.toUpperCase()]: 2 } } },
+					{ args: { sameBy: { [globTags.style.toUpperCase()]: 2 } } },
+					{ args: { sameBy: { [globTags.composer.toUpperCase()]: 2 } } },
+					{ args: { sameBy: { [globTags.key.toUpperCase()]: 1 } } },
 					{ name: 'sep' },
-					{ args: { sameBy: { [globTags.style.toLowerCase()]: 2, [globTags.mood.toLowerCase()]: 6 } } },
-					{ args: { sameBy: { [globTags.style.toLowerCase()]: 2, [globTags.date.toLowerCase()]: 10 } } },
+					{ args: { sameBy: { [globTags.style.toUpperCase()]: 2, [globTags.mood.toUpperCase()]: 6 } } },
+					{ args: { sameBy: { [globTags.style.toUpperCase()]: 2, [globTags.date.toUpperCase()]: 10 } } },
 				];
 				let selArg = { ...sameByQueries[0] };
 				const sameByQueriesDefaults = [...sameByQueries];
@@ -144,23 +144,23 @@
 			{	// Static menus: Special playlist (at other menu)
 				if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
 					menu.newEntry({ menuName: specialMenu, entryText: 'Based on Queries:', func: null, flags: MF_GRAYED }); // Jumps just before special playlists
-					const artist = [globTags.artistRaw.toLowerCase()];
-					const composer = [globTags.composer.toLowerCase()];
+					const artist = globTags.artistRaw.toUpperCase();
+					const composer = globTags.composer.toUpperCase();
 					const selArgs = [
 						{ title: 'sep', menu: specialMenu },
 						{ // Finds tracks where artist or involved people matches any from selection
 							title: 'Same artist(s) or featured artist(s)', menu: specialMenu,
 							args: {
-								sameBy: { [artist]: 1, 'artist': 1, involvedpeople: 1 },
-								remapTags: { [artist]: ['involvedpeople'], artist: ['involvedpeople'], involvedpeople: [...new Set([artist, 'artist'])] },
+								sameBy: { [artist]: 1, 'ARTIST': 1, INVOLVEDPEOPLE: 1 },
+								remapTags: { [artist]: ['INVOLVEDPEOPLE'], ARTIST: ['INVOLVEDPEOPLE'], INVOLVEDPEOPLE: [...new Set([artist, 'ARTIST'])] },
 								bOnlyRemap: false, logic: 'OR'
 							}
 						},
 						{ // Finds tracks where involved people matches artist from selection (remap)
 							title: 'Find collaborations along other artists', menu: specialMenu,
 							args: {
-								sameBy: { [artist]: 1, 'artist': 1 },
-								remapTags: { [artist]: ['involvedpeople'], artist: ['involvedpeople'] },
+								sameBy: { [artist]: 1, 'ARTIST': 1 },
+								remapTags: { [artist]: ['INVOLVEDPEOPLE'], ARTIST: ['INVOLVEDPEOPLE'] },
 								bOnlyRemap: true,
 								logic: 'OR'
 							}
@@ -169,7 +169,7 @@
 							title: 'Music by same composer(s) as artist(s)', menu: specialMenu,
 							args: {
 								sameBy: { [composer]: 1 },
-								remapTags: { [composer]: [...new Set(['involvedpeople', 'artist', 'album artist', artist])] },
+								remapTags: { [composer]: [...new Set(['INVOLVEDPEOPLE', 'ARTIST', 'ALBUM ARTIST', artist])] },
 								bOnlyRemap: true,
 								logic: 'OR'
 							}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//13/05/24
 
 /*
 	Search same by
@@ -91,7 +91,7 @@ function searchSameByCombs({
 	checkDuplicatesBias = globQuery.remDuplBias,
 	bAdvTitle = true,
 	bMultiple = true,
-	sameBy = { genre: 1, style: 2, mood: 5 },
+	sameBy = { GENRE: 1, STYLE: 2, MOOD: 5 },
 	playlistName = 'Search...',
 	logic = 'AND',
 	remapTags = {},
@@ -146,7 +146,7 @@ function searchSameByCombs({
 	}
 	const test = bProfile ? new FbProfiler('searchSameByCombs') : null;
 	if (!sel) {
-		console.log('No track selected for mix.');
+		console.log('searchSameByCombs: No track selected for mix.');
 		return null;
 	}
 
@@ -159,7 +159,7 @@ function searchSameByCombs({
 		const tagName = tags[i].toLowerCase(); // To match sets!
 		const bIsFunc = tagName.indexOf('$') !== -1;
 		const tagNameTF = bIsFunc ? tagName : _t(tagName); // It's a function? Then at eval as is, and at queries use '"' + tagNameTF + '"'
-		const queryTagNameTF = bIsFunc ? _q(tagNameTF) : tagName;
+		const queryTagNameTF = bIsFunc ? _q(tagNameTF) : tagName.toUpperCase();
 		const tagIdx = sel_info.MetaFind(tags[i]);
 		const tagNumber = (tagIdx !== -1) ? sel_info.MetaValueCount(tagIdx) : 0;
 		if (tagNumber === 0 && !dynamicTags.has(tagName)) {
@@ -183,14 +183,14 @@ function searchSameByCombs({
 				if (valueUpper !== valueLower) {
 					let tempQuery = [];
 					if (valueLower > tagValue) { // we reached the limits and swapped values (x - y ... upperLimit + 1 = lowerLimit ... x ... x + y ... upperLimit)
-						tempQuery[0] = tagName + ' GREATER ' + lowerLimit + ' AND ' + tagName + ' LESS ' + tagValue; // (lowerLimit , x)
-						tempQuery[1] = tagName + ' GREATER ' + tagValue + ' AND ' + tagName + ' LESS ' + valueLower; // (x, x + y)
-						tempQuery[2] = tagName + ' GREATER ' + valueUpper + ' AND ' + tagName + ' LESS ' + upperLimit; // (x - y, upperLimit)
+						tempQuery[0] = queryTagNameTF + ' GREATER ' + lowerLimit + ' AND ' + queryTagNameTF + ' LESS ' + tagValue; // (lowerLimit , x)
+						tempQuery[1] = queryTagNameTF + ' GREATER ' + tagValue + ' AND ' + queryTagNameTF + ' LESS ' + valueLower; // (x, x + y)
+						tempQuery[2] = queryTagNameTF + ' GREATER ' + valueUpper + ' AND ' + queryTagNameTF + ' LESS ' + upperLimit; // (x - y, upperLimit)
 					} else { // (x - y ... x .... x + y)
-						tempQuery[0] = tagName + ' GREATER ' + valueLower + ' AND ' + tagName + ' LESS ' + valueUpper; // (x - y , x + y)
+						tempQuery[0] = queryTagNameTF + ' GREATER ' + valueLower + ' AND ' + queryTagNameTF + ' LESS ' + valueUpper; // (x - y , x + y)
 					}
 					query[ql] += queryJoin(tempQuery, 'OR');
-				} else { query[ql] += tagName + ' EQUAL ' + tagValue; }
+				} else { query[ql] += queryTagNameTF + ' EQUAL ' + tagValue; }
 			} else { // or a string one
 				let tagValues = [];
 				tagValues.length = tagNumber;
@@ -228,16 +228,18 @@ function searchSameByCombs({
 				if (bAscii) { tagValues = tagValues.map((val) => { return _asciify(val); }); }
 				let tagQuery = k_combinations(tagValues, k);
 				query[ql] = '';
-				if (Object.keys(remapTags).length > 0 && Object.hasOwn(remapTags, tagName)) {
+				if (Object.keys(remapTags).length > 0 && Object.hasOwn(remapTags, tags[i])) {
 					let subQuery = [];
 					if (!bOnlyRemap) { // When only mixing, don't use the query for the original tag... just remap
-						subQuery.push(queryCombinations(tagQuery, tagName, 'OR', 'AND'));
+						subQuery.push(queryCombinations(tagQuery, queryTagNameTF, 'OR', 'AND'));
 					}
-					remapTags[tagName].forEach((tag) => {
-						subQuery.push(queryCombinations(tagQuery, tag, 'OR', 'AND'));
+					remapTags[tags[i]].forEach((tag) => {
+						const bIsFunc = tag.indexOf('$') !== -1;
+						const remapTag = bIsFunc ? _q(tag) : tag.toUpperCase();
+						subQuery.push(queryCombinations(tagQuery, remapTag, 'OR', 'AND'));
 					});
 					query[ql] += queryJoin(subQuery, 'OR');
-				} else { query[ql] += queryCombinations(tagQuery, tagName, 'OR', 'AND'); }
+				} else { query[ql] += queryCombinations(tagQuery, queryTagNameTF, 'OR', 'AND'); }
 			}
 		}
 		i++;
@@ -292,17 +294,17 @@ function searchSameByQueries({
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return; }
 	const test = bProfile ? new FbProfiler('searchSameByQueries') : null;
 	if (!sel) {
-		console.log('No track selected for mix.');
+		console.log('searchSameByQueries: No track selected for mix.');
 		return null;
 	}
 	sameBy.forEach((tags) => {
 		if (!isArrayStrings(tags)) {
-			console.log('searchSameByCombs: sameBy ' + JSON.stringify(sameBy) + ' some values are not Strings');
+			console.log('searchSameByQueries: sameBy ' + JSON.stringify(sameBy) + ' some values are not Strings');
 			return null;
 		}
 	});
 	if (!isArrayStrings(checkDuplicatesBy)) {
-		console.log('searchSameByCombs: checkDuplicatesBy ' + checkDuplicatesBy + ' some keys are not String');
+		console.log('searchSameByQueries: checkDuplicatesBy ' + checkDuplicatesBy + ' some keys are not String');
 		return null;
 	}
 	let selInfo = sel.GetFileInfo();
@@ -312,7 +314,7 @@ function searchSameByQueries({
 		tagsArr.forEach((tag) => {
 			let tagIdx = selInfo.MetaFind(tag);
 			let tagNumber = (tagIdx !== -1) ? selInfo.MetaValueCount(tagIdx) : 0;
-			if (tagNumber === 0) { return; }
+			if (tagNumber === 0) { console.log('searchSameByQueries: Missing tag ' + tag); return; }
 			for (let j = 0; j < tagNumber; j++) {
 				tagVal[i].push(selInfo.MetaValue(tagIdx, j));
 			}
@@ -324,27 +326,30 @@ function searchSameByQueries({
 	tagVal.forEach((tagsArr, i) => {
 		if (tagsArr.length) { query[i] = queryJoin(queryCombinations(tagsArr, sameBy[i], 'AND'), 'OR'); }
 	});
-	query = queryJoin(query, 'AND');
-	if (forcedQuery) {
-		query = _p(query) + ' AND ' + forcedQuery;
-	}
+	let outputHandleList = null;
+	if (query.length) {
+		query = queryJoin(query, 'AND');
+		if (forcedQuery) {
+			query = _p(query) + ' AND ' + forcedQuery;
+		}
+		//Load query
+		console.log('Playlist created: ' + query);
+		try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query); } // Sanity check
+		catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return null; }
 
-	//Load query
-	console.log('Playlist created: ' + query);
-	let outputHandleList;
-	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return; }
-
-	//Find and remove duplicates. Sort Random
-	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
-		outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle, bMultiple });
-	}
-	const oldCount = outputHandleList.Count;
-	//Limit n tracks
-	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
-	if (bSendToPls) {
-		console.log('Items retrieved by query: ' + oldCount + ' tracks');
-		sendToPlaylist(outputHandleList, playlistName);
+		//Find and remove duplicates. Sort Random
+		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
+			outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bProfile, bAdvTitle, bMultiple });
+		}
+		const oldCount = outputHandleList.Count;
+		//Limit n tracks
+		outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+		if (bSendToPls) {
+			console.log('Items retrieved by query: ' + oldCount + ' tracks');
+			sendToPlaylist(outputHandleList, playlistName);
+		}
+	} else {
+		console.log('searchSameByQueries: Track is missing all tags and no query can be created.');
 	}
 	if (bProfile) { test.Print('Task #1: Search same tracks by tags query', false); }
 	return outputHandleList;
