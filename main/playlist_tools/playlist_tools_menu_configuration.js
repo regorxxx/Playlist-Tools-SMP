@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//14/05/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -173,7 +173,7 @@
 					menuName: subMenuName, entryText: 'Use RegExp for title matching', func: () => {
 						defaultArgs.bAdvTitle = !defaultArgs.bAdvTitle;
 						menu_properties.bAdvTitle[1] = defaultArgs.bAdvTitle;
-						if (defaultArgs.bAdvTitle) { fb.ShowPopupMessage(globRegExp.title.desc, window.Name); }
+						fb.ShowPopupMessage(globRegExp.title.desc, scriptName + ': ' + configMenu);
 						overwriteMenuProperties();
 					}
 				});
@@ -182,7 +182,14 @@
 					menuName: subMenuName, entryText: 'Partial Multi-value tag matching', func: () => {
 						defaultArgs.bMultiple = !defaultArgs.bMultiple;
 						menu_properties.bMultiple[1] = defaultArgs.bMultiple;
-						if (defaultArgs.bMultiple) { fb.ShowPopupMessage(globRegExp.singleTags.desc, window.Name); }
+						fb.ShowPopupMessage(
+							'When this option is enabled, multi-value tags are parsed independently and a track may be considered a duplicate if at least one of those values match (instead of requiring all to match in the same order).\n\nSo for \'[ARTIST, DATE, TITLE]\' tags, these are duplicates with this option enabled:\n' +
+							'\nJimi Hendrix - 1969 - Blabla' +
+							'\nJimi Hendrix experience, Jimi Hendrix - 1969 - Blabla' +
+							'\nBand of Gypys, Jimi Hendrix - 1969 - Blabla' +
+							'\n\nWith multi-value parsing disabled, these are considered non-duplicated tracks since not all artists match.',
+							scriptName + ': ' + configMenu
+						);
 						overwriteMenuProperties();
 					}
 				});
