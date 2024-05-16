@@ -1,5 +1,5 @@
 ﻿'use strict';
-///14/05/24
+//16/05/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -14,13 +14,13 @@
 
 /* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, VK_CONTROL:readable, MK_CONTROL:readable, globRegExp:readable */
+/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, VK_CONTROL:readable, MK_CONTROL:readable, globRegExp:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
-/* global settingsMenu:readable */
+/* global settingsMenu:readable, _menu:readable */
 include('..\\helpers\\menu_xxx_extras.js');
-/* global _createSubMenuEditEntries:readable  */
+/* global _createSubMenuEditEntries:readable */
 include('..\\helpers\\helpers_xxx_input.js');
 /* global Input:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -138,6 +138,31 @@ addButton({
 			const bMultiple = this.buttonsProperties.bMultiple[1];
 			if (mask === MK_CONTROL) {
 				showDuplicates({ checkKeys, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+			} else if (mask === MK_SHIFT + MK_CONTROL) {
+				const menu = new _menu();
+				menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
+				menu.newEntry({ entryText: 'sep' });
+				JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+					// Add separators
+					if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
+						menu.newEntry({ entryText: 'sep' });
+					} else {
+						menu.newEntry({
+							entryText: entry.name, func: () => {
+								const preset = { ...entry.settings };
+								['checkInputA', 'checkInputB', 'checkInputC'].forEach((k) => {
+									if (Object.hasOwn(preset, k) && preset[k].length) {
+										if (!Object.hasOwn(preset, 'checkKeys')) { preset.checkKeys = []; }
+										preset.checkKeys.push(preset[k]);
+										delete preset[k];
+									}
+								});
+								removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false, ...preset });
+							}
+						});
+					}
+				});
+				menu.btn_up(this.currX, this.currY + this.currH);
 			} else {
 				removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
 			}
@@ -156,6 +181,7 @@ addButton({
 			info += '\n-----------------------------------------------------';
 			info += '\n(Ctrl + L. Click to show duplicates)';
 			info += '\n(Shift + L. Click to open config menu)';
+			info += '\n(Shift + Ctrl + L. Click to remove duplicates by preset)';
 		}
 		return info;
 	}, prefix, newButtonsProperties, chars.duplicates, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),

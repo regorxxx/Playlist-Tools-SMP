@@ -62,7 +62,7 @@
 ## [Unreleased][]
 ### Added
 - Buttons: added presets to Search same by query and Search same by combinations buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu.
-- Buttons: added presets to remove/show duplicates and filter playlist buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu.
+- Buttons: added presets to remove/show duplicates and filter playlist buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu. Additionally, a preset can be directly applied (without changing the button settings) pressing Shift + Ctrl + L. Click.
 - Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression. Use 'Restore defaults' on Pools submenu to enable them.
 - Pools: added top not played tracks mix presets, which output similar tracks to "top tracks" mixes but only if they were not played on the last 2 weeks (to ensure fresh tracks every time). Use 'Restore defaults' on Pools submenu to enable them.
 - Other tools\Write Tags:  added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
