@@ -42,16 +42,16 @@
 +-----------------+--------+--------------------+---------------------+
 | toPls           | String | -                  | Any string          |
 +-----------------+--------+--------------------+---------------------+
-|                 |        |                    | random              |
-|                 |        |                    | start               |
-|                 |        |                    | end                 |
+|                 |        |                    | random (default)    |
+|                 |        | (optional for all) | start               |
+|                 |        |  sources)          | end                 |
 | pickMethod      | Object | Pair source-string | (per source)        |
 +-----------------+--------+--------------------+---------------------+
 |                 |        | (optional, once    | TF for sorting      |
 | sort            | String |  per pool)         | "" is random        |
 +-----------------+--------+--------------------+---------------------+
 |                 |        | (optional, once    | True to use         |
-| harmonicMix     | Bool   |  per pool)         | Not set to disable  |
+| harmonicMix     | Bool.  |  per pool)         | Not set to disable  |
 +-----------------+--------+--------------------+---------------------+
 |                 |        | (optional, once    | TF/Tag for sorting  |
 | smartShuffle    | String |  per pool)         | Not set to disable  |

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//20/05/24
 
 /* exported _pools */
 
@@ -379,7 +379,11 @@ function _pools({
 			if (!plsName.startsWith('_GROUP_')) {
 				const count = handleListFrom.Count;
 				if (count !== 1) {
-					handleListFrom = this.pickMethods[pool.pickMethod[plsName]](handleListFrom, num, count);
+					const pickMethod = (Object.hasOwn(pool, 'pickMethod')
+						? pool.pickMethod[plsName]
+						: ''
+					) || 'random';
+					handleListFrom = this.pickMethods[pickMethod](handleListFrom, num, count);
 				}
 				console.log(scriptName + ': pool size -> ' + handleListFrom.Count + ' tracks (from ' + count + ' deduplicated / ' + sourceCount + ' total)'); // DEBUG
 			} else { console.log(scriptName + ': pool size -> ' + handleListFrom.Count + ' tracks from ' + num + ' groups'); }
