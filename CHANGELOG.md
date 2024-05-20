@@ -71,6 +71,7 @@
 - Readmes: added readme for global settings found at 'foobar2000\js_data\presets\global' .json files.
 - Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting for console logging to file. Disabled by default. Now this is a change from the previous behavior, where console was always logged to 'console.log' file at the [FOOBAR PROFILE FOLDER]. It can now be switched, but since it's probably not useful for most users is disabled by default.
 ### Changed
+- Pools: 'pickMethod' key per source on pool is no longer needed and if any is omitted, 'random' is used by default.
 - Remove Duplicates: improved performance of duplicates removal in multiple places.
 - Other tools\Import track list: added setting to skip lines starting with some string.
 - Other tools\Import track list: improved file retrieval from online sources.
@@ -85,8 +86,10 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Playlist Revive: fixed handling of files without tags which were supposed to match by paths similarity.
 - Quicksearch: workaround for 'ALBUM ARTIST' not working with multi-value tags in queries. It now uses that tag only when it's present on files, and fallbacks to 'ARTIST' otherwise. To use the new query, restore defaults on the 'Same Artist(s)' entry, the entire entry list or the button (the last 2 will remove any customized entry too).
 - Other tools\Write Tags: tool not processing next step automatically after Chromaprint tagging in some cases.
+- Fixed possible crash handling web request while closing foobar2000. See [this](https://hydrogenaud.io/index.php/topic,121047.msg1044579.html#msg1044579), although current methods don't use 'WinHttp.WinHttpRequest.5.1' but 'Microsoft.XMLHTTP' which hasn't given any problems yet.
 
 ## [4.2.0] - 2024-03-21
 ### Added
