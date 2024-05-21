@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//21/05/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -289,15 +289,31 @@ function importPreset(path = folders.data + 'playlistTools_presets.json') {
 		readme = newPresets.readme;
 		delete newPresets.readme;
 	}
+	// Check
+	const keys = Object.keys(newPresets);
+	if (keys.some((key) => !Object.hasOwn(menu_properties, key))) {
+		readme += (readme.length ? '\n\n' : '');
+		fb.ShowPopupMessage(
+			readme +
+			'Some keys are not recognized:\n\n' +
+			keys.map((key) => !Object.hasOwn(menu_properties, key) ? key : null).filter(Boolean).join('\n'),
+			scriptName + ': Presets (' + file.split('\\').pop() + ')'
+		);
+		return false;
+	}
 	// List entries
-	const presetList = Object.keys(newPresets).map((key) => { return '+ ' + key + ' -> ' + menu_properties[key][0] + '\n\t- ' + newPresets[key].map((preset) => { return preset.name + (Object.hasOwn(preset, 'method') ? ' (' + preset.method + ')' : ''); }).join('\n\t- '); });
+	const presetList = keys.map((key) =>
+		'+ ' + key + ' -> ' + menu_properties[key][0] + '\n\t- ' + newPresets[key].map((preset) =>
+			preset.name + (Object.hasOwn(preset, 'method') ? ' (' + preset.method + ')' : '')
+		).join('\n\t- ')
+	);
 	readme += (readme.length ? '\n\n' : '') + 'List of presets:\n' + presetList;
 	fb.ShowPopupMessage(readme, scriptName + ': Presets (' + file.split('\\').pop() + ')');
 	// Accept?
 	const answer = WshShell.Popup('Check the popup for description. Do you want to import it?', 0, scriptName + ': Presets (' + file.split('\\').pop() + ')', popup.question + popup.yes_no);
 	if (answer === popup.no) { return false; }
 	// Import
-	Object.keys(newPresets).forEach((key) => {
+	keys.forEach((key) => {
 		// Merge with current presets
 		let currentMenu = JSON.parse(menu_properties[key][1]);
 		if (Object.hasOwn(presets, key)) { presets[key] = [...presets[key], ...newPresets[key]]; }
