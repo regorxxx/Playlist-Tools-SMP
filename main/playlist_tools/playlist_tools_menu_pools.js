@@ -46,6 +46,7 @@
 				const plLenQuart = Math.floor(plLen / 4);
 				let pools = [
 					{
+						folder: 'Top tracks',
 						name: 'Top tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
@@ -55,6 +56,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top tracks mix (harmonic)', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
@@ -64,6 +66,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top tracks mix (intercalate)', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
@@ -73,8 +76,9 @@
 							sort: '%PLAYLIST_INDEX%',
 						}
 					},
-					{ name: 'sep' },
+					{ folder: 'Top tracks', name: 'sep' },
 					{
+						folder: 'Top tracks',
 						name: 'Top this year tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#' },
@@ -84,6 +88,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top last 5 years tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
@@ -93,6 +98,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top last 10 years tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#' },
@@ -101,8 +107,9 @@
 							sort: '',
 						}
 					},
-					{ name: 'sep' },
+					{ folder: 'Top tracks', name: 'sep' },
 					{
+						folder: 'Top tracks',
 						name: 'Top recently played tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)' },
@@ -112,6 +119,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top recently added tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 5 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 5 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS' },
@@ -120,8 +128,9 @@
 							sort: '',
 						}
 					},
-					{ name: 'sep' },
+					{ folder: 'Top tracks', name: 'sep' },
 					{
+						folder: 'Top tracks',
 						name: 'Top not played tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEK OR %LAST_PLAYED% DURING LAST 2 WEEK)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)' },
@@ -131,6 +140,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top not played this year tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#' },
@@ -140,6 +150,7 @@
 						}
 					},
 					{
+						folder: 'Top tracks',
 						name: 'Top not played last 5 years tracks mix', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
@@ -150,6 +161,7 @@
 					},
 					{ name: 'sep' },
 					{
+						folder: 'From current track',
 						name: 'Current genre/style and top tracks', pool: {
 							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
 							query: { _LIBRARY_0: '' + globTags.genre + ' IS #' + globTags.genre + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: globTags.style + ' IS #' + globTags.style + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
@@ -159,6 +171,7 @@
 						}
 					},
 					{
+						folder: 'From current track',
 						name: 'Current genre/style and instrumentals', pool: {
 							fromPls: { _LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart },
 							query: { _LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5', _LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globQuery.instrumental + ') AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)' },
@@ -169,6 +182,7 @@
 					},
 					{ name: 'sep' },
 					{
+						folder: 'Classic Pools',
 						name: 'Classic Pools (50 artists current genre)', pool: {
 							fromPls: { _GROUP_0: 50 },
 							group: { _GROUP_0: globTags.artist },
@@ -179,6 +193,7 @@
 						}
 					},
 					{
+						folder: 'Classic Pools',
 						name: 'Classic Pools (50 random artists)', pool: {
 							fromPls: { _GROUP_0: 50 },
 							group: { _GROUP_0: globTags.artist },
@@ -189,6 +204,7 @@
 						}
 					},
 					{
+						folder: 'Classic Pools',
 						name: 'Classic Pools (all dates)', pool: {
 							fromPls: { _GROUP_0: Infinity },
 							group: { _GROUP_0: globTags.date },
@@ -199,6 +215,7 @@
 						}
 					},
 					{
+						folder: 'Classic Pools',
 						name: 'Classic Pools (3 tracks per artist letter)', pool: {
 							fromPls: { _GROUP_0: Infinity },
 							group: { _GROUP_0: '$lower($ascii($left(' + globTags.artist + ',1)))' },
@@ -209,6 +226,7 @@
 						}
 					},
 					{
+						folder: 'Classic Pools',
 						name: 'Classic Pools (3 tracks per genre)', pool: {
 							fromPls: { _GROUP_0: Infinity },
 							group: { _GROUP_0: globTags.genre },
@@ -238,9 +256,13 @@
 						pools = JSON.parse(menu_properties['pools'][1]);
 						const entryNames = new Set();
 						pools.forEach((poolObj) => {
+							// Add submenus
+							const subMenu = Object.hasOwn(poolObj, 'folder')
+								? menu.findOrNewMenu(poolObj.folder, menuName)
+								: menuName;
 							// Add separators
 							if (Object.hasOwn(poolObj, 'name') && poolObj.name === 'sep') {
-								menu.newEntry({ menuName, entryText: 'sep' });
+								menu.newEntry({ menuName: subMenu, entryText: 'sep' });
 							} else {
 								// Create names for all entries
 								let poolName = poolObj.name || '';
@@ -267,7 +289,7 @@
 									});
 								}
 								menu.newEntry({
-									menuName, entryText: poolName, func: () => {
+									menuName: subMenu, entryText: poolName, func: () => {
 										poolsGen.changeConfig({
 											sortBias: defaultArgs.sortBias,
 											checkDuplicatesBy: defaultArgs.checkDuplicatesBy,
