@@ -56,9 +56,8 @@
 |                 |        | (optional, once    | TF/Tag for sorting  |
 | smartShuffle    | String |  per pool)         | Not set to disable  |
 +-----------------+--------+--------------------+---------------------+
-|                 |        |                    | standard            |
-|                 |        | (optional for all) | intercalate         |
-| insertMethod    | String |  sources)          | (per source)        |
+|                 |        | (optional, once    | standard            |
+| insertMethod    | String |  per pool)         | intercalate         |
 +-----------------+--------+--------------------+---------------------+
 |                 |        | (optional for all  |                     |
 |                 |        |  _GROUP_# sources) |                     |
