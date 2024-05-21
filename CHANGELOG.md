@@ -65,6 +65,7 @@
 - Buttons: added presets to remove/show duplicates and filter playlist buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu. Additionally, a preset can be directly applied (without changing the button settings) pressing Shift + Ctrl + L. Click.
 - Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression. Use 'Restore defaults' on Pools submenu to enable them.
 - Pools: added top not played tracks mix presets, which output similar tracks to "top tracks" mixes but only if they were not played on the last 2 weeks (to ensure fresh tracks every time). Use 'Restore defaults' on Pools submenu to enable them.
+- Pools: added subfolders to pools, so now pools can be grouped on submenus and have many more of them with proper classification. Restore default entries to see changes.
 - Other tools\Write Tags:  added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
 - Quicksearch: added new entry at ' Partial match' submenu named 'By Title and same Artist', which further filters the partial match by title to only output results by the same artist than the selected one(s). This may be used to easily find duplicates by title, no matter if they have extra strings like '(live)', etc. The old entry also worked the same but the output included tacks from any artist, so the new one reduces the search one step.
 - Remove Duplicates: added multi-value parsing to tools and buttons related to duplicates search and removal. i.e. A track with multiple artists but same title can be considered a duplicated if at least one of those artists matches (instead of requiring all to match). This can also be used for more exotic uses, like filtering a playlist and ensuring only X tracks share any genre. This setting can be switched at the 'Configuration\Duplicates Handling' submenu. See [this](https://github.com/regorxxx/Search-by-Distance-SMP/issues/31#issuecomment-2111061984) for more info.
@@ -72,10 +73,13 @@
 - Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting for console logging to file. Disabled by default. Now this is a change from the previous behavior, where console was always logged to 'console.log' file at the [FOOBAR PROFILE FOLDER]. It can now be switched, but since it's probably not useful for most users is disabled by default.
 ### Changed
 - Pools: 'pickMethod' key per source on pool is no longer needed and if any is omitted, 'random' is used by default.
+- Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
+- Presets: added extra checks when importing any Playlist Tools preset. Popups will be thrown if an error is found.
 - Remove Duplicates: improved performance of duplicates removal in multiple places.
 - Other tools\Import track list: added setting to skip lines starting with some string.
 - Other tools\Import track list: improved file retrieval from online sources.
 - Selection manipulation\Find & remove: greatly improved performance (~99%) (which affects when clicking the button to show the menu). It should be much faster now if you have tons of playlists or select many tracks to look for, requiring less than 30 ms with 5K tracks at the same time. As result, the default value for selection limit has been raised, up to 250 tracks (and the same for the limit configuration submenu).
+- Configuration: changed the remove duplicates bias to prefer lossless tracks with 16 bits per sample, 44.1 Khz sample rate and greater %DYNAMIC RANGE% values.
 - UI: changed wording on menu entries related to Playlist Revive.
 - UI: changed wording on some submenus.
 - Buttons: filter playlist button default tags now use artist and date but not title.
