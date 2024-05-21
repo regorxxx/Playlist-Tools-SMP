@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/05/24
+//21/05/24
 
 /* exported _pools */
 
@@ -143,6 +143,21 @@ function _pools({
 	this.processPool = async (pool, properties, options = { toPls: true }) => {
 		options = { toPls: true, ...(options || {}) };
 		const profiler = this.bProfile ? new FbProfiler('processPool') : null;
+		let bError = false;
+		// Checks
+		['query', 'deDuplicate', 'pickMethod', 'limit'].forEach((type) => {
+			if (Object.hasOwn(pool, type)) {
+				Object.keys(pool[type]).forEach((checkSource) => {
+					const found = Object.keys(pool.fromPls).some((source) => source === checkSource);
+					if (!found) {
+						console.log(scriptName + ': ' + type + ' source not found -> ' + checkSource);
+						bError = true;
+					}
+				});
+			}
+		});
+		if (bError) { fb.ShowPopupMessage('There are some errors processing the pool, check the console log.', scriptName); }
+		// Process
 		const libItems = Object.keys(pool.fromPls).some((key) => key.startsWith('_LIBRARY_') || key.startsWith('_GROUP_'))
 			? fb.GetLibraryItems()
 			: null;
