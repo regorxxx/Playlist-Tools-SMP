@@ -82,12 +82,14 @@
 - Configuration: changed the remove duplicates bias to prefer lossless tracks with 16 bits per sample, 44.1 Khz sample rate and greater %DYNAMIC RANGE% values.
 - UI: changed wording on menu entries related to Playlist Revive.
 - UI: changed wording on some submenus.
+- UI: minor menu tweaks to reports.
 - Buttons: filter playlist button default tags now use artist and date but not title.
 - Readmes: updated dynamic queries readme with latest additions.
 - Helpers: minor performance improvements caching multiple playlist/selection checks on menu processing.
 - Helpers: most json data files are now saved with Windows EOL for compatibility improvements with Windows text editors.
 - Helpers: json button files are now saved with Windows EOL for compatibility improvements with Windows text editors.
 - Helpers: updated helpers.
+- Improved compatibility when running foobar2000 on drives without recycle bin.
 ### Removed
 ### Fixed
 - Playlist Revive: fixed handling of files without tags which were supposed to match by paths similarity.

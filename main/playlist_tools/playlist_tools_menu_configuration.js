@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/05/24
+//03/06/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -335,7 +335,7 @@
 					const answer = WshShell.Popup('This will export all user presets (but not the default ones) as a json file, which can be imported later in any Playlist Tools panel.\nThat file can be easily edited with a text editor to add, tune or remove entries. Presets can also be manually deleted in their associated menu.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 					if (answer === popup.yes) {
 						const path = folders.data + 'playlistTools_presets.json';
-						_recycleFile(path);
+						_recycleFile(path, true);
 						const readme = 'Backup ' + new Date().toString();
 						if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g, '\r\n'))) {
 							_explorer(path);
@@ -357,7 +357,7 @@
 						if (answerPresets === popup.yes) {
 							copy = { ...presets };
 						} else {
-							_recycleFile(path);
+							_recycleFile(path, true);
 							const readme = 'Backup ' + new Date().toString();
 							if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g, '\r\n'))) {
 								console.log('Playlist tools: presets backup saved at ' + path);
