@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/04/24
+//01/06/24
 
 /*
 	Automatic tagging...
@@ -24,7 +24,7 @@ include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable */
 
 function TagAutomation({
-	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: true, LRA: true, KEY: true} */,
+	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: true, LRA: true, KEY: true, bpmAnaly: false } */,
 	bOutputTools = false,
 	bOutputDefTools = false,
 	bWineBug = false,
@@ -74,6 +74,10 @@ function TagAutomation({
 		{
 			key: 'tpScan', tag: ['TRUEPEAK_SCANNER_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_TRUE_PEAK', 'TRUEPEAK_SCANNER_TRACK_GAIN', 'REPLAYGAIN_TRACK_TRUE_PEAK','TRUEPEAK_SCANNER_PEAK_POSITION','TRUEPEAK_SCANNER_CLIPPED_SAMPLES','TRUEPEAK_SCANNER_CLIPPED_SAMPLES_ALBUM'],
 			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true), bDefault: false
+		},
+		{
+			key: 'bpmAnaly', tag: ['BPM'],
+			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true), bDefault: false
 		},
 		{
 			key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
@@ -152,9 +156,12 @@ function TagAutomation({
 			if (this.toolsByKey.essentiaFastKey) {
 				console.popup('Essentia (fast) is being used to calculate Key tag, along Essentia (full extractor) for other tag(s); in such case it\'s recommended to disable the former and retrieve the key tag with the full extractor instead. Results will be the same.\n\nCalculation time will decrease since Essentia (full extractor) computes all low level data even when retrieving only a single tag, thus skipping an additional step.', 'Tags Automation');
 			}
+			if (this.toolsByKey.bpmAnaly) {
+				console.popup('BPM (foo_bpm) is being used to calculate BPM tag, along Essentia (full extractor) for other tag(s); in such case it\'s recommended to disable the former and retrieve the BPM tag with the full extractor instead.\n\nCalculation time will decrease since Essentia (full extractor) computes all low level data even when retrieving only a single tag, thus skipping an additional step.', 'Tags Automation');
+			}
 		}
 		if (this.bToolPopups && this.toolsByKey.rgScan && this.toolsByKey.tpScan) {
-			console.popup('True Peak Scanner is being used along ReplayGain. Note some custom settings may duplicate file scanning or tagging unnecesarily, so it may be desirable to only use one of them. Check their original documentation for more usage info.', 'Tags Automation');
+			console.popup('True Peak Scanner is being used along ReplayGain. Note some custom settings may duplicate file scanning or tagging unnecessarily, so it may be desirable to only use one of them. Check their original documentation for more usage info.', 'Tags Automation');
 		}
 		this.countItems = 0;
 		this.currentTime = 0;
@@ -382,7 +389,7 @@ function TagAutomation({
 				} else { bSucess = false; }
 				break;
 			case 10: // These require user input before saving, so they are read only operations and can be done at the same time
-				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan ) {
+				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan || this.toolsByKey.bpmAnaly ) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
@@ -412,6 +419,12 @@ function TagAutomation({
 							bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan True Peaks and Positions (as albums)', cacheSelItems, 8);
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
+					}
+					if (this.toolsByKey.bpmAnaly) {
+						setTimeout(function () {
+							bSucess = fb.RunContextCommandWithMetadb('Automatically analyse BPMs', cacheSelItems, 8);
+						}, this.currentTime); // Takes ~500 ms / track
+						this.currentTime += 15000 * this.countItems; // But we give them some time to run before firing the next one
 					}
 				} else { bSucess = false; }
 				break;
