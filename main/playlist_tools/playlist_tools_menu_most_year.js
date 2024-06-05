@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//05/06/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -139,7 +139,7 @@
 						const queryDateAndName = (selArgs, selYear) => {
 							let dateQuery = '';
 							if (selYear.length === 2) {
-								dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' + selYear[1];
+								dateQuery = _q(globTags.date) + ' GREATER ' + (selYear[0] - 1) + ' AND ' + _q(globTags.date) + ' LESS ' + (selYear[1] + 1);
 							} else {
 								dateQuery = _q(globTags.date) + ' IS ' + selYear;
 							}
@@ -208,7 +208,7 @@
 						const queryDateAndName = (selArgs, selYear) => {
 							let dateQuery = '';
 							if (selYear.length === 2) {
-								dateQuery = _q(globTags.date) + ' GREATER ' + selYear[0] + ' AND ' + _q(globTags.date) + ' LESS ' + selYear[1];
+								dateQuery = _q(globTags.date) + ' GREATER ' + (selYear[0] - 1) + ' AND ' + _q(globTags.date) + ' LESS ' + (selYear[1] + 1);
 							} else {
 								dateQuery = _q(globTags.date) + ' IS ' + selYear;
 							}
