@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/05/24
+//06/06/24
 
 /* exported _pools */
 
@@ -13,7 +13,7 @@ include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global addLock:readable, removeLock:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global queryReplaceWithCurrent:readable, getHandleListTagsV2:readable, checkQuery:readable, sanitizeQueryVal:readable */
+/* global queryReplaceWithCurrent:readable, getHandleListTagsV2:readable, checkQuery:readable, sanitizeQueryVal:readable, stripSort:readable, getSortObj:readable */
 // Sorting and filter functions
 include('..\\sort\\harmonic_mixing.js');
 /* global shuffleByTags:readable */
@@ -132,8 +132,8 @@ function _pools({
 				j++;
 			}
 		});
-		if (matches.length) {
-			matches.reverse().forEach((match) => { // Delete from origin at inverse order
+		if (matches.length) { // Delete from origin at inverse order
+			matches.reverse().forEach((match) => { // NOSONAR
 				handleListTo.RemoveById(match.toIdx);
 				handleListTo.Insert(match.toIdx, handleListFrom[match.fromIdx]);
 				handleListFrom.RemoveById(match.fromIdx);
@@ -181,10 +181,19 @@ function _pools({
 					handleListFrom = libItems;
 					const query = typeof pool.query !== 'undefined' ? pool.query[plsName] : '';
 					if (query.length && query.toUpperCase() !== 'ALL') {
-						const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
-						if (checkQuery(processedQuery, false)) {
+						const queryNoSort = stripSort(query);
+						const sortedBy = query === queryNoSort
+							? null
+							: query.replace(queryNoSort, '');
+						const sortObj = sortedBy
+							? getSortObj(sortedBy)
+							: null;
+						const processedQuery = queryReplaceWithCurrent(queryNoSort, fb.GetFocusItem(true));
+						if (checkQuery(processedQuery, false) && (!sortedBy || sortObj)) {
 							console.log(scriptName + ': filter -> ' + processedQuery); // DEBUG
+							if (sortedBy) { console.log(scriptName + ': sorted by -> ' + sortedBy); } // DEBUG
 							handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
+							if (sortObj) { handleListFrom.OrderByFormat(sortObj.tf, sortObj.direction); }
 						} else { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); return; }
 					}
 					// Retrieve all possible groups
@@ -365,10 +374,19 @@ function _pools({
 				// Filter
 				const query = typeof pool.query !== 'undefined' ? pool.query[plsName] : '';
 				if (query.length && query.toUpperCase() !== 'ALL') {
-					const processedQuery = queryReplaceWithCurrent(query, fb.GetFocusItem(true));
-					if (checkQuery(processedQuery, false)) {
+					const queryNoSort = stripSort(query);
+					const sortedBy = query === queryNoSort
+						? null
+						: query.replace(queryNoSort, '');
+					const sortObj = sortedBy
+						? getSortObj(sortedBy)
+						: null;
+					const processedQuery = queryReplaceWithCurrent(queryNoSort, fb.GetFocusItem(true));
+					if (checkQuery(processedQuery, false) && (!sortedBy || sortObj)) {
 						console.log(scriptName + ': filter -> ' + processedQuery); // DEBUG
+						if (sortedBy) { console.log(scriptName + ': sorted by -> ' + sortedBy); } // DEBUG
 						handleListFrom = fb.GetQueryItems(handleListFrom, processedQuery);
+						if (sortObj) { handleListFrom.OrderByFormat(sortObj.tf, sortObj.direction); }
 					} else { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query + '\n->\n' + processedQuery, scriptName); return; }
 				}
 				sourceCount = handleListFrom.Count;
@@ -448,12 +466,14 @@ function _pools({
 				sortBias: this.smartShuffleSortBias,
 				bDebug: this.bDebug
 			});
-			handleListTo.RemoveAll();
-			handleListTo.AddRange(shuffle.handleList);
-			console.log(scriptName + ': smart shuffle -> ' + pool.smartShuffle + ' tag'); // DEBUG
+			if (shuffle) {
+				handleListTo.RemoveAll();
+				handleListTo.AddRange(shuffle.handleList);
+				console.log(scriptName + ': smart shuffle -> ' + pool.smartShuffle + ' tag'); // DEBUG
+			}
 		}
 		// Legacy sorting only when not applying special sorting
-		if (!bHarmonic && !bShuffle && typeof pool.sort !== 'undefined') {
+		if (!bHarmonic && !bShuffle && Object.hasOwn(pool, 'sort')) {
 			if (pool.sort.toUpperCase !== '%PLAYLIST_INDEX%') {
 				if (pool.sort.length) { handleListTo.OrderByFormat(fb.TitleFormat(pool.sort), 1); }
 				else { handleListTo = new FbMetadbHandleList(handleListTo.Convert().shuffle()); }
