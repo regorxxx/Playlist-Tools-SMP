@@ -426,24 +426,26 @@
 							folder: 'Genre mixes',
 							pool: {
 								fromPls: {
-									_LIBRARY_0: 13,
+									_LIBRARY_0: 6,
 									_LIBRARY_1: 8,
 									_LIBRARY_2: 8,
 									_LIBRARY_3: 4,
 									_LIBRARY_4: 13,
 									_LIBRARY_5: 4,
 									_LIBRARY_6: 4,
-									_LIBRARY_7: 4
+									_LIBRARY_7: 4,
+									_LIBRARY_8: 7
 								},
 								query: {
 									_LIBRARY_0: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND %RATING% IS 5',
-									_LIBRARY_1: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_1: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND (%RATING% IS 4 OR %RATING% IS 3)',
 									_LIBRARY_2: 'STYLE IS spanish hip-hop AND (%RATING% IS 4 OR %RATING% IS 3)',
 									_LIBRARY_3: 'STYLE IS flamenco AND GENRE IS hip-hop AND %RATING% GREATER 2',
-									_LIBRARY_4: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND STYLE IS female vocal AND %RATING% GREATER 2',
+									_LIBRARY_4: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND STYLE IS female vocal AND %RATING% GREATER 2',
 									_LIBRARY_5: 'STYLE IS nuevo flamenco AND GENRE IS hip-hop AND DATE GREATER 2000 AND %RATING% GREATER 3',
 									_LIBRARY_6: '(STYLE IS flamenco rock OR STYLE IS flamenco) AND (STYLE IS spanish folk OR STYLE IS spanish rock) AND DATE GREATER 2000 AND %RATING% GREATER 3',
-									_LIBRARY_7: '(STYLE IS rumba fusion OR STYLE IS rumba) AND STYLE IS spanish rock AND DATE GREATER 2000 AND %RATING% GREATER 3'
+									_LIBRARY_7: '(STYLE IS rumba fusion OR STYLE IS rumba) AND STYLE IS spanish rock AND DATE GREATER 2000 AND %RATING% GREATER 3',
+									_LIBRARY_8: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND %RATING% IS 5',
 								},
 								toPls: 'Spanish Urban Music',
 								smartShuffle: 'ARTIST'
@@ -512,8 +514,9 @@
 					include(scriptPathGraph.replace(folders.xxx + 'main\\', '..\\'));
 					pools.push({ name: 'sep' });
 					music_graph_descriptors.style_cluster.forEach((cluster) => {
+						const genres = [...new Set(music_graph_descriptors.replaceWithSubstitutionsReverse(cluster[1]).concat(cluster[1]))];
 						const genreQuery = queryJoin(
-							queryCombinations(cluster[1].map((s) => s.toLowerCase()), [globTags.genre, globTags.style], 'OR')
+							queryCombinations(genres.map((s) => s.toLowerCase()), [globTags.genre, globTags.style], 'OR')
 							, 'OR'
 						);
 						const pool = {
