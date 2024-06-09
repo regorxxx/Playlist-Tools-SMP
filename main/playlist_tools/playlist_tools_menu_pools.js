@@ -1,9 +1,9 @@
 ﻿'use strict';
-//09/05/24
+//09/06/24
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable */
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable, clone:readable, MF_STRING:readable, globQuery:readable, isJSON:readable, Input:readable, _qCond:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable, clone:readable, MF_STRING:readable, globQuery:readable, isJSON:readable, Input:readable, _qCond:readable, queryJoin:readable, queryCombinations:readable */
 
 // Pools
 {
@@ -45,198 +45,534 @@
 				const plLenHalf = Math.floor(plLen / 2) + Math.ceil(plLen % 4 / 2);
 				const plLenQuart = Math.floor(plLen / 4);
 				let pools = [
-					{
-						folder: 'Top tracks',
-						name: 'Top tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top tracks mix',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top tracks mix (harmonic)', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top tracks mix',
-							harmonicMix: true
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top tracks mix (intercalate)', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental, _LIBRARY_1: globTags.rating + ' EQUAL 4', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							insertMethod: 'intercalate',
-							toPls: 'Top tracks mix',
-							sort: '%PLAYLIST_INDEX%',
-						}
-					},
-					{ folder: 'Top tracks', name: 'sep' },
-					{
-						folder: 'Top tracks',
-						name: 'Top this year tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top last year tracks mix',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top last 5 years tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top last 5 years tracks mix',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top last 10 years tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top last 10 years tracks mix',
-							sort: '',
-						}
-					},
-					{ folder: 'Top tracks', name: 'sep' },
-					{
-						folder: 'Top tracks',
-						name: 'Top recently played tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top recently played tracks mix',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top recently added tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 5 WEEKS', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 5 WEEKS', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top recently added tracks mix',
-							sort: '',
-						}
-					},
-					{ folder: 'Top tracks', name: 'sep' },
-					{
-						folder: 'Top tracks',
-						name: 'Top not played tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEK OR %LAST_PLAYED% DURING LAST 2 WEEK)', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top not played tracks mix',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top not played this year tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top not played this year tracks mix',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Top tracks',
-						name: 'Top not played last 5 years tracks mix', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#', _LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Top not played last 5 years tracks mix',
-							sort: '',
-						}
-					},
+					...[ // Top tracks
+						{
+							folder: 'Top tracks',
+							name: 'Top tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental,
+									_LIBRARY_1: globTags.rating + ' EQUAL 4',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5'
+								},
+								toPls: 'Top tracks mix',
+								sort: '', // Random
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top tracks mix (harmonic)', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental,
+									_LIBRARY_1: globTags.rating + ' EQUAL 4',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5'
+								},
+								toPls: 'Top tracks mix',
+								harmonicMix: true
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top tracks mix (intercalate)', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.noInstrumental,
+									_LIBRARY_1: globTags.rating + ' EQUAL 4',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5'
+								},
+								insertMethod: 'intercalate',
+								toPls: 'Top tracks mix'
+							}
+						},
+						{ folder: 'Top tracks', name: 'sep' },
+						{
+							folder: 'Top tracks',
+							name: 'Top this year tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#'
+								},
+								toPls: 'Top last year tracks mix',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top last 5 years tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#'
+								},
+								toPls: 'Top last 5 years tracks mix',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top last 10 years tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,10)#'
+								},
+								toPls: 'Top last 10 years tracks mix',
+								sort: '',
+							}
+						},
+						{ folder: 'Top tracks', name: 'sep' },
+						{
+							folder: 'Top tracks',
+							name: 'Top recently played tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)'
+								},
+								toPls: 'Top recently played tracks mix',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top recently added tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 5 WEEKS',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 5 WEEKS',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'
+								},
+								toPls: 'Top recently added tracks mix',
+								sort: '',
+							}
+						},
+						{ folder: 'Top tracks', name: 'sep' },
+						{
+							folder: 'Top tracks',
+							name: 'Top not played tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEK OR %LAST_PLAYED% DURING LAST 2 WEEK)',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS)'
+								},
+								toPls: 'Top not played tracks mix',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top not played this year tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#'
+								},
+								toPls: 'Top not played this year tracks mix',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Top tracks',
+							name: 'Top not played last 5 years tracks mix', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
+									_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5 AND NOT (%LAST_PLAYED_ENHANCED% DURING LAST 2 WEEKS OR %LAST_PLAYED% DURING LAST 2 WEEKS) AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#'
+								},
+								toPls: 'Top not played last 5 years tracks mix',
+								sort: '',
+							}
+						},
+					],
 					{ name: 'sep' },
-					{
-						folder: 'From current track',
-						name: 'Current genre/style and top tracks', pool: {
-							fromPls: { _LIBRARY_0: plLenQuart, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenHalf },
-							query: { _LIBRARY_0: '' + globTags.genre + ' IS #' + globTags.genre + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: globTags.style + ' IS #' + globTags.style + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_2: globTags.rating + ' EQUAL 5' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Current genre/style and top tracks',
-							sort: '',
-						}
-					},
-					{
-						folder: 'From current track',
-						name: 'Current genre/style and instrumentals', pool: {
-							fromPls: { _LIBRARY_0: plLenHalf, _LIBRARY_1: plLenQuart, _LIBRARY_2: plLenQuart },
-							query: { _LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)', _LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5', _LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globQuery.instrumental + ') AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)' },
-							pickMethod: { _LIBRARY_0: 'random', _LIBRARY_1: 'random', _LIBRARY_2: 'random' },
-							toPls: 'Current genre/style and instrumentals',
-							sort: '',
-						}
-					},
+					...[ // From selection
+						{
+							folder: 'From current track',
+							name: 'Current genre/style and top tracks', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenQuart,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: '' + globTags.genre + ' IS #' + globTags.genre + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)',
+									_LIBRARY_1: globTags.style + ' IS #' + globTags.style + '# AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)',
+									_LIBRARY_2: globTags.rating + ' EQUAL 5'
+								},
+								toPls: 'Current genre/style and top tracks',
+								sort: '',
+							}
+						},
+						{
+							folder: 'From current track',
+							name: 'Current genre/style and instrumentals', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenHalf,
+									_LIBRARY_1: plLenQuart,
+									_LIBRARY_2: plLenQuart
+								},
+								query: {
+									_LIBRARY_0: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)',
+									_LIBRARY_1: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND ' + globTags.rating + ' EQUAL 5',
+									_LIBRARY_2: '((' + globTags.genre + ' IS #' + globTags.genre + '#) OR (' + globTags.style + ' IS #' + globTags.style + '#)) AND (' + globQuery.instrumental + ') AND NOT (' + globTags.rating + ' EQUAL 2 OR ' + globTags.rating + ' EQUAL 1)'
+								},
+								toPls: 'Current genre/style and instrumentals',
+								sort: '',
+							}
+						},
+						{
+							folder: 'From current track',
+							name: 'Current artist\'s top tracks', pool: {
+								fromPls: {
+									_LIBRARY_0: plLenHalf,
+									_LIBRARY_1: plLenHalf
+								},
+								query: {
+									_LIBRARY_0: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globTags.rating + ' EQUAL 4',
+									_LIBRARY_1: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globTags.rating + ' EQUAL 5',
+								},
+								toPls: 'Current artist\'s top tracks',
+								sort: '',
+							}
+						},
+					],
 					{ name: 'sep' },
-					{
-						folder: 'Classic Pools',
-						name: 'Classic Pools (50 artists current genre)', pool: {
-							fromPls: { _GROUP_0: 50 },
-							group: { _GROUP_0: globTags.artist },
-							limit: { _GROUP_0: 3 },
-							query: { _GROUP_0: '' + globTags.genre + ' IS #' + globTags.genre + '#' },
-							toPls: 'Classic Pools (50 artists current genre)',
-							sort: '',
+					...[ // Classic Pools
+						{
+							folder: 'Classic Pools',
+							name: 'Classic Pools (50 artists current genre)', pool: {
+								fromPls: { _GROUP_0: 50 },
+								group: { _GROUP_0: globTags.artist },
+								limit: { _GROUP_0: 3 },
+								query: { _GROUP_0: '' + globTags.genre + ' IS #' + globTags.genre + '#' },
+								toPls: 'Classic Pools (50 artists current genre)',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Classic Pools',
+							name: 'Classic Pools (50 random artists)', pool: {
+								fromPls: { _GROUP_0: 50 },
+								group: { _GROUP_0: globTags.artist },
+								limit: { _GROUP_0: 3 },
+								query: { _GROUP_0: '' },
+								toPls: 'Classic Pools (50 artists)',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Classic Pools',
+							name: 'Classic Pools (all dates)', pool: {
+								fromPls: { _GROUP_0: Infinity },
+								group: { _GROUP_0: globTags.date },
+								limit: { _GROUP_0: 2 },
+								query: { _GROUP_0: '' },
+								toPls: 'Classic Pools (all dates)',
+								sort: globTags.date,
+							}
+						},
+						{
+							folder: 'Classic Pools',
+							name: 'Classic Pools (3 tracks per artist letter)', pool: {
+								fromPls: { _GROUP_0: Infinity },
+								group: { _GROUP_0: '$lower($ascii($left(' + globTags.artist + ',1)))' },
+								limit: { _GROUP_0: 3 },
+								query: { _GROUP_0: '' },
+								toPls: 'Classic Pools (3 tracks per letter)',
+								sort: '',
+							}
+						},
+						{
+							folder: 'Classic Pools',
+							name: 'Classic Pools (3 tracks per genre)', pool: {
+								fromPls: { _GROUP_0: Infinity },
+								group: { _GROUP_0: globTags.genre },
+								limit: { _GROUP_0: 3 },
+								query: { _GROUP_0: '' },
+								toPls: 'Classic Pools (3 tracks per genre)',
+								sort: '',
+							}
+						},
+					],
+					{ name: 'sep' },
+					...[ // Genre mixes
+						{
+							name: 'Dark Metal',
+							folder: 'Genre mixes',
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 10,
+									_LIBRARY_1: 5,
+									_LIBRARY_2: 8,
+									_LIBRARY_3: 8,
+									_LIBRARY_4: 5,
+									_LIBRARY_5: 5,
+									_LIBRARY_6: 5
+								},
+								query: {
+									_LIBRARY_0: '(STYLE IS black metal OR STYLE IS stoner doom OR STYLE IS doom metal OR STYLE IS death metal) AND %RATING% IS 5',
+									_LIBRARY_1: 'STYLE IS black metal AND NOT STYLE IS folk metal AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_2: 'STYLE IS stoner doom AND NOT STYLE IS folk metal AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_3: 'STYLE IS doom metal AND NOT STYLE IS folk metal AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_4: 'STYLE IS folk metal AND (STYLE IS black metal OR STYLE IS stoner doom OR STYLE IS doom metal OR STYLE IS death metal) AND %RATING% GREATER 2',
+									_LIBRARY_5: '(STYLE IS black metal OR STYLE IS stoner doom OR STYLE IS doom metal OR STYLE IS death metal) AND GENRE IS instrumental AND %RATING% GREATER 2',
+									_LIBRARY_6: '(STYLE IS black metal AND STYLE IS ambient metal) OR (STYLE IS atmospheric black metal) OR (STYLE IS death metal AND STYLE IS acoustic) AND %RATING% GREATER 3'
+								},
+								toPls: 'Dark Metal',
+								smartShuffle: 'ARTIST'
+							}
+						},
+						{
+							name: 'Kawaii Rock and Metal',
+							folder: 'Genre mixes',
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 10,
+									_LIBRARY_1: 5,
+									_LIBRARY_2: 10,
+									_LIBRARY_3: 5,
+									_LIBRARY_4: 10
+								},
+								query: {
+									_LIBRARY_0: 'STYLE IS kawaii metal AND %RATING% IS 5',
+									_LIBRARY_1: 'STYLE IS j-pop AND (GENRE IS rock OR GENRE IS heavy metal) AND %RATING% GREATER 2',
+									_LIBRARY_2: 'STYLE IS kawaii metal AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_3: 'STYLE IS kawaii metal AND GENRE IS instrumental AND %RATING% GREATER 2',
+									_LIBRARY_4: 'STYLE IS kawaii metal OR (STYLE IS j-pop AND (GENRE IS rock OR GENRE IS heavy metal)) AND STYLE IS female vocal AND %RATING% GREATER 2'
+								},
+								toPls: 'Kawaii Metal',
+								smartShuffle: 'ARTIST'
+							}
+						},
+						{
+							name: 'Chill and Downtempo',
+							folder: 'Genre mixes',
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 13,
+									_LIBRARY_1: 8,
+									_LIBRARY_2: 8,
+									_LIBRARY_3: 4,
+									_LIBRARY_4: 13,
+									_LIBRARY_5: 4
+								},
+								query: {
+									_LIBRARY_0: '(STYLE IS chill-out downtempo OR STYLE IS trip hop OR STYLE IS deep house) AND %RATING% IS 5',
+									_LIBRARY_1: 'STYLE IS trip hop AND (MOOD IS not aggressive AND MOOD IS relaxed) AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_2: '(STYLE IS contemporary r&b OR STYLE IS neo soul) AND (MOOD IS not aggressive AND MOOD IS relaxed) AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_3: 'STYLE IS deep house AND (MOOD IS not aggressive AND MOOD IS relaxed AND BPM LESS 140) AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_4: '(STYLE IS chill-out downtempo OR STYLE IS trip hop OR STYLE IS deep house) AND STYLE IS female vocal AND (MOOD IS not aggressive AND MOOD IS relaxed) AND %RATING% GREATER 2',
+									_LIBRARY_5: '(STYLE IS chill-out downtempo OR STYLE IS trip hop OR STYLE IS deep house) AND GENRE IS instrumental AND (MOOD IS not aggressive AND MOOD IS relaxed) AND %RATING% GREATER 2'
+								},
+								toPls: 'Chill and Downtempo',
+								smartShuffle: 'ARTIST'
+							}
+						},
+						{
+							name: 'Spanish Urban Music',
+							folder: 'Genre mixes',
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 13,
+									_LIBRARY_1: 8,
+									_LIBRARY_2: 8,
+									_LIBRARY_3: 4,
+									_LIBRARY_4: 13,
+									_LIBRARY_5: 4,
+									_LIBRARY_6: 4,
+									_LIBRARY_7: 4
+								},
+								query: {
+									_LIBRARY_0: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND %RATING% IS 5',
+									_LIBRARY_1: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_2: 'STYLE IS spanish hip-hop AND (%RATING% IS 4 OR %RATING% IS 3)',
+									_LIBRARY_3: 'STYLE IS flamenco AND GENRE IS hip-hop AND %RATING% GREATER 2',
+									_LIBRARY_4: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND STYLE IS female vocal AND %RATING% GREATER 2',
+									_LIBRARY_5: 'STYLE IS nuevo flamenco AND GENRE IS hip-hop AND DATE GREATER 2000 AND %RATING% GREATER 3',
+									_LIBRARY_6: '(STYLE IS flamenco rock OR STYLE IS flamenco) AND (STYLE IS spanish folk OR STYLE IS spanish rock) AND DATE GREATER 2000 AND %RATING% GREATER 3',
+									_LIBRARY_7: '(STYLE IS rumba fusion OR STYLE IS rumba) AND STYLE IS spanish rock AND DATE GREATER 2000 AND %RATING% GREATER 3'
+								},
+								toPls: 'Spanish Urban Music',
+								smartShuffle: 'ARTIST'
+							}
+						},
+						{
+							name: 'Gothic Rock',
+							folder: 'Genre mixes',
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 13,
+									_LIBRARY_1: 10,
+									_LIBRARY_2: 15,
+									_LIBRARY_3: 4,
+									_LIBRARY_4: 4,
+									_LIBRARY_5: 4
+								},
+								query: {
+									_LIBRARY_0: '(STYLE IS darkwave OR STYLE IS gothic rock OR STYLE IS post-punk) AND %RATING% IS 5',
+									_LIBRARY_1: '(STYLE IS darkwave OR STYLE IS gothic rock OR STYLE IS post-punk) AND DATE LESS 2000 AND %RATING% IS 5',
+									_LIBRARY_2: '(STYLE IS darkwave OR STYLE IS gothic rock OR STYLE IS post-punk) AND %RATING% GREATER 2',
+									_LIBRARY_3: '(STYLE IS darkwave OR STYLE IS gothic rock OR STYLE IS post-punk) AND STYLE IS female vocal AND %RATING% GREATER 2',
+									_LIBRARY_4: '(STYLE IS gothic metal) AND %RATING% GREATER 3',
+									_LIBRARY_5: '(STYLE IS darksynth OR STYLE IS dark techno) AND %RATING% GREATER 3'
+								},
+								toPls: 'Gothic Rock',
+								smartShuffle: 'ARTIST'
+							}
+						},
+						{
+							name: 'Gothic Metal',
+							folder: 'Genre mixes',
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 5,
+									_LIBRARY_1: 5,
+									_LIBRARY_2: 5,
+									_LIBRARY_3: 5,
+									_LIBRARY_4: 7,
+									_LIBRARY_5: 7,
+									_LIBRARY_6: 5,
+									_LIBRARY_7: 5,
+									_LIBRARY_8: 5
+								},
+								query: {
+									_LIBRARY_0: 'STYLE IS gothic metal AND %RATING% IS 5',
+									_LIBRARY_1: 'STYLE IS atmospheric black metal AND %RATING% GREATER 3',
+									_LIBRARY_2: 'STYLE IS black metal AND %RATING% IS 5',
+									_LIBRARY_3: '(STYLE IS dark techno OR STYLE IS dark ambient) AND GENRE IS heavy metal AND %RATING% GREATER 3',
+									_LIBRARY_4: 'STYLE IS doom metal AND GENRE IS heavy metal AND %RATING% GREATER 3',
+									_LIBRARY_5: 'STYLE IS doom metal AND GENRE IS heavy metal AND STYLE IS female vocal AND %RATING% GREATER 3',
+									_LIBRARY_6: 'STYLE IS doom metal AND (%RATING% IS 5 OR STYLE IS female vocal AND %RATING% IS 4)',
+									_LIBRARY_7: '(STYLE IS pagan metal OR STYLE IS sludge metal OR STYLE IS stoner doom OR STYLE IS stoner sludge) AND GENRE IS heavy metal AND %RATING% GREATER 3',
+									_LIBRARY_8: 'STYLE IS gothic metal AND STYLE IS female vocal AND %RATING% IS 5'
+								},
+								toPls: 'Gothic Rock',
+								smartShuffle: 'ARTIST'
+							}
 						}
-					},
-					{
-						folder: 'Classic Pools',
-						name: 'Classic Pools (50 random artists)', pool: {
-							fromPls: { _GROUP_0: 50 },
-							group: { _GROUP_0: globTags.artist },
-							limit: { _GROUP_0: 3 },
-							query: { _GROUP_0: '' },
-							toPls: 'Classic Pools (50 artists)',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Classic Pools',
-						name: 'Classic Pools (all dates)', pool: {
-							fromPls: { _GROUP_0: Infinity },
-							group: { _GROUP_0: globTags.date },
-							limit: { _GROUP_0: 2 },
-							query: { _GROUP_0: '' },
-							toPls: 'Classic Pools (all dates)',
-							sort: globTags.date,
-						}
-					},
-					{
-						folder: 'Classic Pools',
-						name: 'Classic Pools (3 tracks per artist letter)', pool: {
-							fromPls: { _GROUP_0: Infinity },
-							group: { _GROUP_0: '$lower($ascii($left(' + globTags.artist + ',1)))' },
-							limit: { _GROUP_0: 3 },
-							query: { _GROUP_0: '' },
-							toPls: 'Classic Pools (3 tracks per letter)',
-							sort: '',
-						}
-					},
-					{
-						folder: 'Classic Pools',
-						name: 'Classic Pools (3 tracks per genre)', pool: {
-							fromPls: { _GROUP_0: Infinity },
-							group: { _GROUP_0: globTags.genre },
-							limit: { _GROUP_0: 3 },
-							query: { _GROUP_0: '' },
-							toPls: 'Classic Pools (3 tracks per genre)',
-							sort: '',
-						}
-					},
+					]
 				];
+				const musicGraphPools = [];
+				const scriptPathGraph = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
+				if (_isFile(scriptPathGraph)) {
+					/* global music_graph_descriptors:readable */
+					include(scriptPathGraph.replace(folders.xxx + 'main\\', '..\\'));
+					pools.push({ name: 'sep' });
+					music_graph_descriptors.style_cluster.forEach((cluster) => {
+						const genreQuery = queryJoin(
+							queryCombinations(cluster[1].map((s) => s.toLowerCase()), [globTags.genre, globTags.style], 'OR')
+							, 'OR'
+						);
+						const pool = {
+							name: cluster[0],
+							folder: 'Music Graph mixes',
+							subFolder: music_graph_descriptors.getStyleGroup(cluster[0]),
+							pool: {
+								fromPls: {
+									_LIBRARY_0: 10,
+									_LIBRARY_1: 15,
+									_LIBRARY_2: 10,
+									_LIBRARY_3: 10,
+									_LIBRARY_4: 5
+								},
+								query: {
+									_LIBRARY_0: queryJoin(
+										[
+											genreQuery,
+											globTags.rating + ' IS 5'
+										]
+										, 'AND'
+									),
+									_LIBRARY_1: queryJoin(
+										[
+											genreQuery,
+											globTags.rating + ' IS 3'
+										]
+										, 'AND'
+									),
+									_LIBRARY_2: queryJoin(
+										[
+											genreQuery,
+											globTags.rating + ' GREATER 3'
+										]
+										, 'AND'
+									),
+									_LIBRARY_3: queryJoin(
+										[
+											genreQuery,
+											'(' + globTags.genre + ' IS female vocal OR ' + globTags.style + ' IS female vocal) AND ' + globTags.rating + ' GREATER 2'
+										]
+										, 'AND'
+									),
+									_LIBRARY_4: queryJoin(
+										[
+											genreQuery,
+											queryJoin(queryCombinations(['instrumental', 'ambiental'], [globTags.genre, globTags.style], 'OR'),'OR'),
+											globTags.rating + ' GREATER 2'
+										]
+										, 'AND'
+									)
+								},
+								toPls: cluster[0],
+								smartShuffle: 'ARTIST'
+							}
+						};
+						musicGraphPools.push(pool);
+					});
+				}
 				let selArg = { ...clone(pools[0]), name: 'Custom' };
 				const poolsDefaults = [...pools];
 				// Create new properties with previous args
@@ -255,11 +591,19 @@
 						// Entry list
 						pools = JSON.parse(menu_properties['pools'][1]);
 						const entryNames = new Set();
-						pools.forEach((poolObj) => {
+						let bSbdSufFolders = false;
+						pools.concat(musicGraphPools).forEach((poolObj) => {
 							// Add submenus
-							const subMenu = Object.hasOwn(poolObj, 'folder')
+							let subMenu = Object.hasOwn(poolObj, 'folder')
 								? menu.findOrNewMenu(poolObj.folder, menuName)
 								: menuName;
+							if (Object.hasOwn(poolObj, 'subFolder')) {
+								if (!bSbdSufFolders && musicGraphPools.includes(poolObj)) {
+									music_graph_descriptors.style_cluster_groups.forEach((group) => menu.findOrNewMenu(group, subMenu));
+									bSbdSufFolders = true;
+								}
+								subMenu = menu.findOrNewMenu(poolObj.subFolder, subMenu);
+							}
 							// Add separators
 							if (Object.hasOwn(poolObj, 'name') && poolObj.name === 'sep') {
 								menu.newEntry({ menuName: subMenu, entryText: 'sep' });
@@ -276,7 +620,11 @@
 								if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {
 									Object.keys(pool.query).forEach((key) => { // With forced query enabled
 										if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-											pool.query[key] = '(' + pool.query[key] + ') AND (' + defaultArgs.forcedQuery + ')';
+											const queryNoSort = stripSort(pool.query[key]);
+											const sortedBy = pool.query[key] === queryNoSort
+												? ''
+												: pool.query[key].replace(queryNoSort, '');
+											pool.query[key] = '(' + queryNoSort + ') AND (' + defaultArgs.forcedQuery + ')' + sortedBy;
 										} else if (!pool.query[key].length) { // Empty uses forced query or ALL
 											pool.query[key] = defaultArgs.forcedQuery;
 										}
@@ -357,7 +705,8 @@
 								defaults: poolsDefaults,
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pools\\default.json',
 								input: poolsGen.inputPool,
-								bDefaultFile: true
+								bDefaultFile: true,
+								bUseFolders: true
 							});
 						}
 					}
