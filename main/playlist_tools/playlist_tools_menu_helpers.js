@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/06/24
+//06/06/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -137,13 +137,23 @@ function createDefaultPreset(options /* name, propName, defaultPreset, defaults*
 	if (bSave) { _save(options.defaultPreset, JSON.stringify(defaults, null, '\t').replace(/\n/g, '\r\n')); }
 }
 
-function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bImport, bDefaultFile}*/) { // NOSONAR
+function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bImport, bDefaultFile, bUseFolders }*/) { // NOSONAR
 	const subMenuSecondName = menu.newMenu('Edit entries from list', menuName);
 	const optionsNames = new Set();
+	const folders = {};
 	options.list.forEach((entry, index) => {
-		const id = entry.name !== 'sep' && optionsNames.has(entry.name) ? '\t' + _b('duplicated: ' + index) : optionsNames.add(entry.name) && ''; // Allow duplicates and mark them
-		const entryName = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name)) + id;
-		const subMenuThirdName = menu.newMenu(entryName, subMenuSecondName);
+		let parentMenu = subMenuSecondName;
+		if (options.bUseFolders && Object.hasOwn(entry, 'folder') && entry.folder.length) {
+			if (!Object.hasOwn(folders, entry.folder)) { folders[entry.folder] = menu.findOrNewMenu(entry.folder, parentMenu); }
+			parentMenu = folders[entry.folder];
+		}
+		const id = entry.name !== 'sep' && optionsNames.has(entry.name)
+			? '\t' + _b('duplicated: ' + index)
+			: optionsNames.add(entry.name) && ''; // Allow duplicates and mark them
+		const entryName = (entry.name === 'sep'
+			? '------(separator)------'
+			: (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name)) + id;
+		const subMenuThirdName = menu.newMenu(entryName, parentMenu);
 		menu.newEntry({
 			menuName: subMenuThirdName, entryText: 'Edit entry...', func: () => {
 				const oriEntry = JSON.stringify(entry);
