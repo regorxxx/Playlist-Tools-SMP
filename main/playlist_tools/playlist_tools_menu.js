@@ -564,10 +564,16 @@ function createMainMenuDynamic() {
 			});
 			// Filter consecutive separators
 			menuList = menuList.filter((item, idx, arr) => { return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx - 1].name !== 'sep') && !arr[idx - 1].name.endsWith('\\sep')); });
+			// Cut names
+			menuList = menuList.map((item) => {
+				item.fullName = item.name;
+				item.name = item.name.split('\t').map((s) => s.cut(70)).join('\t');
+				return item;
+			});
 		}
 		// Create dynamic menus
 		dynamicMenuList.forEach((menu, i) => {
-			fb.RegisterMainMenuCommand(i, menu.name, menu.name);
+			fb.RegisterMainMenuCommand(i, menu.name.split('\t').map((s) => s.cut(70)).join('\t'), menu.name);
 			onMainMenuDynamicEntries.push({ ...menu, parent: scriptName });
 		});
 		// Last action entry
