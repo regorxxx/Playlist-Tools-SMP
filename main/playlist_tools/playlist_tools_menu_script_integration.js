@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//07/06/24
 
 /* exported mainMenuSMP, executeByName */
 
@@ -69,7 +69,7 @@
 						// Filter consecutive separators
 						menuList = menuList.filter((item, idx, arr) => { return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx - 1].name !== 'sep') && !arr[idx - 1].name.endsWith('\\sep')); });
 						const listExport = menuList;
-						return _save(path + 'playlisttoolsentries.json', JSON.stringify(listExport, null, '\t'));
+						return _save(path + 'playlisttoolsentries.json', JSON.stringify(listExport, null, '\t').replace(/\n/g, '\r\n'));
 					};
 					// Global scope
 					var executeByName = function executeByName() { // NOSONAR [global]
