@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/06/24
+//10/06/24
 
 /* exported mainMenuSMP, executeByName */
 
@@ -248,7 +248,7 @@
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText: entryText + '\t (' + (index + 1) + ')', func: () => {
 											mainMenuSMP.splice(index, 1);
-											delete onMainMenuEntries[index + 1];
+											delete onMainMenuEntries[index + 1]; // NOSONAR [leave hole]
 											menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 											// Presets
 											if (Object.hasOwn(presets, 'mainMenuSMP')) {
@@ -396,14 +396,12 @@
 									try { path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', scriptName + ': ' + name, '', true); }
 									catch (e) { return; }
 									if (path === 'sep') { input = { name: path }; } // Add separator
-									else { // or new entry
-										if (_isFile(path)) {
-											try { include(path); }
-											catch (e) { return; }
-											const arr = utils.SplitFilePath(path);
-											const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
-											input = { name, path };
-										}
+									else if (_isFile(path)) { // or new entry
+										try { include(path); }
+										catch (e) { return; }
+										const arr = utils.SplitFilePath(path);
+										const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
+										input = { name, path };
 									}
 									// Add entry
 									scriptIncluded.push(input);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/06/24
+//10/06/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -326,7 +326,7 @@
 						},
 						{
 							folder: 'Classic Pools',
-							name: 'Classic Pools (3 tracks per artist letter)', pool: {
+							name: 'Classic Pools (3 tracks per letter)', pool: {
 								fromPls: { _GROUP_0: Infinity },
 								group: { _GROUP_0: '$lower($ascii($left(' + globTags.artist + ',1)))' },
 								limit: { _GROUP_0: 3 },
