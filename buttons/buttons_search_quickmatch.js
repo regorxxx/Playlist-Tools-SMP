@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/01/24
+//12/06/24
 
 /*
 	Quickmatch same....
@@ -274,7 +274,7 @@ function quickmatchMenu() {
 				[...queryObj.valSet].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })).forEach((tagVal, i) => {
 					menu.newEntry({
 						menuName, entryText: bSingle ? queryObj.name + '\t[' + (tagVal.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : tagVal.cut(25), func: () => {
-							let query = queryJoin(queryObj.tf.map((key) => _t(key) + ' IS ' + tagVal), 'OR');
+							let query = queryJoin(queryObj.tf.map((key) => key + ' IS ' + tagVal), 'OR');
 							// Search by Distance tags
 							if (queryObj.tf.some((tag) => tag.toUpperCase().indexOf('LOCALE') !== -1)) {
 								// World map tags

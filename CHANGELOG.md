@@ -98,6 +98,7 @@
 ### Fixed
 - Playlist Revive: fixed handling of files without tags which were supposed to match by paths similarity.
 - Quicksearch: workaround for 'ALBUM ARTIST' not working with multi-value tags in queries. It now uses that tag only when it's present on files, and fallbacks to 'ARTIST' otherwise. To use the new query, restore defaults on the 'Same Artist(s)' entry, the entire entry list or the button (the last 2 will remove any customized entry too).
+- Quickmatch: tags no longer use '%' if not explicitly added to the entries, which solves unwanted usage of ARTIST or ALBUM ARTIST tags on queries.
 - Other tools\Write Tags: tool not processing next step automatically after Chromaprint tagging in some cases.
 - Top played tracks from: first and last years were not used when looking for a range. For ex. Top tracks from 2020-2024 did not output tracks from 2020 or 2024.
 - Top rated tracks from: first and last years were not used when looking for a range. Top tracks from 2020-2024 did not output tracks from 2020 or 2024.
