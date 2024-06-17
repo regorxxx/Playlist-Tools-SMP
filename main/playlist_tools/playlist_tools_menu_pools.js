@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/06/24
+//17/06/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -513,68 +513,69 @@
 					/* global music_graph_descriptors:readable */
 					include(scriptPathGraph.replace(folders.xxx + 'main\\', '..\\'));
 					pools.push({ name: 'sep' });
-					music_graph_descriptors.style_cluster.forEach((cluster) => {
-						const genres = [...new Set(music_graph_descriptors.replaceWithSubstitutionsReverse(cluster[1]).concat(cluster[1]))];
-						const genreQuery = queryJoin(
-							queryCombinations(genres.map((s) => s.toLowerCase()), [globTags.genre, globTags.style], 'OR')
-							, 'OR'
-						);
-						const pool = {
-							name: cluster[0],
-							folder: 'Music Graph mixes',
-							subFolder: music_graph_descriptors.getStyleGroup(cluster[0]),
-							pool: {
-								fromPls: {
-									_LIBRARY_0: 10,
-									_LIBRARY_1: 15,
-									_LIBRARY_2: 10,
-									_LIBRARY_3: 10,
-									_LIBRARY_4: 5
-								},
-								query: {
-									_LIBRARY_0: queryJoin(
-										[
-											genreQuery,
-											globTags.rating + ' IS 5'
-										]
-										, 'AND'
-									),
-									_LIBRARY_1: queryJoin(
-										[
-											genreQuery,
-											globTags.rating + ' IS 3'
-										]
-										, 'AND'
-									),
-									_LIBRARY_2: queryJoin(
-										[
-											genreQuery,
-											globTags.rating + ' GREATER 3'
-										]
-										, 'AND'
-									),
-									_LIBRARY_3: queryJoin(
-										[
-											genreQuery,
-											'(' + globTags.genre + ' IS female vocal OR ' + globTags.style + ' IS female vocal) AND ' + globTags.rating + ' GREATER 2'
-										]
-										, 'AND'
-									),
-									_LIBRARY_4: queryJoin(
-										[
-											genreQuery,
-											queryJoin(queryCombinations(['instrumental', 'ambiental'], [globTags.genre, globTags.style], 'OR'),'OR'),
-											globTags.rating + ' GREATER 2'
-										]
-										, 'AND'
-									)
-								},
-								toPls: cluster[0],
-								smartShuffle: 'ARTIST'
-							}
-						};
-						musicGraphPools.push(pool);
-					});
+					[...music_graph_descriptors.style_cluster, ...music_graph_descriptors.style_supergenre]
+						.forEach((cluster) => {
+							const genres = [...new Set(music_graph_descriptors.replaceWithSubstitutionsReverse(cluster[1]).concat(cluster[1]))];
+							const genreQuery = queryJoin(
+								queryCombinations(genres.map((s) => s.toLowerCase()), [globTags.genre, globTags.style], 'OR')
+								, 'OR'
+							);
+							const pool = {
+								name: cluster[0].replace('_supergenre', ' Supergenre'),
+								folder: 'Music Graph mixes',
+								subFolder: music_graph_descriptors.getStyleGroup(cluster[0].replace('_supergenre', '')),
+								pool: {
+									fromPls: {
+										_LIBRARY_0: 10,
+										_LIBRARY_1: 15,
+										_LIBRARY_2: 10,
+										_LIBRARY_3: 10,
+										_LIBRARY_4: 5
+									},
+									query: {
+										_LIBRARY_0: queryJoin(
+											[
+												genreQuery,
+												globTags.rating + ' IS 5'
+											]
+											, 'AND'
+										),
+										_LIBRARY_1: queryJoin(
+											[
+												genreQuery,
+												globTags.rating + ' IS 3'
+											]
+											, 'AND'
+										),
+										_LIBRARY_2: queryJoin(
+											[
+												genreQuery,
+												globTags.rating + ' GREATER 3'
+											]
+											, 'AND'
+										),
+										_LIBRARY_3: queryJoin(
+											[
+												genreQuery,
+												'(' + globTags.genre + ' IS female vocal OR ' + globTags.style + ' IS female vocal) AND ' + globTags.rating + ' GREATER 2'
+											]
+											, 'AND'
+										),
+										_LIBRARY_4: queryJoin(
+											[
+												genreQuery,
+												queryJoin(queryCombinations(['instrumental', 'ambiental'], [globTags.genre, globTags.style], 'OR'),'OR'),
+												globTags.rating + ' GREATER 2'
+											]
+											, 'AND'
+										)
+									},
+									toPls: cluster[0],
+									smartShuffle: 'ARTIST'
+								}
+							};
+							musicGraphPools.push(pool);
+						});
 				}
 				let selArg = { ...clone(pools[0]), name: 'Custom' };
 				const poolsDefaults = [...pools];
