@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/24
+//18/06/24
 
 /*
 	Search same by v 1.0 24/08/22
@@ -314,7 +314,7 @@ addButton({
 			);
 		let info = 'Random playlist matching from currently selected track:';
 		info += preset ? '\nName:\t\t' + preset.name : '';
-		info += '\nTF (at least):\t' + parent.buttonsProperties.sameBy[1];
+		info += '\nTF (at least):\t' + parent.buttonsProperties.sameBy[1].cut(50);
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Shift + L. Click to open config menu)';

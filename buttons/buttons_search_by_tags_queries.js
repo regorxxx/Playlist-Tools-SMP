@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/24
+//18/06/24
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -211,7 +211,7 @@ addButton({
 			);
 		let info = 'Random playlist matching from currently selected track:';
 		info += preset ? '\nName:\t' + preset.name : '';
-		info += '\nTF (all):\t' + parent.buttonsProperties.sameBy[1];
+		info += '\nTF (all):\t' + parent.buttonsProperties.sameBy[1].cut(50);
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Shift + L. Click to open config menu)';
