@@ -63,6 +63,7 @@
 ### Added
 - Buttons: added presets to Search same by query and Search same by combinations buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu.
 - Buttons: added presets to remove/show duplicates and filter playlist buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu. Additionally, a preset can be directly applied (without changing the button settings) pressing Shift + Ctrl + L. Click.
+- Buttons: added direct preset processing to search same by (combinations) and search same by (query), without changing the button settings, pressing Shift + Ctrl + L. Click.
 - Pools: new pools presets at 'Music Graph mixes' for all style clusters and supergenres present on search by distance/music graph descriptors (the script must be also present on the installation folder). While they are not finetuned like manually created pools, they can be considered equivalent to Spotify's genre mixes, creating playlists with random high rated tracks from different styles which mix well together. These presets are automatically generated everytime the menu is opened.
 - Pools: new pools presets at 'Genre mixes', manually created to cover some arbitrary style clusters. It may be expanded on the future.
 - Pools: added top last x years track mix presets, which make use of #YEAR# dynamic query expression. Use 'Restore defaults' on Pools submenu to enable them.
@@ -83,10 +84,12 @@
 - Other tools\Import track list: improved file retrieval from online sources.
 - Selection manipulation\Find & remove: greatly improved performance (~99%) (which affects when clicking the button to show the menu). It should be much faster now if you have tons of playlists or select many tracks to look for, requiring less than 30 ms with 5K tracks at the same time. As result, the default value for selection limit has been raised, up to 250 tracks (and the same for the limit configuration submenu).
 - Configuration: changed the remove duplicates bias to prefer lossless tracks with 16 bits per sample, 44.1 Khz sample rate and greater %DYNAMIC RANGE% values.
+- UI: preset name is now shown along the TF settings on Search same by (query), Search same by (combinations), Remove duplicates and Show duplicates buttons.
 - UI: SMP main menus entries (at File\...) are now cut to 70 chars in length before creating them.
 - UI: changed wording on menu entries related to Playlist Revive.
 - UI: changed wording on some submenus.
 - UI: minor menu tweaks to reports.
+- Buttons: reworked presets on same by query/combinations buttons. Restore defaults on these buttons upon installation if you have any error.
 - Buttons: filter playlist button default tags now use artist and date but not title.
 - Readmes: updated dynamic queries readme with latest additions.
 - Helpers: minor performance improvements caching multiple playlist/selection checks on menu processing.
