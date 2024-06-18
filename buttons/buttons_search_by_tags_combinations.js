@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/05/24
+//17/06/24
 
 /*
 	Search same by v 1.0 24/08/22
@@ -64,11 +64,11 @@
 
 /* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, globRegExp:readable */
+/* global globFonts:readable, MK_SHIFT:readable, MK_CONTROL:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, globRegExp:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
-/* global settingsMenu:readable  */
+/* global settingsMenu:readable, _menu:readable  */
 include('..\\helpers\\menu_xxx_extras.js');
 /* global _createSubMenuEditEntries:readable  */
 include('..\\helpers\\helpers_xxx_input.js');
@@ -106,59 +106,59 @@ var newButtonsProperties = { // NOSONAR[global]
 	presets: ['Presets', JSON.stringify([
 		{
 			name: 'By Genre', settings: {
-				sameBy: JSON.stringify({
+				sameBy: {
 					[globTags.genre.toUpperCase()]: 2
-				})
+				}
 			}
 		},
 		{
 			name: 'By Style', settings: {
-				sameBy: JSON.stringify({
+				sameBy: {
 					[globTags.style.toUpperCase()]: 2
-				})
+				}
 			}
 		},
 		{
 			name: 'By Mood', settings: {
-				sameBy: JSON.stringify({
+				sameBy: {
 					[globTags.mood.toUpperCase()]: 2
-				})
+				}
 			}
 		},
 		{
 			name: 'By Genre - Style - Mood', settings: {
-				sameBy: JSON.stringify({
+				sameBy: {
 					[globTags.genre.toUpperCase()]: 1,
 					[globTags.style.toUpperCase()]: 2,
 					[globTags.mood.toUpperCase()]: 5
-				})
+				}
 			}
 		},
 		{ name: 'sep' },
 		{
 			name: 'By Composer', settings: {
-				sameBy: JSON.stringify({
+				sameBy: {
 					[globTags.composer.toUpperCase()]: 2
-				})
+				}
 			}
 		},
 		{
 			name: 'By Key', settings: {
-				sameBy: JSON.stringify({
+				sameBy: {
 					[globTags.key.toUpperCase()]: 1
-				})
+				}
 			}
 		},
 		{ name: 'sep' },
 		{ // Finds tracks where artist or involved people matches any from selection
 			name: 'By Same artist(s) or featured artist(s)',
 			settings: {
-				sameBy: JSON.stringify({ [globTags.artistRaw.toUpperCase()]: 1, 'ARTIST': 1, INVOLVEDPEOPLE: 1 }),
-				remapTags: JSON.stringify({
+				sameBy: { [globTags.artistRaw.toUpperCase()]: 1, 'ARTIST': 1, INVOLVEDPEOPLE: 1 },
+				remapTags: {
 					[globTags.artistRaw.toUpperCase()]: ['INVOLVEDPEOPLE'],
 					ARTIST: ['INVOLVEDPEOPLE'],
 					INVOLVEDPEOPLE: [...new Set([globTags.artistRaw.toUpperCase(), 'ARTIST'])]
-				}),
+				},
 				bOnlyRemap: false,
 				logic: 'OR'
 			}
@@ -166,11 +166,11 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ // Finds tracks where involved people matches artist from selection (remap)
 			name: 'Find collaborations along other artists',
 			settings: {
-				sameBy: JSON.stringify({ [globTags.artistRaw.toUpperCase()]: 1, 'ARTIST': 1 }),
-				remapTags: JSON.stringify({
+				sameBy: { [globTags.artistRaw.toUpperCase()]: 1, 'ARTIST': 1 },
+				remapTags: {
 					[globTags.artistRaw.toUpperCase()]: ['INVOLVEDPEOPLE'],
 					ARTIST: ['INVOLVEDPEOPLE']
-				}),
+				},
 				bOnlyRemap: true,
 				logic: 'OR'
 			}
@@ -178,10 +178,10 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ // Finds tracks where artist or involvedpeople matches composer from selection (remap)
 			name: 'Music by same composer(s) as artist(s)',
 			settings: {
-				sameBy: JSON.stringify({ [globTags.composer.toUpperCase()]: 1 }),
-				remapTags: JSON.stringify({
+				sameBy: { [globTags.composer.toUpperCase()]: 1 },
+				remapTags: {
 					[globTags.composer.toUpperCase()]: [...new Set(['INVOLVEDPEOPLE', 'ARTIST', 'ALBUM ARTIST', globTags.artistRaw.toUpperCase()])]
-				}),
+				},
 				bOnlyRemap: true,
 				logic: 'OR'
 			}
@@ -218,7 +218,9 @@ addButton({
 								menuName: subMenuName, entryText: entry.name, func: () => {
 									for (const key in entry.settings) {
 										if (Object.hasOwn(this.buttonsProperties, key)) {
-											this.buttonsProperties[key][1] = entry.settings[key];
+											this.buttonsProperties[key][1] = typeof (entry.settings[key]) === 'object'
+												? JSON.stringify(entry.settings[key])
+												: entry.settings[key];
 										}
 									}
 									overwriteProperties(this.buttonsProperties);
@@ -226,7 +228,7 @@ addButton({
 							});
 							menu.newCheckMenuLast(
 								() => Object.keys(entry.settings).every(
-									(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === entry.settings[key]
+									(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
 								)
 							);
 						}
@@ -259,17 +261,39 @@ addButton({
 			).btn_up(this.currX, this.currY + this.currH);
 			const newName = this.buttonsProperties.customName[1].toString();
 			if (oldName !== newName) { this.adjustNameWidth(newName); }
+		} else if (mask === MK_SHIFT + MK_CONTROL) {
+			const menu = new _menu();
+			menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
+			menu.newEntry({ entryText: 'sep' });
+			JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+				// Add separators
+				if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
+					menu.newEntry({ entryText: 'sep' });
+				} else {
+					menu.newEntry({
+						entryText: entry.name, func: () => {
+							const preset = entry;
+							console.log(preset.settings);
+							searchSameByCombs({
+								checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
+								bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+								playlistLength: Number(this.buttonsProperties.playlistLength[1]),
+								...preset.settings,
+								bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
+							});
+						}
+					});
+				}
+			});
+			menu.btn_up(this.currX, this.currY + this.currH);
 		} else {
 			// Try to match a preset (for complex usage) or just use the standard arg
 			const preset =JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
 				.find((entry) =>
 					Object.keys(entry.settings).every(
-						(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === entry.settings[key]
+						(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
 					)
 				);
-			if (preset) {
-				['sameBy', 'remapTags'].forEach((key) => preset.settings[key] = JSON.parse(preset.settings[key]));
-			}
 			console.log(((preset || {settings: {sameBy: JSON.parse(this.buttonsProperties.sameBy[1])}}).settings));
 			searchSameByCombs({
 				checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
@@ -285,14 +309,16 @@ addButton({
 		const preset =JSON.parse(parent.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
 			.find((entry) =>
 				Object.keys(entry.settings).every(
-					(key) => !Object.hasOwn(parent.buttonsProperties, key) || parent.buttonsProperties[key][1] === entry.settings[key]
-				) && Object.keys(entry.settings).length > 1
+					(key) => !Object.hasOwn(parent.buttonsProperties, key) || parent.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
+				)
 			);
 		let info = 'Random playlist matching from currently selected track:';
-		info += '\n' + (preset ? preset.name : 'TF (at least):\t' + parent.buttonsProperties.sameBy[1]);
+		info += preset ? '\nName:\t\t' + preset.name : '';
+		info += '\nTF (at least):\t' + parent.buttonsProperties.sameBy[1];
 		if (bShift || bInfo) {
 			info += '\n-----------------------------------------------------';
 			info += '\n(Shift + L. Click to open config menu)';
+			info += '\n(Shift + Ctrl + L. Click to search by preset)';
 		}
 		return info;
 	}, prefix, newButtonsProperties, chars.searchPlus, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
