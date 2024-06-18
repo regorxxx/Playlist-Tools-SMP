@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/05/24
+//18/06/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -173,7 +173,14 @@ addButton({
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+		const preset =JSON.parse(parent.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
+			.find((entry) =>
+				Object.keys(entry.settings).every(
+					(key) => !Object.hasOwn(parent.buttonsProperties, key) || parent.buttonsProperties[key][1] === entry.settings[key]
+				)
+			);
 		let info = 'Removes duplicates according to equal:';
+		info += preset ? '\nName:\t' + preset.name : '';
 		info += '\nTF:\t' + checkKeys.join('|').cut(50);
 		info += '\nBias:\t' + parent.buttonsProperties.sortBias[1].cut(50);
 		info += '\nRegExp:\t' + parent.buttonsProperties.bAdvTitle[1];
