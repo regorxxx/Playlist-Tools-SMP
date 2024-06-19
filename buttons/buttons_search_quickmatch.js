@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/06/24
+//19/06/24
 
 /*
 	Quickmatch same....
@@ -119,12 +119,16 @@ addButton({
 		let info = '';
 		if (sel) {
 			let tfo = fb.TitleFormat(
-				'Current track:		' + _t(globTags.artist) + ' / %TRACK% - %TITLE%' +
+				'$puts(info,' + globTags.artist + ' / %TRACK% - %TITLE%)' +
+				'Current track:	$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
 				'$crlf()Date:		' + _b(globTags.date) +
-				'$crlf()Genres:		' + _b(_t(globTags.genre)) +
+				'$puts(info,' + _b(_t(globTags.genre)) + ')' +
+				'$crlf()Genres:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
 				// ['Album Genre AllMusic', 'Artist Genre AllMusic', 'Album Genre Wikipedia', 'Artist Genre Wikipedia'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ') +
-				'$crlf()Styles:		' + _b(_t(globTags.style)) +
-				'$crlf()Moods:		' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%]'
+				'$puts(info,' + _b(_t(globTags.style)) + ')' +
+				'$crlf()Styles:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+				'$puts(info,' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%])' +
+				'$crlf()Moods:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))'
 				// ['Album Mood AllMusic', 'Album Theme AllMusic'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ')
 			);
 			info += tfo.EvalWithMetadb(sel);

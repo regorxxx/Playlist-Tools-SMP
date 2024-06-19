@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/06/24
+//19/06/24
 
 /*
 	Playlist Tools Menu
@@ -432,11 +432,15 @@ function menuTooltip() {
 	let info = 'No track selected\nSome menus disabled';
 	if (sel) {
 		let tfo = fb.TitleFormat(
-			'Current track:	' + globTags.artist + ' / %TRACK% - %TITLE%' +
+			'$puts(info,' + globTags.artist + ' / %TRACK% - %TITLE%)' +
+			'Current track:	$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
 			'$crlf()Date:		' + _b(globTags.date) +
-			'$crlf()Genres:		' + _b(_t(globTags.genre)) +
-			'$crlf()Styles:		' + _b(_t(globTags.style)) +
-			'$crlf()Moods:		' + _b(_t(globTags.mood))
+			'$puts(info,' + _b(_t(globTags.genre)) + ')' +
+			'$crlf()Genres:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+			'$puts(info,' + _b(_t(globTags.style)) + ')' +
+			'$crlf()Styles:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+			'$puts(info,' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%])' +
+			'$crlf()Moods:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))'
 		);
 		info = 'Playlist:		' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistName(plman.ActivePlaylist) : '-none-') + infoMul + '\n';
 		info += tfo.EvalWithMetadb(sel);

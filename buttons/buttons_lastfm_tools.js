@@ -1,5 +1,5 @@
 'use strict';
-//03/01/24
+//19/06/24
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -155,11 +155,15 @@ addButton({
 		let info = '';
 		if (sel) {
 			let tfo = fb.TitleFormat(
-				'Current track:	'	+ _t(globTags.artist) + ' / %TRACK% - %TITLE%' +
+				'$puts(info,' + globTags.artist + ' / %TRACK% - %TITLE%)' +
+				'Current track:	$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
 				'$crlf()Date:		' + _b(globTags.date) +
-				'$crlf()Genres:		' + _b(_t(globTags.genre)) +
-				'$crlf()Styles:		' + _b(_t(globTags.style)) +
-				'$crlf()Moods:		' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%]'
+				'$puts(info,' + _b(_t(globTags.genre)) + ')' +
+				'$crlf()Genres:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+				'$puts(info,' + _b(_t(globTags.style)) + ')' +
+				'$crlf()Styles:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+				'$puts(info,' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%])' +
+				'$crlf()Moods:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))'
 			);
 			info += tfo.EvalWithMetadb(sel);
 		} else {info += 'No track selected';}
