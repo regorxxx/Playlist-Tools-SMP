@@ -84,8 +84,9 @@
 - Other tools\Import track list: improved file retrieval from online sources.
 - Selection manipulation\Find & remove: greatly improved performance (~99%) (which affects when clicking the button to show the menu). It should be much faster now if you have tons of playlists or select many tracks to look for, requiring less than 30 ms with 5K tracks at the same time. As result, the default value for selection limit has been raised, up to 250 tracks (and the same for the limit configuration submenu).
 - Configuration: changed the remove duplicates bias to prefer lossless tracks with 16 bits per sample, 44.1 Khz sample rate and greater %DYNAMIC RANGE% values.
-- UI: preset name is now shown along the TF settings on Search same by (query), Search same by (combinations), Remove duplicates and Show duplicates buttons.
+- UI: preset name is now shown along the TF settings on Search same by (query), Search same by (combinations), Remove duplicates, Filter duplicates and Show duplicates buttons.
 - UI: SMP main menus entries (at File\...) are now cut to 70 chars in length before creating them.
+- UI: Quickmatch, Playlist Tools and Last.fm buttons' tooltip cut to 50 chars per tag line.
 - UI: changed wording on menu entries related to Playlist Revive.
 - UI: changed wording on some submenus.
 - UI: minor menu tweaks to reports.
@@ -105,6 +106,7 @@
 - Other tools\Write Tags: tool not processing next step automatically after Chromaprint tagging in some cases.
 - Top played tracks from: first and last years were not used when looking for a range. For ex. Top tracks from 2020-2024 did not output tracks from 2020 or 2024.
 - Top rated tracks from: first and last years were not used when looking for a range. Top tracks from 2020-2024 did not output tracks from 2020 or 2024.
+- Configuration: .json files at 'foobar2000\js_data\presets\global' not being saved with the calculated properties based on user values from other files.
 - Fixed possible crash handling web request while closing foobar2000. See [this](https://hydrogenaud.io/index.php/topic,121047.msg1044579.html#msg1044579), although current methods don't use 'WinHttp.WinHttpRequest.5.1' but 'Microsoft.XMLHTTP' which hasn't given any problems yet.
 
 ## [4.2.0] - 2024-03-21
