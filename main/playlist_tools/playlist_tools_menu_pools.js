@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/06/24
+//20/06/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -440,10 +440,10 @@
 									_LIBRARY_0: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop) AND %RATING% IS 5',
 									_LIBRARY_1: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND (%RATING% IS 4 OR %RATING% IS 3)',
 									_LIBRARY_2: 'STYLE IS spanish hip-hop AND (%RATING% IS 4 OR %RATING% IS 3)',
-									_LIBRARY_3: 'STYLE IS flamenco AND GENRE IS hip-hop AND %RATING% GREATER 2',
+									_LIBRARY_3: '(STYLE IS flamenco OR STYLE IS rumba flamenca) AND GENRE IS hip-hop AND %RATING% GREATER 2',
 									_LIBRARY_4: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND STYLE IS female vocal AND %RATING% GREATER 2',
 									_LIBRARY_5: 'STYLE IS nuevo flamenco AND GENRE IS hip-hop AND DATE GREATER 2000 AND %RATING% GREATER 3',
-									_LIBRARY_6: '(STYLE IS flamenco rock OR STYLE IS flamenco) AND (STYLE IS spanish folk OR STYLE IS spanish rock) AND DATE GREATER 2000 AND %RATING% GREATER 3',
+									_LIBRARY_6: '(STYLE IS flamenco rock OR STYLE IS flamenco OR STYLE IS rumba flamenca) AND (STYLE IS spanish folk OR STYLE IS spanish rock) AND DATE GREATER 2000 AND %RATING% GREATER 3',
 									_LIBRARY_7: '(STYLE IS rumba fusion OR STYLE IS rumba) AND STYLE IS spanish rock AND DATE GREATER 2000 AND %RATING% GREATER 3',
 									_LIBRARY_8: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND %RATING% IS 5',
 								},
@@ -542,10 +542,29 @@
 											], 'AND NOT')
 										}
 									];
+								} else if (cluster[0] === 'Hardcore Punk_supergenre') {
+									return [
+										{
+											name: 'Hardcore Rock-Metal Supergenre',
+											subFolder: 'Metal and Hard Rock',
+											query: queryJoin([
+												genreQuery,
+												queryJoin(queryCombinations(['heavy metal', 'hard rock'], [globTags.genre, globTags.style], 'OR'),'OR')
+											], 'AND')
+										},
+										{
+											name,
+											subFolder: music_graph_descriptors.getStyleGroup(cluster[0].replace('_supergenre', '')),
+											query: queryJoin([
+												genreQuery,
+												queryJoin(queryCombinations(['heavy metal', 'hard rock'], [globTags.genre, globTags.style], 'OR'),'OR')
+											], 'AND NOT')
+										}
+									];
 								} else {
 									return [
 										{
-											name,
+											name: 'Hardcore Psy-Alt-Punk Supergenre',
 											subFolder: music_graph_descriptors.getStyleGroup(cluster[0].replace('_supergenre', '')),
 											query: genreQuery,
 										}
