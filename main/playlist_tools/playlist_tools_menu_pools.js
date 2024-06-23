@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/06/24
+//21/06/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -553,7 +553,7 @@
 											], 'AND')
 										},
 										{
-											name,
+											name: 'Hardcore Psy-Alt-Punk Supergenre',
 											subFolder: music_graph_descriptors.getStyleGroup(cluster[0].replace('_supergenre', '')),
 											query: queryJoin([
 												genreQuery,
@@ -564,7 +564,7 @@
 								} else {
 									return [
 										{
-											name: 'Hardcore Psy-Alt-Punk Supergenre',
+											name,
 											subFolder: music_graph_descriptors.getStyleGroup(cluster[0].replace('_supergenre', '')),
 											query: genreQuery,
 										}
