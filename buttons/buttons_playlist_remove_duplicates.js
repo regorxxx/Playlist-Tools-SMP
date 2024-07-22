@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/06/24
+//26/06/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -51,6 +51,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ name: 'By Date', settings: { checkInputA: '', checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
 		{ name: 'sep' },
 		{ name: 'By Artist - Title - Date', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Artist - Title', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By MBID', settings: { checkInputA: 'MUSICBRAINZ_TRACKID', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'sep' },
 		{ name: 'By Genre', settings: { checkInputA: globTags.genre, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
