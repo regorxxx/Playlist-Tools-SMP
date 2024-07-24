@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [4.3.0](#430---2024-07-24)
 - [4.2.0](#420---2024-03-21)
 - [4.1.0](#410---2024-03-15)
 - [4.0.1](#401---2024-03-02)
@@ -61,6 +62,12 @@
 
 ## [Unreleased][]
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [4.3.0] - 2024-07-24
+### Added
 - Buttons: added presets to Search same by query and Search same by combinations buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu.
 - Buttons: added presets to remove/show duplicates and filter playlist buttons, which allow to quickly switch between any combination of settings. They can be found at the button's settings menu. Additionally, a preset can be directly applied (without changing the button settings) pressing Shift + Ctrl + L. Click.
 - Buttons: added direct preset processing to search same by (combinations) and search same by (query), without changing the button settings, pressing Shift + Ctrl + L. Click.
@@ -71,11 +78,12 @@
 - Pools: added subfolders to pools, so now pools can be grouped on submenus and have many more of them with proper classification. Restore default entries to see changes.
 - Other tools\Write Tags: added [True Peak Scanner](https://foobar.hyv.fi/?view=foo_truepeak) support. Is preferable to use the default custom tags, beware other settings may not work properly, your mileage may vary (and no further support will be given). Used along ReplayGain scanner, it could introduce unnecessary extra processing if ReplayGain is also enabled on True Peak Scanner. It's recommended to test in a few sample files to ensure tagging and settings are applied as desired anyway.
 - Other tools\Write Tags: added [BPM Analyser](https://foobar.hyv.fi/?view=foo_bpm) support.
-- Quicksearch: added new entry at ' Partial match' submenu named 'By Title and same Artist', which further filters the partial match by title to only output results by the same artist than the selected one(s). This may be used to easily find duplicates by title, no matter if they have extra strings like '(live)', etc. The old entry also worked the same but the output included tacks from any artist, so the new one reduces the search one step.
+- Quicksearch: added new entry at 'Partial match' submenu named 'By Title and same Artist', which further filters the partial match by title to only output results by the same artist than the selected one(s). This may be used to easily find duplicates by title, no matter if they have extra strings like '(live)', etc. The old entry also worked the same but the output included tacks from any artist, so the new one reduces the search one step.
 - Remove Duplicates: added multi-value parsing to tools and buttons related to duplicates search and removal. i.e. A track with multiple artists but same title can be considered a duplicated if at least one of those artists matches (instead of requiring all to match). This can also be used for more exotic uses, like filtering a playlist and ensuring only X tracks share any genre. This setting can be switched at the 'Configuration\Duplicates Handling' submenu. See [this](https://github.com/regorxxx/Search-by-Distance-SMP/issues/31#issuecomment-2111061984) for more info.
 - Readmes: added readme for global settings found at 'foobar2000\js_data\presets\global' .json files.
 - Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting for console logging to file. Disabled by default. Now this is a change from the previous behavior, where console was always logged to 'console.log' file at the [FOOBAR PROFILE FOLDER]. It can now be switched, but since it's probably not useful for most users is disabled by default.
 ### Changed
+- Pools: automatic numbering of sources has been enhanced to also cover playlist sources and any other source even if they have been partially numbered to avoid duplicates ('_LIBRARY,5:_LIBRARY_0,5' -> '_LIBRARY_1,5:_LIBRARY_0,5').
 - Pools: 'pickMethod' key per source on pool is no longer needed and if any is omitted, 'random' is used by default.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Presets: added extra checks when importing any Playlist Tools preset. Popups will be thrown if an error is found.
@@ -100,6 +108,7 @@
 - Improved compatibility when running foobar2000 on drives without recycle bin.
 ### Removed
 ### Fixed
+- Pools: multiple instances of the same playlist as source could not be used. See https://hydrogenaud.io/index.php/topic,126321.msg1048219/topicseen.html
 - Playlist Revive: fixed handling of files without tags which were supposed to match by paths similarity.
 - Quicksearch: workaround for 'ALBUM ARTIST' not working with multi-value tags in queries. It now uses that tag only when it's present on files, and fallbacks to 'ARTIST' otherwise. To use the new query, restore defaults on the 'Same Artist(s)' entry, the entire entry list or the button (the last 2 will remove any customized entry too).
 - Quickmatch: tags no longer use '%' if not explicitly added to the entries, which solves unwanted usage of ARTIST or ALBUM ARTIST tags on queries.
@@ -1267,7 +1276,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.2.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.1...v4.1.0
 [4.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.0...v4.0.1
