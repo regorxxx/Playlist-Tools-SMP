@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/06/24
+//24/07/24
 
 /* exported _pools */
 
@@ -55,6 +55,13 @@ function _pools({
 	this.bProfile = bProfile;
 	this.title = title;
 	let scriptName = '';
+
+	this.validSources = () => [
+		'Playlists names',
+		'_LIBRARY_',
+		'_GROUP_',
+		...(this.bEnableSearchDistance ? ['_SEARCHBYGRAPH_', '_SEARCHBYWEIGHT_', '_SEARCHBYDYNGENRE_'] : [])
+	];
 
 	this.changeConfig = (config) => {
 		for (let key in config) {
@@ -332,7 +339,7 @@ function _pools({
 					break;
 				}
 				default: { // Playlist Source
-					const idxFrom = plman.FindPlaylist(plsName);
+					const idxFrom = plman.FindPlaylist(plsName.replace(/_\d*$/, ''));
 					// Try loaded playlist first, then matching pls name (within file) and then by filename
 					if (idxFrom === -1) { // Playlist file
 						let bDone = false;
@@ -495,7 +502,7 @@ function _pools({
 		try {
 			fromPls = utils.InputBox(
 				window.ID,
-				'Enter playlist source(s) (pairs):\nNo playlist name equals to _LIBRARY_#.\n(playlist,# tracks;playlist,# tracks)',
+				'Enter playlist source(s) (pairs):\n(source,# tracks;source,# tracks)\n\nValid sources: Playlist names, ' + this.validSources().map(n => '\'' + n +'\'').slice(1, 3).join(', ') + '.\nSources left empty will be replaced with \'_LIBRARY_#\'.\nSources without an Id (#) will be automatically numbered.',
 				(this.title ? this.title + ': ' : '') + 'Pools',
 				Object.hasOwn(last, 'fromPls')
 					? Object.keys(last.fromPls).reduce((total, key) => { return total + (total.length ? ';' : '') + key + ',' + last.fromPls[key]; }, '')
@@ -506,21 +513,38 @@ function _pools({
 		if (!fromPls.length) { console.log('Input was empty'); return; }
 		if (fromPls.indexOf(',') === -1) { console.log('Input was not a pair separated by \',\''); return; }
 		fromPls = fromPls.split(';');
-		fromPls = fromPls.map((pair, index) => {
+		const count = new Map();
+		fromPls = fromPls.map((pair) => {
 			pair = pair.split(',');
-			if (!pair[0].length) { pair[0] = '_LIBRARY_' + index; }
+			if (!pair[0].length) { pair[0] = '_LIBRARY'; }
+			if (pair[0].length) {
+				const [, id, idx] = RegExp(/(.*)_(\d+)$/).exec(pair[0]) || [null, pair[0], null];
+				const indexes = count.get(id) || new Set();
+				if (typeof idx !== 'undefined' && idx !== null) { indexes.add(Number(idx)); }
+				count.set(id, indexes);
+			}
 			pair[1] = Number(pair[1]);
 			return pair;
 		});
 		if (fromPls.some((pair) => { return pair.length % 2 !== 0; })) { console.log('Input was not a list of pairs separated \';\''); return; }
 		if (fromPls.some((pair) => { return Number.isNaN(pair[1]); })) { console.log('# tracks was not a number'); return; }
+		fromPls = fromPls.map((pair) => {
+			if (!RegExp(/_\d+$/).test(pair[0])) {
+				const [, id] = RegExp(/(.*)_\d+$/).exec(pair[0]) || [null, pair[0]];
+				const indexes = count.get(id);
+				for (let i = 0; i < 1000; i++) {
+					if (!indexes.has(i)) { pair[0] += (pair[0].endsWith('_') ? '' : '_') + i; indexes.add(i); break; }
+				}
+			}
+			return pair;
+		});
 		fromPls = Object.fromEntries(fromPls);
 		// Queries
 		let query;
 		try {
 			query = utils.InputBox(
 				window.ID,
-				'Enter queries to filter the sources (pairs):\nEmpty or ALL are equivalent, but empty applies global forced query too if enabled.\n(playlist,query;playlist,query)',
+				'Enter queries to filter the sources (pairs):\n(source,query;source,query)\n\nEmpty or ALL are equivalent, but empty applies global forced query too if enabled.',
 				(this.title ? this.title + ': ' : '') + 'Pools',
 				Object.hasOwn(last, 'query') && isArrayEqual(origKeys, Object.keys(fromPls))
 					? Object.keys(last.query).reduce((total, key) => { return total + (total.length ? ';' : '') + key + ',' + last.query[key]; }, '')

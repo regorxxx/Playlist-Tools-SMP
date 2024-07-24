@@ -11,6 +11,8 @@ Usage:
     - As source name, _SEARCHBY$_#, where $ is GRAPH\WEIGHT\DYNGENRE, 
     may be used. (**)
     - As source name, _GROUP_#, where # is a number, may be used. (***)
+	- If any source is specified without the # Id, it will be 
+	automatically numbered. It also applies to playlist names.
   - Set other parameters:
     - The query will be applied to the current source to get eligible 
     tracks.
