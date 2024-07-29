@@ -63,6 +63,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Pools: minor tweaks to pool presets.
 ### Removed
 ### Fixed
 
