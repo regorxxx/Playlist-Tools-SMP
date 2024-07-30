@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [4.4.0](#440---2024-07-30)
 - [4.3.0](#430---2024-07-24)
 - [4.2.0](#420---2024-03-21)
 - [4.1.0](#410---2024-03-15)
@@ -61,6 +62,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [4.4.0] - 2024-07-30
 ### Added
 - Other Tools\Check tags: added ALBUM to the list of default tags to check.
 ### Changed
@@ -1281,7 +1288,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.3.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.4.0...HEAD
+[4.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.0.1...v4.1.0
