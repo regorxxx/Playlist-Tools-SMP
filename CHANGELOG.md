@@ -69,6 +69,7 @@
 - Other Tools\Check tags: ALBUM tag skips now some rules for multi-value tags.
 ### Removed
 ### Fixed
+- Fix 'Property value is wrong' error. [See](https://hydrogenaud.io/index.php/topic,126343.msg1048420.html#msg1048420).
 
 ## [4.3.0] - 2024-07-24
 ### Added
