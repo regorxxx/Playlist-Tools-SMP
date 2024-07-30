@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/05/24
+//30/07/24
 
 /*
 	Check Library Tags
@@ -68,7 +68,7 @@ include('..\\..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https:
 /* global music_graph_descriptors:readable */
 
 const checkTags_properties = {
-	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE'].join(',')],
+	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE', 'ALBUM'].join(',')],
 	tagsToCompare: ['Tags to compare against (\'tag name,...\')', [[globTags.genre, globTags.style].join(','), [...new Set([globTags.composer, globTags.artistRaw, 'ARTIST', 'INVOLVEDPEOPLE'])]].join(';')],
 	tagValuesExcludedPath: ['File listing tag values to be excluded', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'check_library_tags_exclusion.json'],
 	tagNamesExcludedDic: ['Tags to be excluded at dictionary checking (\'tag name,...\')', [...new Set([globTags.composer, globTags.titleRaw, globTags.artistRaw, 'INVOLVEDPEOPLE', 'ARTIST', 'ALBUM'])].join(',')],
@@ -336,11 +336,12 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 				else if (!tagValue[0].trim().length) { bError = true; } // NOSONAR
 				else if (tagValue[0].trim().length !== tagValue[0].length) { bError = true; } // NOSONAR
 				else if (tagValue[0] === '?') { bError = true; } // NOSONAR
-				else if (tag !== 'title') {
-					if (tagValue[0].indexOf('  ') !== -1) { bError = true; } // NOSONAR
-					else if (tagValue[0].indexOf(';') !== -1) { bError = true; } // NOSONAR
+				else if (tag !== 'title' && tag !== 'album') {
+					if (tagValue[0].indexOf(';') !== -1) { bError = true; } // NOSONAR
 					else if (tagValue[0].indexOf(',') !== -1) { bError = true; } // NOSONAR
 					else if (tagValue[0].indexOf('/') !== -1) { bError = true; } // NOSONAR
+				} else if (tag !== 'title') {
+					if (tagValue[0].indexOf('  ') !== -1) { bError = true; } // NOSONAR
 				}
 				if (bError) { countArrayFiltered[index].push(tagValue); }
 			});
