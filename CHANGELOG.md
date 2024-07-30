@@ -64,6 +64,7 @@
 ### Added
 - Other Tools\Check tags: added ALBUM to the list of default tags to check.
 ### Changed
+- Helpers: updated helpers.
 - Pools: minor tweaks to pool presets.
 - Other Tools\Check tags: ALBUM tag skips now some rules for multi-value tags.
 ### Removed
