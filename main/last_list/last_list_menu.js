@@ -53,6 +53,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 							.EvalWithMetadb(sel)
 							.split('; ')
 							.filter(Boolean)
+							.slice(0, 10)
 							.forEach((val) => {
 								val = val.trim();
 								tag.val[i].push(val);
@@ -74,31 +75,37 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 				}
 			});
 		});
-		// Search by Distance tags
-		const sbdPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'searchByDistance_artists.json';
-		if (_isFile(sbdPath)) {
-			const dataId = 'artist';
-			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
-			if (selIds.length) {
-				const data = getSimilarDataFromFile(sbdPath);
-				const sdbData = new Set();
-				if (data) {
-					data.forEach((item) => {
-						if (selIds.some((id) => item[dataId] === id)) {
-							item.val.forEach((val) => sdbData.add(val.artist));
+		// Similar artists tags
+		[
+			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: 'SIMILAR ARTISTS LISTENBRAINZ'},
+			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: 'SIMILAR ARTISTS SEARCHBYDISTANCE'}
+		].forEach((option) => {
+			const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + option.file;
+			if (_isFile(path)) {
+				const dataId = option.dataId;
+				const dataTag = option.tag;
+				const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
+				if (selIds.length) {
+					const data = getSimilarDataFromFile(path);
+					const lbData = new Set();
+					if (data) {
+						data.forEach((item) => {
+							if (selIds.some((id) => item[dataId] === id)) {
+								item.val.slice(0, 10).forEach((val) => lbData.add(val.artist));
+							}
+						});
+					}
+					if (lbData.size) {
+						const lbTag = tags.find((tag) => tag.tf.some((tf) => tf === dataTag));
+						const idx = lbTag ? lbTag.tf.findIndex((tf) => tf === dataTag) : -1;
+						if (idx !== -1) {
+							lbTag.val[idx].push(...lbData);
+							lbTag.valSet = lbTag.valSet.union(lbData);
 						}
-					});
-				}
-				if (sdbData.size) {
-					const sbdTag = tags.find((tag) => tag.tf.some((tf) => tf === 'SIMILAR ARTISTS SEARCHBYDISTANCE'));
-					const idx = sbdTag ? sbdTag.tf.findIndex((tf) => tf === 'SIMILAR ARTISTS SEARCHBYDISTANCE') : -1;
-					if (idx !== -1) {
-						sbdTag.val[idx].push(...sdbData);
-						sbdTag.valSet = sbdTag.valSet.union(sdbData);
 					}
 				}
 			}
-		}
+		});
 		// World map tags
 		const worldMapPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
 		if (_isFile(worldMapPath)) {

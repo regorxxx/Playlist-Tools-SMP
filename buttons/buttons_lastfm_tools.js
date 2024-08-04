@@ -1,5 +1,5 @@
 'use strict';
-//19/06/24
+//04/08/24
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -7,13 +7,13 @@
 
 /* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, doOnce:readable, MF_GRAYED:readable */
+/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, doOnce:readable, MF_GRAYED:readable, VK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isStringWeak:readable, _t:readable, _b:readable, isInt:readable */
+/* global isBoolean:readable, isStringWeak:readable, _t:readable, _b:readable, isInt:readable, isJSON:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
@@ -51,7 +51,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		{name: 'Artist top tracks',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST'},
 		{name: 'Artist shuffle',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST_RADIO'},
 		{name: 'Similar artists to',	tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'SIMILAR'},
-		{name: 'Similar artists',		tf: [...new Set(['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM'])], type: 'ARTIST'},
+		{name: 'Similar artists',		tf: [...new Set(['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM', 'SIMILAR ARTISTS LISTENBRAINZ'])], type: 'ARTIST'},
 		// {name: 'Similar tracks',		tf: [...new Set(['TITLE', 'ARTIST', 'ALBUM'])], type: 'TITLE'},
 		{name: 'Album tracks',			tf: [...new Set(['ALBUM', globTags.artistRaw])], type: 'ALBUM_TRACKS'},
 		{ name: 'Genre & Style(s)', tf: [...new Set([globTags.genre, globTags.style, 'GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'])], type: 'TAG'},
@@ -60,6 +60,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	])],
 	cacheTime:		['YouTube lookups cache expiration', 86400000, {func: isInt}, 86400000],
 };
+newButtonsProperties.tags.push({ func: isJSON }, newButtonsProperties.tags[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -111,17 +112,31 @@ addButton({
 					const menuName = menu.getMainMenuName();
 					menu.newEntry({menuName: menu.getMainMenuName(), entryText: 'sep'});
 					const subMenuName = menu.newMenu('Tag remap...', menuName);
-					menu.newEntry({menuName: subMenuName, entryText: 'Available entries:', flags: MF_GRAYED});
+					menu.newEntry({menuName: subMenuName, entryText: 'Available entries: (Ctrl + Click to reset)', flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					const tags = JSON.parse(properties.tags[1]);
 					tags.forEach((tag) => {
 						menu.newEntry({menuName: subMenuName, entryText: tag.name + (tag.tf && tag.tf.length ? '' : '\t-disabled-'), func: () => {
-							const input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s):\n(JSON)\n\nSetting it to [] will disable the menu entry.', 'Last.fm Tools', '["ARTIST","ALBUM ARTIST"]', void(0), true);
-							if (input === null) {return;}
+							let input;
+							if (utils.IsKeyPressed(VK_CONTROL)) {
+								const defTag = JSON.parse(properties.tags[3])
+									.find((defTag) => tag.name === defTag.name);
+								if (defTag) {input = defTag.tf;}
+							} else {
+								input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s):\n(JSON)\n\nSetting it to [] will disable the menu entry.', 'Last.fm Tools', '["ARTIST","ALBUM ARTIST"]', void(0), true);
+								if (input === null) {return;}
+							}
 							tag.tf = input;
 							properties.tags[1] = JSON.stringify(tags);
 							overwriteProperties(properties);
 						}});
+					});
+					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newEntry({
+						menuName: subMenuName, entryText: 'Restore defaults...', func: () => {
+							properties.tags[1] = properties.tags[3];
+							overwriteProperties(properties);
+						}
 					});
 				}
 			).btn_up(this.currX, this.currY + this.currH);
