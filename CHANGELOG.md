@@ -66,6 +66,7 @@
 ### Changed
 ### Removed
 ### Fixed
+- Playlist Revive: fixed handling of files with tags showing '.' as value, being reported as exact matches in some cases.
 
 ## [4.4.0] - 2024-07-30
 ### Added
