@@ -63,8 +63,11 @@
 
 ## [Unreleased][]
 ### Added
+- Quickmatch: added support for similar artists retrieved with [ListenBrainz-SMP](/regorxxx/ListenBrainz-SMP) and tag files with the 10 most similar artists into 'SIMILAR ARTISTS LISTENBRAINZ' tag. Restore defaults to 'By similar artists' entry to use it.
+- Last.fm: added support for similar artists retrieved with [ListenBrainz-SMP](/regorxxx/ListenBrainz-SMP) and tag files with the 10 most similar artists into 'SIMILAR ARTISTS LISTENBRAINZ' tag. Restore defaults to 'Similar artists' tag remap entry to use it.
 ### Changed
 - Search by Distance: updated helpers related to similar artists handling.
+- UI: added a restore defaults option to configurable menu entries related to tags (Quickmatch, Last.fm tools,e tc.).
 ### Removed
 ### Fixed
 - Playlist Revive: fixed handling of files with tags showing '.' as value, being reported as exact matches in some cases.
