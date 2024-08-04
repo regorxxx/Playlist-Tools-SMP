@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/06/24
+//04/08/24
 
 /*
 	Quickmatch same....
@@ -30,6 +30,8 @@ include('..\\helpers\\helpers_xxx_input.js');
 /* global Input:readable */
 include('..\\helpers\\helpers_xxx_tags.js');
 /* global queryJoin:readable */
+include('..\\helpers\\helpers_xxx_tags_extra.js');
+/* global getSimilarDataFromFile:readable */
 include('..\\main\\filter_and_query\\dynamic_query.js');
 /* global dynamicQueryProcess:readable, dynamicQuery:readable */
 include('..\\main\\bio\\bio_tags.js');
@@ -208,14 +210,12 @@ function quickmatchMenu() {
 			const dataId = 'artist';
 			const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
-				const data = _jsonParseFileCheck(sbdPath, 'Tags json', window.Name, utf8);
+				const data = getSimilarDataFromFile(sbdPath);
 				const sdbData = new Set();
 				if (data) {
 					data.forEach((item) => {
 						if (selIds.some((id) => item[dataId] === id)) {
-							item.val.forEach((val) => {
-								if (val.scoreW >= 70) { sdbData.add(val.artist); }
-							});
+							item.val.forEach((val) => sdbData.add(val.artist));
 						}
 					});
 				}

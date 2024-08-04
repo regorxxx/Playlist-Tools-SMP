@@ -64,6 +64,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Search by Distance: updated helpers related to similar artists handling.
 ### Removed
 ### Fixed
 - Playlist Revive: fixed handling of files with tags showing '.' as value, being reported as exact matches in some cases.

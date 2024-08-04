@@ -1,5 +1,5 @@
 'use strict';
-//07/05/24
+//04/08/24
 
 /* exported _lastListMenu */
 
@@ -13,6 +13,8 @@ include('..\\..\\helpers\\helpers_xxx_input.js');
 /* global Input:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global isString:readable, isFunction:readable, */
+include('..\\..\\helpers\\helpers_xxx_tags_extra.js');
+/* global getSimilarDataFromFile:readable */
 
 function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main menu, entries are not split by tag */ } = {}) {
 	const parent = this.lastList;
@@ -78,14 +80,12 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			const dataId = 'artist';
 			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
-				const data = _jsonParseFileCheck(sbdPath, 'Tags json', window.Name, utf8);
+				const data = getSimilarDataFromFile(sbdPath);
 				const sdbData = new Set();
 				if (data) {
 					data.forEach((item) => {
 						if (selIds.some((id) => item[dataId] === id)) {
-							item.val.forEach((val) => {
-								if (val.scoreW >= 70) { sdbData.add(val.artist); }
-							});
+							item.val.forEach((val) => sdbData.add(val.artist));
 						}
 					});
 				}
