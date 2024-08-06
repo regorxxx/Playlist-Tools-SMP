@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/07/24
+//06/08/24
 
 /* exported _pools */
 
@@ -562,7 +562,7 @@ function _pools({
 		if (query.some((pair) => { return pair.length % 2 !== 0; })) { console.log('Input was not a list of pairs separated \';\''); return; }
 		if (query.some((pair) => { return !Object.hasOwn(fromPls, pair[0]); })) { console.log('Playlist named did not match with sources'); return; }
 		if (query.some((pair) => {
-			const bCheck = pair[1] === 'ALL' || checkQuery(pair[1], true);
+			const bCheck = pair[1] === 'ALL' || checkQuery(pair[1], true, true);
 			if (!bCheck) { console.log('Query not valid: ' + pair[1]); }
 			return !bCheck;
 		})) { return; }
