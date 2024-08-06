@@ -1,5 +1,5 @@
 'use strict';
-//04/08/24
+//06/08/24
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -51,7 +51,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		{name: 'Artist top tracks',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST'},
 		{name: 'Artist shuffle',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST_RADIO'},
 		{name: 'Similar artists to',	tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'SIMILAR'},
-		{name: 'Similar artists',		tf: [...new Set(['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM', 'SIMILAR ARTISTS LISTENBRAINZ'])], type: 'ARTIST'},
+		{name: 'Similar artists',		tf: [...new Set([globTags.sbdSimilarArtist, 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM', globTags.lbSimilarArtist])], type: 'ARTIST'},
 		// {name: 'Similar tracks',		tf: [...new Set(['TITLE', 'ARTIST', 'ALBUM'])], type: 'TITLE'},
 		{name: 'Album tracks',			tf: [...new Set(['ALBUM', globTags.artistRaw])], type: 'ALBUM_TRACKS'},
 		{ name: 'Genre & Style(s)', tf: [...new Set([globTags.genre, globTags.style, 'GENRE', 'STYLE', 'ARTIST GENRE LAST.FM', 'ARTIST GENRE ALLMUSIC', 'ALBUM GENRE LAST.FM', 'ALBUM GENRE ALLMUSIC', 'ALBUM GENRE WIKIPEDIA', 'ARTIST GENRE WIKIPEDIA'])], type: 'TAG'},

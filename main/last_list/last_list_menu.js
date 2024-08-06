@@ -1,10 +1,10 @@
 'use strict';
-//04/08/24
+//06/08/24
 
 /* exported _lastListMenu */
 
 include('..\\..\\helpers\\helpers_xxx.js');
-/* global folders:readable, MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable, VK_SHIFT:readable */
+/* global folders:readable, MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable, VK_SHIFT:readable, globTags:readable */
 include('..\\..\\helpers\\menu_xxx.js');
 /* global _menu:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
@@ -77,8 +77,8 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 		});
 		// Similar artists tags
 		[
-			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: 'SIMILAR ARTISTS LISTENBRAINZ'},
-			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: 'SIMILAR ARTISTS SEARCHBYDISTANCE'}
+			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist},
+			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist}
 		].forEach((option) => {
 			const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + option.file;
 			if (_isFile(path)) {
