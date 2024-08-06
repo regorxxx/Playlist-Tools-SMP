@@ -66,8 +66,10 @@
 - Quickmatch: added support for similar artists retrieved with [ListenBrainz-SMP](/regorxxx/ListenBrainz-SMP) and tag files with the 10 most similar artists into 'SIMILAR ARTISTS LISTENBRAINZ' tag. Restore defaults to 'By similar artists' entry to use it.
 - Last.fm: added support for similar artists retrieved with [ListenBrainz-SMP](/regorxxx/ListenBrainz-SMP) and tag files with the 10 most similar artists into 'SIMILAR ARTISTS LISTENBRAINZ' tag. Restore defaults to 'Similar artists' tag remap entry to use it.
 ### Changed
+- Pools: input popup for queries now also allow 'SORT BY' expressions a the end of the query. They ware already supported in JSON presets and internally, but were throwing a warning about invalid queries when added with this method.
 - Search by Distance: updated helpers related to similar artists handling.
-- UI: added a restore defaults option to configurable menu entries related to tags (Quickmatch, Last.fm tools,e tc.).
+- UI: added a restore defaults option to configurable menu entries related to tags (Quickmatch, Last.fm tools, etc.).
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 - Playlist Revive: fixed handling of files with tags showing '.' as value, being reported as exact matches in some cases.
@@ -81,6 +83,8 @@
 - Other Tools\Check tags: ALBUM tag skips now some rules for multi-value tags.
 ### Removed
 ### Fixed
+- Smart shuffle: foo_playcount was not being properly detected (instead looking for foo_enhanced_playcount).
+- UI: separator not being added properly before 'Music Graph mixes' at pools menu.
 - Fix 'Property value is wrong' error. [See](https://hydrogenaud.io/index.php/topic,126343.msg1048420.html#msg1048420).
 
 ## [4.3.0] - 2024-07-24
