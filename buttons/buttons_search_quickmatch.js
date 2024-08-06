@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/08/24
+//06/08/24
 
 /*
 	Quickmatch same....
@@ -61,7 +61,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		},
 		{
 			name: 'By Similar artist',
-			tf: [...new Set(['SIMILAR ARTISTS SEARCHBYDISTANCE', 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM', 'SIMILAR ARTISTS LISTENBRAINZ'])]
+			tf: [...new Set([globTags.sbdSimilarArtist, 'LASTFM_SIMILAR_ARTIST', 'SIMILAR ARTISTS LAST.FM', globTags.lbSimilarArtist])]
 		},
 		{
 			name: 'By Folksonomy',
@@ -207,8 +207,8 @@ function quickmatchMenu() {
 		});
 		// Similar artists tags
 		[
-			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: 'SIMILAR ARTISTS LISTENBRAINZ'},
-			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: 'SIMILAR ARTISTS SEARCHBYDISTANCE'}
+			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist},
+			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist}
 		].forEach((option) => {
 			const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + option.file;
 			if (_isFile(path)) {
