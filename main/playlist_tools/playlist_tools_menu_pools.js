@@ -512,7 +512,7 @@
 				if (_isFile(scriptPathGraph)) {
 					/* global music_graph_descriptors:readable */
 					include(scriptPathGraph.replace(folders.xxx + 'main\\', '..\\'));
-					pools.push({ name: 'sep' });
+					musicGraphPools.push({ name: 'sep' });
 					[...music_graph_descriptors.style_cluster, ...music_graph_descriptors.style_supergenre]
 						.forEach((cluster) => {
 							const genres = [...new Set(music_graph_descriptors.replaceWithSubstitutionsReverse(cluster[1]).concat(cluster[1]))];
