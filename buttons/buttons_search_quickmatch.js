@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/24
+//09/08/24
 
 /*
 	Quickmatch same....
@@ -304,7 +304,7 @@ function quickmatchMenu() {
 											});
 										}
 										if (worldMapData.size) {
-											query = _p(query) + ' OR ' + _p(queryJoin([...worldMapData].map((locTag) => _t(dataId) + ' IS ' + locTag), 'OR'));
+											query = _p(query) + ' OR ' + _p(queryJoin(Array.from(worldMapData, (locTag) => _t(dataId) + ' IS ' + locTag), 'OR'));
 										}
 									}
 								}

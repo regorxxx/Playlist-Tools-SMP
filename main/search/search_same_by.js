@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/05/24
+//09/08/24
 
 /*
 	Search same by
@@ -309,7 +309,7 @@ function searchSameByQueries({
 	}
 	let selInfo = sel.GetFileInfo();
 	// Loop tags
-	const tagVal = new Array(sameBy.length).fill(null).map(() => { return []; });
+	const tagVal = Array.from({ length: sameBy.length }, () => []);
 	sameBy.forEach((tagsArr, i) => {
 		tagsArr.forEach((tag) => {
 			let tagIdx = selInfo.MetaFind(tag);

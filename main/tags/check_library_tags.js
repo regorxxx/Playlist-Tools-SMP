@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/07/24
+//09/08/24
 
 /*
 	Check Library Tags
@@ -150,7 +150,7 @@ function checkTags({
 	// Skipped values at pre-filter
 	const tagValuesExcluded = loadTagsExcluded(properties['tagValuesExcludedPath'][1]); // i x k sets
 
-	const tagsToCheck = [...new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean))].map((s) => s.toLowerCase()); // i, filter holes and remove duplicates
+	const tagsToCheck = Array.from(new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean)), (s) => s.toLowerCase()); // i, filter holes and remove duplicates
 	if (!tagsToCheck.length) {
 		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
 		return (bAsync ? Promise.resolve(false) : false);
@@ -167,8 +167,8 @@ function checkTags({
 	}
 	if (!bAsync || !iSteps || iSteps === 1 || iDelay === 0) {
 		// Get all tags and their frequency
-		const tags = checkTagsRetrieve(selItems, tagsToCheck, [...Array(tagsToCheck.length)].map(() => { return []; }));
-		const count = [...Array(tags.length)].map(() => { return new Map(); }); // i x j x k
+		const tags = checkTagsRetrieve(selItems, tagsToCheck, Array.from({ length: tagsToCheck.length }, () => []));
+		const count = Array.from({ length: tags.length }, () => new Map()); // i x j x k
 		tags.forEach((tagArray, i) => { // i
 			checkTagsCount(tagArray, count, i);
 		});
@@ -198,7 +198,7 @@ function checkTags({
 			const count = items.length;
 			const range = Math.round(count / iSteps);
 			const delay = iDelay / 4;
-			let tags = [...Array(tagsToCheck.length)].map(() => { return []; });
+			let tags = Array.from({ length: tagsToCheck.length }, () => []);
 			let prevProgress = -1;
 			for (let i = 1; i <= iSteps; i++) {
 				promises.push(new Promise(resolve => {
@@ -218,7 +218,7 @@ function checkTags({
 			.then(tags => {
 				return new Promise(resolve => {
 					const promises = [];
-					const count = [...Array(tags.length)].map(() => { return new Map(); }); // i x j x k
+					const count = Array.from({ length: tags.length }, () => new Map()); // i x j x k
 					const delay = iDelay / 50;
 					tags.forEach((tagArray, i) => { // i
 						promises.push(new Promise(resolve => {
@@ -569,7 +569,7 @@ function objectToPairs(inputObj) { // {A:[x,y],B:[z], ...} -> A,x;A,y;B,z;...
 		const arr = (Array.isArray(inputObj[key])
 			? inputObj[key]
 			: [...inputObj[key]]
-		).sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'}));
+		).sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' }));
 		for (let value of arr) {
 			if (value) { outputSet.add(key.toLowerCase() + ',' + value); }
 		}
@@ -588,7 +588,7 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 		if (!bSet) { outputObj[key].push(value); }
 		else { outputObj[key].add(value); }
 	});
-	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})); } }
+	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })); } }
 	return outputObj;
 }
 
@@ -602,7 +602,7 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 	for (const key in obj) {
 		if (key !== key.toLowerCase()) {
 			obj[key.toLowerCase()] = [...new Set([...obj[key], ...(obj[key.toLowerCase()] || [])])]
-				.sort((a,b) => a.localeCompare(b, 'en', {'sensitivity': 'base'}));
+				.sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' }));
 			delete obj[key];
 			bSave = true;
 		}

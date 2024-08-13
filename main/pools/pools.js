@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/24
+//09/08/24
 
 /* exported _pools */
 
@@ -130,7 +130,7 @@ function _pools({
 		});
 		const tfoFrom = new Set(fb.TitleFormat(replaceByTF).EvalWithMetadbs(handleListFrom));
 		const tfoTo = new Set(fb.TitleFormat(replaceByTF).EvalWithMetadbs(handleListTo));
-		const idxMap = new Map([...tfoFrom].map((tf, i) => [tf, i]));
+		const idxMap = new Map(Array.from(tfoFrom, (tf, i) => [tf, i]));
 		const matches = [];
 		tfoFrom.intersection(tfoTo).forEach((from) => {
 			let j = 0;
