@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//12/09/24
 
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, globTags:readable */
@@ -21,7 +21,9 @@ essentia.calculateKey = function calculateKey({
 	if (!fromHandleList || !fromHandleList.Count || !tagName.length) { return false; }
 	if (!_isFile(essentiaPath)) { fb.ShowPopupMessage('essentia_streaming_key executable not found:\n' + essentiaPath, 'Essentia Key extractor'); }
 	const profile = bProfile ? new FbProfiler('Essentia Key extractor') : null;
-	const handleListArr = fromHandleList.Convert();
+	const handleListArr = fromHandleList.Convert()
+		.filter((handle) => handle.Path.split('.').slice(-1)[0] !== 'dsf');
+	if (!handleListArr.length) { return false; }
 	const totalTracks = handleListArr.length, numTracks = 25, maxCount = Math.ceil(totalTracks / numTracks);
 	let totalItems = 0;
 	let bDone = true;
