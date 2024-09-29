@@ -72,13 +72,17 @@
 ### Added
 - Quickmatch: added support for similar artists retrieved with [ListenBrainz-SMP](/regorxxx/ListenBrainz-SMP) and tag files with the 10 most similar artists into 'SIMILAR ARTISTS LISTENBRAINZ' tag. Restore defaults to 'By similar artists' entry to use it.
 - Last.fm: added support for similar artists retrieved with [ListenBrainz-SMP](/regorxxx/ListenBrainz-SMP) and tag files with the 10 most similar artists into 'SIMILAR ARTISTS LISTENBRAINZ' tag. Restore defaults to 'Similar artists' tag remap entry to use it.
+- Pools: expanded 'Top tracks' and 'From current track' presets. Restore defaults at pools submenu to show them.
 ### Changed
 - Pools: input popup for queries now also allow 'SORT BY' expressions a the end of the query. They ware already supported in JSON presets and internally, but were throwing a warning about invalid queries when added with this method.
 - Search by Distance: updated helpers related to similar artists handling.
+
 - UI: added a restore defaults option to configurable menu entries related to tags (Quickmatch, Last.fm tools, etc.).
+- Configuration: changed the remove duplicates bias to prefer tracks containing 'BEST' within a 'TRACKDSP' tag.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Other tools\Write Tags: proper handling of incompatible tools with dsf format.
 - Playlist Revive: fixed handling of files with tags showing '.' as value, being reported as exact matches in some cases.
 
 ## [4.4.0] - 2024-07-30
