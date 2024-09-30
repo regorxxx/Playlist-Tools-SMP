@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/06/24
+//25/09/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -137,20 +137,23 @@ function createDefaultPreset(options /* name, propName, defaultPreset, defaults*
 	if (bSave) { _save(options.defaultPreset, JSON.stringify(defaults, null, '\t').replace(/\n/g, '\r\n')); }
 }
 
-function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bImport, bDefaultFile, bUseFolders }*/) { // NOSONAR
+function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bClone, bCopyCurrent, bImport, bDefaultFile, bUseFolders }*/) { // NOSONAR
 	const subMenuSecondName = menu.newMenu('Edit entries from list', menuName);
 	const optionsNames = new Set();
 	const folders = {};
+	const bAdd = !Object.hasOwn(options, 'bAdd') || options.bAdd;
+	const bClone = bAdd && !Object.hasOwn(options, 'bClone') || options.bClone;
+	const bImport = !Object.hasOwn(options, 'bImport') || options.bImport;
 	options.list.forEach((entry, index) => {
 		let parentMenu = subMenuSecondName;
 		if (options.bUseFolders && Object.hasOwn(entry, 'folder') && entry.folder.length) {
 			if (!Object.hasOwn(folders, entry.folder)) { folders[entry.folder] = menu.findOrNewMenu(entry.folder, parentMenu); }
 			parentMenu = folders[entry.folder];
 		}
-		const id = entry.name !== 'sep' && optionsNames.has(entry.name)
+		const id = menu.isNotSeparator(entry) && optionsNames.has(entry.name)
 			? '\t' + _b('duplicated: ' + index)
 			: optionsNames.add(entry.name) && ''; // Allow duplicates and mark them
-		const entryName = (entry.name === 'sep'
+		const entryName = (menu.isSeparator(entry)
 			? '------(separator)------'
 			: (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name)) + id;
 		const subMenuThirdName = menu.newMenu(entryName, parentMenu);
@@ -172,16 +175,20 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				menu_properties[options.propName][1] = JSON.stringify(options.list);
 				// Presets
 				if (Object.hasOwn(presets, options.propName)) {
-					const presetIdxJSON = presets[options.propName].findIndex((obj) => { return JSON.stringify(obj) === oriEntry; });
-					const presetIdxName = presetIdxJSON === -1 ? presets[options.propName].findIndex((obj) => { return obj.name === entry.name; }) : -1;
-					const presetIdx = presetIdxJSON !== -1 ? presetIdxJSON : presetIdxName; // Harden against manual changes since name is unique
+					const presetIdxJSON = presets[options.propName].findIndex((obj) => JSON.stringify(obj) === oriEntry);
+					const presetIdxName = presetIdxJSON === -1
+						? presets[options.propName].findIndex((obj) => obj.name === entry.name)
+						: -1;
+					const presetIdx = presetIdxJSON !== -1 // Harden against manual changes since name is unique
+						? presetIdxJSON
+						: presetIdxName;
 					if (presetIdx !== -1) {
 						presets[options.propName][presetIdx] = newEntry;
 						menu_properties.presets[1] = JSON.stringify(presets);
 					}
 				}
 				overwriteMenuProperties(); // Updates panel
-			}, flags: entry.name === 'sep' ? MF_GRAYED : MF_STRING
+			}, flags: menu.isSeparator(entry) ? MF_GRAYED : MF_STRING
 		});
 		menu.newEntry({
 			menuName: subMenuThirdName, entryText: 'Move entry...', func: () => {
@@ -197,6 +204,70 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				overwriteMenuProperties(); // Updates panel
 			}
 		});
+		if (bClone) {
+			menu.newEntry({ menuName: subMenuThirdName, entryText: 'sep' });
+			menu.newEntry({
+				menuName: subMenuThirdName, entryText: 'Clone entry...', func: () => {
+					// Input all variables
+					let input;
+					let entryName = '';
+					if (menu.isNotSeparator(entry)) {
+						try { entryName = utils.InputBox(window.ID, 'Enter new name for cloned menu entry:', scriptName + ': ' + options.name, '', true); }
+						catch (e) { return; }
+						if (!entryName.length) { return; }
+						if (menu.isSeparator({ name: entryName })) { return; } // Add separator
+						else { // or new entry
+							if (options.list.findIndex((entry) => entry.name === entryName) !== -1) {
+								fb.ShowPopupMessage('There is another entry with same name.\nRetry with another name.', scriptName);
+								return;
+							}
+							input = { ...entry };
+							input.name = entryName;
+						}
+					} else {
+						input = { ...entry };
+					}
+					// Add entry
+					options.list.push(input);
+					// Save as property
+					menu_properties[options.propName][1] = JSON.stringify(options.list); // And update property with new value
+					// Presets
+					if (!Object.hasOwn(presets, options.propName)) { presets[options.propName] = []; }
+					presets[options.propName].push(input);
+					menu_properties.presets[1] = JSON.stringify(presets);
+					overwriteMenuProperties(); // Updates panel
+				}
+			});
+		}
+		if (bAdd && options.bCopyCurrent && menu.isNotSeparator(entry)) {
+			menu.newEntry({ menuName: subMenuThirdName, entryText: 'sep' });
+			menu.newEntry({
+				menuName: subMenuThirdName, entryText: 'Update with current settings', func: () => {
+					const oriEntry = JSON.stringify(entry);
+					const current = options.input(true);
+					if (!current) { return; }
+					for (let key in current) { options.list[index][key] = current[key]; }
+					console.log(options.list[index]);
+					menu_properties[options.propName][1] = JSON.stringify(options.list);
+					// Presets
+					if (Object.hasOwn(presets, options.propName)) {
+						const presetIdxJSON = presets[options.propName].findIndex((obj) => JSON.stringify(obj) === oriEntry);
+						const presetIdxName = presetIdxJSON === -1
+							? presets[options.propName].findIndex((obj) => obj.name === entry.name)
+							: -1;
+						const presetIdx = presetIdxJSON !== -1 // Harden against manual changes since name is unique
+							? presetIdxJSON
+							: presetIdxName;
+						if (presetIdx !== -1) {
+							presets[options.propName][presetIdx] = options.list[index];
+							menu_properties.presets[1] = JSON.stringify(presets);
+						}
+					}
+					menu_properties.presets[1] = JSON.stringify(presets);
+					overwriteMenuProperties(); // Updates panel
+				}
+			});
+		}
 		menu.newEntry({ menuName: subMenuThirdName, entryText: 'sep' });
 		menu.newEntry({
 			menuName: subMenuThirdName, entryText: 'Remove entry', func: () => {
@@ -216,8 +287,8 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 		});
 	});
 	if (!options.list.length) { menu.newEntry({ menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-	if (!Object.hasOwn(options, 'bImport') || options.bImport || !Object.hasOwn(options, 'bAdd') || options.bAdd) { menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' }); }
-	if (!Object.hasOwn(options, 'bAdd') || options.bAdd) {
+	if (bImport || bAdd) { menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' }); }
+	if (bAdd) {
 		menu.newEntry({
 			menuName: subMenuSecondName, entryText: 'Add new entry to list...', func: () => {
 				// Input all variables
@@ -226,7 +297,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				try { entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + options.name, '', true); }
 				catch (e) { return; }
 				if (!entryName.length) { return; }
-				if (entryName === 'sep') { input = { name: entryName }; } // Add separator
+				if (menu.isSeparator({ name: entryName })) { input = { name: entryName }; } // Add separator
 				else { // or new entry
 					if (options.list.findIndex((entry) => entry.name === entryName) !== -1) {
 						fb.ShowPopupMessage('There is another entry with same name.\nRetry with another name.', scriptName);
@@ -248,7 +319,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			}
 		});
 	}
-	if (!Object.hasOwn(options, 'bImport') || options.bImport) {
+	if (bImport) {
 		menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
 		menu.newEntry({
 			menuName: subMenuSecondName, entryText: 'Import preset...', func: () => {
@@ -364,7 +435,7 @@ flagsCache.plsItemCount = {};
 flagsCache.selItems = {};
 flagsCache.getFocus = () => {
 	return flagsCache.focus || (flagsCache.focus = fb.GetFocusItem(true));
-};flagsCache.getPlsItemCount = (idx) => {
+}; flagsCache.getPlsItemCount = (idx) => {
 	return flagsCache.plsItemCount[idx] || (flagsCache.plsItemCount[idx] = plman.PlaylistItemCount(idx));
 };
 flagsCache.getSelItemsCount = (idx) => {

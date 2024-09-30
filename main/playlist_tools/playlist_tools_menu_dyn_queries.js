@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//25/09/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -67,23 +67,27 @@
 				menu_properties['dynamicQueries'].push({ func: isJSON }, menu_properties['dynamicQueries'][1]);
 				menu_properties['dynamicQueriesCustomArg'].push({ func: (query) => { return checkQuery(query, true); } }, menu_properties['dynamicQueriesCustomArg'][1]);
 				// Helper
-				const inputDynQuery = () => {
-					let query = '';
-					try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true); }
-					catch (e) { return; }
-					if (!query.length) { return; }
-					let tfo = '';
-					try { tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true); }
-					catch (e) { return; }
-					let direction = 1;
-					try { direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true)); }
-					catch (e) { return; }
-					if (isNaN(direction)) { return; }
-					direction = direction > 0 ? 1 : -1;
-					// Final check
-					try { if (!dynamicQuery({ query, bSendToPls: false })) { throw new Error(); } }
-					catch (e) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; }
-					return { query, sort: { tfo, direction } };
+				const inputDynQuery = (bCopyCurrent = false) => {
+					if (bCopyCurrent) {
+						return { query: selArg.query };
+					} else {
+						let query = '';
+						try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true); }
+						catch (e) { return; }
+						if (!query.length) { return; }
+						let tfo = '';
+						try { tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true); }
+						catch (e) { return; }
+						let direction = 1;
+						try { direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true)); }
+						catch (e) { return; }
+						if (isNaN(direction)) { return; }
+						direction = direction > 0 ? 1 : -1;
+						// Final check
+						try { if (!dynamicQuery({ query, bSendToPls: false })) { throw new Error(); } }
+						catch (e) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; }
+						return { query, sort: { tfo, direction } };
+					}
 				};
 				// Menus
 				menu.newEntry({ menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED });
@@ -156,7 +160,8 @@
 								defaults: queryFilterDefaults,
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\dyn_query_filter\\default.json',
 								input: inputDynQuery,
-								bDefaultFile: true
+								bDefaultFile: true,
+								bCopyCurrent: true
 							});
 						}
 					}

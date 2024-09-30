@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//25/09/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
 
@@ -164,7 +164,8 @@
 						defaultPreset: null,
 						input: null,
 						bAdd: false,
-						bImport: false
+						bImport: false,
+						bClone: true
 					});
 				}
 			}});

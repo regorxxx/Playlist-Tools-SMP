@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/06/24
+//25/09/24
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -15,8 +15,6 @@ include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable, _menu:readable */
 include('..\\helpers\\menu_xxx_extras.js');
 /* global _createSubMenuEditEntries:readable  */
-include('..\\helpers\\helpers_xxx_input.js');
-/* global Input:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
 /* global isBoolean:readable, isString:readable, isStringWeak:readable, isJSON:readable, isInt:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
@@ -145,7 +143,6 @@ addButton({
 						defaults: JSON.parse(this.buttonsProperties.presets[3]),
 						input: () => {
 							const entry = {
-								tf: Input.string('string', 'Current settings', 'Enter preset name:', 'Search Same By Tags (Combinations)', 'My name', void (0), true),
 								settings: {
 									sameBy: this.buttonsProperties.sameBy[1],
 									forcedQuery: this.buttonsProperties.forcedQuery[1],
@@ -157,6 +154,7 @@ addButton({
 							return entry;
 						},
 						bNumbered: true,
+						bCopyCurrent: true,
 						onBtnUp: (presets) => {
 							this.buttonsProperties.presets[1] = JSON.stringify(presets);
 							overwriteProperties(this.buttonsProperties);

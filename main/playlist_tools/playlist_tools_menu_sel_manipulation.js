@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//25/09/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -38,10 +38,14 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Sort selection (legacy):', func: null, flags: MF_GRAYED });
 					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 					// Helper
-					const inputSort = () => {
+					const inputSort = (bCopyCurrent = false) => {
 						let tfo = '';
-						try { tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true); }
-						catch (e) { return; }
+						if (bCopyCurrent) {
+							tfo = selArg.tfo;
+						} else {
+							try { tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true); }
+							catch (e) { return; }
+						}
 						if (!tfo.length) { return; }
 						return { tfo };
 					};
@@ -120,7 +124,8 @@
 									defaults: sortLegacyDefaults,
 									defaultPreset: folders.xxx + 'presets\\Playlist Tools\\sort\\default.json',
 									input: inputSort,
-									bDefaultFile: true
+									bDefaultFile: true,
+									bCopyCurrent: true
 								});
 							}
 						}
@@ -322,15 +327,21 @@
 					menu_properties['scatter'].push({ func: isJSON }, menu_properties['scatter'][1]);
 					menu_properties['scatterCustomArg'].push({ func: isJSON }, menu_properties['scatterCustomArg'][1]);
 					// Helpers
-					const inputScatter = () => {
+					const inputScatter = (bCopyCurrent = false) => {
 						let tagName = '';
-						try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-						catch (e) { return; }
-						if (!tagName.length) { return; }
 						let tagValue = '';
-						try { tagValue = utils.InputBox(window.ID, 'Enter tag values to match:\n(multiple values may be separated by \',\')', scriptName + ': ' + name, selArg.args.tagValue, true); }
-						catch (e) { return; }
-						if (!tagValue.length) { return; }
+						if (bCopyCurrent) {
+							tagName = selArg.args.tagName;
+							tagValue = selArg.args.tagValue;
+							if (!tagValue.length || !tagName.length) { return; }
+						} else {
+							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
+							catch (e) { return; }
+							if (!tagName.length) { return; }
+							try { tagValue = utils.InputBox(window.ID, 'Enter tag values to match:\n(multiple values may be separated by \',\')', scriptName + ': ' + name, selArg.args.tagValue, true); }
+							catch (e) { return; }
+							if (!tagValue.length) { return; }
+						}
 						return { args: { tagName, tagValue } };
 					};
 					// Menus
@@ -390,7 +401,8 @@
 									defaults: scatterDefaults,
 									defaultPreset: folders.xxx + 'presets\\Playlist Tools\\scatter\\default.json',
 									input: inputScatter,
-									bDefaultFile: true
+									bDefaultFile: true,
+									bCopyCurrent: true
 								});
 							}
 						}
@@ -421,10 +433,14 @@
 					menu_properties['intercalate'].push({ func: isJSON }, menu_properties['intercalate'][1]);
 					menu_properties['intercalateCustomArg'].push({ func: isJSON }, menu_properties['intercalateCustomArg'][1]);
 					// Helpers
-					const inputIntercalate = () => {
+					const inputIntercalate = (bCopyCurrent = false) => {
 						let tagName = '';
-						try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-						catch (e) { return; }
+						if (bCopyCurrent) {
+							tagName = selArg.args.tagName;
+						} else {
+							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
+							catch (e) { return; }
+						}
 						if (!tagName.length) { return; }
 						return { args: { tagName, tagValue: null } };
 					};
@@ -485,7 +501,8 @@
 									defaults: intercalateDefaults,
 									defaultPreset: folders.xxx + 'presets\\Playlist Tools\\intercalate\\default.json',
 									input: inputIntercalate,
-									bDefaultFile: true
+									bDefaultFile: true,
+									bCopyCurrent: true
 								});
 							}
 						}
@@ -523,12 +540,17 @@
 						menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', { func: isStringWeak }, 'random'];
 					}
 					// Helpers
-					const inputShuffle = () => {
+					const inputShuffle = (bCopyCurrent = false) => {
 						let tagName = '';
-						try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-						catch (e) { return; }
-						if (!tagName.length) { return; }
-						tagName = tagName.split(/[;,]/g);
+						if (bCopyCurrent) {
+							tagName = selArg.args.tagName;
+							if (!tagName.length) { return; }
+						} else {
+							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
+							catch (e) { return; }
+							if (!tagName.length) { return; }
+							tagName = tagName.split(/[;,]/g);
+						}
 						return { args: { tagName } };
 					};
 					// Menus
@@ -690,12 +712,17 @@
 					menu_properties['group'].push({ func: isJSON }, menu_properties['group'][1]);
 					menu_properties['groupCustomArg'].push({ func: isJSON }, menu_properties['groupCustomArg'][1]);
 					// Helpers
-					const inputGroup = () => {
+					const inputGroup = (bCopyCurrent = false) => {
 						let tagName = '';
-						try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-						catch (e) { return; }
-						if (!tagName.length) { return; }
-						tagName = tagName.split(/[;,]/g);
+						if (bCopyCurrent) {
+							tagName = selArg.args.tagName;
+							if (!tagName.length) { return; }
+						} else {
+							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
+							catch (e) { return; }
+							if (!tagName.length) { return; }
+							tagName = tagName.split(/[;,]/g);
+						}
 						return { args: { tagName } };
 					};
 					// Menus
@@ -758,7 +785,8 @@
 									defaults: groupDefaults,
 									defaultPreset: folders.xxx + 'presets\\Playlist Tools\\group\\default.json',
 									input: inputGroup,
-									bDefaultFile: true
+									bDefaultFile: true,
+									bCopyCurrent: true
 								});
 							}
 						}
@@ -1289,14 +1317,19 @@
 					menu_properties['selQueryFilter'].push({ func: isJSON }, menu_properties['selQueryFilter'][1]);
 					menu_properties['selQueryFilter'].push({ func: (query) => { return checkQuery(query, true); } }, menu_properties['selQueryFilter'][1]);
 					// Helpers
-					const inputPlsQuery = () => {
-						let query;
-						try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
-						catch (e) { return; }
-						if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
-							try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-							catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
+					const inputPlsQuery = (bCopyCurrent = false) => {
+						let query = '';
+						if (bCopyCurrent) {
+							query = selArg.query;
+						} else {
+							try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
+							catch (e) { return; }
+							if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
+								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
+								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
+							}
 						}
+						if (!query.length) { return; }
 						return { query };
 					};
 					// Menus
@@ -1392,7 +1425,8 @@
 								defaults: selQueryFilterDefaults,
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_sel_filter\\default.json',
 								input: inputPlsQuery,
-								bDefaultFile: true
+								bDefaultFile: true,
+								bCopyCurrent: true
 							});
 						}
 					});

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/05/24
+//25/09/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -37,36 +37,40 @@
 				menu_properties['sameByQueries'].push({ func: isJSON }, menu_properties['sameByQueries'][1]);
 				menu_properties['sameByCustomArg'].push({ func: isString }, menu_properties['sameByCustomArg'][1]);
 				// Helpers
-				const inputSameByQuery = () => {
-					let input = '';
-					try { input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true); }
-					catch (e) { return; }
-					if (!input.length) { return; }
-					if (input.indexOf(',') === -1) { return; }
-					if (input.indexOf(';') !== -1) { return; }
-					let logic = 'AND';
-					try { logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', scriptName + ': ' + name, logic, true); }
-					catch (e) { return; }
-					if (!logic.length) { return; }
-					let remap;
-					try { remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', scriptName + ': ' + name, '', true); }
-					catch (e) { return; }
-					let bOnlyRemap = false;
-					if (remap.length) {
-						const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
-						if (answer === popup.yes) { bOnlyRemap = true; }
-					}
-					input = { args: { sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap } };
-					// Final check
-					const sel = fb.GetFocusItem();
-					if (sel) {
-						const selInfo = sel.GetFileInfo();
-						if (!Object.keys(input.args.sameBy).every((key) => { return selInfo.MetaFind(key) === -1; })) {
-							try { if (!searchSameByCombs({ ...input.args, bSendToPls: false })) { throw new Error(); } }
-							catch (e) { fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName); return; }
+				const inputSameByQuery = (bCopyCurrent = false) => {
+					if (bCopyCurrent) {
+						return { args: selArg.args };
+					} else {
+						let input = '';
+						try { input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true); }
+						catch (e) { return; }
+						if (!input.length) { return; }
+						if (input.indexOf(',') === -1) { return; }
+						if (input.indexOf(';') !== -1) { return; }
+						let logic = 'AND';
+						try { logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', scriptName + ': ' + name, logic, true); }
+						catch (e) { return; }
+						if (!logic.length) { return; }
+						let remap;
+						try { remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', scriptName + ': ' + name, '', true); }
+						catch (e) { return; }
+						let bOnlyRemap = false;
+						if (remap.length) {
+							const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
+							if (answer === popup.yes) { bOnlyRemap = true; }
 						}
+						input = { args: { sameBy: convertStringToObject(input, 'number', ','), logic, remapTags: remap.length ? convertStringToObject(remap, 'string', ',', ';') : {}, bOnlyRemap } };
+						// Final check
+						const sel = fb.GetFocusItem();
+						if (sel) {
+							const selInfo = sel.GetFileInfo();
+							if (!Object.keys(input.args.sameBy).every((key) => { return selInfo.MetaFind(key) === -1; })) {
+								try { if (!searchSameByCombs({ ...input.args, bSendToPls: false })) { throw new Error(); } }
+								catch (e) { fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName); return; }
+							}
+						}
+						return input;
 					}
-					return input;
 				};
 				// Menus
 				menu.newEntry({ menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED });
@@ -87,7 +91,8 @@
 								if (!queryName.length) {
 									Object.keys(queryObj.args.sameBy).forEach((key, index, array) => {
 										// Reuse the original key if tag matches a global tag
-										const keyText = (Object.entries(globTags).find((pair) => isString(pair[1]) && pair[1].toLowerCase() === key) || [key])[0];
+										const keyLc = key.toLocaleLowerCase();
+										const keyText = (Object.entries(globTags).find((pair) => isString(pair[1]) && pair[1].toLowerCase() === keyLc) || [key])[0];
 										queryName += (!queryName.length ? '' : index !== array.length - 1 ? ', ' : ' and ');
 										queryName += capitalize(keyText) + (queryObj.args.sameBy[key] > 1 ? 's' : '') + ' (=' + queryObj.args.sameBy[key] + ')';
 									});
@@ -135,7 +140,8 @@
 								defaults: sameByQueriesDefaults,
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\same_by_queries\\default.json',
 								input: inputSameByQuery,
-								bDefaultFile: true
+								bDefaultFile: true,
+								bCopyCurrent: true
 							});
 						}
 					}

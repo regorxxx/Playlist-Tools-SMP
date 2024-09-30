@@ -65,6 +65,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- UI: preset entries can now be cloned or updated with current settings in most buttons and menus.
 ### Removed
 ### Fixed
 

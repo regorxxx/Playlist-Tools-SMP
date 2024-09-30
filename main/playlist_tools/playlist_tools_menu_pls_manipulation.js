@@ -147,14 +147,19 @@
 					menu_properties['queryFilter'].push({ func: isJSON }, menu_properties['queryFilter'][1]);
 					menu_properties['queryFilter'].push({ func: (query) => { return checkQuery(query, true); } }, menu_properties['queryFilter'][1]);
 					// Helpers
-					const inputPlsQuery = () => {
-						let query;
-						try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
-						catch (e) { return; }
-						if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
-							try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-							catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
+					const inputPlsQuery = (bCopyCurrent = false) => {
+						let query = '';
+						if (bCopyCurrent) {
+							query = selArg.query;
+						} else {
+							try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
+							catch (e) { return; }
+							if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
+								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
+								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
+							}
 						}
+						if (!query.length) { return; }
 						return { query };
 					};
 					// Menus
@@ -250,7 +255,8 @@
 								defaults: queryFilterDefaults,
 								defaultPreset: folders.xxx + 'presets\\Playlist Tools\\pls_query_filter\\default.json',
 								input: inputPlsQuery,
-								bDefaultFile: true
+								bDefaultFile: true,
+								bCopyCurrent: true
 							});
 						}
 					});
