@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/09/24
+//01/10/24
 
 /* exported createPoolPresets */
 
@@ -567,6 +567,96 @@ function createPoolPresets({size = 50} = {}) {
 						_LIBRARY_8: '(STYLE IS trap OR GENRE IS hip-hop) AND (LANGUAGE IS spa OR STYLE IS spanish hip-hop OR STYLE IS latin trap) AND NOT (STYLE IS rap metal) AND %RATING% IS 5',
 					},
 					toPls: 'Spanish Urban Music',
+					smartShuffle: 'ARTIST'
+				}
+			},
+			{
+				name: 'Rock Classics',
+				folder: 'Genre mixes',
+				pool: {
+					fromPls: {
+						_LIBRARY_0: Math.floor(tenth * 1.4),
+						_LIBRARY_1: Math.floor(tenth * 1.5),
+						_LIBRARY_2: Math.floor(tenth * 1.4),
+						_LIBRARY_3: Math.floor(tenth * 0.8) || 1,
+						_LIBRARY_4: tenth,
+						_LIBRARY_5: Math.floor(tenth * 1.4) || 1,
+						_LIBRARY_6: tenth,
+						_LIBRARY_7: Math.floor(tenth * 0.8) || 1,
+						_LIBRARY_8: Math.floor(tenth * 0.5) || 1,
+					},
+					query: {
+						_LIBRARY_0: 'STYLE IS classic rock AND GENRE IS rock AND DATE LESS 1990 AND %RATING% IS 5',
+						_LIBRARY_1: 'STYLE IS classic rock AND GENRE IS rock AND DATE LESS 1990 AND %RATING% IS 4',
+						_LIBRARY_2: 'STYLE IS classic rock AND GENRE IS rock AND DATE LESS 1990 AND %RATING% IS 3',
+						_LIBRARY_3: 'STYLE IS classic rock AND GENRE IS folk-rock AND DATE LESS 1990 AND %RATING% GREATER 3',
+						_LIBRARY_4: 'STYLE IS classic rock AND STYLE IS female vocal AND DATE LESS 1990 AND %RATING% GREATER 2',
+						_LIBRARY_5: 'GENRE IS rock AND NOT STYLE IS 80s rock AND DATE GREATER 1960 AND DATE LESS 1980 AND %RATING% GREATER 3',
+						_LIBRARY_6: 'GENRE IS hard rock AND STYLE IS classic rock AND DATE LESS 1990 AND %RATING% GREATER 2',
+						_LIBRARY_7: '(STYLE IS beat music OR STYLE IS soft rock OR GENRE IS rock & roll) AND DATE GREATER 1960 AND DATE LESS 1980 AND %RATING% IS 5',
+						_LIBRARY_8: 'GENRE IS rock & roll AND DATE GREATER 1960 AND DATE LESS 1980 AND %RATING% IS 5',
+					},
+					toPls: 'Rock Classics',
+					smartShuffle: 'ARTIST'
+				}
+			},
+			{
+				name: '60s Psychedelic Pills',
+				folder: 'Genre mixes',
+				pool: {
+					fromPls: {
+						_LIBRARY_0: Math.floor(tenth * 1.5),
+						_LIBRARY_1: tenth,
+						_LIBRARY_2: tenth,
+						_LIBRARY_3: tenth,
+						_LIBRARY_4: Math.floor(tenth * 1.5),
+						_LIBRARY_5: tenth,
+						_LIBRARY_6: tenth,
+						_LIBRARY_7: tenth,
+						_LIBRARY_8: tenth,
+					},
+					query: {
+						_LIBRARY_0: 'STYLE IS acid rock AND GENRE IS psychedelic rock AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% IS 5',
+						_LIBRARY_1: '(STYLE IS acid rock OR STYLE IS raga rock) AND GENRE IS psychedelic rock AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% GREATER 3',
+						_LIBRARY_2: 'STYLE IS acid rock AND (GENRE IS rock OR GENRE IS folk-rock) AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% GREATER 2',
+						_LIBRARY_3: 'STYLE IS british psychedelia AND GENRE IS psychedelic rock AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% IS 5',
+						_LIBRARY_4: 'STYLE IS british psychedelia AND (GENRE IS rock OR GENRE IS folk-rock OR GENRE IS psychedelic rock) AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% GREATER 2',
+						_LIBRARY_5: '(STYLE IS krautrock OR STYLE IS space rock OR STYLE IS italian prog. rock OR STYLE IS japanese prog. rock) AND GENRE IS psychedelic rock AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% GREATER 3',
+						_LIBRARY_6: 'STYLE IS psychedelic folk AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% GREATER 2',
+						_LIBRARY_7: '(STYLE IS psychedelic pop OR STYLE IS sunshine pop) AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% GREATER 3',
+						_LIBRARY_8: '(STYLE IS psychedelic soul OR STYLE IS psychedelic funk OR STYLE IS psychedelic blues) AND DATE GREATER 1960 AND DATE LESS 1971 AND %RATING% IS 5',
+					},
+					toPls: '60s Psychedelic Pills',
+					smartShuffle: 'ARTIST'
+				}
+			},
+			{
+				name: '80s Hits',
+				folder: 'Genre mixes',
+				pool: {
+					fromPls: {
+						_LIBRARY_0: Math.floor(tenth * 1.4),
+						_LIBRARY_1: Math.floor(tenth * 1.4),
+						_LIBRARY_2: Math.floor(tenth * 1.4),
+						_LIBRARY_3: Math.floor(tenth * 0.8) || 1,
+						_LIBRARY_4: tenth,
+						_LIBRARY_5: Math.floor(tenth * 1.4) || 1,
+						_LIBRARY_6: tenth,
+						_LIBRARY_7: Math.floor(tenth * 0.8) || 1,
+						_LIBRARY_8: Math.floor(tenth * 0.7) || 1,
+					},
+					query: {
+						_LIBRARY_0: 'STYLE IS 80s rock AND GENRE IS rock AND DATE LESS 1992 AND %RATING% IS 5',
+						_LIBRARY_1: 'STYLE IS 80s rock AND (GENRE IS rock OR GENRE IS pop) AND DATE LESS 1992 AND %RATING% IS 4',
+						_LIBRARY_2: 'STYLE IS 80s rock AND (GENRE IS rock OR GENRE IS pop) AND DATE LESS 1992 AND %RATING% IS 3',
+						_LIBRARY_3: 'STYLE IS 80s rock AND (GENRE IS folk-rock OR GENRE IS blues OR GENRE IS alt. rock) AND DATE LESS 1992 AND %RATING% GREATER 3',
+						_LIBRARY_4: 'STYLE IS 80s rock OR (GENRE IS rock AND DATE GREATER 1979 AND DATE LESS 1990) AND STYLE IS female vocal AND %RATING% GREATER 2',
+						_LIBRARY_5: 'STYLE IS power pop AND DATE GREATER 1979 AND DATE LESS 1990 AND %RATING% GREATER 3',
+						_LIBRARY_6: 'STYLE IS new wave AND DATE GREATER 1979 AND DATE LESS 1990 AND %RATING% GREATER 3',
+						_LIBRARY_7: '(STYLE IS post-punk OR STYLE IS soft rock OR GENRE IS rock & roll) AND DATE GREATER 1979 AND DATE LESS 1990 AND %RATING% GREATER 3',
+						_LIBRARY_8: '(STYLE IS euro-pop OR STYLE IS sophisti-pop OR STYLE IS disco OR STYLE IS smooth soul) AND DATE GREATER 1979 AND DATE LESS 1990 AND %RATING% GREATER 3',
+					},
+					toPls: '80s Hits',
 					smartShuffle: 'ARTIST'
 				}
 			},
