@@ -67,6 +67,7 @@
 ### Changed
 - Pools: expanded 'Top tracks' and 'From current track' presets. Restore defaults at pools submenu to show them.
 - Pools: 'Top tracks' folder is now split into 'Top tracks (rating)' and 'Top tracks (playcount)'.
+- UI: preset entries on pools submenu are now split into multiple columns if there are more than 10 elements.
 - UI: preset entries can now be cloned or updated with current settings in most buttons and menus.
 ### Removed
 ### Fixed

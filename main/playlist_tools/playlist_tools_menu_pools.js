@@ -1,9 +1,9 @@
 ﻿'use strict';
-//23/09/24
+//01/10/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, clone:readable, MF_STRING:readable, isJSON:readable, Input:readable */
+/* global MF_GRAYED:readable, MF_MENUBARBREAK:readable, folders:readable, _isFile:readable, clone:readable, MF_STRING:readable, isJSON:readable, Input:readable */
 
 // Pools
 {
@@ -43,14 +43,14 @@
 				title: 'Playlist Tools'
 			});
 			{	// Pools
-				let pools = createPoolPresets({size: defaultArgs.playlistLength});
+				let pools = createPoolPresets({ size: defaultArgs.playlistLength });
 				const musicGraphPools = [];
 				const scriptPathGraph = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
 				if (_isFile(scriptPathGraph)) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\').replace('pools.js', 'pools_presets_musicgraph.js'));
 					/* global createPoolMusicGraphPresets:readable, music_graph_descriptors:readable */
 					musicGraphPools.push({ name: 'sep' });
-					createPoolMusicGraphPresets({size: defaultArgs.playlistLength})
+					createPoolMusicGraphPresets({ size: defaultArgs.playlistLength })
 						.forEach((pool) => musicGraphPools.push(pool));
 				}
 				let selArg = { ...clone(pools[0]), name: 'Custom' };
@@ -72,6 +72,7 @@
 						pools = JSON.parse(menu_properties['pools'][1]);
 						const entryNames = new Set();
 						let bSbdSufFolders = false;
+						const folderCount = {};
 						pools.concat(musicGraphPools).forEach((poolObj) => {
 							// Add submenus
 							let subMenu = Object.hasOwn(poolObj, 'folder')
@@ -84,6 +85,8 @@
 								}
 								subMenu = menu.findOrNewMenu(poolObj.subFolder, subMenu);
 							}
+							if (Object.hasOwn(folderCount, subMenu)) { folderCount[subMenu]++; }
+							else { folderCount[subMenu] = 0; }
 							// Add separators
 							if (Object.hasOwn(poolObj, 'name') && poolObj.name === 'sep') {
 								menu.newEntry({ menuName: subMenu, entryText: 'sep' });
@@ -129,7 +132,8 @@
 											bDebug: defaultArgs.bDebug,
 											bProfile: defaultArgs.bProfile
 										}).processPool(pool, menu_properties);
-									}
+									},
+									flags: folderCount[subMenu] % 10 === 0 ? MF_MENUBARBREAK : MF_STRING
 								});
 							}
 						});
