@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [4.6.0](#460---2024-10-09)
 - [4.5.0](#450---2024-08-13)
 - [4.4.0](#440---2024-07-30)
 - [4.3.0](#430---2024-07-24)
@@ -63,6 +64,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [4.6.0] - 2024-10-09
 ### Added
 ### Changed
 - Pools: expanded 'Top tracks' and 'From current track' presets. Restore defaults at pools submenu to show them.
@@ -1316,7 +1323,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.5.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.6.0...HEAD
+[4.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.5.0...v4.6.0
 [4.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.4.0...v4.5.0
 [4.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.2.0...v4.3.0
