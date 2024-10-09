@@ -71,6 +71,8 @@
 - UI: preset entries on pools submenu are now split into multiple columns if there are more than 10 elements.
 - UI: preset entries can now be cloned or updated with current settings in most buttons and menus.
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support and ES2021 compatibility.
+- Helpers: in case saving a file throws an error due to long paths (+255 chars) a warning popup will be shown.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 
