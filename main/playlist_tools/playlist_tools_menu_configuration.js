@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/06/24
+//10/10/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -399,6 +399,10 @@
 		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
 		{	// Readmes
 			const subMenuName = menu.newMenu('Readmes', configMenu);
+			if (window.ScriptInfo.Name === 'Playlist Tools: Buttons Bar') {
+				readmes[newReadmeSep()] = 'sep';
+				readmes['Toolbar'] = folders.xxx + 'helpers\\readme\\toolbar.txt';
+			}
 			menu.newEntry({ menuName: subMenuName, entryText: 'Open popup with readme:', func: null, flags: MF_GRAYED });
 			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 			let iCount = 0;
