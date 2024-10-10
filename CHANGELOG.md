@@ -66,6 +66,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- UI: minor adjustments to menu entries on Last.fm button.
 ### Removed
 ### Fixed
 

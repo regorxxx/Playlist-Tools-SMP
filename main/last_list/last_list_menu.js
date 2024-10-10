@@ -1,5 +1,5 @@
 'use strict';
-//06/08/24
+//10/10/24
 
 /* exported _lastListMenu */
 
@@ -225,7 +225,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 		} else {
 			tags.forEach((tag) => {
 				const bSingle = tag.valSet.size <= 1;
-				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name + '...');
+				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name);
 				if (tag.valSet.size === 0) { tag.valSet.add(''); }
 				[...tag.valSet].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })).forEach((val, i) => {
 					menu.newEntry({
@@ -249,8 +249,8 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 	}
 	menu.newEntry({ entryText: 'sep' });
 	{
-		const subMenuCustom = menu.newMenu('Custom...');
-		const subMenuUser = menu.newMenu('By User...');
+		const subMenuCustom = menu.newMenu('Custom');
+		const subMenuUser = menu.newMenu('By User');
 		const customURLS = [
 			{
 				name: 'By Artist...', menuName: subMenuCustom, url: () => {

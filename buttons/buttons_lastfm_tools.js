@@ -1,5 +1,5 @@
 'use strict';
-//06/08/24
+//10/10/24
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -111,7 +111,7 @@ addButton({
 				(menu) => { // Append this menu entries to the config menu
 					const menuName = menu.getMainMenuName();
 					menu.newEntry({menuName: menu.getMainMenuName(), entryText: 'sep'});
-					const subMenuName = menu.newMenu('Tag remap...', menuName);
+					const subMenuName = menu.newMenu('Tag remap', menuName);
 					menu.newEntry({menuName: subMenuName, entryText: 'Available entries: (Ctrl + Click to reset)', flags: MF_GRAYED});
 					menu.newEntry({menuName: subMenuName, entryText: 'sep'});
 					const tags = JSON.parse(properties.tags[1]);
