@@ -65,8 +65,11 @@
 
 ## [Unreleased][]
 ### Added
+- UI: toolbar tooltip now shows 'Shift + Win + R. Click' shortcut to open SMP/JSpliter panel menu (which works globally on any script and panel, at any position).
+- UI: toolbar readme is now listed on the readmes submenu.
 ### Changed
 - UI: minor adjustments to menu entries on Last.fm button.
+- Helpers: updated helpers.
 ### Removed
 ### Fixed
 
