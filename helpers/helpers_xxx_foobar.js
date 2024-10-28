@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/10/24
+//28/10/24
 
 /* exported checkCompatible, memoryUsed, isPortable, lastStartup, memoryPrint*/
 
@@ -29,12 +29,12 @@ function compareVersions(from, to, bNum = true) {
 }
 
 function isCompatible(requiredVersionStr = '1.6.1', target = 'smp') {
-	return compareVersions((target.toLowerCase === 'smp' ? utils : fb).Version.split('.'), requiredVersionStr.split('.'));
+	return compareVersions((target.toLowerCase() === 'smp' ? utils : fb).Version.split('.'), requiredVersionStr.split('.'));
 }
 
 function checkCompatible(requiredVersionStr = '1.6.1', target = 'smp') {
 	if (!isCompatible(requiredVersionStr)) {
-		console.popup('This script requires v' + requiredVersionStr + '. Current ' + (target.toLowerCase === 'smp' ? 'component' : 'Foobar2000') + ' version is v' + (target.toLowerCase === 'smp' ? utils : fb).Version + '.', window.Name);
+		console.popup('This script requires v' + requiredVersionStr + '. Current ' + (target.toLowerCase() === 'smp' ? 'component' : 'Foobar2000') + ' version is v' + (target.toLowerCase() === 'smp' ? utils : fb).Version + '.', window.Name);
 	}
 }
 
@@ -49,7 +49,7 @@ function memoryPrint(text, obj) {
 	console.log(
 		window.Name + (text ? ' - ' + text : '') +
 		(
-			typeof obj !== 'undefined' 
+			typeof obj !== 'undefined'
 				? '\n\tArgs memory usage: ' + utils.FormatFileSize(roughSizeOfObject(obj))
 				: ''
 		) +
