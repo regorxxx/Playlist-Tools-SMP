@@ -117,7 +117,25 @@ function createPoolPresets({size = 50} = {}) {
 					toPls: 'Top last 10 years tracks mix',
 					sort: '',
 				}
-			}
+			},
+			{ folder: 'Top tracks (rating)', name: 'sep' },
+			{
+				folder: 'Top tracks (rating)',
+				name: 'Recently added tracks mix', pool: {
+					fromPls: {
+						_LIBRARY_0: fourth,
+						_LIBRARY_1: fourth,
+						_LIBRARY_2: half
+					},
+					query: {
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 5 WEEKS',
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 5 WEEKS',
+						_LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'
+					},
+					toPls: 'Top recently added tracks mix',
+					sort: '',
+				}
+			},
 		],
 		...[ // Top tracks by playcount
 			{
@@ -134,23 +152,6 @@ function createPoolPresets({size = 50} = {}) {
 						_LIBRARY_2: globTags.rating + ' EQUAL 5 AND (%LAST_PLAYED_ENHANCED% DURING LAST 5 WEEKS OR %LAST_PLAYED% DURING LAST 5 WEEKS)'
 					},
 					toPls: 'Top recently played tracks mix',
-					sort: '',
-				}
-			},
-			{
-				folder: 'Top tracks (playcount)',
-				name: 'Recently added tracks mix', pool: {
-					fromPls: {
-						_LIBRARY_0: fourth,
-						_LIBRARY_1: fourth,
-						_LIBRARY_2: half
-					},
-					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 5 WEEKS',
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 5 WEEKS',
-						_LIBRARY_2: globTags.rating + ' EQUAL 5 AND %ADDED% DURING LAST 5 WEEKS'
-					},
-					toPls: 'Top recently added tracks mix',
 					sort: '',
 				}
 			},

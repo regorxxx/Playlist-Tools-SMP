@@ -66,6 +66,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
