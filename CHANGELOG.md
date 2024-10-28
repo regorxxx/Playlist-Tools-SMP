@@ -65,22 +65,22 @@
 
 ## [Unreleased][]
 ### Added
-- UI: toolbar tooltip now shows 'Shift + Win + R. Click' shortcut to open SMP/JSpliter panel menu (which works globally on any script and panel, at any position).
-- UI: toolbar readme is now listed on the readmes submenu.
 ### Changed
-- UI: minor adjustments to menu entries on Last.fm button.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
 
 ## [4.6.0] - 2024-10-09
 ### Added
+- UI: toolbar tooltip now shows 'Shift + Win + R. Click' shortcut to open SMP/JSpliter panel menu (which works globally on any script and panel, at any position).
+- UI: toolbar readme is now listed on the readmes submenu.
 ### Changed
 - Pools: expanded 'Top tracks' and 'From current track' presets. Restore defaults at pools submenu to show them.
 - Pools: 'Top tracks' folder is now split into 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
 - UI: preset entries on pools submenu are now split into multiple columns if there are more than 10 elements.
 - UI: preset entries can now be cloned or updated with current settings in most buttons and menus.
+- UI: minor adjustments to menu entries on Last.fm button.
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support and ES2021 compatibility.
 - Helpers: in case saving a file throws an error due to long paths (+255 chars) a warning popup will be shown.
 - Helpers: updated helpers.
