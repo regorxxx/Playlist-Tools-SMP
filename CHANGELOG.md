@@ -70,6 +70,7 @@
 ### Removed
 ### Fixed
 - Last.fm: fix malformed youTube links.
+- UI: '&' being displayed as '_' on tooltips.
 
 ## [4.6.0] - 2024-10-09
 ### Added
