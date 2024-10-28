@@ -69,6 +69,7 @@
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
+- Last.fm: fix malformed youTube links.
 
 ## [4.6.0] - 2024-10-09
 ### Added

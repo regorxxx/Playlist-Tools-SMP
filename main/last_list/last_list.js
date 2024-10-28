@@ -296,7 +296,7 @@ class LastList {
 				if (item.file) {
 					newItem = item.file;
 				} else {
-					newItem = `3dydfy://www.youtube.com/watch?v=${item.youtube}&fb2k_artist=${encodeURIComponent(item.artist)}&fb2k_title=${encodeURIComponent(item.title)}`;
+					newItem = `3dydfy://www.youTube.com/watch?v=${item.youTube}&fb2k_artist=${encodeURIComponent(item.artist)}&fb2k_title=${encodeURIComponent(item.title)}`;
 					if (item.cover) {
 						// upscale cover art link
 						item.cover = item.cover.replace(/\/64s\//g, '/300x300/');
