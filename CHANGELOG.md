@@ -66,6 +66,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support for locked playlists.
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Helpers: updated helpers.
 ### Removed

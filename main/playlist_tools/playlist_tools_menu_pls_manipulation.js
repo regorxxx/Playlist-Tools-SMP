@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//29/10/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -897,7 +897,7 @@
 								const playlist = { name: plman.GetPlaylistName(index), index };
 								const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(index));
 								const lockName = plman.GetPlaylistLockName(index);
-								const bSMPLock = lockName === 'foo_spider_monkey_panel' || !lockName;
+								const bSMPLock = lockName === 'foo_spider_monkey_panel' || lockName === 'foo_uie_jsplitter' || !lockName;
 								const bLocked = !bSMPLock || playlistLockTypes.isSuperset(new Set(lockTypes));
 								const flags = bSMPLock ? MF_STRING : MF_GRAYED;
 								const entryText = playlist.name + (!bSMPLock
@@ -966,7 +966,7 @@
 								{
 									const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(plman.ActivePlaylist));
 									const lockName = plman.GetPlaylistLockName(plman.ActivePlaylist);
-									const bSMPLock = lockName === 'foo_spider_monkey_panel' || !lockName;
+									const bSMPLock = lockName === 'foo_spider_monkey_panel' || lockName === 'foo_uie_jsplitter' || !lockName;
 									const bLocked = !bSMPLock || playlistLockTypes.isSuperset(new Set(lockTypes));
 									const flags = obj.action === 'lock' && bLocked
 										? MF_GRAYED
