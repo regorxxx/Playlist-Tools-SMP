@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/12/23
+//30/10/24
 
 /* exported filterByQuery, selectByQuery */
 
@@ -54,6 +54,7 @@ function selectByQuery(handleList = null, query = 'ALL') {
 
 	if (bActivePlaylist) {
 		let selCount = items.Count;
+		plman.ClearPlaylistSelection(plman.ActivePlaylist);
 		if (selCount) { // Send to active playlist if there was no input list and changes were made
 			const selIdx = [];
 			const selItems = items.Clone();
@@ -61,7 +62,6 @@ function selectByQuery(handleList = null, query = 'ALL') {
 			handleList.Convert().map((handle, i) => {
 				if (selItems.BSearch(handle) !== -1) {selIdx.push(i);}
 			});
-			plman.ClearPlaylistSelection(plman.ActivePlaylist);
 			plman.SetPlaylistSelection(plman.ActivePlaylist, selIdx, true);
 			console.log('Selected ' + selCount + ' tracks from active playlist by: ' + query);
 		} else {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//30/10/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1228,21 +1228,19 @@
 		{	// Move
 			const name = 'Move selection to';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
+				/* global getPlaylistSelectedIndexFirst:readable, getPlaylistSelectedIndexLast:readable */
 				readmes[menuName + '\\' + 'Move, expand & jump'] = folders.xxx + 'helpers\\readme\\selection_expand_jump.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'On current playlist:', func: null, flags: MF_GRAYED });
 				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'To specified position', func: () => {
+					menuName: subMenuName, entryText: 'To the top', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
-						let pos = 0;
-						try { pos = utils.InputBox(window.ID, 'Move by delta value:\n(positive or negative)', scriptName + ': ' + name, 1, true); }
-						catch (e) { return; }
-						if (!pos) { return; }
 						plman.UndoBackup(ap);
-						plman.MovePlaylistSelection(ap, pos);
-					}, flags: selectedFlagsReorder
+						plman.MovePlaylistSelection(ap, -plman.PlaylistItemCount(ap));
+					}, flags: selectedFlagsAddRem
 				});
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'To the middle', func: () => {
@@ -1257,6 +1255,15 @@
 						plman.SetPlaylistFocusItem(ap, pos);
 					}, flags: selectedFlagsAddRem
 				});
+				menu.newEntry({
+					menuName: subMenuName, entryText: 'To the bottom', func: () => {
+						const ap = plman.ActivePlaylist;
+						if (ap === -1) { return; }
+						plman.UndoBackup(ap);
+						plman.MovePlaylistSelection(ap, plman.PlaylistItemCount(ap));
+					}, flags: selectedFlagsAddRem
+				});
+				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'After playing now track', func: () => {
 						const playingItemLocation = plman.GetPlayingItemLocation();
@@ -1276,6 +1283,40 @@
 						plman.InsertPlaylistItems(pp, pos, selItems, true);
 						plman.SetPlaylistFocusItem(pp, pos);
 					}, flags: () => { return (fb.IsPlaying ? selectedFlagsAddRem() : MF_GRAYED); }
+				});
+				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newEntry({
+					menuName: subMenuName, entryText: 'By delta...', func: () => {
+						const ap = plman.ActivePlaylist;
+						if (ap === -1) { return; }
+						let pos = 0;
+						try { pos = utils.InputBox(window.ID, 'Move by delta value:\n(positive or negative)\n\nNon-contiguous selection is kept unless extremes can not move.', scriptName + ': ' + name, 1, true); }
+						catch (e) { return; }
+						if (!pos) { return; }
+						plman.UndoBackup(ap);
+						plman.MovePlaylistSelection(ap, pos);
+					}, flags: selectedFlagsReorder
+				});
+				menu.newEntry({
+					menuName: subMenuName, entryText: 'To specified position...', func: () => {
+						const ap = plman.ActivePlaylist;
+						if (ap === -1) { return; }
+						let pos = 0;
+						let bReverse = false;
+						const total = plman.PlaylistItemCount(ap);
+						try { pos = Number(utils.InputBox(window.ID, 'Move to position:\n(from 1 [beginning] to ' + total + ' [end] or -1 [end] to -' + total + ' [beginning]))\n\nNon-contiguous selection is kept unless extremes can not move (use negative values to send from end without compacting it).', scriptName + ': ' + name, 1, true)); }
+						catch (e) { return; }
+						if (pos === 0) { return; }
+						if (pos < 0) { bReverse = true; pos = -pos;}
+						const first = bReverse
+							? getPlaylistSelectedIndexLast(ap)
+							: getPlaylistSelectedIndexFirst(ap);
+						if (first === -1) { return; }
+						plman.UndoBackup(ap);
+						if (bReverse) { fb.RunMainMenuCommand('Edit/Sort/Reverse'); }
+						plman.MovePlaylistSelection(ap, (pos - 1) - first);
+						if (bReverse) { fb.RunMainMenuCommand('Edit/Sort/Reverse'); }
+					}, flags: selectedFlagsReorder
 				});
 				menu.newEntry({ menuName, entryText: 'sep' });
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
