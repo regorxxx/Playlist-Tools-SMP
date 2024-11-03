@@ -79,6 +79,7 @@
 - Select by Query: if query returns no tracks, then selection is cleared (instead of maintaining the previous selection).
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
+- Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
