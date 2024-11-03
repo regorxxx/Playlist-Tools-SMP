@@ -1,0 +1,2 @@
+﻿Simple device switcher as button, click to switch to selected device.
+Current device is shown on tooltip and with a checkbox on the menu.
