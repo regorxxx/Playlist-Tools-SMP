@@ -152,15 +152,24 @@ function _pools({
 		const profiler = this.bProfile ? new FbProfiler('processPool') : null;
 		let bError = false;
 		// Checks
+		const sources = Object.keys(pool.fromPls);
 		['query', 'deDuplicate', 'pickMethod', 'limit'].forEach((type) => {
 			if (Object.hasOwn(pool, type)) {
-				Object.keys(pool[type]).forEach((checkSource) => {
-					const found = Object.keys(pool.fromPls).some((source) => source === checkSource);
+				const typeSources = Object.keys(pool[type]);
+				typeSources.forEach((checkSource) => {
+					const found = sources.some((source) => source === checkSource);
 					if (!found) {
 						console.log(scriptName + ': ' + type + ' source not found -> ' + checkSource);
 						bError = true;
 					}
 				});
+				if (type === 'query') {
+					sources.forEach((source) => {
+						if (!typeSources.includes(source)) {
+							console.log(scriptName + ': ' + type + ' source not declared (probably an error) -> ' + source);
+						}
+					});
+				}
 			}
 		});
 		if (bError) { fb.ShowPopupMessage('There are some errors processing the pool, check the console log.', scriptName); }
@@ -379,7 +388,7 @@ function _pools({
 			// Only apply to non-classic pool
 			if (!plsName.startsWith('_GROUP_')) {
 				// Filter
-				const query = typeof pool.query !== 'undefined' ? pool.query[plsName] : '';
+				const query = (typeof pool.query !== 'undefined' ? pool.query[plsName] : '') || '';
 				if (query.length && query.toUpperCase() !== 'ALL') {
 					const queryNoSort = stripSort(query);
 					const sortedBy = query === queryNoSort

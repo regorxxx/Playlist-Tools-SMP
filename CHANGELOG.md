@@ -78,6 +78,7 @@
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Select by Query: if query returns no tracks, then selection is cleared (instead of maintaining the previous selection).
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
+- Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed
