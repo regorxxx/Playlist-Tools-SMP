@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/01/24
+//31/10/24
 
 // Adjust paths as needed
 include('..\\..\\helpers\\helpers_xxx.js');
@@ -12,7 +12,7 @@ var prefix = 'EDIT'; // NOSONAR[global]
 
 //Always loaded along other buttons and panel
 include('..\\..\\helpers\\buttons_panel_xxx.js');
-/* global buttonsPanel:readable, addButton:readable, ThemedButton:readable, getUniquePrefix:readable, calcNextButtonCoordinates:readable, on_paint_buttn:readable */
+/* global buttonsPanel:readable, addButton:readable, ThemedPanelButton:readable, getUniquePrefix:readable, calcNextButtonCoordinates:readable, on_paint_buttn:readable */
 var buttonCoordinates = { x: 0, y: window.Height - 22, w: 98, h: 22 }; // NOSONAR[global]
 buttonsPanel.config.orientation = 'x';
 
@@ -26,7 +26,7 @@ var newButtonsProperties = { // NOSONAR[global]
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 
 addButton({
-	OneButton: new ThemedButton(calcNextButtonCoordinates(buttonCoordinates, buttonsPanel.config.orientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsPanel.config.orientation, false).y, buttonCoordinates.w, buttonCoordinates.h, 'EDIT', function () {
+	OneButton: new ThemedPanelButton(calcNextButtonCoordinates(buttonCoordinates, buttonsPanel.config.orientation).x, calcNextButtonCoordinates(buttonCoordinates, buttonsPanel.config.orientation, false).y, buttonCoordinates.w, buttonCoordinates.h, 'EDIT', function () {
 		let t0 = Date.now();
 		let t1 = 0;
 		let [EDIT] = getPropertiesValues(this.buttonsProperties, this.prefix); // This gets all the panel properties at once
