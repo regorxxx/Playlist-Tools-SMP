@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/10/24
+//31/10/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -250,7 +250,7 @@
 					entryText: 'async', condFunc: () => {
 						const async = JSON.parse(menu_properties.async[1]);
 						const options = Object.keys(async);
-						const notAvailable = ['Write tags', 'Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
+						const notAvailable = ['Tagger', 'Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
 						options.forEach((key) => {
 							const bNotAvailable = notAvailable.indexOf(key) !== -1;
 							menu.newEntry({

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//03/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -170,15 +170,15 @@
 			}
 		}
 		{	// Automate tags
-			const scriptPath = folders.xxx + 'main\\tags\\tags_automation.js';
-			/* global TagAutomation:readable */
+			const scriptPath = folders.xxx + 'main\\tags\\tagger.js';
+			/* global Tagger:readable */
 			if (_isFile(scriptPath)) {
-				const name = 'Write tags';
+				const name = 'Tagger';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
-					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tags_automation.txt';
-					const tAut = new TagAutomation();
-					menu_properties['toolsByKey'] = ['\'Other tools\\Write tags\' tools enabled', JSON.stringify(tAut.toolsByKey)];
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tagger.txt';
+					const tAut = new Tagger();
+					menu_properties['toolsByKey'] = ['\'Other tools\\Tagger\' tools enabled', JSON.stringify(tAut.toolsByKey)];
 					const subMenuName = menu.newMenu(name, menuName);
 					const firedFlags = () => { return tAut.isRunning() ? MF_STRING : MF_GRAYED; };
 					const allFlags = () => { return (!tAut.isRunning() ? selectedFlags() : MF_GRAYED); };
@@ -250,7 +250,7 @@
 					});
 					// Refresh settings on startup
 					menu.newCondEntry({
-						entryText: 'Write tags (cond)', condFunc: (bInit = true) => {
+						entryText: 'Tagger (cond)', condFunc: (bInit = true) => {
 							if (bInit) { tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1])); }
 						}
 					});
@@ -413,7 +413,7 @@
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Configure filters...', func: () => {
 								let input;
-								try { input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n[\'%CHANNELS% LESS 3\', \'%RATING% GREATER 2\']\n\nThe example would try to find matches with 2 or less channels, then filter those results with rating > 2. In case the later filter does not output at least a single track, then will be skipped and only the previous filter applied (channels)... and so on (for more filters).', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g, '\''), true).replace(/'/g, '"'); }
+								try { input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n[\'%CHANNELS% LESS 3\', \'' + globTags.rating + ' GREATER 2\']\n\nThe example would try to find matches with 2 or less channels, then filter those results with rating > 2. In case the later filter does not output at least a single track, then will be skipped and only the previous filter applied (channels)... and so on (for more filters).', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g, '\''), true).replace(/'/g, '"'); }
 								catch (e) { return; }
 								if (!input.length) { input = '[]'; }
 								try { JSON.parse(input); }
