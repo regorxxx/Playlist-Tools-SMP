@@ -65,8 +65,18 @@
 
 ## [Unreleased][]
 ### Added
+- Move selection to: new entry 'Move selection to\To specified position...' is added which moves the selection to an absolute index. 'Move selection to\By delta...' moves by delta value (previous behavior). Both support non-contiguous selections unless the extremes can not move anymore (thus they start to compact) but allow to use positive or negative values to choose where to start from (top or bottom of playlist) to avoid it. All this info is shown in the input popup.
+- Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
+- Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
+- Buttons: 'utils_main_menu' button now has additional settings to save and handle button states, either internally or by main menu checks.
+- Readmes: added readme for 'buttons_device_switcher.js' button.
+- Readmes: Ctrl + L. Click on any entry within 'Add button' submenu on toolbar now opens directly their associated readme (without actually adding the button).
 ### Changed
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support for locked playlists.
+- Other tools\Write Tags: renamed to 'Tagger'.
+- Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
+- Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
+- Select by Query: if query returns no tracks, then selection is cleared (instead of maintaining the previous selection).
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Helpers: updated helpers.
 ### Removed
