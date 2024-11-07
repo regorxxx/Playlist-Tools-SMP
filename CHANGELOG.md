@@ -69,6 +69,7 @@
 - Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Buttons: 'utils_main_menu' button now has additional settings to save and handle button states, either internally or by main menu checks.
+- Buttons: added more presets to remove/show duplicates and filter playlist buttons.
 - Readmes: added readme for 'buttons_device_switcher.js' button.
 - Readmes: Ctrl + L. Click on any entry within 'Add button' submenu on toolbar now opens directly their associated readme (without actually adding the button).
 ### Changed
@@ -80,6 +81,7 @@
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
+- Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
 - Helpers: updated helpers.
 ### Removed
 ### Fixed

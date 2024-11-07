@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//07/11/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -48,13 +48,21 @@ var newButtonsProperties = { // NOSONAR[global]
 	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
 	presets: ['Presets', JSON.stringify([
 		{ name: 'By Artist', settings: { checkInputA: '', checkInputB: globTags.artist, checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Title', settings: { checkInputA: globTags.title, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Date', settings: { checkInputA: '', checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
-		{ name: 'By Artist - Date', settings: { checkInputA: globTags.artist, checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'sep' },
+		{ name: 'By Artist - Title - Date', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Artist - Title', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By MBID', settings: { checkInputA: 'MUSICBRAINZ_TRACKID', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: '' } },
 		{ name: 'sep' },
 		{ name: 'By Genre', settings: { checkInputA: globTags.genre, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Style', settings: { checkInputA: globTags.style, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Genre - Date', settings: { checkInputA: globTags.genre, checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Style - Date', settings: { checkInputA: globTags.style, checkInputB: '', checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
+		{ name: 'sep' },
+		{ name: 'By Album', settings: { checkInputA: 'ALBUM', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
+		{ name: 'By Album version', settings: { checkInputA: 'ALBUM', checkInputB: 'COMMENT', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: '' } },
+		{ name: 'By Path', settings: { checkInputA: '$directory(%PATH%,3)\\$directory(%PATH%,2)', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: ''  } },
 	]), { func: isJSON }],
 	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
 };
@@ -115,7 +123,8 @@ addButton({
 									checkInputC: this.buttonsProperties.checkInputC[1],
 									nAllowed: this.buttonsProperties.nAllowed[1],
 									bAdvTitle: this.buttonsProperties.bAdvTitle[1],
-									bMultiple: this.buttonsProperties.bMultiple[1]
+									bMultiple: this.buttonsProperties.bMultiple[1],
+									sortBias: this.buttonsProperties.sortBias[1]
 								},
 							};
 							return entry;
