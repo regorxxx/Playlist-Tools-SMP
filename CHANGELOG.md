@@ -88,6 +88,7 @@
 - Last.fm: fix malformed youTube links.
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
 - UI: '&' being displayed as '_' on tooltips.
+- Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 
 ## [4.6.0] - 2024-10-09
 ### Added
