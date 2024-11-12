@@ -72,6 +72,7 @@
 - Buttons: added more presets to remove/show duplicates and filter playlist buttons.
 - Readmes: added readme for 'buttons_device_switcher.js' button.
 - Readmes: Ctrl + L. Click on any entry within 'Add button' submenu on toolbar now opens directly their associated readme (without actually adding the button).
+- Playlist Manager integration: added support for [foo_playcount_2003](https://marc2k3.github.io/component/playcount-2003/) tags in Smart Playlists. i.e. '%2003_ADDED%', '%2003_LAST_PLAYED%', '%2003_PLAYCOUNT%' and '%2003_RATING%'.
 ### Changed
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support for locked playlists.
 - Other tools\Write Tags: renamed to 'Tagger'.
