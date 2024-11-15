@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/09/24
+//15/11/24
 
 /*
 	Automatic tagging...
@@ -11,7 +11,7 @@
 	are delayed to the end so the user can press OK on those popups without blocking processing.
  */
 
-/* exported TagAutomation */
+/* exported Tagger */
 
 /* global chromaPrintUtils:readable, ffmpeg:readable, folksonomyUtils:readable, essentia:readable */
 include('..\\..\\helpers\\helpers_xxx.js');
@@ -23,8 +23,8 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable */
 
-function TagAutomation({
-	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: true, LRA: true, KEY: true, bpmAnaly: false } */,
+function Tagger({
+	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: false, drMeter: true, LRA: true, KEY: true, bpmAnaly: false } */,
 	bOutputTools = false,
 	bOutputDefTools = false,
 	bWineBug = false,
@@ -52,11 +52,11 @@ function TagAutomation({
 	this.bFormatPopups = bFormatPopups;
 	this.bToolPopups = bToolPopups;
 	this.notAllowedTools = new Set();
-	this.incompatibleTools = new BiMap({ ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey' });
+	this.incompatibleTools = new BiMap({ ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey', drMeter: 'dynamicRange' });
 	this.tools = [
 		{
 			key: 'biometric', tag: [globTags.fooidFP],
-			title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: true
+			title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: false
 		},
 		{
 			key: 'chromaPrint', tag: [globTags.acoustidFP],
@@ -80,31 +80,35 @@ function TagAutomation({
 		},
 		{
 			key: 'bpmAnaly', tag: [globTags.bpm],
-			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true), bDefault: false
+			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true), bDefault: true
 		},
 		{
 			key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
-			title: 'DR', bAvailable: utils.CheckComponent('foo_dynamic_range', true), bDefault: true
+			title: 'DR (foo_dynamic_range)', bAvailable: utils.CheckComponent('foo_dynamic_range', true), bDefault: false
+		},
+		{
+			key: 'drMeter', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
+			title: 'DR (foo_dr_meter)', bAvailable: utils.CheckComponent('foo_dr_meter', true), bDefault: true
 		},
 		{
 			key: 'ffmpegLRA', tag: ['LRA'],
 			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true
 		},
 		{
-			key: 'folksonomy', tag: ['FOLKSONOMY'],
+			key: 'folksonomy', tag: [globTags.folksonomy],
 			title: 'Folksonomy', bAvailable: false, bDefault: false
 		},
 		{
 			key: 'essentiaFastKey', tag: [globTags.key],
-			title: 'Key (essentia fast)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: false
+			title: 'Key (essentia fast)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: true
 		},
 		{
 			key: 'essentiaKey', tag: [globTags.key],
-			title: 'Key (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: true
+			title: 'Key (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
 		},
 		{
 			key: 'essentiaBPM', tag: [globTags.bpm],
-			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: true
+			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
 		},
 		{
 			key: 'essentiaDanceness', tag: ['DANCENESS'],
@@ -361,7 +365,7 @@ function TagAutomation({
 		this.debouncedStep(this.iStep);
 	};
 
-	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'massTag', 'dynamicRange', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
+	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'massTag', 'dynamicRange', 'drMeter', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 	if (orderKeys.flat(Infinity).some((k) => !Object.hasOwn(this.toolsByKey, k))) { throw new Error('Key not associated to any tool'); }
 	this.stepTag = (i) => {
 		let bSucess = false;
@@ -397,10 +401,14 @@ function TagAutomation({
 			case 4: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
 				if (this.toolsByKey.dynamicRange) {
 					bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);
-				}
-				else { bSucess = false; }
+				} else { bSucess = false; }
 				break;
-			case 5:
+			case 5: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
+				if (this.toolsByKey.drMeter) {
+					bSucess = fb.RunContextCommandWithMetadb('DR Meter/Measure Dynamic Range', this.selItems, 8);
+				} else { bSucess = false; }
+				break;
+			case 6:
 				if (this.toolsByKey.chromaPrint) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -409,7 +417,7 @@ function TagAutomation({
 					} else { bSucess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItems }); }
 				} else { bSucess = false; }
 				break;
-			case 6:
+			case 7:
 				if (this.toolsByKey.ffmpegLRA) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -418,7 +426,7 @@ function TagAutomation({
 					} else { bSucess = ffmpeg.calculateLoudness({ fromHandleList: this.selItems, bWineBug: this.bWineBug }); }
 				} else { bSucess = false; }
 				break;
-			case 7:
+			case 8:
 				if (this.toolsByKey.folksonomy) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -427,7 +435,7 @@ function TagAutomation({
 					} else { bSucess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItems }); }
 				} else { bSucess = false; }
 				break;
-			case 8:
+			case 9:
 				if (this.toolsByKey.essentiaFastKey) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -436,7 +444,7 @@ function TagAutomation({
 					} else { bSucess = essentia.calculateKey({ fromHandleList: this.selItems }); }
 				} else { bSucess = false; }
 				break;
-			case 9:
+			case 10:
 				if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
 					const tagName = ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA'].map((key) => { return this.toolsByKey[key] ? this.tagsByKey[key][0] : null; }).filter(Boolean);
 					if (this.check.subSong) {
@@ -446,7 +454,7 @@ function TagAutomation({
 					} else { bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName }); }
 				} else { bSucess = false; }
 				break;
-			case 10: // These require user input before saving, so they are read only operations and can be done at the same time
+			case 11: // These require user input before saving, so they are read only operations and can be done at the same time
 				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan || this.toolsByKey.bpmAnaly ) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
