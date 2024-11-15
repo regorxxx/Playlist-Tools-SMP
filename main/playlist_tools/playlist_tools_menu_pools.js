@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/10/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -19,7 +19,6 @@
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_pools.txt';
 			readmes[name + ' (allowed keys)'] = folders.xxx + '\\presets\\Playlist Tools\\pools\\allowedKeys.txt';
 			forcedQueryMenusEnabled[name] = true;
-			let menuName = menu.newMenu(name);
 			const nameGraph = 'Search similar by Graph';
 			const nameDynGenre = 'Search similar by DynGenre';
 			const nameWeight = 'Search similar by Weight';
@@ -43,16 +42,8 @@
 				title: 'Playlist Tools'
 			});
 			{	// Pools
+				const menuName = menu.newMenu(name);
 				let pools = createPoolPresets({ size: defaultArgs.playlistLength });
-				const musicGraphPools = [];
-				const scriptPathGraph = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
-				if (_isFile(scriptPathGraph)) {
-					include(scriptPath.replace(folders.xxx + 'main\\', '..\\').replace('pools.js', 'pools_presets_musicgraph.js'));
-					/* global createPoolMusicGraphPresets:readable, music_graph_descriptors:readable */
-					musicGraphPools.push({ name: 'sep' });
-					createPoolMusicGraphPresets({ size: defaultArgs.playlistLength })
-						.forEach((pool) => musicGraphPools.push(pool));
-				}
 				let selArg = { ...clone(pools[0]), name: 'Custom' };
 				const poolsDefaults = [...pools];
 				// Create new properties with previous args
@@ -63,7 +54,7 @@
 				menu_properties['poolsCustomArg'].push({ func: isJSON }, menu_properties['poolsCustomArg'][1]);
 				// Menus
 				menu.newEntry({ menuName, entryText: 'Use Playlists / Queries as pools:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 				menu.newCondEntry({
 					entryText: 'Pools (cond)', condFunc: () => {
 						// On first execution, must update from property
@@ -71,25 +62,20 @@
 						// Entry list
 						pools = JSON.parse(menu_properties['pools'][1]);
 						const entryNames = new Set();
-						let bSbdSufFolders = false;
 						const folderCount = {};
-						pools.concat(musicGraphPools).forEach((poolObj) => {
+						pools.forEach((poolObj) => {
 							// Add submenus
 							let subMenu = Object.hasOwn(poolObj, 'folder')
 								? menu.findOrNewMenu(poolObj.folder, menuName)
 								: menuName;
 							if (Object.hasOwn(poolObj, 'subFolder')) {
-								if (!bSbdSufFolders && musicGraphPools.includes(poolObj)) {
-									music_graph_descriptors.style_cluster_groups.forEach((group) => menu.findOrNewMenu(group, subMenu));
-									bSbdSufFolders = true;
-								}
 								subMenu = menu.findOrNewMenu(poolObj.subFolder, subMenu);
 							}
 							if (Object.hasOwn(folderCount, subMenu)) { folderCount[subMenu]++; }
 							else { folderCount[subMenu] = 0; }
 							// Add separators
-							if (Object.hasOwn(poolObj, 'name') && poolObj.name === 'sep') {
-								menu.newEntry({ menuName: subMenu, entryText: 'sep' });
+							if (menu.isSeparator(poolObj)) {
+								menu.newSeparator(subMenu);
 							} else {
 								// Create names for all entries
 								let poolName = poolObj.name || '';
@@ -137,7 +123,7 @@
 								});
 							}
 						});
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						{ // Static menu: user configurable
 							menu.newEntry({
 								menuName, entryText: 'Custom pool...', func: () => {
@@ -179,7 +165,7 @@
 								}
 							});
 							// Menu to configure property
-							menu.newEntry({ menuName, entryText: 'sep' });
+							menu.newSeparator(menuName);
 						}
 						{	// Add / Remove
 							createSubMenuEditEntries(menuName, {
@@ -202,13 +188,101 @@
 					}
 				});
 			}
+			if (bEnableSearchDistance) {	// SBD Pools
+				const menuName = menu.newMenu(name + ' (Music Graph)');
+				const musicGraphPools = [];
+				const scriptPathGraph = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
+				if (_isFile(scriptPathGraph)) {
+					include(scriptPath.replace(folders.xxx + 'main\\', '..\\').replace('pools.js', 'pools_presets_musicgraph.js'));
+					/* global createPoolMusicGraphPresets:readable, music_graph_descriptors:readable */
+					createPoolMusicGraphPresets({ size: defaultArgs.playlistLength })
+						.forEach((pool) => {
+							delete pool.folder;
+							musicGraphPools.push(pool);
+						});
+				}
+				// Menus
+				menu.newEntry({ menuName, entryText: 'Use Music Graph mixes as pools:', func: null, flags: MF_GRAYED });
+				menu.newSeparator(menuName);
+				menu.newCondEntry({
+					entryText: 'Pools (cond)', condFunc: () => {
+						const entryNames = new Set();
+						let bSbdSufFolders = false;
+						const folderCount = {};
+						musicGraphPools.forEach((poolObj) => {
+							// Add submenus
+							let subMenu = Object.hasOwn(poolObj, 'folder')
+								? menu.findOrNewMenu(poolObj.folder, menuName)
+								: menuName;
+							if (Object.hasOwn(poolObj, 'subFolder')) {
+								if (!bSbdSufFolders && musicGraphPools.includes(poolObj)) {
+									music_graph_descriptors.style_cluster_groups.forEach((group) => menu.findOrNewMenu(group, subMenu));
+									bSbdSufFolders = true;
+								}
+								subMenu = menu.findOrNewMenu(poolObj.subFolder, subMenu);
+							}
+							if (Object.hasOwn(folderCount, subMenu)) { folderCount[subMenu]++; }
+							else { folderCount[subMenu] = 0; }
+							// Add separators
+							if (menu.isSeparator(poolObj)) {
+								menu.newSeparator(subMenu);
+							} else {
+								// Create names for all entries
+								let poolName = poolObj.name || '';
+								poolName = poolName.length > 40 ? poolName.substring(0, 40) + ' ...' : poolName;
+								if (entryNames.has(poolName)) {
+									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + poolName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(poolObj, null, '\t'), scriptName + ': ' + name);
+									return;
+								} else { entryNames.add(poolName); }
+								// Global forced query
+								const pool = clone(poolObj.pool);
+								if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {
+									Object.keys(pool.query).forEach((key) => { // With forced query enabled
+										if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
+											const queryNoSort = stripSort(pool.query[key]);
+											const sortedBy = pool.query[key] === queryNoSort
+												? ''
+												: pool.query[key].replace(queryNoSort, '');
+											pool.query[key] = '(' + queryNoSort + ') AND (' + defaultArgs.forcedQuery + ')' + sortedBy;
+										} else if (!pool.query[key].length) { // Empty uses forced query or ALL
+											pool.query[key] = defaultArgs.forcedQuery;
+										}
+									});
+								} else {
+									Object.keys(pool.query).forEach((key) => { // Otherwise empty is replaced with ALL
+										if (!pool.query[key].length) {
+											pool.query[key] = 'ALL';
+										}
+									});
+								}
+								menu.newEntry({
+									menuName: subMenu, entryText: poolName, func: () => {
+										poolsGen.changeConfig({
+											sortBias: defaultArgs.sortBias,
+											checkDuplicatesBy: defaultArgs.checkDuplicatesBy,
+											bAdvTitle: defaultArgs.bAdvTitle,
+											bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
+											smartShuffleSortBias: menu_properties.smartShuffleSortBias[1],
+											keyTag: defaultArgs.keyTag,
+											playlistPath: JSON.parse(menu_panelProperties.playlistPath[1]),
+											bDebug: defaultArgs.bDebug,
+											bProfile: defaultArgs.bProfile
+										}).processPool(pool, menu_properties);
+									},
+									flags: folderCount[subMenu] % 10 === 0 ? MF_MENUBARBREAK : MF_STRING
+								});
+							}
+						});
+					}
+				});
+			}
 			if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 				const subMenuName = 'Smart shuffle';
 				if (!menu.hasMenu(subMenuName, configMenu)) {
 					menu.newMenu(subMenuName, configMenu);
 					{	// bSmartShuffleAdvc
 						menu.newEntry({ menuName: subMenuName, entryText: 'For any tool which uses Smart Shuffle:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Enable extra conditions', func: () => {
 								menu_properties.bSmartShuffleAdvc[1] = !menu_properties.bSmartShuffleAdvc[1];
@@ -239,7 +313,7 @@
 								{ key: 'Key 6A centered', flags: MF_STRING },
 							];
 							menu.newEntry({ menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED });
-							menu.newEntry({ menuName: subMenuNameSecond, entryText: 'sep' });
+							menu.newSeparator(subMenuNameSecond);
 							options.forEach((opt) => {
 								const tf = opt.key.replace(/ /g, '').toLowerCase();
 								menu.newEntry({
@@ -249,7 +323,7 @@
 									}, flags: opt.flags
 								});
 							});
-							menu.newEntry({ menuName: subMenuNameSecond, entryText: 'sep' });
+							menu.newSeparator(subMenuNameSecond);
 							menu.newEntry({
 								menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
 									const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
@@ -264,8 +338,9 @@
 							});
 						}
 					}
-					menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+					menu.newSeparator(configMenu);
 				}
+				menu.newSeparator();
 			} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 	}
