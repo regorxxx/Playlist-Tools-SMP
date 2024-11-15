@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/10/24
+//15/11/24
 
 /* exported mainMenuSMP, executeByName */
 
@@ -60,14 +60,14 @@
 								menuList.push({ name: menuName + '\\sep', flags: 1 });
 							}
 							if (!new Set(menuList).has(menuName)) { menuList.push(menuName); }
-							if (menuName === mainMenu && entryText === 'sep') { menuList.push({ name: entryText, flags: 1 }); }
+							if (menuName === mainMenu && menu.isSeparator(entryText)) { menuList.push({ name: entryText, flags: 1 }); }
 						});
 						Object.keys(tree).forEach((menuKey) => {
 							const idx = menuList.indexOf(menuKey);
 							if (idx !== -1) { menuList = [...menuList.slice(0, idx), ...tree[menuKey], ...menuList.slice(idx + 1)]; }
 						});
 						// Filter consecutive separators
-						menuList = menuList.filter((item, idx, arr) => { return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx - 1].name !== 'sep') && !arr[idx - 1].name.endsWith('\\sep')); });
+						menuList = menuList.filter((item, idx, arr) => !menu.isSeparator(item) || (idx !== 0 && !menu.isSeparator(arr[idx - 1])));
 						const listExport = menuList;
 						return _save(path + 'playlisttoolsentries.json', JSON.stringify(listExport, null, '\t').replace(/\n/g, '\r\n'));
 					};
@@ -112,7 +112,7 @@
 					//  Menus
 					const flags = isCompatible('1.6.1', 'smp') ? MF_STRING : MF_GRAYED;
 					menu.newEntry({ menuName: subMenuName, entryText: 'File\\Spider Monkey Panel\\Script commands:', flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newCondEntry({
 						entryText: name + ' (cond)', condFunc: () => {
 							// Entry list
@@ -121,8 +121,8 @@
 							mainMenuSMP.forEach((entry, index) => {
 								if (!entry) { return; }
 								// Add separators
-								if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
-									menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+								if (menu.isSeparator(entry)) {
+									menu.newSeparator(subMenuName);
 								} else {
 									// Create names for all entries
 									let scriptName = entry.name;
@@ -139,7 +139,7 @@
 								}
 							});
 							if (!mainMenuSMP.filter(Boolean).length) { menu.newEntry({ menuName: subMenuName, entryText: '(none set yet)', func: null, flags: MF_GRAYED }); }
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							{	// Add
 								const toolName = name;
 								const subMenuNameTwo = menu.newMenu('Set menus', subMenuName);
@@ -211,8 +211,8 @@
 								];
 								options.forEach((entry) => {
 									// Add separators
-									if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
-										menu.newEntry({ menuName: subMenuNameTwo, entryText: 'sep' });
+									if (menu.isSeparator(entry)) {
+										menu.newSeparator(subMenuNameTwo);
 									} else {
 										// Create names for all entries
 										let scriptName = entry.name;
@@ -244,7 +244,7 @@
 								const subMenuSecondName = menu.newMenu('Remove entry from list', subMenuName);
 								mainMenuSMP.forEach((entry, index) => {
 									if (!entry) { return; }
-									const entryText = (entry.name === 'sep' ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name));
+									const entryText = (menu.isSeparator(entry) ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name));
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText: entryText + '\t (' + (index + 1) + ')', func: () => {
 											mainMenuSMP.splice(index, 1);
@@ -265,7 +265,7 @@
 									});
 								});
 								if (!mainMenuSMP.length) { menu.newEntry({ menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-								menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
+								menu.newSeparator(subMenuSecondName);
 								menu.newEntry({
 									menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 										mainMenuSMP = [...mainMenuSMPDefaults];
@@ -283,7 +283,7 @@
 									}
 								});
 							}
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Create SMP dynamic menus', func: () => {
 									menu_panelProperties.bDynamicMenus[1] = !menu_panelProperties.bDynamicMenus[1];
@@ -330,7 +330,7 @@
 				const subMenuName = menu.newMenu(name, menuName);
 				//  Menus
 				menu.newEntry({ menuName: subMenuName, entryText: 'Switch event listener:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newSeparator(subMenuName);
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Enabled Playlist Names Commands', func: () => {
 						if (!menu_properties.bPlaylistNameCommands[1]) {
@@ -345,7 +345,7 @@
 				menu.newCheckMenuLast(() => menu_properties.bPlaylistNameCommands[1]);
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 		}
-		menu.newEntry({ menuName, entryText: 'sep' });
+		menu.newSeparator(menuName);
 		{	// Include scripts
 			const name = 'Include scripts';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -366,15 +366,15 @@
 				});
 				//  Menus
 				menu.newEntry({ menuName: subMenuName, entryText: 'Include headless scripts:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newSeparator(subMenuName);
 				menu.newCondEntry({
 					entryText: name + ' (cond)', condFunc: () => {
 						// Entry list
 						scriptIncluded = JSON.parse(menu_properties['scriptIncluded'][1]);
 						scriptIncluded.forEach((scrObj) => {
 							// Add separators
-							if (Object.hasOwn(scrObj, 'name') && scrObj.name === 'sep') {
-								menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							if (menu.isSeparator(scrObj)) {
+								menu.newSeparator(subMenuName);
 							} else {
 								// Create names for all entries
 								let scriptName = scrObj.name;
@@ -384,7 +384,7 @@
 							}
 						});
 						if (!scriptIncluded.length) { menu.newEntry({ menuName: subMenuName, entryText: '(none set yet)', func: null, flags: MF_GRAYED }); }
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						{	// Add / Remove
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Add new entry to list...', func: () => {
@@ -395,7 +395,7 @@
 									let path = '';
 									try { path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', scriptName + ': ' + name, '', true); }
 									catch (e) { return; }
-									if (path === 'sep') { input = { name: path }; } // Add separator
+									if (menu.isSeparator(path)) { input = { name: path }; } // Add separator
 									else if (_isFile(path)) { // or new entry
 										try { include(path); }
 										catch (e) { return; }
@@ -417,7 +417,7 @@
 							{
 								const subMenuSecondName = menu.newMenu('Remove entry from list', subMenuName);
 								scriptIncluded.forEach((queryObj, index) => {
-									const entryText = (queryObj.name === 'sep' ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ' : queryObj.name));
+									const entryText = (menu.isSeparator(queryObj) ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ' : queryObj.name));
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText, func: () => {
 											scriptIncluded.splice(index, 1);
@@ -433,7 +433,7 @@
 									});
 								});
 								if (!scriptIncluded.length) { menu.newEntry({ menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-								menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
+								menu.newSeparator(subMenuSecondName);
 								menu.newEntry({
 									menuName: subMenuSecondName, entryText: 'Restore defaults', func: () => {
 										scriptIncluded = [...scriptIncludedDefaults];

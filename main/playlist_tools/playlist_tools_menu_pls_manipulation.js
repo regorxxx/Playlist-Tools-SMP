@@ -1,5 +1,5 @@
 ﻿'use strict';
-//30/10/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -33,7 +33,7 @@
 					menu_properties['nAllowed'].push({ greaterEq: 0, func: isInt }, menu_properties['nAllowed'][1]);
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Filter playlists using tags or TF:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newCondEntry({
 						entryText: 'Remove Duplicates (cond)', condFunc: () => {
 							// Update args
@@ -52,9 +52,9 @@
 								.toLowerCase();
 							menu.newEntry({ menuName: subMenuName, entryText: 'Remove duplicates by ' + entryKeysD, func: () => { removeDuplicates({ checkKeys: sortInputDuplic, sortBias, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
 							menu.newEntry({ menuName: subMenuName, entryText: 'Show duplicates by ' + entryKeysD, func: () => { showDuplicates({ checkKeys: sortInputDuplic, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							menu.newEntry({ menuName: subMenuName, entryText: 'Filter playlist by ' + entryKeysF + ' (n = ' + nAllowed + ')', func: () => { filterDuplicates({ checkKeys: sortInputFilter, sortBias, nAllowed, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Filter playlist by... (tags)', func: () => {
 									let tags;
@@ -69,7 +69,7 @@
 									filterDuplicates({ checkKeys: tags, sortBias, nAllowed: n, bAdvTitle, bMultiple });
 								}, flags: playlistCountFlagsAddRem
 							});
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Set tags (for duplicates)...', func: () => {
 									const input = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join('|'));
@@ -164,7 +164,7 @@
 					};
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Filter active playlist: (Ctrl + click to invert)', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newCondEntry({
 						entryText: 'Filter playlists using queries (cond)', condFunc: () => {
 							const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
@@ -172,8 +172,8 @@
 							queryFilter = JSON.parse(menu_properties['queryFilter'][1]);
 							const entryNames = new Set();
 							queryFilter.forEach((queryObj) => {
-								if (queryObj.name === 'sep') { // Create separators
-									menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+								if (menu.isSeparator(queryObj)) { // Create separators
+									menu.newSeparator(subMenuName);
 								} else {
 									// Create names for all entries
 									let queryName = queryObj.name || '';
@@ -213,7 +213,7 @@
 									});
 								}
 							});
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Filter playlist by... (query)', func: () => {
 									selArg.query = menu_properties['queryFilterCustomArg'][1];
@@ -247,7 +247,7 @@
 									overwriteMenuProperties(); // Updates panel
 								}, flags: playlistCountFlagsAddRem
 							});
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							createSubMenuEditEntries(subMenuName, {
 								name,
 								list: queryFilter,
@@ -260,7 +260,7 @@
 							});
 						}
 					});
-					menu.newEntry({ menuName, entryText: 'sep' });
+					menu.newSeparator(menuName);
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
@@ -379,33 +379,28 @@
 					if (!Object.hasOwn(menu_properties, 'bHarmonicMixDoublePass')) { menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true]; }
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Using rule of Fifths (new playlist):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					selArgs.forEach((selArg) => {
-						if (selArg.name === 'sep') {
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
-						} else {
-							let entryText = selArg.name;
-							menu.newEntry({
-								menuName: subMenuName, entryText, func: (args = { ...defaultArgs, ...selArg.args }) => {
-									args.selItems = args.selItems();
-									args.playlistLength = args.selItems.Count; // Max allowed
-									args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
-									const profiler = defaultArgs.bProfile ? new FbProfiler('harmonicMixing') : null;
-									if (args.isCycle) { harmonicMixingCycle(args); }
-									else { harmonicMixing(args); }
-									if (defaultArgs.bProfile) { profiler.Print(); }
-								}, flags: selArg.flags ? selArg.flags : undefined
-							});
-						}
+						menu.newEntry({
+							menuName: subMenuName, entryText: selArg.name, func: (args = { ...defaultArgs, ...selArg.args }) => {
+								args.selItems = args.selItems();
+								args.playlistLength = args.selItems.Count; // Max allowed
+								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
+								const profiler = defaultArgs.bProfile ? new FbProfiler('harmonicMixing') : null;
+								if (args.isCycle) { harmonicMixingCycle(args); }
+								else { harmonicMixing(args); }
+								if (defaultArgs.bProfile) { profiler.Print(); }
+							}, flags: selArg.flags ? selArg.flags : undefined
+						});
 					});
-					menu.newEntry({ menuName, entryText: 'sep' });
+					menu.newSeparator(menuName);
 					if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 						const subMenuName = 'Harmonic mixing';
 						if (!menu.hasMenu(subMenuName, configMenu)) {
 							menu.newMenu(subMenuName, configMenu);
 							{	// bHarmonicMixDoublePass
 								menu.newEntry({ menuName: subMenuName, entryText: 'For any tool which uses harmonic mixing:', func: null, flags: MF_GRAYED });
-								menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+								menu.newSeparator(subMenuName);
 								menu.newEntry({
 									menuName: subMenuName, entryText: 'Enable double pass to match more tracks', func: () => {
 										menu_properties['bHarmonicMixDoublePass'][1] = !menu_properties['bHarmonicMixDoublePass'][1];
@@ -414,7 +409,7 @@
 								});
 								menu.newCheckMenu(subMenuName, 'Enable double pass to match more tracks', void (0), () => { return menu_properties['bHarmonicMixDoublePass'][1]; });
 							}
-							menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+							menu.newSeparator(configMenu);
 						}
 					} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
@@ -455,24 +450,19 @@
 					{ name: () => { return 'Global pls. length (end): ' + menu_properties.playlistLength[1]; }, func: (idx) => { removeNotSelectedTracks(idx, menu_properties.playlistLength[1]); } },
 				];
 				menu.newEntry({ menuName: subMenuName, entryText: 'Set playlist length to desired #:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newSeparator(subMenuName);
 				// Menus
 				selArgs.forEach((selArg) => {
-					if (selArg.name === 'sep') {
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
-					} else {
-						let entryText = selArg.name;
-						menu.newEntry({
-							menuName: subMenuName, entryText, func: () => {
-								const ap = plman.ActivePlaylist;
-								if (ap === -1) { return; }
-								plman.UndoBackup(ap);
-								selArg.func(ap);
-							}, flags: playlistCountFlagsRem
-						});
-					}
+					menu.newEntry({
+						menuName: subMenuName, entryText: selArg.name, func: () => {
+							const ap = plman.ActivePlaylist;
+							if (ap === -1) { return; }
+							plman.UndoBackup(ap);
+							selArg.func(ap);
+						}, flags: playlistCountFlagsRem
+					});
 				});
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 		}
 		{	// Merge / Intersect / Difference
@@ -500,17 +490,17 @@
 				if (!bDiff) { menuDisabled.push({ menuName: nameDiff, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 				if (bMerge) {
 					menu.newEntry({ menuName: subMenuNameMerge, entryText: 'Merge current playlist\'s tracks with:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameMerge, entryText: 'sep' });
+					menu.newSeparator(subMenuNameMerge);
 				}
 				if (bInter) {
 					menu.newEntry({ menuName: subMenuNameInter, entryText: 'Output current playlist\'s tracks present on:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameInter, entryText: 'sep' });
+					menu.newSeparator(subMenuNameInter);
 				}
 				if (bDiff) {
 					menu.newEntry({ menuName: subMenuNameDiff, entryText: 'Remove current playlist\'s tracks present on:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameDiff, entryText: 'sep' });
+					menu.newSeparator(subMenuNameDiff);
 				}
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 				// Build submenus
 				menu.newCondEntry({
 					entryText: 'Merge/Intersect/Difference to Playlists', condFunc: () => {
@@ -734,15 +724,15 @@
 				if (!bClose) { menuDisabled.push({ menuName: nameClose, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 				if (bSend) {
 					menu.newEntry({ menuName: subMenuNameSend, entryText: 'Sends all tracks from current playlist to:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameSend, entryText: 'sep' });
+					menu.newSeparator(subMenuNameSend);
 				}
 				if (bGo) {
 					menu.newEntry({ menuName: subMenuNameGo, entryText: 'Switch to another playlist:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameGo, entryText: 'sep' });
+					menu.newSeparator(subMenuNameGo);
 				}
 				if (bClose) {
 					menu.newEntry({ menuName: subMenuNameClose, entryText: 'Close another playlist:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameClose, entryText: 'sep' });
+					menu.newSeparator(subMenuNameClose);
 				}
 				// Build submenus
 				menu.newCondEntry({
@@ -837,7 +827,7 @@
 						if (defaultArgs.bProfile) { profiler.Print(); }
 					}
 				});
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 			} else {
 				menuDisabled.push({ menuName: nameSend, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true });
 				menuDisabled.push({ menuName: nameGo, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true });
@@ -868,19 +858,19 @@
 				if (bLock) {
 					const lockTypesMenu = menu.newMenu('Lock playlist (by SMP):', subMenuNameLock);
 					menu.newEntry({ menuName: lockTypesMenu, entryText: 'With these locks:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: lockTypesMenu, entryText: 'sep' });
+					menu.newSeparator(lockTypesMenu);
 					['AddItems', 'RemoveItems', 'ReplaceItems', 'ReorderItems', 'RemovePlaylist'].forEach((lock) => {
 						menu.newEntry({ menuName: lockTypesMenu, entryText: lock.split(/(\B[A-Z]\w*)/g).join(' '), func: null, flags: MF_GRAYED | MF_CHECKED });
 					});
-					menu.newEntry({ menuName: subMenuNameLock, entryText: 'sep' });
+					menu.newSeparator(subMenuNameLock);
 				}
 				if (bUnlock) {
 					menu.newEntry({ menuName: subMenuNameUnlock, entryText: 'Unlock playlist (by SMP):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameUnlock, entryText: 'sep' });
+					menu.newSeparator(subMenuNameUnlock);
 				}
 				if (bSwitch) {
 					menu.newEntry({ menuName: subMenuNameSwitch, entryText: 'Switch lock playlist (by SMP):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameSwitch, entryText: 'sep' });
+					menu.newSeparator(subMenuNameSwitch);
 				}
 				// Build submenus
 				menu.newCondEntry({
@@ -962,7 +952,7 @@
 										if (lockUnlockMenu(i, obj.subMenuName, obj)) { bSomeEntry = true; }
 									}
 								}
-								if (bSomeEntry) { menu.newEntry({ menuName: obj.subMenuName, entryText: 'sep' }); }
+								if (bSomeEntry) { menu.newSeparator(obj.subMenuName); }
 								{
 									const playlistLockTypes = new Set(plman.GetPlaylistLockedActions(plman.ActivePlaylist));
 									const lockName = plman.GetPlaylistLockName(plman.ActivePlaylist);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//15/11/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -205,7 +205,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			}
 		});
 		if (bClone) {
-			menu.newEntry({ menuName: subMenuThirdName, entryText: 'sep' });
+			menu.newSeparator(subMenuThirdName);
 			menu.newEntry({
 				menuName: subMenuThirdName, entryText: 'Clone entry...', func: () => {
 					// Input all variables
@@ -240,7 +240,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			});
 		}
 		if (bAdd && options.bCopyCurrent && menu.isNotSeparator(entry)) {
-			menu.newEntry({ menuName: subMenuThirdName, entryText: 'sep' });
+			menu.newSeparator(subMenuThirdName);
 			menu.newEntry({
 				menuName: subMenuThirdName, entryText: 'Update with current settings', func: () => {
 					const oriEntry = JSON.stringify(entry);
@@ -268,7 +268,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				}
 			});
 		}
-		menu.newEntry({ menuName: subMenuThirdName, entryText: 'sep' });
+		menu.newSeparator(subMenuThirdName);
 		menu.newEntry({
 			menuName: subMenuThirdName, entryText: 'Remove entry', func: () => {
 				options.list.splice(index, 1);
@@ -287,7 +287,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 		});
 	});
 	if (!options.list.length) { menu.newEntry({ menuName: subMenuSecondName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-	if (bImport || bAdd) { menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' }); }
+	if (bImport || bAdd) { menu.newSeparator(subMenuSecondName); }
 	if (bAdd) {
 		menu.newEntry({
 			menuName: subMenuSecondName, entryText: 'Add new entry to list...', func: () => {
@@ -320,7 +320,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 		});
 	}
 	if (bImport) {
-		menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
+		menu.newSeparator(subMenuSecondName);
 		menu.newEntry({
 			menuName: subMenuSecondName, entryText: 'Import preset...', func: () => {
 				importPreset(options.defaultPreset);
@@ -341,7 +341,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			}, flags: Object.hasOwn(presets, options.propName) && presets[options.propName].length > 0 ? MF_STRING : MF_GRAYED
 		});
 	}
-	menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
+	menu.newSeparator(subMenuSecondName);
 	menu.newEntry({
 		menuName: subMenuSecondName, entryText: 'Restore defaults...', func: () => {
 			options.list = [...options.defaults];

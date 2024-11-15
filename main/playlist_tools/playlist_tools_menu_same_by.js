@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -74,7 +74,7 @@
 				};
 				// Menus
 				menu.newEntry({ menuName, entryText: 'Based on Queries matching minimum (X) tags:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 				menu.newCondEntry({
 					entryText: 'Search same by tags (cond)', condFunc: () => {
 						// Entry list
@@ -82,9 +82,9 @@
 						const entryNames = new Set();
 						sameByQueries.forEach((queryObj) => {
 							// Add separators
-							if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
+							if (menu.isSeparator(queryObj)) {
 								let entryMenuName = Object.hasOwn(queryObj, 'menu') ? queryObj.menu : menuName;
-								menu.newEntry({ menuName: entryMenuName, entryText: 'sep' });
+								menu.newSeparator(entryMenuName);
 							} else {
 								// Create names for all entries
 								let queryName = queryObj.name || '';
@@ -109,7 +109,7 @@
 								menu.newEntry({ menuName, entryText: 'By ' + queryName, func: () => { searchSameByCombs(sameByArgs); }, flags: focusFlags });
 							}
 						});
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						{ // Static menu: user configurable
 							menu.newEntry({
 								menuName, entryText: 'By... (pairs of tags)', func: () => {
@@ -130,7 +130,7 @@
 								}, flags: focusFlags
 							});
 							// Menu to configure property
-							menu.newEntry({ menuName, entryText: 'sep' });
+							menu.newSeparator(menuName);
 						}
 						{	// Add / Remove
 							createSubMenuEditEntries(menuName, {
@@ -183,9 +183,9 @@
 						{ title: 'sep', menu: specialMenu },
 					];
 					selArgs.forEach((selArg) => {
-						if (selArg.title === 'sep') {
+						if (menu.isSeparator(selArg)) {
 							let entryMenuName = Object.hasOwn(selArg, 'menu') ? selArg.menu : menuName;
-							menu.newEntry({ menuName: entryMenuName, entryText: 'sep' });
+							menu.newSeparator(entryMenuName);
 						} else {
 							let entryText = '';
 							if (!Object.hasOwn(selArg, 'title')) {
@@ -199,7 +199,7 @@
 						}
 					});
 				}
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 			}
 		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 	}

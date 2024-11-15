@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/10/24
+//15/11/24
 
 /*
 	Playlist Tools Menu
@@ -316,7 +316,7 @@ include('playlist_tools_menu_search_by_distance.js');
 		if (!menu.hasMenu(specialMenu)) {
 			menu.newMenu(specialMenu);
 		}
-		menu.newEntry({ entryText: 'sep' });
+		menu.newSeparator();
 	} else if (menuDisabled.findIndex((menu) => { return menu.menuName === specialMenu; }) === -1) { menuDisabled.push({ menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 }
 
@@ -353,7 +353,7 @@ include('playlist_tools_menu_last_action.js');
 			? menuAltAllowed.has(entry.subMenuFrom) // menu
 			: (Object.hasOwn(entry, 'condFunc')
 				? entry.condFunc !== null && menuAltAllowed.has(entry.entryText) // Conditional entry
-				: entry.entryText !== 'sep' && (entry.func !== null) && menuAltAllowed.has(entry.menuName) // Standard entry
+				: !menu.isSeparator(entry) && (entry.func !== null) && menuAltAllowed.has(entry.menuName) // Standard entry
 			)
 		);
 	});
@@ -361,7 +361,7 @@ include('playlist_tools_menu_last_action.js');
 	menuDisabled.forEach((obj) => { menuList.splice(obj.index - (obj.index < 16 ? 1 : 0), 0, obj); });
 	// Header
 	menuAlt.newEntry({ entryText: 'Switch menus functionality:', func: null, flags: MF_GRAYED });
-	menuAlt.newEntry({ entryText: 'sep' });
+	menuAlt.newSeparator();
 	// All entries
 	menuAlt.newEntry({
 		entryText: 'Restore all', func: () => {
@@ -375,7 +375,7 @@ include('playlist_tools_menu_last_action.js');
 			window.Reload();
 		}
 	});
-	menuAlt.newEntry({ entryText: 'sep' });
+	menuAlt.newSeparator();
 	// Individual entries
 	let i = 0;
 	let bLastSep = false;
@@ -391,7 +391,7 @@ include('playlist_tools_menu_last_action.js');
 		let bSep = false;
 		if (menuEntry.subMenuFrom === mainMenuName) {
 			if (idx && i >= 16) { i = 0; flags = MF_MENUBARBREAK; }
-			if (!bLastSep && i && menuList[idx + 1] && menuList[idx + 1].subMenuFrom !== mainMenuName) { bLastSep = true; menuAlt.newEntry({ entryText: 'sep' }); }
+			if (!bLastSep && i && menuList[idx + 1] && menuList[idx + 1].subMenuFrom !== mainMenuName) { bLastSep = true; menuAlt.newSeparator(); }
 			else { bLastSep = false; }
 			i++;
 		} else {
@@ -409,7 +409,7 @@ include('playlist_tools_menu_last_action.js');
 			}, flags
 		});
 		menuAlt.newCheckMenu(menuAlt.getMainMenuName(), entryName, void (0), () => menusEnabled[menuName]);
-		if (bSep) { menuAlt.newEntry({ entryText: 'sep' }); }
+		if (bSep) { menuAlt.newSeparator(); }
 	});
 	menu_panelProperties['menusEnabled'][1] = JSON.stringify(menusEnabled);
 }
@@ -476,7 +476,7 @@ menu.newCondEntry({
 				const flag = entry.flags;
 				// Skip
 				if (!toInclude.has(menuName.toLowerCase())) { return; }
-				if (entryText === 'sep') { return; }
+				if (menu.isSeparator(entryText)) { return; }
 				if (flag === MF_GRAYED) { return; }
 				if (toSkip.has(entryText) || toSkip.has(menuName) || toSkip.has(entryText.split('\\').pop())) { return; }
 				if (entryText.endsWith('...')) { return; }
@@ -484,7 +484,6 @@ menu.newCondEntry({
 				if (!Object.hasOwn(tree, menuName)) { tree[menuName] = []; }
 				tree[menuName].push((menuName !== mainMenu ? menuName + '\\' + entryText : entryText));
 				if (!new Set(menuList).has(menuName)) { menuList.push(menuName); }
-				if (menuName === mainMenu && entryText === 'sep') { menuList.push(entryText); }
 			});
 			Object.keys(tree).forEach((menuKey) => {
 				const idx = menuList.indexOf(menuKey);
@@ -492,7 +491,7 @@ menu.newCondEntry({
 			});
 			const newMacro = { name: 'Test Tools (generated)', entry: [...menuList], bAsync: false };
 			let menuName = 'Macros';
-			menu.newEntry({ menuName, entryText: 'sep' });
+			menu.newSeparator(menuName);
 			menu.newEntry({
 				menuName, entryText: newMacro.name + (newMacro.bAsync ? '\t(async)' : ''), func: () => {
 					menu.Macros.run(newMacro, true);
@@ -538,8 +537,8 @@ function createMainMenuDynamic() {
 				const menuName = entry.menuName.replace(invRe, '');
 				// Skip
 				if (toSkip.has(entryText) || toSkip.has(menuName)) { return; }
-				if (toSkipStarts.some((title) => { return entryText.startsWith(title); }) || toSkipStarts.some((title) => { return menuName.startsWith(title); })) { return; }
-				if (toRegEx.some((regex) => { return (regex.test(menuName + '\\' + entryText)); })) { return; }
+				if (toSkipStarts.some((title) => entryText.startsWith(title)) || toSkipStarts.some((title) => menuName.startsWith(title))) { return; }
+				if (toRegEx.some((regex) => regex.test(menuName + '\\' + entryText))) { return; }
 				// Save
 				if (!toSkipExport.has(entryText) && !toSkipExport.has(menuName)) {
 					if (!Object.hasOwn(tree, menuName)) { tree[menuName] = []; }
@@ -548,11 +547,11 @@ function createMainMenuDynamic() {
 						menuList.push({ name: menuName + '\\sep', flags: 1 });
 					}
 					if (!new Set(menuList).has(menuName)) { menuList.push(menuName); }
-					if (menuName === mainMenu && entryText === 'sep') { menuList.push({ name: entryText, flags: 1 }); }
+					if (menuName === mainMenu && menu.isSeparator(entryText)) { menuList.push({ name: entryText, flags: 1 }); }
 				}
 				if (!toSkipDynamic.has(entryText) && !toSkipDynamic.has(menuName)) {
 					if (!Object.hasOwn(dynamicTree, menuName)) { dynamicTree[menuName] = []; }
-					if (entry.flags !== MF_GRAYED && entryText !== 'sep') {
+					if (entry.flags !== MF_GRAYED && !menu.isSeparator(entryText)) {
 						dynamicTree[menuName].push({ name: (menuName !== mainMenu ? menuName + '\\' + entryText : entryText) });
 						if (!new Set(dynamicMenuList).has(menuName)) { dynamicMenuList.push(menuName); }
 					}
@@ -567,7 +566,7 @@ function createMainMenuDynamic() {
 				if (idx !== -1) { dynamicMenuList = [...dynamicMenuList.slice(0, idx), ...dynamicTree[menuKey], ...dynamicMenuList.slice(idx + 1)]; }
 			});
 			// Filter consecutive separators
-			menuList = menuList.filter((item, idx, arr) => { return (item.name !== 'sep' && !item.name.endsWith('\\sep')) || (idx !== 0 && (arr[idx - 1].name !== 'sep') && !arr[idx - 1].name.endsWith('\\sep')); });
+			menuList = menuList.filter((item, idx, arr) => !menu.isSeparator(item) || (idx !== 0 && menu.isSeparator(arr[idx - 1])));
 			// Cut names
 			menuList = menuList.map((item) => {
 				item.fullName = item.name;

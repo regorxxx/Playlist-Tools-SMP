@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, lastActionEntry:readable , newReadmeSep:readable */
 
@@ -11,7 +11,7 @@
 	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 		readmes[newReadmeSep()] = 'sep';
 		readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_last_action.txt';
-		menu.newEntry({entryText: 'sep'});
+		menu.newSeparator();
 		menu.newCondEntry({entryText: name, condFunc: () => {
 			const {entryText, fullName, flags} = lastActionEntry();
 			menu.newEntry({entryText, func: () => {
@@ -24,7 +24,7 @@
 			? menuAltAllowed.has(entry.subMenuFrom) // menu
 			: (Object.hasOwn(entry, 'condFunc')
 				? entry.condFunc !== null && menuAltAllowed.has(entry.entryText) // Conditional entry
-				: entry.entryText !== 'sep' && (entry.func !== null) && menuAltAllowed.has(entry.menuName) // Standard entry
+				: !menu.isSeparator(entry) && entry.func !== null && menuAltAllowed.has(entry.menuName) // Standard entry
 			)
 		);
 	}).length + disabledCount++});} // NOSONAR

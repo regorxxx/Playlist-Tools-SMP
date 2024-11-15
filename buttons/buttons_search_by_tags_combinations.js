@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//15/11/24
 
 /*
 	Search same by v 1.0 24/08/22
@@ -205,12 +205,12 @@ addButton({
 				},
 				void (0),
 				(menu) => {
-					menu.newEntry({ entryText: 'sep' });
+					menu.newSeparator();
 					const subMenuName = menu.newMenu('Presets');
 					JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
 						// Add separators
-						if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						if (menu.isSeparator(entry)) {
+							menu.newSeparator(subMenuName);
 						} else {
 							menu.newEntry({
 								menuName: subMenuName, entryText: entry.name, func: () => {
@@ -231,7 +231,7 @@ addButton({
 							);
 						}
 					});
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					_createSubMenuEditEntries(menu, subMenuName, {
 						name: 'Search Same By Tags (Combinations)',
 						list: JSON.parse(this.buttonsProperties.presets[1]),
@@ -262,26 +262,21 @@ addButton({
 		} else if (mask === MK_SHIFT + MK_CONTROL) {
 			const menu = new _menu();
 			menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
-			menu.newEntry({ entryText: 'sep' });
+			menu.newSeparator();
 			JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
-				// Add separators
-				if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
-					menu.newEntry({ entryText: 'sep' });
-				} else {
-					menu.newEntry({
-						entryText: entry.name, func: () => {
-							const preset = entry;
-							console.log(preset.settings);
-							searchSameByCombs({
-								checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
-								bAdvTitle: this.buttonsProperties.bAdvTitle[1],
-								playlistLength: Number(this.buttonsProperties.playlistLength[1]),
-								...preset.settings,
-								bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
-							});
-						}
-					});
-				}
+				menu.newEntry({
+					entryText: entry.name, func: () => {
+						const preset = entry;
+						console.log(preset.settings);
+						searchSameByCombs({
+							checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
+							bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+							playlistLength: Number(this.buttonsProperties.playlistLength[1]),
+							...preset.settings,
+							bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
+						});
+					}
+				});
 			});
 			menu.btn_up(this.currX, this.currY + this.currH);
 		} else {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/11/24
+//15/11/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -85,12 +85,12 @@ addButton({
 				},
 				void (0),
 				(menu) => {
-					menu.newEntry({ entryText: 'sep' });
+					menu.newSeparator();
 					const subMenuName = menu.newMenu('Presets');
 					JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
 						// Add separators
-						if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						if (menu.isSeparator(entry)) {
+							menu.newSeparator(subMenuName);
 						} else {
 							menu.newEntry({
 								menuName: subMenuName, entryText: entry.name, func: () => {
@@ -107,7 +107,7 @@ addButton({
 							);
 						}
 					});
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					_createSubMenuEditEntries(menu, subMenuName, {
 						name: 'Show Duplicates',
 						list: JSON.parse(this.buttonsProperties.presets[1]),
@@ -145,11 +145,11 @@ addButton({
 			} else if (mask === (MK_SHIFT + MK_CONTROL)) {
 				const menu = new _menu();
 				menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
 					// Add separators
-					if (Object.hasOwn(entry, 'name') && entry.name === 'sep') {
-						menu.newEntry({ entryText: 'sep' });
+					if (menu.isSeparator(entry)) {
+						menu.newSeparator();
 					} else {
 						menu.newEntry({
 							entryText: entry.name, func: () => {

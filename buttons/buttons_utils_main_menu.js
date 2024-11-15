@@ -61,7 +61,7 @@ buttonsBar.list.push(newButtonsProperties);
 			if (mask === MK_SHIFT || !list.length) {
 				const menu = new _menu();
 				menu.newEntry({ entryText: 'Select output:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				_createSubMenuEditEntries(menu, void (0), {
 					name: 'Main Menu Shortcut',
 					list,
@@ -157,7 +157,7 @@ buttonsBar.list.push(newButtonsProperties);
 						menu.newCheckMenuLast(() => compareObjects(list, option.entries) && compareObjects(indicator, option.indicator));
 					});
 				}
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				{
 					const menuName = menu.newMenu('Run when closing foobar');
 					menu.newEntry({
@@ -226,7 +226,7 @@ buttonsBar.list.push(newButtonsProperties);
 						menu.newCheckMenuLast(() => indicator.menuCheck ? 1 : 0, options);
 					}
 				}
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				menu.newEntry({
 					entryText: 'Rename button...', func: () => {
 						const input = Input.string('string', this.buttonsProperties.customName[1], 'Enter button name:', window.Name + 'Main Menu Shortcut', this.buttonsProperties.customName[3], void (0), false);

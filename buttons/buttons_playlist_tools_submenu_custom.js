@@ -54,7 +54,7 @@ addButton({
 					} else {
 						const menuName = buttonMenu.newMenu(menuObj.menuName);
 						subMenuList.forEach((subMenuObj, i) => {
-							if (subMenuObj === 'sep') {
+							if (menu.isSeparator(subMenuObj)) {
 								buttonMenu.newEntry({ menuName, entryText: 'separator' });
 							} else {
 								buttonMenu.newEntry({

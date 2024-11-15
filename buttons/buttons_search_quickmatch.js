@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/08/24
+//15/11/24
 
 /*
 	Quickmatch same....
@@ -87,7 +87,7 @@ addButton({
 			const menu = settingsMenu(
 				this, true, ['buttons_search_quickmatch.js'], void (0), void (0),
 				(menu) => {
-					menu.newEntry({ entryText: 'sep' });
+					menu.newSeparator();
 					_createSubMenuEditEntries(menu, void (0), {
 						name: 'Quickmatch',
 						list: JSON.parse(this.buttonsProperties.entries[1]),
@@ -269,12 +269,12 @@ function quickmatchMenu() {
 	// Menu
 	const menu = new _menu();
 	menu.newEntry({ entryText: 'Shift to search / Ctrl for AutoPlaylist:', flags: MF_GRAYED });
-	menu.newEntry({ entryText: 'sep' });
+	menu.newSeparator();
 	{	// Same...
 		entries.forEach((queryObj) => {
 			// Add separators
-			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
-				menu.newEntry({ entryText: 'sep' });
+			if (menu.isSeparator(queryObj)) {
+				menu.newSeparator();
 			} else {
 				// Create names for all entries
 				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;

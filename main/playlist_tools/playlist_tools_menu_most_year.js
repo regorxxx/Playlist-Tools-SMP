@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/06/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -19,7 +19,7 @@
 			forcedQueryMenusEnabled[name] = true;
 			const menuName = menu.newMenu(name);
 			menu.newEntry({ menuName, entryText: 'Based on play counts within a period:', func: null, flags: MF_GRAYED });
-			menu.newEntry({ menuName, entryText: 'sep' });
+			menu.newSeparator(menuName);
 			{	// Static menus
 				const currentYear = new Date().getFullYear();
 				const selYearArr = [currentYear, currentYear - 1, currentYear - 2];
@@ -32,7 +32,7 @@
 						}
 					});
 				});
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 				const options = [
 					{ name: 'day', arg: '1 DAY' },
 					{ name: 'week', arg: '1 WEEK' },
@@ -50,7 +50,7 @@
 					});
 				});
 			}
-			menu.newEntry({ menuName, entryText: 'sep' });
+			menu.newSeparator(menuName);
 			if (_isFile(scriptPathElse)) {
 				// All years
 				include(scriptPathElse);
@@ -60,7 +60,7 @@
 						topTracks(args);
 					}
 				});
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 			}
 			{	// Input menu: x year
 				menu.newEntry({
@@ -89,7 +89,7 @@
 					}
 				});
 			}
-			menu.newEntry({ entryText: 'sep' });
+			menu.newSeparator();
 		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 	} else if (isPlayCount && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
@@ -103,7 +103,7 @@
 					topTracks(args);
 				}
 			}); // Skips menu name, added to top
-			menu.newEntry({ entryText: 'sep' });
+			menu.newSeparator();
 		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 	}
 }
@@ -125,7 +125,7 @@
 						forcedQueryMenusEnabled[name] = true;
 						const menuName = menu.newMenu(name);
 						menu.newEntry({ menuName, entryText: 'Shift + Click to randomize:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						const currentYear = new Date().getFullYear();
 						const fromTo = [1950, Math.ceil(currentYear / 10) * 10];
 						const step = 10;
@@ -150,7 +150,7 @@
 							return [dateQuery, plsName];
 						};
 						selYearArr.reverse().forEach((selYear) => {
-							if (selYear === 'sep') { menu.newEntry({ menuName, entryText: 'sep' }); return; }
+							if (menu.isSeparator(selYear)) { menu.newSeparator(menuName); return; }
 							selYear.sort(); // Invariant to order
 							const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
 							menu.newEntry({
@@ -161,7 +161,7 @@
 								}
 							});
 						});
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						{	// Input menu
 							menu.newEntry({
 								menuName, entryText: 'From year...', func: () => {
@@ -194,7 +194,7 @@
 						forcedQueryMenusEnabled[name] = true;
 						const menuName = menu.newMenu(name);
 						menu.newEntry({ menuName, entryText: 'Shift + Click to randomize:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						const currentYear = new Date().getFullYear();
 						const fromTo = [1950, Math.ceil(currentYear / 10) * 10];
 						const step = 10;
@@ -219,7 +219,7 @@
 							return [dateQuery, plsName];
 						};
 						selYearArr.reverse().forEach((selYear) => {
-							if (selYear === 'sep') { menu.newEntry({ menuName, entryText: 'sep' }); return; }
+							if (menu.isSeparator(selYear)) { menu.newSeparator(menuName); return; }
 							selYear.sort(); // Invariant to order
 							const dateName = (selYear.length === 2 && selYear[0] === 0 ? ' before ' + selYear[1] : ' from ' + selYear.join('-'));
 							menu.newEntry({
@@ -230,7 +230,7 @@
 								}
 							});
 						});
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						{	// Input menu
 							menu.newEntry({
 								menuName, entryText: 'From year...', func: () => {
@@ -253,7 +253,7 @@
 					} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 				}
 			}
-			menu.newEntry({ entryText: 'sep' });
+			menu.newSeparator();
 		} else {
 			menuDisabled.push({ menuName: namePlay, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true });
 			menuDisabled.push({ menuName: nameRate, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true });

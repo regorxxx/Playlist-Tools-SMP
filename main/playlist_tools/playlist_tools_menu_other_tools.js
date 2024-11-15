@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/11/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -44,7 +44,7 @@
 					];
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({
 						menuName: subMenuName, entryText: 'Report errors by comparison', func: (_, bAsync) => {
 							if (typeof bAsync === 'undefined') { bAsync = JSON.parse(menu_properties.async[1])['Check tags']; }
@@ -62,9 +62,9 @@
 					{	// Submenu
 						const subMenuSecondName = menu.newMenu('Check only', subMenuName);
 						menu.newEntry({ menuName: subMenuSecondName, entryText: 'Limits comparisons to:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
+						menu.newSeparator(subMenuSecondName);
 						tagsToCheck.forEach((obj) => {
-							if (obj === 'sep') { menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' }); return; }
+							if (menu.isSeparator(obj)) { menu.newSeparator(subMenuSecondName); return; }
 							menu.newEntry({
 								menuName: subMenuSecondName, entryText: obj.name, func: (_, bAsync) => {
 									const properties = clone(menu_properties);
@@ -76,9 +76,9 @@
 							});
 						});
 					}
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({ menuName: subMenuName, entryText: 'Reports all tags. Slow! (on selection):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({
 						menuName: subMenuName, entryText: 'Report all tags by comparison', func: (_, bAsync) => {
 							if (typeof bAsync === 'undefined') { bAsync = JSON.parse(menu_properties.async[1])['Check tags']; }
@@ -96,9 +96,9 @@
 					{	// Submenu
 						const subMenuSecondName = menu.newMenu('Report all from', subMenuName);
 						menu.newEntry({ menuName: subMenuSecondName, entryText: 'Limits comparisons to:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' });
+						menu.newSeparator(subMenuSecondName);
 						tagsToCheck.forEach((obj) => {
-							if (obj === 'sep') { menu.newEntry({ menuName: subMenuSecondName, entryText: 'sep' }); return; }
+							if (menu.isSeparator(obj)) { menu.newSeparator(subMenuSecondName); return; }
 							menu.newEntry({
 								menuName: subMenuSecondName, entryText: obj.name, func: (_, bAsync) => {
 									const properties = clone(menu_properties);
@@ -110,7 +110,7 @@
 							});
 						});
 					}
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({
 						menuName: subMenuName, entryText: 'Configure tags to check...', func: () => {
 							const input = utils.InputBox(window.ID, 'Tag name(s) to check\nList \'tagName,tagName,...\' separated by \',\' :', scriptName + ': ' + name, menu_properties['tagNamesToCheck'][1]);
@@ -183,7 +183,7 @@
 					const firedFlags = () => { return tAut.isRunning() ? MF_STRING : MF_GRAYED; };
 					const allFlags = () => { return (!tAut.isRunning() ? selectedFlags() : MF_GRAYED); };
 					menu.newEntry({ menuName: subMenuName, entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({
 						menuName: subMenuName, entryText: () => { return 'Add tags on batch to selected tracks' + (tAut.isRunning() ? ' (running)' : ''); }, func: () => {
 							tAut.run();
@@ -191,13 +191,13 @@
 							if (defaultArgs.parent) { defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, () => { return !tAut.isRunning(); }); }
 						}, flags: allFlags
 					});
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({ menuName: subMenuName, entryText: () => { return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)'); }, func: tAut.nextStepTag, flags: firedFlags });
 					menu.newEntry({ menuName: subMenuName, entryText: () => { return 'Stop execution' + (tAut.isRunning() ? '' : ' (not running)'); }, func: tAut.stopStepTag, flags: firedFlags });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					const subMenuTools = menu.newMenu('Available tools', subMenuName);
 					menu.newEntry({ menuName: subMenuTools, entryText: 'Toggle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuTools, entryText: 'sep' });
+					menu.newSeparator(subMenuTools);
 					tAut.tools.forEach((tool) => {
 						const key = tool.key;
 						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
@@ -227,7 +227,7 @@
 						});
 						menu.newCheckMenu(subMenuTools, tool.title, void (0), () => !!tAut.toolsByKey[key]);
 					});
-					menu.newEntry({ menuName: subMenuTools, entryText: 'sep' });
+					menu.newSeparator(subMenuTools);
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
 						menu.newEntry({
 							menuName: subMenuTools, entryText: entryText, func: () => {
@@ -254,7 +254,7 @@
 							if (bInit) { tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1])); }
 						}
 					});
-					menu.newEntry({ menuName, entryText: 'sep' });
+					menu.newSeparator(menuName);
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
@@ -274,10 +274,10 @@
 						menu_properties['simThreshold'].push({ range: [[0, 1]], func: !Number.isNaN }, menu_properties['simThreshold'][1]);
 						// Menus
 						menu.newEntry({ menuName: subMenuName, entryText: 'Replaces dead items with tracks from library:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({ menuName: subMenuName, entryText: 'Find dead items (all playlists)', func: findDeadItems });
 						menu.newEntry({ menuName: subMenuName, entryText: 'Revive dead items (all playlists)', func: playlistReviveAll });
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Revive dead items (active playlist)', func: () => {
 								playlistRevive({ selItems: plman.GetPlaylistItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true });
@@ -288,7 +288,7 @@
 								selectDeadItems(plman.ActivePlaylist);
 							}, flags: focusFlags
 						});
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Revive dead items (on selection)', func: () => {
 								playlistRevive({ selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true });
@@ -299,7 +299,7 @@
 								playlistRevive({ selItems: plman.GetPlaylistSelectedItems(plman.ActivePlaylist), simThreshold: menu_properties['simThreshold'][1], bFindAlternative: true, bSimulate: true });
 							}, flags: () => focusFlags() | selectedFlags()
 						});
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({
 							menuName: subMenuName, entryText: () => 'Sets similarity threshold...' + '\t' + _b(menu_properties['simThreshold'][1]), func: () => {
 								const input = Number(utils.InputBox(window.ID, 'Float number between 0 and 1:', scriptName + ': ' + name, menu_properties['simThreshold'][1]));
@@ -341,7 +341,7 @@
 						];
 						// Menus
 						menu.newEntry({ menuName: subMenuName, entryText: 'Find matches on library from a txt file:', func: null, flags: MF_GRAYED });
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Import from file \\ url...', func: () => {
 								let bPresetUsed = false;
@@ -409,7 +409,7 @@
 									});
 							}
 						});
-						menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+						menu.newSeparator(subMenuName);
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Configure filters...', func: () => {
 								let input;
@@ -432,7 +432,7 @@
 							}
 						});
 					}
-					menu.newEntry({ menuName, entryText: 'sep' });
+					menu.newSeparator(menuName);
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
@@ -446,12 +446,12 @@
 					const plsHistory = new PlsHistory();
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({ menuName: subMenuName, entryText: 'Switch to previous playlists:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+					menu.newSeparator(subMenuName);
 					menu.newEntry({ menuName: subMenuName, entryText: 'Previous playlist', func: plsHistory.goPrevPls, flags: () => { return (plsHistory.size() >= 2 ? MF_STRING : MF_GRAYED); } });
 					menu.newCondEntry({
 						entryText: 'Playlist History (cond)', condFunc: () => {
 							const [, ...list] = plsHistory.getAll();
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							if (!list.length) { menu.newEntry({ menuName: subMenuName, entryText: '-None-', func: null, flags: MF_GRAYED }); }
 							list.forEach((pls) => {
 								menu.newEntry({
@@ -472,6 +472,6 @@
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
-		menu.newEntry({ entryText: 'sep' });
+		menu.newSeparator();
 	} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 }

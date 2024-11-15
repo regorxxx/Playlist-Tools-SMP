@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
 
@@ -104,15 +104,15 @@
 			// Checks
 			menu_properties['macros'].push({func: isJSON}, menu_properties['macros'][1]);
 			// Menus
-			menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', func: null, flags: MF_GRAYED});
-			menu.newEntry({menuName, entryText: 'sep'});
+			menu.newEntry({menuName, entryText: 'Save and run multiple menu entries:', flags: MF_GRAYED});
+			menu.newSeparator(menuName);
 			menu.newCondEntry({entryText: 'Macros', condFunc: () => {
 				const propMacros = JSON.parse(menu_properties['macros'][1]);
 				// List
 				const entryNames = new Set();
 				propMacros.forEach((macro) => {
-					if (macro.name === 'sep') { // Create separators
-						menu.newEntry({menuName, entryText: 'sep'});
+					if (menu.isSeparator(macro)) { // Create separators
+						menu.newSeparator(menuName);
 					} else {
 						let macroName = macro.name || '';
 						macroName = macroName.length > 40 ? macroName.substring(0,40) + ' ...' : macroName;
@@ -127,12 +127,12 @@
 					}
 				});
 				if (!propMacros.length) {menu.newEntry({menuName, entryText: '(none saved yet)', func: null, flags: MF_GRAYED});}
-				menu.newEntry({menuName, entryText: 'sep'});
+				menu.newSeparator(menuName);
 				// Save
 				menu.newEntry({menuName, entryText: 'Start recording a macro' + (Macros.isRecording()  ? '\t[recording]' : ''), func: () => {
 					Macros.set(propMacros); // There is no need for updating the list, but doing this ensures names are not duplicated
 					const macro = Macros.record();
-					if (macro && macro.name === 'sep') { // Just add a separator
+					if (menu.isSeparator(macro)) { // Just add a separator
 						Macros.save();
 						menu_properties['macros'][1] = JSON.stringify(Macros.get());
 						// Presets
@@ -154,7 +154,7 @@
 					menu_properties['presets'][1] = JSON.stringify(presets);
 					overwriteMenuProperties(); // Updates panel
 				}, flags: Macros.isRecording() ? MF_STRING : MF_GRAYED});
-				menu.newEntry({menuName, entryText: 'sep'});
+				menu.newSeparator(menuName);
 				{	// Add / Remove
 					createSubMenuEditEntries(menuName, {
 						name,
@@ -169,7 +169,7 @@
 					});
 				}
 			}});
-			menu.newEntry({entryText: 'sep'});
+			menu.newSeparator();
 		}
 	} else {menuDisabled.push({menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => {return menuAltAllowed.has(entry.subMenuFrom);}).length + disabledCount++, bIsMenu: true});} // NOSONAR
 }

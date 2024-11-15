@@ -79,11 +79,13 @@
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Select by Query: if query returns no tracks, then selection is cleared (instead of maintaining the previous selection).
+- Pools: music graph mixes moved to their own submenu 'Pools (Music Graph)'.
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
 - Helpers: updated helpers.
+- Helpers: general code cleanup on menus internal code. Please report any bug on extra separators or menu entries not working as expected.
 ### Removed
 ### Fixed
 - Last.fm: fix malformed youTube links.

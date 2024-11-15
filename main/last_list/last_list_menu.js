@@ -1,5 +1,5 @@
 'use strict';
-//10/10/24
+//15/11/24
 
 /* exported _lastListMenu */
 
@@ -199,7 +199,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 	}
 	{
 		menu.newEntry({ entryText: 'Shift + Click to bypass cache:', flags: MF_GRAYED });
-		menu.newEntry({ entryText: 'sep' });
+		menu.newSeparator();
 		if (bDynamicMenu) {
 			tags.forEach((tag) => {
 				const subMenu = menu.getMainMenuName();
@@ -247,7 +247,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			});
 		}
 	}
-	menu.newEntry({ entryText: 'sep' });
+	menu.newSeparator();
 	{
 		const subMenuCustom = menu.newMenu('Custom');
 		const subMenuUser = menu.newMenu('By User');
@@ -353,7 +353,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 				}, data: { bDynamicMenu: true }
 			});
 		});
-		menu.newEntry({ menuName: subMenuCustom, entryText: 'sep' });
+		menu.newSeparator(subMenuCustom);
 		menu.newEntry({
 			menuName: subMenuCustom, entryText: 'By url...', func: () => {
 				parent.url = cache.lastURL;
@@ -366,7 +366,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			}, data: { bDynamicMenu: true }
 		});
 	}
-	menu.newEntry({ entryText: 'sep' });
+	menu.newSeparator();
 	{
 		const year = new Date().getFullYear();
 		const staticURLS = [

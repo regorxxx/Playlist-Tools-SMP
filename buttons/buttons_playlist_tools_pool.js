@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//15/11/24
 
 /*
 	Playlist Tools Pools
@@ -41,11 +41,11 @@ addButton({
 					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
 					let propPools = JSON.parse(args.properties['pools'][1]);
 					configMenu.newEntry({ entryText: 'Playlist creation:', func: null, flags: MF_GRAYED });
-					configMenu.newEntry({ entryText: 'sep' });
+					configMenu.newSeparator();
 					// List
 					propPools.forEach((pool) => {
-						if (pool.name === 'sep') { // Create separators
-							configMenu.newEntry({ entryText: 'sep' });
+						if (menu.isSeparator(pool)) { // Create separators
+							configMenu.newSeparator();
 						} else {
 							configMenu.newEntry({
 								entryText: pool.name, func: () => {

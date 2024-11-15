@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/10/24
+//15/11/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -20,7 +20,7 @@
 				const subMenuNameTwo = menu.newMenu('Dynamic queries evaluation', subMenuName);
 				{	// Menu to configure properties: dynQueryEvalSel
 					menu.newEntry({ menuName: subMenuNameTwo, entryText: 'Evaluate on entire selection:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameTwo, entryText: 'sep' });
+					menu.newSeparator(subMenuNameTwo);
 					menu.newCondEntry({
 						entryText: 'dynQueryEvalSel', condFunc: () => {
 							const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
@@ -43,7 +43,7 @@
 				const subMenuNameTwo = menu.newMenu('Global Forced Query', subMenuName);
 				{	// Menu to configure properties: forcedQuery
 					menu.newEntry({ menuName: subMenuNameTwo, entryText: 'Switch forced query functionality:', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenuNameTwo, entryText: 'sep' });
+					menu.newSeparator(subMenuNameTwo);
 					menu.newCondEntry({
 						entryText: 'forcedQueryMenusEnabled', condFunc: () => {
 							// Merge with properties
@@ -60,7 +60,7 @@
 								});
 								menu.newCheckMenuLast(() => forcedQueryMenusEnabled[key]);
 							});
-							menu.newEntry({ menuName: subMenuNameTwo, entryText: 'sep' });
+							menu.newSeparator(subMenuNameTwo);
 							menu.newEntry({
 								menuName: subMenuNameTwo, entryText: 'Set Global Forced Query...', func: () => {
 									const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, menu_properties['forcedQuery'][1]);
@@ -79,28 +79,33 @@
 								const bFile = _isFile(file);
 								if (bFile) {
 									options = _jsonParseFileCheck(file, 'Query filters json', 'Playlist Tools', utf8) || [];
+									let bSave;
+									options.forEach((o) => {
+										if (!Object.hasOwn(o, 'name')) { o.name = o.title; delete o.title; bSave = true; }
+									});
+									if (bSave) { _save(file, JSON.stringify(options, null, '\t').replace(/\n/g, '\r\n')); }
 								} else {
 									options = [
-										{ title: 'Female vocals', query: globQuery.female },
-										{ title: 'Instrumentals', query: globQuery.instrumental },
-										{ title: 'Acoustic tracks', query: globQuery.acoustic },
-										{ title: 'Rating > 2', query: globQuery.ratingGr2 },
-										{ title: 'Rating > 3', query: globQuery.ratingGr3 },
-										{ title: 'Length < 6 min', query: globQuery.shortLength },
-										{ title: 'Only Stereo', query: globQuery.stereo },
-										{ title: 'sep' },
-										{ title: 'No Female vocals', query: globQuery.noFemale },
-										{ title: 'No Instrumentals', query: globQuery.noInstrumental },
-										{ title: 'No Acoustic tracks', query: globQuery.noAcoustic },
-										{ title: 'Not rated', query: globQuery.noRating },
-										{ title: 'Not Live (unless Hi-Fi)', query: globQuery.noLive }
+										{ name: 'Female vocals', query: globQuery.female },
+										{ name: 'Instrumentals', query: globQuery.instrumental },
+										{ name: 'Acoustic tracks', query: globQuery.acoustic },
+										{ name: 'Rating > 2', query: globQuery.ratingGr2 },
+										{ name: 'Rating > 3', query: globQuery.ratingGr3 },
+										{ name: 'Length < 6 min', query: globQuery.shortLength },
+										{ name: 'Only Stereo', query: globQuery.stereo },
+										{ name: 'sep' },
+										{ name: 'No Female vocals', query: globQuery.noFemale },
+										{ name: 'No Instrumentals', query: globQuery.noInstrumental },
+										{ name: 'No Acoustic tracks', query: globQuery.noAcoustic },
+										{ name: 'Not rated', query: globQuery.noRating },
+										{ name: 'Not Live (unless Hi-Fi)', query: globQuery.noLive }
 									];
 								}
 								menu.newEntry({ menuName: subMenuNameThree, entryText: 'Appended to Global Forced Query:', flags: MF_GRAYED });
-								menu.newEntry({ menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED });
+								menu.newSeparator(subMenuNameThree);
 								options.forEach((obj) => {
-									if (obj.title === 'sep') { menu.newEntry({ menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED }); return; }
-									const entryText = obj.title;
+									if (menu.isSeparator(obj)) { menu.newSeparator(subMenuNameThree); return; }
+									const entryText = obj.name;
 									let input = menu_properties['forcedQuery'][1].length ? ' AND ' + _p(obj.query) : obj.query;
 									menu.newEntry({
 										menuName: subMenuNameThree, entryText, func: () => {
@@ -118,7 +123,7 @@
 									});
 									menu.newCheckMenuLast(() => menu_properties['forcedQuery'][1].indexOf(input) !== -1);
 								});
-								menu.newEntry({ menuName: subMenuNameThree, entryText: 'sep', flags: MF_GRAYED });
+								menu.newSeparator(subMenuNameThree);
 								menu.newEntry({
 									menuName: subMenuNameThree, entryText: 'Edit entries...' + (bFile ? '' : '\t(new file)'), func: () => {
 										if (!bFile) { _save(file, JSON.stringify(options, null, '\t').replace(/\n/g, '\r\n')); }
@@ -131,7 +136,7 @@
 				}
 			}
 		}
-		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+		menu.newSeparator(configMenu);
 		{	// Menu to configure properties: playlistLength
 			menu.newEntry({
 				menuName: configMenu, entryText: () => 'Set Global Playlist Length...' + '\t[' + menu_properties['playlistLength'][1] + ']', func: () => {
@@ -148,7 +153,7 @@
 			const subMenuName = menu.newMenu('Duplicates handling', configMenu);
 			{
 				menu.newEntry({ menuName: subMenuName, entryText: 'Remove duplicates on playlist creation:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newSeparator(subMenuName);
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Configure Tags or TF expression...', func: () => {
 						let input = [];
@@ -201,7 +206,7 @@
 			{
 				const options = ['key', 'styleGenre'];
 				menu.newEntry({ menuName: subMenuName, entryText: 'Set the tags used by tools:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newSeparator(subMenuName);
 				options.forEach((tagName) => {
 					const key = tagName + 'Tag';
 					const entryText = () => {
@@ -225,7 +230,7 @@
 						}
 					});
 				});
-				menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+				menu.newSeparator(subMenuName);
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Restore defaults...', func: () => {
 						options.forEach((key) => {
@@ -239,11 +244,11 @@
 				});
 			}
 		}
-		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+		menu.newSeparator(configMenu);
 		{	// Async processing
 			const subMenuName = menu.newMenu('Asynchronous processing', configMenu);
 			menu.newEntry({ menuName: subMenuName, entryText: 'Switch async functionality:', func: null, flags: MF_GRAYED });
-			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+			menu.newSeparator(subMenuName);
 			{	// Enable
 				readmes[configMenu + '\\Async processing'] = folders.xxx + 'helpers\\readme\\async_processing.txt';
 				menu.newCondEntry({
@@ -270,11 +275,11 @@
 				});
 			}
 		}
-		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+		menu.newSeparator(configMenu);
 		{	// Logging
 			const subMenuName = menu.newMenu('Logging', configMenu);
 			menu.newEntry({ menuName: subMenuName, entryText: 'Switch logging functionality:', func: null, flags: MF_GRAYED });
-			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+			menu.newSeparator(subMenuName);
 			{	// bDebug
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Enabled extended console debug', func: () => {
@@ -298,7 +303,7 @@
 		{	// UI
 			const subMenuName = menu.newMenu('UI', configMenu);
 			menu.newEntry({ menuName: subMenuName, entryText: 'Switch UI functionality:', func: null, flags: MF_GRAYED });
-			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+			menu.newSeparator(subMenuName);
 			{	// bTooltipInfo
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Show mouse shortcuts on tooltip', func: () => {
@@ -308,7 +313,7 @@
 				});
 				menu.newCheckMenuLast(() => menu_panelProperties.bTooltipInfo[1]);
 			}
-			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+			menu.newSeparator(subMenuName);
 			{	// Shortcuts
 				readmes[configMenu + '\\Keyboard Shortcuts'] = folders.xxx + 'helpers\\readme\\keyboard_shortcuts.txt';
 				menu.newEntry({
@@ -325,7 +330,7 @@
 				menu.newEntry({ menuName: subMenuName, entryText: 'Open shortcuts file...', func: () => { _explorer(shortcutsPath); } });
 			}
 		}
-		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+		menu.newSeparator(configMenu);
 		{	// Import presets
 			menu.newEntry({ menuName: configMenu, entryText: 'Import user presets... ', func: importPreset });
 		}
@@ -345,7 +350,7 @@
 				}
 			});
 		}
-		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+		menu.newSeparator(configMenu);
 		{	// Reset all config
 			menu.newEntry({
 				menuName: configMenu, entryText: 'Reset all configuration... ', func: () => {
@@ -396,7 +401,7 @@
 				}
 			});
 		}
-		menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+		menu.newSeparator(configMenu);
 		{	// Readmes
 			const subMenuName = menu.newMenu('Readmes', configMenu);
 			if (window.ScriptInfo.Name === 'Playlist Tools: Buttons Bar') {
@@ -404,13 +409,13 @@
 				readmes['Toolbar'] = folders.xxx + 'helpers\\readme\\toolbar.txt';
 			}
 			menu.newEntry({ menuName: subMenuName, entryText: 'Open popup with readme:', func: null, flags: MF_GRAYED });
-			menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+			menu.newSeparator(subMenuName);
 			let iCount = 0;
 			const breakOn = 20;
 			if (Object.keys(readmes).length) {
 				const sepRegEx = /(^sep$)|(^separator$)/i;
 				Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files
-					if (sepRegEx.test(value)) { menu.newEntry({ menuName: subMenuName, entryText: 'sep' }); }
+					if (sepRegEx.test(value)) { menu.newSeparator(subMenuName); }
 					else if (_isFile(value)) {
 						const readme = _open(value, utf8); // Executed on script load
 						const flags = iCount < breakOn ? MF_STRING : iCount === breakOn ? MF_MENUBREAK : (iCount - breakOn) % (breakOn + 1) ? MF_STRING : MF_MENUBREAK; // Span horizontally
@@ -431,7 +436,7 @@
 				menu.newCondEntry({
 					entryText: 'Readme test', condFunc: (bInit = true) => { // Runs the first time the menu is clicked
 						if (bInit && menu_panelProperties.bDebug[1]) {
-							menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+							menu.newSeparator(subMenuName);
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Open all readmes', func: () => { // Executed on menu click
 									Object.entries(readmes).forEach(([key, value]) => { // Only show non empty files

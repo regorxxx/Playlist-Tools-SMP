@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/10/24
+//15/11/24
 
 /*
 	Automatic tagging...
@@ -59,21 +59,21 @@ buttonsBar.list.push(newButtonsProperties);
 				const selFlags = handleList.Count ? MF_STRING : MF_GRAYED;
 				const allFlags = () => { return (!this.tAut.isRunning() ? selFlags : MF_GRAYED); };
 				menu.newEntry({ entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				menu.newEntry({
 					entryText: () => { return 'Add tags on batch to selected tracks' + (this.tAut.isRunning() ? ' (running)' : ''); }, func: () => {
 						this.tAut.run();
 						this.switchAnimation('Automate Tags', true, () => { return !this.tAut.isRunning(); });
 					}, flags: allFlags
 				});
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				menu.newEntry({ entryText: () => { return 'Manually force next step' + (this.tAut.isRunning() ? '' : ' (not running)'); }, func: this.tAut.nextStepTag, flags: firedFlags });
 				menu.newEntry({ entryText: () => { return 'Stop execution' + (this.tAut.isRunning() ? '' : ' (not running)'); }, func: this.tAut.stopStepTag, flags: firedFlags });
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				{
 					const subMenu = menu.newMenu('Available tools...', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
 					menu.newEntry({ menuName: subMenu, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED });
-					menu.newEntry({ menuName: subMenu, entryText: 'sep' });
+					menu.newSeparator(subMenu);
 					this.tAut.tools.forEach((tool) => {
 						const key = tool.key;
 						const flags = tool.bAvailable ? MF_STRING : MF_GRAYED;
@@ -104,7 +104,7 @@ buttonsBar.list.push(newButtonsProperties);
 						});
 						menu.newCheckMenu(subMenu, tool.title, void (0), () => !!this.tAut.toolsByKey[key]);
 					});
-					menu.newEntry({ menuName: subMenu, entryText: 'sep' });
+					menu.newSeparator(subMenu);
 					['Enable all', 'Disable all'].forEach((entryText, i) => {
 						menu.newEntry({
 							menuName: subMenu, entryText, func: () => {
@@ -116,7 +116,7 @@ buttonsBar.list.push(newButtonsProperties);
 							}
 						});
 					});
-					menu.newEntry({ menuName: subMenu, entryText: 'sep' });
+					menu.newSeparator(subMenu);
 					menu.newEntry({
 						menuName: subMenu, entryText: 'Invert selected tools', func: () => {
 							this.tAut.tools.forEach((tool) => { this.tAut.toolsByKey[tool.key] = tool.bAvailable ? !this.tAut.toolsByKey[tool.key] : false; });
@@ -127,7 +127,7 @@ buttonsBar.list.push(newButtonsProperties);
 						}
 					});
 				}
-				menu.newEntry({ entryText: 'sep' });
+				menu.newSeparator();
 				{
 					const subMenu = menu.newMenu('Settings...', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
 					menu.newEntry({

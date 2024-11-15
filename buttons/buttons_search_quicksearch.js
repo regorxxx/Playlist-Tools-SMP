@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/04/24
+//15/11/24
 
 /*
 	Quicksearch for same....
@@ -164,7 +164,7 @@ addButton({
 						}
 				},
 				(menu) => {
-					menu.newEntry({ entryText: 'sep' });
+					menu.newSeparator();
 					_createSubMenuEditEntries(menu, void (0), {
 						name: 'Quicksearch',
 						list: JSON.parse(this.buttonsProperties.entries[1]),
@@ -221,12 +221,12 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 	// Menu
 	const menu = new _menu({ onBtnUp: () => this.selItems = null });
 	menu.newEntry({ entryText: 'Shift to search / Ctrl for AutoPlaylist:', flags: MF_GRAYED });
-	menu.newEntry({ entryText: 'sep' });
+	menu.newSeparator();
 	{	// Same...
 		queryFilter.forEach((queryObj) => {
 			// Add separators
-			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
-				menu.newEntry({ entryText: 'sep' });
+			if (menu.isSeparator(queryObj)) {
+				menu.newSeparator();
 			} else {
 				// Create names for all entries
 				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
@@ -265,7 +265,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 			}
 		});
 	}
-	menu.newEntry({ entryText: 'sep' });
+	menu.newSeparator();
 	{	// Static menu: user configurable
 		menu.newEntry({
 			entryText: 'By... (query)', func: () => {
@@ -300,19 +300,19 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 			}, flags, data: { bDynamicMenu: true }
 		});
 	}
-	menu.newEntry({ entryText: 'sep' });
+	menu.newSeparator();
 	{	// Begin with
 		const beginMenu = menu.newMenu('Begins with...');
 		menu.newEntry({ menuName: beginMenu, entryText: 'Simulates \'%TAG% IS VALUE*\':', flags: MF_GRAYED });
-		menu.newEntry({ menuName: beginMenu, entryText: 'sep' });
+		menu.newSeparator(beginMenu);
 		[
 			...queryFilter,
 			{ name: 'Same Title', query: 'TITLE IS #TITLE#' }
 		].forEach((queryObj) => {
 			// Add separators
-			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
-				if ((menu.getLastEntry() || { entryText: '' }).entryText !== 'sep') {
-					menu.newEntry({ menuName: beginMenu, entryText: 'sep' });
+			if (menu.isSeparator(queryObj)) {
+				if (!menu.isSeparator((menu.getLastEntry() || { entryText: '' }))) {
+					menu.newSeparator(beginMenu);
 				}
 			} else {
 				// Create names for all entries
@@ -358,15 +358,15 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 	{	// Includes
 		const beginMenu = menu.newMenu('Partially includes...');
 		menu.newEntry({ menuName: beginMenu, entryText: 'Simulates \'%TAG% HAS VALUE\':', flags: MF_GRAYED });
-		menu.newEntry({ menuName: beginMenu, entryText: 'sep' });
+		menu.newSeparator(beginMenu);
 		[
 			...queryFilter,
 			{ name: 'Same Title', query: 'TITLE HAS #TITLE#' }
 		].forEach((queryObj) => {
 			// Add separators
-			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
-				if ((menu.getLastEntry() || { entryText: '' }).entryText !== 'sep') {
-					menu.newEntry({ menuName: beginMenu, entryText: 'sep' });
+			if (menu.isSeparator(queryObj)) {
+				if (!menu.isSeparator(menu.getLastEntry() || { entryText: '' })) {
+					menu.newSeparator(beginMenu);
 				}
 			} else {
 				// Create names for all entries
@@ -412,7 +412,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 	{	// Partial
 		const partialMenu = menu.newMenu('Partial match...');
 		menu.newEntry({ menuName: partialMenu, entryText: 'Matches any value partially equal:', flags: MF_GRAYED });
-		menu.newEntry({ menuName: partialMenu, entryText: 'sep' });
+		menu.newSeparator(partialMenu);
 		// Mutate original queries into partial matches
 		[
 			...queryFilter,
@@ -434,14 +434,14 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 					};
 				}
 			}
-			return Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep'
+			return menu.isSeparator(queryObj)
 				? queryObj
 				: void (0);
 		}).filter(Boolean).forEach((queryObj) => {
 			// Add separators
-			if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
-				if ((menu.getLastEntry() || { entryText: '' }).entryText !== 'sep') {
-					menu.newEntry({ menuName: partialMenu, entryText: 'sep' });
+			if (menu.isSeparator(queryObj)) {
+				if (!menu.isSeparator(menu.getLastEntry() || { entryText: '' })) {
+					menu.newSeparator(partialMenu);
 				}
 			} else {
 				// Create names for all entries

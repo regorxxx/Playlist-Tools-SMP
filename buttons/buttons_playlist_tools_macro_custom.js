@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//15/11/24
 
 /*
 	Playlist Tools Macro custom
@@ -45,18 +45,18 @@ addButton({
 						let propMacros = JSON.parse(args.properties['macros'][1]);
 						Macros.set(propMacros); // Restore macros list on first init
 						configMenu.newEntry({ entryText: 'Execute macros:', func: null, flags: MF_GRAYED });
-						configMenu.newEntry({ entryText: 'sep' });
+						configMenu.newSeparator();
 						configMenu.newEntry({
 							entryText: 'None', func: () => {
 								this.buttonsProperties['macro'][1] = '';
 								overwriteProperties(this.buttonsProperties);
 							}
 						});
-						configMenu.newEntry({ entryText: 'sep' });
+						configMenu.newSeparator();
 						// List
 						propMacros.forEach((macro) => {
-							if (macro.name === 'sep') { // Create separators
-								configMenu.newEntry({ entryText: 'sep' });
+							if (menu.isSeparator(macro)) { // Create separators
+								configMenu.newSeparator();
 							} else {
 								configMenu.newEntry({
 									entryText: macro.name, func: () => {
@@ -66,14 +66,13 @@ addButton({
 								});
 							}
 						});
-						const options = propMacros.map((item) => { return item.name; }).filter((item) => { return item !== 'sep'; });
-						configMenu.newCheckMenu(configMenu.getMainMenuName(), 'None', options[options.length - 1], () => {
+						configMenu.newCheckMenuLast((o) => {
 							const name = this.buttonsProperties['macro'][1].replace('Macros\\', '');
-							const idx = options.indexOf(name);
+							const idx = o.findIndex((macro) => macro.name === name);
 							return idx !== -1 ? idx + 1 : 0;
-						});
+						}, propMacros);
 						if (!propMacros.length) { configMenu.newEntry({ entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-						configMenu.newEntry({ entryText: 'sep' });
+						configMenu.newSeparator();
 						configMenu.newEntry({
 							entryText: 'Button name...', func: () => {
 								const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();

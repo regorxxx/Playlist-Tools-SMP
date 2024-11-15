@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -53,9 +53,9 @@
 			// Menus
 			const loadMenus = (menuName, selArgs, entryArgs = []) => {
 				selArgs.forEach((selArg) => {
-					if (selArg.name === 'sep') {
+					if (menu.isSeparator(selArg)) {
 						let entryMenuName = Object.hasOwn(selArg, 'menu') ? selArg.menu : menuName;
-						menu.newEntry({ menuName: entryMenuName, entryText: 'sep' });
+						menu.newSeparator(entryMenuName);
 					} else {
 						const entryArg = entryArgs.find((item) => { return item.name === selArg.name; }) || {};
 						let entryText = selArg.name;
@@ -139,10 +139,10 @@
 			{	// -> Config menu
 				if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 					{
-						const submenu = menu.newMenu('Search by Distance', configMenu);
+						const subMenu = menu.newMenu('Search by Distance', configMenu);
 						{ 	// Find genre/styles not on graph
 							menu.newEntry({
-								menuName: submenu, entryText: 'Find genres/styles not on Graph', func: () => {
+								menuName: subMenu, entryText: 'Find genres/styles not on Graph', func: () => {
 									const tags = JSON.parse(menu_properties.tags[1]);
 									findStyleGenresMissingGraph({
 										genreStyleFilter: JSON.parse(menu_properties.genreStyleFilterTag[1]).filter(Boolean),
@@ -154,7 +154,7 @@
 							});
 							// Graph debug
 							menu.newEntry({
-								menuName: submenu, entryText: 'Debug Graph (check console)', func: () => {
+								menuName: subMenu, entryText: 'Debug Graph (check console)', func: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('graphDebug') : null;
 									graphDebug(sbd.allMusicGraph, true); // Show popup on pass
 									music_graph_descriptors_culture.debug(sbd.allMusicGraph);
@@ -163,7 +163,7 @@
 							});
 							// Graph test
 							menu.newEntry({
-								menuName: submenu, entryText: 'Run distance tests (check console)', func: () => {
+								menuName: subMenu, entryText: 'Run distance tests (check console)', func: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('testGraph') : null;
 									[testGraphNodes, testGraphNodeSets, music_graph_descriptors_culture.distanceDebug].forEach((f, i) => {
 										console.log('-'.repeat(60) + '-> Test ' + _p(i + 1));
@@ -172,10 +172,10 @@
 									if (defaultArgs.bProfile) { profiler.Print(); }
 								}
 							});
-							menu.newEntry({ menuName: submenu, entryText: 'sep' });
+							menu.newSeparator(subMenu);
 							// Graph cache reset Async
 							menu.newEntry({
-								menuName: submenu, entryText: () => 'Reset link cache' + (sbd.isCalculatingCache ? '\t -processing-' : ''), func: () => {
+								menuName: subMenu, entryText: () => 'Reset link cache' + (sbd.isCalculatingCache ? '\t -processing-' : ''), func: () => {
 									if (sbd.isCalculatingCache) {
 										fb.ShowPopupMessage('There is a calculation currently on process.\nTry again after it finishes. Check console (or animation).', 'Graph cache');
 										return;
@@ -188,20 +188,20 @@
 								}, flags: () => !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED
 							});
 						}
-						menu.newEntry({ menuName: submenu, entryText: 'sep' });
+						menu.newSeparator(subMenu);
 						{
-							const submenuTwo = menu.newMenu('Tag remapping', submenu);
+							const submenuTwo = menu.newMenu('Tag remapping', subMenu);
 							{	// Menu to configure tags
 								menu.newEntry({ menuName: submenuTwo, entryText: 'Tag remapping (only this tool):', func: null, flags: MF_GRAYED });
-								menu.newEntry({ menuName: submenuTwo, entryText: 'sep' });
+								menu.newSeparator(submenuTwo);
 								menu.newCondEntry({
 									entryText: 'Tags (cond)', condFunc: () => {
 										const tags = JSON.parse(menu_properties.tags[1]);
 										const options = [...Object.keys(tags)];
 										// Create menu on 2 places: tool config submenu and global tag submenu
 										const configMenuTag = menu.findOrNewMenu('Tag remapping', configMenu);
-										menu.newEntry({ menuName: configMenuTag, entryText: 'sep' });
-										const configSubmenu = menu.newMenu(submenu + '...', configMenuTag);
+										menu.newSeparator(configMenuTag);
+										const configSubmenu = menu.newMenu(subMenu + '...', configMenuTag);
 										options.forEach((key) => {
 											const tag = tags[key];
 											const value = tag.tf.join(',');
@@ -238,7 +238,7 @@
 											});
 										});
 										[configSubmenu, submenuTwo].forEach((sm) => {
-											menu.newEntry({ menuName: sm, entryText: 'sep' });
+											menu.newSeparator(sm);
 											{	// Cache
 												const options = ['bAscii', 'bTagsCache'];
 												options.forEach((key) => {
@@ -278,7 +278,7 @@
 											}
 										});
 										[configSubmenu, submenuTwo].forEach((sm) => {
-											menu.newEntry({ menuName: sm, entryText: 'sep' });
+											menu.newSeparator(sm);
 											menu.newEntry({
 												menuName: sm, entryText: 'Restore defaults...', func: () => {
 													menu_properties.tags[1] = menu_propertiesBack.tags[1];
@@ -300,16 +300,16 @@
 								});
 							}
 						}
-						menu.newEntry({ menuName: submenu, entryText: 'sep' });
+						menu.newSeparator(subMenu);
 						{ // Open descriptors
 							menu.newEntry({
-								menuName: submenu, entryText: 'Open main descriptor', func: () => {
+								menuName: subMenu, entryText: 'Open main descriptor', func: () => {
 									const file = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
 									if (_isFile(file)) { _explorer(file); _run('notepad.exe', file); }
 								}
 							});
 							menu.newEntry({
-								menuName: submenu, entryText: 'Open user descriptor', func: () => {
+								menuName: subMenu, entryText: 'Open user descriptor', func: () => {
 									const file = folders.userHelpers + 'music_graph_descriptors_xxx_user.js';
 									if (!_isFile(file)) {
 										_copyFile(folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx_user.js', file);
@@ -320,24 +320,24 @@
 								}
 							});
 						}
-						menu.newEntry({ menuName: submenu, entryText: 'sep' });
+						menu.newSeparator(subMenu);
 						{ // Open graph html file
 							menu.newEntry({
-								menuName: submenu, entryText: 'Show Music Graph on Browser', func: () => {
+								menuName: subMenu, entryText: 'Show Music Graph on Browser', func: () => {
 									const file = folders.xxx + 'Draw Graph.html';
 									if (_isFile(file)) { _run(file); }
 								}
 							});
 						}
 					}
-					menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+					menu.newSeparator(configMenu);
 					{
 						const subMenuName = 'Harmonic mixing';
 						if (!menu.hasMenu(subMenuName, configMenu)) {
 							menu.newMenu(subMenuName, configMenu);
 							{	// bHarmonicMixDoublePass
 								menu.newEntry({ menuName: subMenuName, entryText: 'For any tool which uses harmonic mixing:', func: null, flags: MF_GRAYED });
-								menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+								menu.newSeparator(subMenuName);
 								menu.newEntry({
 									menuName: subMenuName, entryText: 'Enable double pass to match more tracks', func: () => {
 										menu_properties['bHarmonicMixDoublePass'][1] = !menu_properties['bHarmonicMixDoublePass'][1];
@@ -354,7 +354,7 @@
 							menu.newMenu(subMenuName, configMenu);
 							{	// bSmartShuffleAdvc
 								menu.newEntry({ menuName: subMenuName, entryText: 'For any tool which uses Smart Shuffle:', func: null, flags: MF_GRAYED });
-								menu.newEntry({ menuName: subMenuName, entryText: 'sep' });
+								menu.newSeparator(subMenuName);
 								menu.newEntry({
 									menuName: subMenuName, entryText: 'Enable extra conditions', func: () => {
 										menu_properties.bSmartShuffleAdvc[1] = !menu_properties.bSmartShuffleAdvc[1];
@@ -385,7 +385,7 @@
 										{ key: 'Key 6A centered', flags: MF_STRING },
 									];
 									menu.newEntry({ menuName: subMenuNameSecond, entryText: 'Prioritize tracks by:', flags: MF_GRAYED });
-									menu.newEntry({ menuName: subMenuNameSecond, entryText: 'sep' });
+									menu.newSeparator(subMenuNameSecond);
 									options.forEach((opt) => {
 										const tf = opt.key.replace(/ /g, '').toLowerCase();
 										menu.newEntry({
@@ -395,7 +395,7 @@
 											}, flags: opt.flags
 										});
 									});
-									menu.newEntry({ menuName: subMenuNameSecond, entryText: 'sep' });
+									menu.newSeparator(subMenuNameSecond);
 									menu.newEntry({
 										menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
 											const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
@@ -410,7 +410,7 @@
 									});
 								}
 							}
-							menu.newEntry({ menuName: configMenu, entryText: 'sep' });
+							menu.newSeparator(configMenu);
 						}
 					}
 				} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR [global]
@@ -418,7 +418,7 @@
 		}
 	} else {
 		menu.newEntry({ menuName: specialMenu, entryText: 'Based on Search by Distance:', func: null, flags: MF_GRAYED });
-		menu.newEntry({ menuName: specialMenu, entryText: 'sep' });
+		menu.newSeparator(specialMenu);
 		menu.newEntry({ menuName: specialMenu, entryText: '-Not installed-', func: null, flags: MF_GRAYED });
 	}
 }

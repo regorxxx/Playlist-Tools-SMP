@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -91,7 +91,7 @@
 				};
 				// Menus
 				menu.newEntry({ menuName, entryText: 'Based on queries evaluated with sel:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 				menu.newCondEntry({
 					entryText: 'Dynamic Queries (cond)', condFunc: () => {
 						const options = JSON.parse(menu_properties.dynQueryEvalSel[1]);
@@ -101,9 +101,9 @@
 						const entryNames = new Set();
 						queryFilter.forEach((queryObj) => {
 							// Add separators
-							if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
+							if (menu.isSeparator(queryObj)) {
 								let entryMenuName = Object.hasOwn(queryObj, 'menu') ? queryObj.menu : menuName;
-								menu.newEntry({ menuName: entryMenuName, entryText: 'sep' });
+								menu.newSeparator(entryMenuName);
 							} else {
 								// Create names for all entries
 								let queryName = queryObj.name || '';
@@ -128,7 +128,7 @@
 								});
 							}
 						});
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						{ // Static menu: user configurable
 							menu.newEntry({
 								menuName, entryText: 'By... (query)', func: () => {
@@ -150,7 +150,7 @@
 								}, flags: selectedFlags
 							});
 							// Menu to configure property
-							menu.newEntry({ menuName, entryText: 'sep' });
+							menu.newSeparator(menuName);
 						}
 						{	// Add / Remove
 							createSubMenuEditEntries(menuName, {
@@ -167,7 +167,7 @@
 					}
 				});
 			}
-			menu.newEntry({ entryText: 'sep' });
+			menu.newSeparator();
 		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 	}
 }

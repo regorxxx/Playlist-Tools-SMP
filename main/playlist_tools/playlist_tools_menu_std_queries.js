@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/09/24
+//15/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable*/
 
@@ -66,7 +66,7 @@
 				};
 				// Menus
 				menu.newEntry({ menuName, entryText: 'Standard search with queries:', func: null, flags: MF_GRAYED });
-				menu.newEntry({ menuName, entryText: 'sep' });
+				menu.newSeparator(menuName);
 				menu.newCondEntry({
 					entryText: 'Search library (cond)', condFunc: () => {
 						// Entry list
@@ -74,9 +74,9 @@
 						const entryNames = new Set();
 						queryFilter.forEach((queryObj) => {
 							// Add separators
-							if (Object.hasOwn(queryObj, 'name') && queryObj.name === 'sep') {
+							if (menu.isSeparator(queryObj)) {
 								let entryMenuName = Object.hasOwn(queryObj, 'menu') ? queryObj.menu : menuName;
-								menu.newEntry({ menuName: entryMenuName, entryText: 'sep' });
+								menu.newSeparator(entryMenuName);
 							} else {
 								// Create names for all entries
 								let queryName = queryObj.name || '';
@@ -99,7 +99,7 @@
 								});
 							}
 						});
-						menu.newEntry({ menuName, entryText: 'sep' });
+						menu.newSeparator(menuName);
 						{ // Static menu: user configurable
 							menu.newEntry({
 								menuName, entryText: 'By... (query)', func: () => {
@@ -119,7 +119,7 @@
 								}
 							});
 							// Menu to configure property
-							menu.newEntry({ menuName, entryText: 'sep' });
+							menu.newSeparator(menuName);
 						}
 						{	// Add / Remove
 							createSubMenuEditEntries(menuName, {
