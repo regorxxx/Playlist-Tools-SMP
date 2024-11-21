@@ -1,40 +1,49 @@
-﻿Button for all Fingerprint Tools, fingerprint search and tagging.
-There different options are explained below:
+﻿Button for all Fingerprint Tools, fingerprint search and tagging. The
+different options are explained below:
 
-	-Compare: Compares the fingerprint of the currently selected
-	tracks and reports the similarity between them (in pairs).
+	-Compare: Compares the fingerprint of the currently selected tracks
+	and reports the similarity between them (in pairs).
 
-	-Search: Searches the entire Foobar2000 library for tracks
-	with similar fingerprint to the currently selected tracks.
+	-Search: Searches the entire Foobar2000 library for tracks with
+	similar fingerprint to the currently selected tracks.
 
-	-Tag: Tags the currently selected tracks with fingerprints.
-	For Chromaprint, the raw fingerprint is saved, not the
-	encoded version provided by default by fpcalc.exe or other
-	software like MusisBrainz Picard. Also the entire file
-	is fingerprinted, not just the first 120 secs.
+	-Tag: Tags the currently selected tracks with fingerprints. There
+	are 2 different algorithms:
 
-	-ChromaPrint database: Creates a reverse indexed database
-	for faster lookups. Specially useful for large libraries.
-	Requires to be recreated on library changes (automatically
-	checked). In large libraries, searches without database
-	may take +30 secs or even minutes, while using the database
-	will be pretty instant.
+		+ Chromaprint: the raw fingerprint is saved, not the
+		encoded version provided by default by fpcalc.exe or other
+		software like MusisBrainz Picard. Also the entire file is
+		fingerprinted, not just the first 120 secs. This should be
+		the preferred method (if you only want one).
+
+		+FooID: legacy algorithm which requires an external
+		component installed (see below), not compatible with
+		x64 foobar2000. Reequires 'foo_biometric' to be installed
+		on Foobar2000, 	along its 'Fooid.dll'. All required files
+		can be found at '_resources', along installation notes.
+
+	-ChromaPrint database: Creates a reverse indexed database for
+	faster lookups. Specially useful for large libraries. Requires
+	to be recreated on library changes (automaticallychecked). In
+	large libraries, searches without database may take +30 secs or
+	even minutes, while using the database will be pretty instant.
 
 	-Read from files: To retrieve the fingerprint tags within
-	foobar2000, the tags must be either cached or read from
-	files. Caching requires RAM usage which may be beyond
-	the limits of x32 binaries. Use x64 foobar2000 or the
-	'Read from files' option, which will read the tags without
-	caching with ffprobe. This option is slower than caching
-	to create the database though (but almost equal as fast
-	for searching and comparing).
-
-	-FooID tagging: requires 'foo_biometric' to be installed
-	on Foobar2000, 	along its 'Fooid.dll'. All required files
-	can be found at '_resources', along installation notes.
-
-FooID or ChromaPrint versions available.
+	foobar2000, the tags must be either cached or read from	files.
+	Caching requires RAM usage which may be beyond the limits of x32
+	binaries. Use x64 foobar2000 or the	'Read from files' option,
+	which will read the tags without caching with ffprobe. This
+	option is slower than caching to create the database though (but
+	almost equal as fast for searching and comparing).
 
 CHROMAPRINT TOOLS MAY HAVE LIMITATIONS ON x32 FOOBAR2000 AND
 SMP ENGINE. SEE:
 https://hydrogenaud.io/index.php?topic=120978.msg1011036#msg1011036
+
+ChromaPrint info:
+https://acoustid.org/chromaprint
+https://github.com/acoustid/chromaprint
+
+FooID info:
+https://github.com/timmartin/libfooid
+https://hydrogenaud.io/index.php/topic,65185.0.html
