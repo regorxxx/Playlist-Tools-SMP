@@ -645,11 +645,11 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_8: Math.floor(tenth * 1.4)
 					},
 					query: {
-						_LIBRARY_0: '(' + globTags.style + ' IS trap OR ' + globTags.genre + ' IS hip-hop) AND (LANGUAGE IS spa OR ' + globTags.style + ' IS spanish hip-hop) AND NOT (' + globTags.style + ' IS rap metal) AND ' + globQuery.fav,
+						_LIBRARY_0: '(' + globTags.style + ' IS trap OR ' + globTags.genre + ' IS hip-hop) AND (LANGUAGE IS spa OR ' + globTags.style + ' IS spanish hip-hop OR ' + globTags.style + ' IS urban breaks) AND NOT (' + globTags.style + ' IS rap metal) AND ' + globQuery.fav,
 						_LIBRARY_1: '(' + globTags.style + ' IS trap OR ' + globTags.genre + ' IS hip-hop) AND (LANGUAGE IS spa OR ' + globTags.style + ' IS spanish hip-hop OR ' + globTags.style + ' IS latin trap) AND NOT (' + globTags.style + ' IS rap metal) AND (' + globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3)',
 						_LIBRARY_2: globTags.style + ' IS spanish hip-hop AND NOT (' + globTags.style + ' IS rap metal) AND (' + globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3)',
 						_LIBRARY_3: '(' + globTags.style + ' IS flamenco OR ' + globTags.style + ' IS rumba flamenca) AND ' + globTags.genre + ' IS hip-hop AND ' + globQuery.ratingGr2,
-						_LIBRARY_4: '(' + globTags.style + ' IS trap OR ' + globTags.genre + ' IS hip-hop) AND (LANGUAGE IS spa OR ' + globTags.style + ' IS spanish hip-hop OR ' + globTags.style + ' IS latin trap) AND NOT (' + globTags.style + ' IS rap metal) AND ' + globTags.style + ' IS female vocal AND ' + globQuery.ratingGr2,
+						_LIBRARY_4: '(' + globTags.style + ' IS trap OR ' + globTags.genre + ' IS hip-hop) AND (LANGUAGE IS spa OR ' + globTags.style + ' IS spanish hip-hop OR ' + globTags.style + ' IS latin trap OR ' + globTags.style + ' IS urban breaks) AND NOT (' + globTags.style + ' IS rap metal) AND ' + globTags.style + ' IS female vocal AND ' + globQuery.ratingGr2,
 						_LIBRARY_5: globTags.style + ' IS nuevo flamenco AND ' + globTags.genre + ' IS hip-hop AND DATE GREATER 2000 AND ' + globQuery.ratingGr3,
 						_LIBRARY_6: '(' + globTags.style + ' IS flamenco rock OR ' + globTags.style + ' IS flamenco OR ' + globTags.style + ' IS rumba flamenca) AND (' + globTags.style + ' IS spanish folk OR ' + globTags.style + ' IS spanish rock) AND DATE GREATER 2000 AND ' + globQuery.ratingGr3,
 						_LIBRARY_7: '(' + globTags.style + ' IS rumba fusion OR ' + globTags.style + ' IS rumba) AND ' + globTags.style + ' IS spanish rock AND DATE GREATER 2000 AND ' + globQuery.ratingGr3,
