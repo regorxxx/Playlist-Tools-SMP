@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//20/11/24
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -247,7 +247,6 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 					const current = options.input(true);
 					if (!current) { return; }
 					for (let key in current) { options.list[index][key] = current[key]; }
-					console.log(options.list[index]);
 					menu_properties[options.propName][1] = JSON.stringify(options.list);
 					// Presets
 					if (Object.hasOwn(presets, options.propName)) {

@@ -1,7 +1,7 @@
 ﻿'use strict';
-//15/11/24
+//21/11/24
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable*/
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, globQuery:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, checkQuery:readable */
 
@@ -22,10 +22,12 @@
 					{ name: 'Entire library', query: 'ALL', sort: { tfo: '', direction: -1 } },
 					{ name: 'Entire library (forced query)', query: '', sort: { tfo: '', direction: -1 } },
 					{ name: 'sep' },
-					{ name: 'Rating 4-5', query: globTags.rating + ' EQUAL 5 OR ' + globTags.rating + ' EQUAL 4', sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Rating 4-5', query: globQuery.ratingGr3 , sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Rating 5', query: globQuery.ratingTop , sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Fav tracks', query: globQuery.fav , sort: { tfo: globTags.playCount, direction: 1 } },
 					{ name: 'sep' },
-					{ name: 'Recently played', query: '%LAST_PLAYED_ENHANCED% DURING LAST 1 WEEK OR %LAST_PLAYED% DURING LAST 1 WEEK', sort: { tfo: '$if2(%LAST_PLAYED_ENHANCED%,%LAST_PLAYED%)', direction: -1 } },
-					{ name: 'Recently added', query: '%ADDED% DURING LAST 1 WEEK', sort: { tfo: '%ADDED%', direction: -1 } },
+					{ name: 'Recently played', query: globQuery.recent, sort: { tfo: globTags.sortLastPlayed , direction: -1 } },
+					{ name: 'Recently added', query: globQuery.added, sort: { tfo: globTags.sortAdded, direction: -1 } },
 					{ name: 'sep' },
 					{ name: 'Rock tracks', query: globTags.genre + ' IS rock OR ' + globTags.genre + ' IS alt. rock OR ' + globTags.genre + ' IS progressive rock OR ' + globTags.genre + ' IS hard rock OR ' + globTags.genre + ' IS rock & roll', sort: { tfo: '$rand()', direction: 1 } },
 					{ name: 'Psychedelic tracks', query: globTags.genre + ' IS psychedelic rock OR ' + globTags.genre + ' IS psychedelic OR ' + globTags.style + ' IS neo-psychedelia OR ' + globTags.style + ' IS psychedelic Folk', sort: { tfo: '$rand()', direction: 1 } },
