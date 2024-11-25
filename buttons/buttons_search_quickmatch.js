@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /*
 	Quickmatch same....
@@ -287,7 +287,7 @@ function quickmatchMenu() {
 						menuName, entryText: bSingle ? queryObj.name + '\t[' + (tagVal.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : tagVal.cut(25), func: () => {
 							let query = queryJoin(queryObj.tf.map((key) => key + ' IS ' + tagVal), 'OR');
 							// Search by Distance tags
-							if (queryObj.tf.some((tag) => tag.toUpperCase().indexOf('LOCALE') !== -1)) {
+							if (queryObj.tf.some((tag) => tag.toUpperCase().includes('LOCALE'))) {
 								// World map tags
 								const worldMapPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
 								if (_isFile(worldMapPath)) {
@@ -309,7 +309,7 @@ function quickmatchMenu() {
 									}
 								}
 							}
-							if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quickmatch'); return; }
+							if (query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, 'Quickmatch'); return; }
 							const bShift = utils.IsKeyPressed(VK_SHIFT);
 							const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 							if (bShift || bCtrl) {

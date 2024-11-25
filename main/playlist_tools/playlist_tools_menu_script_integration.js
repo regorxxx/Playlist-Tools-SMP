@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* exported mainMenuSMP, executeByName */
 
@@ -38,7 +38,7 @@
 					// Helpers
 					const exportMenus = (path) => {
 						const listExport = clone(mainMenuSMP).filter(Boolean).map((entry) => { return { name: entry.name, funcName: entry.funcName, icon: Object.hasOwn(entry, 'icon') ? entry.icon : '' }; });
-						return _save(path + 'smpmenus.json', JSON.stringify(listExport, null, '\t'));
+						return _save(path + 'smpmenus.json', JSON.stringify(listExport, null, '\t').replace(/\n/g, '\r\n'));
 					};
 					const exportEntries = (path) => {
 						const mainMenu = menu.getMainMenuName();

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/12/23
+//25/11/24
 
 /* exported sortByKey */
 /* global globTags:readable */
@@ -28,7 +28,7 @@ function sortByKey({
 	let tfo = '';
 	// Translate keys into something usable on TF
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)
-	const keyTagTF = keyTag.indexOf('$') === -1 && keyTag.indexOf('%') === -1 ? '%' + keyTag + '%' : keyTag;
+	const keyTagTF = !keyTag.includes('$') && !keyTag.includes('%') ? '%' + keyTag + '%' : keyTag;
 	let i = 0;
 	camelotWheel.getKeyNotationTable().forEach((val, key) => {
 		const num = val.slice(0, -1);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -161,7 +161,7 @@ addButton({
 			}
 		}
 	}, null, void (0), (parent) => {
-		const tagKeys = Object.keys(parent.buttonsProperties).filter((key) => { return key.indexOf('checkInput') !== -1; });
+		const tagKeys = Object.keys(parent.buttonsProperties).filter((key) => key.includes('checkInput'));
 		const checkKeys = tagKeys.map((key) => { return parent.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
 		const bShift = utils.IsKeyPressed(VK_SHIFT);
 		const bCtrl = utils.IsKeyPressed(VK_CONTROL);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1355,7 +1355,7 @@
 						} else {
 							try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
 							catch (e) { return; }
-							if (query.indexOf('#') === -1) { // Try the query only if it is not a dynamic one
+							if (!query.includes('#')) { // Try the query only if it is not a dynamic one
 								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
 								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
 							}
@@ -1388,7 +1388,7 @@
 											let query = queryObj.query;
 											// Test
 											let focusHandle = fb.GetFocusItem(true);
-											if (focusHandle && query.indexOf('#') !== -1) {
+											if (focusHandle && query.includes('#')) {
 												if (bEvalSel) {
 													const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => { return queryReplaceWithCurrent(query, handle); }))];
 													query = queryJoin(queries, 'OR');
@@ -1430,7 +1430,7 @@
 									} else if (!query.length) { query = 'ALL'; } // Otherwise empty is replaced with ALL
 									// Test
 									let focusHandle = fb.GetFocusItem(true);
-									if (focusHandle && query.indexOf('#') !== -1) {
+									if (focusHandle && query.includes('#')) {
 										if (bEvalSel) {
 											const queries = [...new Set(plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Convert().map((handle) => { return queryReplaceWithCurrent(query, handle); }))];
 											query = queryJoin(queries, 'OR');

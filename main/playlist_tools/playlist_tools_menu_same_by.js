@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -45,8 +45,8 @@
 						try { input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true); }
 						catch (e) { return; }
 						if (!input.length) { return; }
-						if (input.indexOf(',') === -1) { return; }
-						if (input.indexOf(';') !== -1) { return; }
+						if (!input.includes(',')) { return; }
+						if (input.includes(';')) { return; }
 						let logic = 'AND';
 						try { logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', scriptName + ': ' + name, logic, true); }
 						catch (e) { return; }

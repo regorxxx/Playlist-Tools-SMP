@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//25/11/24
 
 /*
 	Top Rated Tracks
@@ -39,8 +39,8 @@ function topRatedTracks({
 	const test = bProfile ? new FbProfiler('topRatedTracks') : null;
 	// Check rating tag
 	let bFunc = false;
-	if (ratingTag.indexOf('$') === -1) {
-		if (ratingTag.indexOf('%') === -1) { ratingTag = '%' + ratingTag + '%'; }
+	if (!ratingTag.includes('$')) {
+		if (!ratingTag.includes('%')) { ratingTag = '%' + ratingTag + '%'; }
 	} else { bFunc = true; }
 	let outputHandleList = new FbMetadbHandleList();
 	let currRating = ratingLimits[1];

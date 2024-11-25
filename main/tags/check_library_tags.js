@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/08/24
+//25/11/24
 
 /*
 	Check Library Tags
@@ -337,18 +337,18 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 				else if (tagValue[0].trim().length !== tagValue[0].length) { bError = true; } // NOSONAR
 				else if (tagValue[0] === '?') { bError = true; } // NOSONAR
 				else if (tag !== 'title' && tag !== 'album') {
-					if (tagValue[0].indexOf(';') !== -1) { bError = true; } // NOSONAR
-					else if (tagValue[0].indexOf(',') !== -1) { bError = true; } // NOSONAR
-					else if (tagValue[0].indexOf('/') !== -1) { bError = true; } // NOSONAR
+					if (tagValue[0].includes(';')) { bError = true; } // NOSONAR
+					else if (tagValue[0].includes(',')) { bError = true; } // NOSONAR
+					else if (tagValue[0].includes('/')) { bError = true; } // NOSONAR
 				} else if (tag !== 'title') {
-					if (tagValue[0].indexOf('  ') !== -1) { bError = true; } // NOSONAR
+					if (tagValue[0].includes('  ')) { bError = true; } // NOSONAR
 				}
 				if (bError) { countArrayFiltered[index].push(tagValue); }
 			});
 			// Then all tags according to freq. filter (excluding previously added ones)
 			if (freqThreshold === 1 && !isFinite(maxSizePerTag)) { // When forced to check all tags, just push them all
 				countArrayPre[index].forEach((tagValue) => {
-					if (countArrayFiltered[index].indexOf(tagValue) === -1) { countArrayFiltered[index].push(tagValue); }
+					if (!countArrayFiltered[index].includes(tagValue)) { countArrayFiltered[index].push(tagValue); }
 				});
 			} else {
 				let breakPoint = -1; // May be entire array or a small subset according to the threshold
@@ -357,7 +357,7 @@ function checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, m
 				if (breakPoint !== -1) {
 					if (breakPoint > maxSizePerTag) { breakPoint = maxSizePerTag; }
 					countArrayPre[index].slice(0, breakPoint).forEach((tagValue) => {
-						if (countArrayFiltered[index].indexOf(tagValue) === -1) { countArrayFiltered[index].push(tagValue); }
+						if (!countArrayFiltered[index].includes(tagValue)) { countArrayFiltered[index].push(tagValue); }
 					});
 				}
 			}
@@ -373,10 +373,10 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 	else if (!tagValueA[0].trim().length) { alternativesMap.set(tagKey, 'Tag set to blank space(s)'); }
 	else if (tagValueA[0].trim().length !== tagValueA[0].length) { alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes'); }
 	else if (tagValueA[0] === '?') { alternativesMap.set(tagKey, 'Tag not set'); }
-	else if (tagA !== 'title' && tagValueA[0].indexOf('  ') !== -1) { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
-	else if (tagA !== 'title' && tagValueA[0].indexOf(';') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (tagA !== 'title' && tagValueA[0].indexOf(',') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (tagA !== 'title' && tagValueA[0].indexOf('/') !== -1) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].includes('  ')) { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
+	else if (tagA !== 'title' && tagValueA[0].includes(';')) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].includes(',')) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].includes('/')) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
 	else if (nodeList !== null && !nodeList.has(_asciify(tagValueA[0]))) { alternativesMap.set(tagKey, 'Missing tag on Music Graph descriptors'); }
 	else if (bCompare) { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
 		let similValues = [];
@@ -398,7 +398,7 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 			}
 		});
 		// If no error found yet, compare against dictionary
-		if (bUseDic && tagNamesExcludedDic.indexOf(tagA) === -1 && !similValues.length) {
+		if (bUseDic && !tagNamesExcludedDic.includes(tagA) && !similValues.length) {
 			tagValueA[0].split(' ').forEach((word, index, array) => {
 				if (!dictionary.check(word)) {
 					const dicSuggest = dictionary.suggest(word);
@@ -493,7 +493,7 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 			queryText += tagName.toUpperCase() + ' - ' + tagVal + ' --> ' + 'NOT ' + tagName.toUpperCase() + ' PRESENT\n';
 		} else {
 			queryText += tagName.toUpperCase() + ' - ' + tagVal + ' --> ' + tagName.toUpperCase() + ' IS ' + '"' + tagVal + '"\n';
-			if (!tagVal.length && tipsText.indexOf(tagName) === -1) { // Only add the tip once per tag name
+			if (!tagVal.length && !tipsText.includes(tagName)) { // Only add the tip once per tag name
 				if (!tipsText.length) { tipsText += 'You can use these TF on facets to differentiate\nbetween empty valued and non set tags on columns:\n\n'; }
 				tipsText += '$if(%' + tagName + '%,$ifgreater($len(%' + tagName + '%),0,%<' + tagName + '>%,\'(Empty)\'),\'(\'Unknown\')\')';
 				tipsText += '\n';
@@ -532,7 +532,7 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 			let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, currentTags);
 			if (currentTags !== inputTags) {
 				tagValuesExcluded = pairsToObj(inputTags);
-				_save(properties['tagValuesExcludedPath'][1], JSON.stringify(tagValuesExcluded, null, '\t'));
+				_save(properties['tagValuesExcludedPath'][1], JSON.stringify(tagValuesExcluded, null, '\t').replace(/\n/g, '\r\n'));
 			}
 		}
 	}
@@ -608,7 +608,7 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 		}
 	}
 	if (bFromFile && bSave) {
-		_save(path, JSON.stringify(obj, null, '\t'));
+		_save(path, JSON.stringify(obj, null, '\t').replace(/\n/g, '\r\n'));
 		console.log('loadTagsExcluded: overwrote file after fixing keys.\n\t' + path);
 	}
 	for (const key in obj) { obj[key] = new Set(obj[key].filter(Boolean)); }

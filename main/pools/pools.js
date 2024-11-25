@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/08/24
+//25/11/24
 
 /* exported _pools */
 
@@ -225,7 +225,7 @@ function _pools({
 					const limit = typeof pool.limit !== 'undefined' ? pool.limit[plsName] : Infinity;
 					const handleListsGroups = [];
 					for (let i = 0; i <= num; i++) {
-						const groupTF = group.indexOf('$') !== -1 ? _q(group) : group;
+						const groupTF = group.includes('$') ? _q(group) : group;
 						const query = groupTF + ' IS ' + tagSet[i];
 						if (!checkQuery(query, true)) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + groupTF + '\n' + query, scriptName); return; }
 						handleListsGroups[i] = fb.GetQueryItems(handleListFrom, query);
@@ -520,7 +520,7 @@ function _pools({
 			);
 		} catch (e) { return; }
 		if (!fromPls.length) { console.log('Input was empty'); return; }
-		if (fromPls.indexOf(',') === -1) { console.log('Input was not a pair separated by \',\''); return; }
+		if (!fromPls.includes(',')) { console.log('Input was not a pair separated by \',\''); return; }
 		fromPls = fromPls.split(';');
 		const count = new Map();
 		fromPls = fromPls.map((pair) => {
@@ -562,7 +562,7 @@ function _pools({
 			);
 		} catch (e) { return; }
 		if (!query.length) { console.log('Input was empty'); return; }
-		if (query.indexOf(',') === -1) { console.log('Input was not a pair separated by \',\''); return; }
+		if (!query.includes(',')) { console.log('Input was not a pair separated by \',\''); return; }
 		query = query.split(';');
 		query = query.map((pair) => {
 			pair = pair.split(',');
@@ -591,15 +591,15 @@ function _pools({
 			);
 		} catch (e) { return; }
 		if (!pickMethod.length) { console.log('Input was empty'); return; }
-		if (pickMethod.indexOf(',') === -1) { console.log('Input was not a pair separated by \',\''); return; }
+		if (!pickMethod.includes(',')) { console.log('Input was not a pair separated by \',\''); return; }
 		pickMethod = pickMethod.split(';');
 		pickMethod = pickMethod.map((pair) => {
 			pair = pair.split(',');
 			pair[1] = pair[1].toLowerCase();
 			return pair;
 		});
-		if (pickMethod.some((pair) => { return pair.length % 2 !== 0; })) { console.log('Input was not a list of pairs separated \';\''); return; }
-		if (pickMethod.some((pair) => { return pickMethodsKeys.indexOf(pair[1]) === -1; })) { console.log('Picking method not recognized'); return; }
+		if (pickMethod.some((pair) => pair.length % 2 !== 0)) { console.log('Input was not a list of pairs separated \';\''); return; }
+		if (pickMethod.some((pair) => !pickMethodsKeys.includes(pair[1]))) { console.log('Picking method not recognized'); return; }
 		pickMethod = Object.fromEntries(pickMethod);
 		// Destination
 		let toPls;

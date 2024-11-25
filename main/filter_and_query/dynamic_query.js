@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/04/24
+//25/11/24
 
 /* exported dynamicQuery */
 
@@ -51,7 +51,7 @@ function dynamicQueryProcess({ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocu
 		query = query.map((q) => dynamicQueryProcess(
 			{query: q, handle, handleList, bToLowerCase, bOmitChecks: true}
 		)).join('');
-	} else if (query.indexOf('#') !== -1) {
+	} else if (query.includes('#')) {
 		if (!handle && !handleList) { return null; } // May pass a standard query which doesn't need a handle to evaluate
 		else if (handleList) {
 			const queries = [...new Set(handleList.Convert().map((handle) => {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/08/24
+//25/11/24
 
 /*
 	Search same by
@@ -140,7 +140,7 @@ function searchSameByCombs({
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); } // Sanity check
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return null; }
 	logic = (logic || '').toUpperCase();
-	if (logicDic.indexOf(logic) === -1) {
+	if (!logicDic.includes(logic)) {
 		console.log('searchSameByCombs(): logic (' + logic + ') is wrong');
 		return null;
 	}
@@ -157,7 +157,7 @@ function searchSameByCombs({
 	let i = 0;
 	while (i < nTags) { // Check all tags
 		const tagName = tags[i].toLowerCase(); // To match sets!
-		const bIsFunc = tagName.indexOf('$') !== -1;
+		const bIsFunc = tagName.includes('$');
 		const tagNameTF = bIsFunc ? tagName : _t(tagName); // It's a function? Then at eval as is, and at queries use '"' + tagNameTF + '"'
 		const queryTagNameTF = bIsFunc ? _q(tagNameTF) : tagName.toUpperCase();
 		const tagIdx = sel_info.MetaFind(tags[i]);
@@ -234,7 +234,7 @@ function searchSameByCombs({
 						subQuery.push(queryCombinations(tagQuery, queryTagNameTF, 'OR', 'AND'));
 					}
 					remapTags[tags[i]].forEach((tag) => {
-						const bIsFunc = tag.indexOf('$') !== -1;
+						const bIsFunc = tag.includes('$');
 						const remapTag = bIsFunc ? _q(tag) : tag.toUpperCase();
 						subQuery.push(queryCombinations(tagQuery, remapTag, 'OR', 'AND'));
 					});

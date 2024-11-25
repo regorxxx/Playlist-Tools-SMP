@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//25/11/24
 
 /*
 	Top X Tracks From Date
@@ -69,7 +69,7 @@ function topTracksFromDate({
 		timeKey = '';
 		timePeriod = Number(last.split(' ')[0]);
 		if (!Number.isSafeInteger(timePeriod)) { fb.ShowPopupMessage('Time period is not a valid number:\n' + timePeriod, 'topTracksFromDate'); return; }
-		if (!Object.keys(timeKeys).some((key) => { if (last.toLowerCase().indexOf(key.toLowerCase()) !== -1) { timeKey = key; return true; } else { return false; } })) {
+		if (!Object.keys(timeKeys).some((key) => { if (last.toLowerCase().includes(key.toLowerCase())) { timeKey = key; return true; } else { return false; } })) {
 			fb.ShowPopupMessage('Time-unit not valid (must be ' + Object.keys(timeKeys).join(', ') + '):\n' + last, 'topTracksFromDate');
 			return;
 		}

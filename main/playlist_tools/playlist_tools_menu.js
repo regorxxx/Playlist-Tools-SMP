@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /*
 	Playlist Tools Menu
@@ -200,7 +200,7 @@ addEventListener('on_notify_data', (name, info) => {
 						bDone = true;
 					}
 				} else if (isStringWeak(info)) {
-					if (playlistPath.indexOf(info) === -1) {
+					if (!playlistPath.includes(info)) {
 						playlistPath.push(info);
 						bDone = true;
 					}
@@ -268,7 +268,7 @@ addEventListener('on_playlists_changed', () => {
 						break;
 					}
 					default: { // Full menus
-						if (command.indexOf('\\') !== -1) {
+						if (command.includes('\\')) {
 							plman.RemovePlaylistSwitch(index);
 							menu.btn_up(void (0), void (0), void (0), command);
 						}
@@ -595,7 +595,7 @@ function exportMainMenuDynamic({ file = folders.ajquerySMP + 'playlisttoolsentri
 		const bToFile = file && file.length;
 		const data = bToFile ? _jsonParseFile(file, utf8) || {} : {};
 		data[window.Name] = menuList;
-		if (bToFile && file.indexOf('ajquery-xxx') !== -1 && !folders.ajqueryCheck()) { return true; }
+		if (bToFile && file.includes('ajquery-xxx') && !folders.ajqueryCheck()) { return true; }
 		bReturn = bToFile ? _save(file, JSON.stringify(data, null, '\t').replace(/\n/g, '\r\n')) : true;
 	} catch (e) { console.log('exportMainMenuDynamic: unknown error'); console.log(e.message); }
 	return bReturn;
@@ -624,18 +624,18 @@ menu.newCondEntry({
 				const idx = entryList.findIndex((entry) => {
 					if (entry.entryText) {
 						if (isFunction(entry.entryText)) {
-							if (entry.entryText().indexOf(shortcut.keys) !== -1) { return false; }
+							if (entry.entryText().includes(shortcut.keys)) { return false; }
 							if (isFunction(entry.menuName)) {
-								return (entry.menuName() + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+								return (entry.menuName() + '\\' + entry.entryText()).includes(shortcut.menu);
 							} else {
-								return (entry.menuName + '\\' + entry.entryText()).indexOf(shortcut.menu) !== -1;
+								return (entry.menuName + '\\' + entry.entryText()).includes(shortcut.menu);
 							}
 						} else {
-							if (entry.entryText.indexOf(shortcut.keys) !== -1) { return false; }
+							if (entry.entryText.includes(shortcut.keys)) { return false; }
 							if (isFunction(entry.menuName)) {
-								return (entry.menuName() + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
+								return (entry.menuName() + '\\' + entry.entryText).includes(shortcut.menu);
 							} else {
-								return (entry.menuName + '\\' + entry.entryText).indexOf(shortcut.menu) !== -1;
+								return (entry.menuName + '\\' + entry.entryText).includes(shortcut.menu);
 							}
 						}
 					}

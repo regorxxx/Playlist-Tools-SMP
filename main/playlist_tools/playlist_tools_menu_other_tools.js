@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -24,7 +24,7 @@
 					const toDelete = ['bUseDic'];
 					let toMerge = {}; // Deep copy
 					Object.keys(checkTags_properties).forEach((key) => {
-						if (toDelete.indexOf(key) === -1) {
+						if (!toDelete.includes(key)) {
 							toMerge[key] = [...checkTags_properties[key]];
 							toMerge[key][0] = '\'Other tools\\Check tags\' ' + toMerge[key][0];
 						}
@@ -349,7 +349,7 @@
 								let path;
 								try { path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true); }
 								catch (e) { return; }
-								if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {
+								if (!_isFile(path) && !path.includes('http://') && !path.includes('https://')) {
 									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': ' + name);
 									return;
 								}
@@ -397,7 +397,7 @@
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Import from custom path', func: () => {
 								const path = menu_properties.importPlaylistPath[1];
-								if (!_isFile(path) && path.indexOf('http://') === -1 && path.indexOf('https://') === -1) {
+								if (!_isFile(path) && !path.includes('http://') && !path.includes('https://')) {
 									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': ' + name);
 									return;
 								}
@@ -425,7 +425,7 @@
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Set custom path...', func: () => {
 								const path = menu_properties.importPlaylistPath[1];
-								const input = Input.string('string', menu_properties.importPlaylistPath[1], 'Enter file path:', window.Name + ': ' + name, menu_properties.importPlaylistPath[3], [(s) => path.indexOf('http://') !== -1 || path.indexOf('https://') !== -1 || sanitizePath(s) === s], true);
+								const input = Input.string('string', menu_properties.importPlaylistPath[1], 'Enter file path:', window.Name + ': ' + name, menu_properties.importPlaylistPath[3], [(s) => path.includes('http://') || path.includes('https://') || sanitizePath(s) === s], true);
 								if (input === null) { return; }
 								menu_properties.importPlaylistPath[1] = input;
 								overwriteMenuProperties(); // Updates panel
@@ -460,7 +460,7 @@
 										if (idx.length) {
 											if (idx.length === 1 && idx[0] !== -1) {
 												plman.ActivePlaylist = idx[0];
-											} else if (idx.indexOf(pls.idx) !== -1) {
+											} else if (idx.includes(pls.idx)) {
 												plman.ActivePlaylist = pls.idx;
 											}
 										}

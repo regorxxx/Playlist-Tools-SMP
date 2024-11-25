@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -116,7 +116,7 @@
 								menu.newEntry({
 									menuName, entryText: queryName, func: () => {
 										let query = queryObj.query;
-										if (query.indexOf('#') !== -1 && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, scriptName); return; }
+										if (query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, scriptName); return; }
 										if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {  // With forced query enabled
 											if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
 												query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
@@ -138,7 +138,7 @@
 									let input = '';
 									try { input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.'), scriptName + ': ' + name, selArg.query, true); }
 									catch (e) { return; }
-									if (input.indexOf('#') !== -1 && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return; }
+									if (input.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return; }
 									// Playlist
 									const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
 									const handleList = bEvalSel ? dynamicQuery({ query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist) }) : dynamicQuery({ query });

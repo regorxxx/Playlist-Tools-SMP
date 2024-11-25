@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -109,7 +109,7 @@
 									let input = menu_properties['forcedQuery'][1].length ? ' AND ' + _p(obj.query) : obj.query;
 									menu.newEntry({
 										menuName: subMenuNameThree, entryText, func: () => {
-											if (menu_properties['forcedQuery'][1].indexOf(input) !== -1) {
+											if (menu_properties['forcedQuery'][1].includes(input)) {
 												input = menu_properties['forcedQuery'][1].replace(input, ''); // Query
 												input = input.slice(1, -1); // Remove parentheses
 											} else {
@@ -121,7 +121,7 @@
 											overwriteMenuProperties(); // Updates panel
 										}
 									});
-									menu.newCheckMenuLast(() => menu_properties['forcedQuery'][1].indexOf(input) !== -1);
+									menu.newCheckMenuLast(() => menu_properties['forcedQuery'][1].includes(input));
 								});
 								menu.newSeparator(subMenuNameThree);
 								menu.newEntry({
@@ -257,7 +257,7 @@
 						const options = Object.keys(async);
 						const notAvailable = ['Tagger', 'Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
 						options.forEach((key) => {
-							const bNotAvailable = notAvailable.indexOf(key) !== -1;
+							const bNotAvailable = notAvailable.includes(key);
 							menu.newEntry({
 								menuName: subMenuName, entryText: key + (bNotAvailable ? '\t not available' : ''), func: () => {
 									if (!async[key]) {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -24,7 +24,7 @@
 			const toDelete = ['forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'graphDistance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'bInversePick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInverseListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesByTag', 'bSmartShuffle', 'bSmartShuffleAdvc', 'smartShuffleSortBias', 'artistRegionFilter', 'genreStyleRegionFilter'];
 			let toMerge = {}; // Deep copy
 			Object.keys(SearchByDistance_properties).forEach((key) => {
-				if (toDelete.indexOf(key) === -1) {
+				if (!toDelete.includes(key)) {
 					toMerge[key] = [...SearchByDistance_properties[key]];
 					toMerge[key][0] = '\'Search similar\' ' + toMerge[key][0];
 				}
