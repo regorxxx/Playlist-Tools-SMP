@@ -68,6 +68,7 @@
 - Move selection to: new entry 'Move selection to\To specified position...' is added which moves the selection to an absolute index. 'Move selection to\By delta...' moves by delta value (previous behavior). Both support non-contiguous selections unless the extremes can not move anymore (thus they start to compact) but allow to use positive or negative values to choose where to start from (top or bottom of playlist) to avoid it. All this info is shown in the input popup.
 - Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
+- Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
 - Buttons: 'utils_main_menu' button now has additional settings to save and handle button states, either internally or by main menu checks.
 - Buttons: added more presets to remove/show duplicates and filter playlist buttons.
 - Readmes: added readme for 'buttons_device_switcher.js' button.
@@ -83,15 +84,19 @@
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
+- Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*'
+- Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
 - Helpers: updated helpers.
 - Helpers: general code cleanup on menus internal code. Please report any bug on extra separators or menu entries not working as expected.
 ### Removed
+- Quicksearch: removed entries with multi-value tags on queries on 'Partial match' submenu; they were never supported.
 ### Fixed
 - Last.fm: fix malformed youTube links.
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
 - UI: '&' being displayed as '_' on tooltips.
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
+- Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
 
 ## [4.6.0] - 2024-10-09
 ### Added
