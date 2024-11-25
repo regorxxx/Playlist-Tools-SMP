@@ -207,6 +207,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 	const multiTags = ['artist', 'genre', 'style', globTags.artistRaw, globTags.genre, globTags.style]
 		.map((t) => t.toLowerCase());
 	const notMultTags = (e) => {
+		if (Array.isArray(e.query)) { return e.query.every(notMultTags); }
 		const query = (e.query || '').toLowerCase();
 		return !query || !multiTags.some((t) => query.includes(t));
 	};
