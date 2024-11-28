@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//28/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -133,7 +133,7 @@
 						{ name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#' },
 						{ name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#' },
-						{ name: 'Same decade than sel', query: '"$right($div(' + _t(globTags.date) + ',10)0s,3)" IS #$right($div(' + _t(globTags.date) + ',10)0s,3)#' },
+						{ name: 'Same decade than sel', query: '"$div(' + _t(globTags.date) + ',10)0s" IS #$div(' + _t(globTags.date) + ',10)0s#' },
 						{ name: 'sep' },
 						{ name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#' }

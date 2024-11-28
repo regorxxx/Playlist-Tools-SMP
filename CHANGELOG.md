@@ -97,6 +97,7 @@
 - UI: '&' being displayed as '_' on tooltips.
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 - Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
+- Presets: minor error on queries using decades.
 
 ## [4.6.0] - 2024-10-09
 ### Added

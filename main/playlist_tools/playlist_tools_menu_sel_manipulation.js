@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//28/11/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1623,7 +1623,7 @@
 					{ name: 'By Album', args: ['%ALBUM%'] },
 					{ name: 'sep' },
 					{ name: 'By Date', args: [globTags.date] },
-					{ name: 'By Decade', args: ['$right($div(' + _t(globTags.date) + ',10)0s,3)'] },
+					{ name: 'By Decade', args: ['$div(' + _t(globTags.date) + ',10)0s'] },
 					{ name: 'By Genre', args: ['%' + globTags.genre + '%'] },
 					{ name: 'By Style', args: ['%' + globTags.style + '%'] },
 					{ name: 'By Key', args: [defaultArgs.keyTag] },
@@ -1682,7 +1682,7 @@
 					{ name: 'By Album', args: ['%ALBUM%'] },
 					{ name: 'sep' },
 					{ name: 'By Date', args: [globTags.date] },
-					{ name: 'By Decade', args: ['$right($div(' + _t(globTags.date) + ',10)0s,3)'] },
+					{ name: 'By Decade', args: ['$div(' + _t(globTags.date) + ',10)0s'] },
 					{ name: 'By Genre', args: ['%' + globTags.genre + '%'] },
 					{ name: 'By Style', args: ['%' + globTags.style + '%'] },
 					{ name: 'By Key', args: [defaultArgs.keyTag] }, // Uses remapped tag. Probably missing %, fixed later.
