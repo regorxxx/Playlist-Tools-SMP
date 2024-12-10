@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//09/12/24
 
 /*
 	Automatic tagging...
@@ -36,7 +36,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	toolsByKey: ['Tools enabled', JSON.stringify(new Tagger({ bOutputDefTools: true }))],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false],
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false],
 	bWineBug: ['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup],
 	bFormatPopups: ['Show format warning popups', true, { func: isBoolean }, true],
 	bToolPopups: ['Show tool warning popups', true, { func: isBoolean }, true],

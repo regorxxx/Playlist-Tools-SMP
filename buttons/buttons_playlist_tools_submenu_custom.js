@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//09/12/24
 
 /*
 	Playlist Tools Submenu Custom
@@ -26,7 +26,7 @@ prefix = getUniquePrefix(prefix, '_'); // Puts new ID before '_'
 var newButtonsProperties = { // NOSONAR[global]
 	customName: ['Name for the custom UI button', 'Customize!', { func: isStringWeak }, 'Customize!'],
 	menu: ['Menu entry', '', { func: isStringWeak }, ''],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 setProperties(newButtonsProperties, prefix); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix); // And retrieve

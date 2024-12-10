@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//09/12/24
 
 /*
 	Top Tracks
@@ -35,7 +35,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	playlistLength: ['Length of playlist', 25, { greater: 0, func: isInt }, 25],
 	forcedQuery: ['Forced query to pre-filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	year: ['Year', 0, { greaterEq: 0, func: isInt }, 0],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

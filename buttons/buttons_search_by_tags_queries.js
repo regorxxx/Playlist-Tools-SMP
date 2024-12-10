@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//09/12/24
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -37,7 +37,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	playlistLength: ['Max Playlist Mix length', 50, { greater: 0, func: isInt }, 50],
 	forcedQuery: ['Forced query to filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	checkDuplicatesBy: ['Tags to look for duplicates', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
-	bAdvTitle: ['Advanced RegEx title matching?', true, { func: isBoolean }, true],
+	bAdvTitle: ['Advanced RegEx title matching', true, { func: isBoolean }, true],
 	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
 	sameBy: ['Tags to look for similarity', JSON.stringify([[globTags.style], [globTags.mood]]), { func: isJSON }, JSON.stringify([[globTags.style], [globTags.mood]])],
 	playlistName: ['Playlist name', 'Search...', { func: isString }, 'Search...'],
@@ -91,7 +91,7 @@ var newButtonsProperties = { // NOSONAR[global]
 			}
 		},
 	]), { func: isJSON }],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 newButtonsProperties.presets.push(newButtonsProperties.presets[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once

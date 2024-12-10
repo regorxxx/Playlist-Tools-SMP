@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//09/12/24
 
 /*
 	Quicksearch for same....
@@ -38,11 +38,11 @@ try { window.DefineScript('Quicksearch button', { author: 'regorxxx', version, f
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	bEvalSel: ['Evaluate multiple tracks?', true, { func: isBoolean }, true],
+	bEvalSel: ['Evaluate multiple tracks', true, { func: isBoolean }, true],
 	lastQuery: ['Last query used', '', { func: isStringWeak }, ''],
 	playlistName: ['Playlist name', 'Search...', { func: isString }, 'Search...'],
-	bDynamicMenus: ['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, { func: isBoolean }, false],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false],
+	bDynamicMenus: ['Menus at  \'File\\Spider Monkey Panel\\...\'', false, { func: isBoolean }, false],
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false],
 	entries: ['Quicksearch entries', JSON.stringify([
 		{
 			name: 'Same Date',

@@ -1,5 +1,5 @@
 'use strict';
-//15/11/24
+//09/12/24
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -44,8 +44,8 @@ var newButtonsProperties = { // NOSONAR[global]
 	lastUser:		['User custom input', '', {func: isStringWeak}, ''],
 	lastAlbum:		['Album custom input', '', {func: isStringWeak}, ''],
 	bBioTags:		['Use tags from Bio panel', true, {func: isBoolean}, true],
-	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false],
-	bDynamicMenus:	['Expose menus at  \'File\\Spider Monkey Panel\\Script commands\'', false, {func: isBoolean}, false],
+	bIconMode:		['Icon-only mode', false, {func: isBoolean}, false],
+	bDynamicMenus:	['Menus at  \'File\\Spider Monkey Panel\\...\'', false, {func: isBoolean}, false],
 	forcedQuery: 	['Forced query to pre-filter database', globQuery.filter, {func: (query) => {return checkQuery(query, true);}}, globQuery.filter],
 	tags: 			['Tags remap for lookups', JSON.stringify([
 		{name: 'Artist top tracks',		tf: [...new Set([globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])], type: 'ARTIST'},

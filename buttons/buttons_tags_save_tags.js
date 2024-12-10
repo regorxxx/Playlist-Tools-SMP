@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/01/24
+//09/12/24
 
 /*
 	-> EDIT
@@ -27,7 +27,7 @@ try { window.DefineScript('Save tags button', { author: 'regorxxx', version, fea
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { // NOSONAR[global]
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//09/12/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -64,7 +64,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ name: 'By Album version', settings: { checkInputA: 'ALBUM', checkInputB: 'COMMENT', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: '' } },
 		{ name: 'By Path', settings: { checkInputA: '$directory(%PATH%,3)\\$directory(%PATH%,2)', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: ''  } },
 	]), { func: isJSON }],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 newButtonsProperties.presets.push(newButtonsProperties.presets[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once

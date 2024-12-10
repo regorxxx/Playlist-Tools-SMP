@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/10/24
+//09/12/24
 
 /*
 	Main Menu shortcut
@@ -41,7 +41,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	indicator: ['Indicator options', JSON.stringify({ init: true, enabled: false, menuCheck: false }), { func: isJSON }],
 	state: ['Current state', false, { func: isBoolean }, false],
 	icon: ['Button icon', chars.console, { func: isString }, chars.console],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 newButtonsProperties.unloadCall.push(newButtonsProperties.unloadCall[1]);

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/10/24
+//09/12/24
 
 /*
 	Playlist Tools Menu
@@ -42,7 +42,7 @@ menu_prefix = prefix; // NOSONAR [update var for internal use of playlist_tools_
 
 var newButtonsProperties = { // NOSONAR [shared on files]
 	...menu_properties,
-	bIconMode:		['Icon-only mode?', false, {func: isBoolean}, false]
+	bIconMode:		['Icon-only mode', false, {func: isBoolean}, false]
 };
 
 {

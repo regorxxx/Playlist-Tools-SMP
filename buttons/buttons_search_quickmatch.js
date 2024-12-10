@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//09/12/24
 
 /*
 	Quickmatch same....
@@ -45,7 +45,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	playlistName: ['Playlist name', 'Search...', { func: isString }, 'Search...'],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false],
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false],
 	entries: ['Quickmatch entries', JSON.stringify([
 		{
 			name: 'By Genre',

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//09/12/24
 
 /*
 	Search same by v 1.0 24/08/22
@@ -185,7 +185,7 @@ var newButtonsProperties = { // NOSONAR[global]
 			}
 		},
 	]), { func: isJSON }],
-	bIconMode: ['Icon-only mode?', false, { func: isBoolean }, false]
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 newButtonsProperties.sameBy.push(newButtonsProperties.sameBy[1]);
 newButtonsProperties.presets.push(newButtonsProperties.presets[1]);
