@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/12/24
+//10/12/24
 
 /*
 	Top X Tracks From Date
@@ -140,7 +140,7 @@ async function topTracksFromDateV2({
 	forcedQuery = globQuery.notLowRating,
 	bSendToPls = true,
 	bProfile = false,
-	listenBrainz = {token: '', bOffline: true}
+	listenBrainz = { token: '', bOffline: true }
 } = {}) {
 	// Sanity checks
 	if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.', window.Name); return; }
@@ -176,8 +176,8 @@ async function topTracksFromDateV2({
 	}
 	// Filter Play counts by date
 	const dataPool = (bUseLast
-		? await getPlayCountV2(outputHandleList, timePeriod, timeKey, void(0), void(0), listenBrainz)
-		: await getPlayCountV2(outputHandleList, year, void(0), void(0), void(0), listenBrainz)
+		? await getPlayCountV2(outputHandleList, timePeriod, timeKey, void (0), void (0), listenBrainz)
+		: await getPlayCountV2(outputHandleList, year, void (0), void (0), void (0), listenBrainz)
 	).filter((v) => v.playCount);
 	let pool = [];
 	// Order by Play Count
@@ -218,6 +218,27 @@ function weeksBetween(d1, d2) {
  */
 function daysBetween(d1, d2) {
 	return Math.round((d2.getTime() - d1.getTime()) / (24 * 60 * 60 * 1000));
+}
+
+/**
+ * Calculates the total time for a given time period
+ *
+ * @function
+ * @name timeOnPeriod
+ * @kind function
+ * @param {number} timePeriod - Single year or number of time units
+ * @param {'Days'|'Weeks'} timeKey? - Time units, null to use single years
+ * @returns {{days:number, minutes:number, seconds:number}}
+ */
+function timeOnPeriod(timePeriod, timeKey = null) {
+	if (!timeKey) { timePeriod = 1; }
+	const unit = timeKey === 'Weeks'
+		? 7
+		: timeKey === 'Days'
+			? 1
+			: 360;
+	const days = unit * timePeriod;
+	return { days, hours: days * 24, minutes: days * 24 * 60, seconds: days * 24 * 60 * 60 };
 }
 
 /**
@@ -276,7 +297,7 @@ function fakeListens(firstListen, lastListen, total) {
  * @kind function
  * @param {FbMetadbHandleList} handleList
  * @param {number} timePeriod - Single year or number of time units
- * @param {string} timeKey? - Time units: Days|Weeks
+ * @param {'Days'|'Weeks'} timeKey? - Time units, null to use single years
  * @param {Date} fromDate? - Reference date for usage with time periods based on time units
  * @param {boolean} bFakeListens? - Fill listens when there is no play times available
  * @returns {{ idx: number; playCount: number; listens: Date[]; }[]}
@@ -458,7 +479,7 @@ function getPlayCount(handleList, timePeriod, timeKey = null, fromDate = new Dat
  * @kind function
  * @param {FbMetadbHandleList} handleList
  * @param {number} timePeriod - Single year or number of time units
- * @param {string} timeKey? - Time units: Days|Weeks
+ * @param {'Days'|'Weeks'} timeKey? - Time units, null to use single years
  * @param {Date} fromDate? - Reference date for usage with time periods based on time units
  * @param {boolean} bFakeListens? - Fill listens when there is no play times available
  * @param {{user?: '', token:string, bOffline:boolean}} listenBrainz - [={user: '', token: '', bOffline: true}] ListenBrainz settings to retrieve playcounts. If no token provided, it's skipped. If no user is provided, it's retrieved from token
@@ -484,14 +505,9 @@ async function getPlayCountV2(handleList, timePeriod, timeKey = null, fromDate =
 		_b(globTags.playCount)
 	).EvalWithMetadbs(handleList);
 	let lbData;
-	if (listenBrainz && (listenBrainz.token || '').length) {
+	if (listenBrainz && (listenBrainz.token || listenBrainz.user || '').length) {
 		/* global ListenBrainz:readable */
-		if (!listenBrainz.user) { listenBrainz.user = await ListenBrainz.retrieveUser(listenBrainz.token , false); }
-		const timeUnit = timeKey === 'Weeks'
-			? 7 * 24 * 60 * 60
-			: timeKey === 'Days'
-				? 24 * 60 * 60
-				: null;
+		if (!listenBrainz.user) { listenBrainz.user = await ListenBrainz.retrieveUser(listenBrainz.token, false); }
 		const max_ts = Math.round(
 			timePeriod && timeKey
 				? fromDate.getTime() / 1000
@@ -499,7 +515,7 @@ async function getPlayCountV2(handleList, timePeriod, timeKey = null, fromDate =
 		);
 		const min_ts = Math.round(
 			timePeriod && timeKey
-				? Math.max(max_ts - timePeriod * timeUnit, 0)
+				? Math.max(max_ts - timeOnPeriod(timePeriod, timeKey).seconds, 0)
 				: new Date(String(timePeriod)).getTime() / 1000
 		);
 		lbData = (await ListenBrainz.retrieveListensForHandleList(handleList, listenBrainz.user, { max_ts, min_ts }, listenBrainz.token, true, listenBrainz.bOffline));

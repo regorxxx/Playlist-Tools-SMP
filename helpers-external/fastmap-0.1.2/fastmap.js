@@ -21,7 +21,7 @@
  */
 	function EmptyObject() {} // NOSONAR
 	EmptyObject.prototype = Object.create(null);
-	EmptyObject.prototype.has = function has(key) {return (this[key] ? true : (this[key] === 0 ? true : false));};
+	EmptyObject.prototype.has = function has(key) {return (this[key] ? true : this[key] === 0);};
 	EmptyObject.prototype.set = function set(key, value) {return this[key] = value;}; // NOSONAR
 	EmptyObject.prototype.get = function get(key) {return this[key];};
 	EmptyObject.prototype.forEach = function forEach(fn) {return Object.entries(this).forEach((pair) => {return fn(pair[1], pair[0]);});};
@@ -44,10 +44,11 @@
 		if (arguments.length > 1) {throw new Error('Constructor only accepts a single iterable or array [[key, value], ...]');}
 		else if (argsLen === 1) {
 			const iterator = arguments[0];
-			for (var _len = iterator.length, props = new Array(_len), _key = 0; _key < _len; _key++) {
+			const len = iterator.length;
+			const props = new Array(len);
+			for (let _key = 0; _key < len; _key++) {
 				props[_key] = {[iterator[_key][0]]: iterator[_key][1]};
 			}
-
 			if (props.length) {
 				Object.assign.apply(Object, [map].concat(props));
 			}
