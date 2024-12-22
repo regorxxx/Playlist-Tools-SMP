@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//15/12/24
 
 /*
 	Automatic tagging...
@@ -52,7 +52,7 @@ function Tagger({
 	this.bFormatPopups = bFormatPopups;
 	this.bToolPopups = bToolPopups;
 	this.notAllowedTools = new Set();
-	this.incompatibleTools = new BiMap({ ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey', drMeter: 'dynamicRange' });
+	this.incompatibleTools = new BiMap({ ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey', drMeter: 'dynamicRange', bpmAnaly: 'essentiaBPM' });
 	this.tools = [
 		{
 			key: 'biometric', tag: [globTags.fooidFP],
