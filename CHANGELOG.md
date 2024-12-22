@@ -92,6 +92,7 @@
 ### Removed
 - Quicksearch: removed entries with multi-value tags on queries on 'Partial match' submenu; they were never supported.
 ### Fixed
+- Remove duplicates: show duplicates feature sometimes reporting as duplicate tracks which only appeared once (by TF) when using partial Multi-value matching.
 - Last.fm: fix malformed youTube links.
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
 - UI: '&' being displayed as '_' on tooltips.
