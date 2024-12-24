@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//23/12/24
 
 /*
 	Check Library Tags
@@ -58,7 +58,7 @@ include('..\\..\\helpers\\helpers_xxx_file.js');
 include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global isString:readable, isArray:readable, isStringWeak:readable, isBoolean:readable, _asciify:readable */
+/* global isString:readable, isStringWeak:readable, isBoolean:readable, _asciify:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTagsV2:readable */
 include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
@@ -445,8 +445,8 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 			countArrayFiltered[index].forEach((pair) => {
 				const tagKey = tag + keySplit + pair[0];
 				if (alternativesMap.has(tagKey)) { // Add alternative terms and error comments if possible
-					let altTerms = alternativesMap.get(tagKey);
-					textA += pair + ' --> ' + (isArray(altTerms) ? altTerms.join(', ') : altTerms) + '\n';
+					const altTerms = alternativesMap.get(tagKey);
+					textA += pair + ' --> ' + (Array.isArray(altTerms) ? altTerms.join(', ') : altTerms) + '\n';
 				} else {
 					textA += pair + '\n';
 				}

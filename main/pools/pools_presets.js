@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/11/24
+//22/12/24
 
 /* exported createPoolPresets */
 
@@ -139,7 +139,7 @@ function createPoolPresets({ size = 50 } = {}) {
 				}
 			},
 		],
-		...[ // Top tracks by playcount
+		...[	// Top tracks by playcount
 			{
 				folder: 'Top tracks (playcount)',
 				name: 'Recently played tracks mix', pool: {
@@ -263,7 +263,7 @@ function createPoolPresets({ size = 50 } = {}) {
 			},
 		],
 		{ name: 'sep' },
-		...[ // From selection
+		...[	// From selection
 			{
 				folder: 'From current track',
 				name: 'Genre top tracks', pool: {
@@ -412,7 +412,7 @@ function createPoolPresets({ size = 50 } = {}) {
 			},
 		],
 		{ name: 'sep' },
-		...[ // Classic Pools
+		...[	// Classic Pools
 			{
 				folder: 'Classic Pools',
 				name: 'Classic Pools (50 artists current genre)', pool: {
@@ -470,8 +470,8 @@ function createPoolPresets({ size = 50 } = {}) {
 			},
 		],
 		{ name: 'sep' },
-		...[ // Genre mixes
-			{
+		...[	// Genre mixes
+			{	//Dark Metal
 				name: 'Dark Metal',
 				folder: 'Genre mixes',
 				pool: {
@@ -495,95 +495,95 @@ function createPoolPresets({ size = 50 } = {}) {
 								'OR'
 							),
 							globQuery.fav
-						],'AND'),
+						], 'AND'),
 						_LIBRARY_1: queryJoin([
 							queryJoin([
 								queryJoin(
-									queryCombinations(['black metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['black metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['folk metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['folk metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 							], 'AND NOT'),
 							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
-						],'AND'),
+						], 'AND'),
 						_LIBRARY_2: queryJoin([
 							queryJoin([
 								queryJoin(
-									queryCombinations(['stoner doom'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['stoner doom'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['folk metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['folk metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 							], 'AND NOT'),
 							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
-						],'AND'),
+						], 'AND'),
 						_LIBRARY_3: queryJoin([
 							queryJoin([
 								queryJoin(
-									queryCombinations(['doom metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['doom metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['folk metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['folk metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 							], 'AND NOT'),
 							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
-						],'AND'),
+						], 'AND'),
 						_LIBRARY_4: queryJoin([
 							queryJoin([
 								queryJoin(
-									queryCombinations(['folk metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['folk metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['black metal','stoner doom','doom metal','death metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['black metal', 'stoner doom', 'doom metal', 'death metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 							], 'AND'),
 							globQuery.ratingGr2
-						],'AND'),
+						], 'AND'),
 						_LIBRARY_5: queryJoin([
 							queryJoin([
 								queryJoin(
-									queryCombinations(['black metal','stoner doom','doom metal','death metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['black metal', 'stoner doom', 'doom metal', 'death metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['instrumental'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['instrumental'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 							], 'AND'),
 							globQuery.ratingGr2
-						],'AND'),
+						], 'AND'),
 						_LIBRARY_6: queryJoin([
 							queryJoin([
 								queryJoin(
-									queryCombinations(['black metal','ambient metal'],[globTags.genre, globTags.style],'AND'),
+									queryCombinations(['black metal', 'ambient metal'], [globTags.genre, globTags.style], 'AND'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['death metal','acoustic'],[globTags.genre, globTags.style],'AND'	),
+									queryCombinations(['death metal', 'acoustic'], [globTags.genre, globTags.style], 'AND'),
 									'OR'
 								),
 								queryJoin(
-									queryCombinations(['atmospheric black metal'],[globTags.genre, globTags.style],'OR'	),
+									queryCombinations(['atmospheric black metal'], [globTags.genre, globTags.style], 'OR'),
 									'OR'
 								),
 							], 'OR'),
 							globQuery.ratingGr3
-						],'AND')
+						], 'AND')
 					},
 					toPls: 'Dark Metal',
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Kawaii Rock and Metal'
 				name: 'Kawaii Rock and Metal',
 				folder: 'Genre mixes',
 				pool: {
@@ -605,7 +605,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Chill and Downtempo
 				name: 'Chill and Downtempo',
 				folder: 'Genre mixes',
 				pool: {
@@ -629,7 +629,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Spanish Urban Music
 				name: 'Spanish Urban Music',
 				folder: 'Genre mixes',
 				pool: {
@@ -659,7 +659,134 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Flamenco flow
+				name: 'Flamenco flow',
+				folder: 'Genre mixes',
+				pool: {
+					fromPls: {
+						_LIBRARY_0: tenth * 2,
+						_LIBRARY_1: tenth,
+						_LIBRARY_2: Math.ceil(tenth * 1.6),
+						_LIBRARY_3: Math.ceil(tenth * 1.6),
+						_LIBRARY_4: tenth,
+						_LIBRARY_5: tenth * 2,
+					},
+					query: {
+						_LIBRARY_0: queryJoin([
+							queryJoin(
+								queryCombinations(
+									['nuevo flamenco', 'flamenco', 'rumba flamenca'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							queryJoin(
+								queryCombinations(
+									['hip-hop'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							globQuery.fav
+						], 'AND'),
+						_LIBRARY_1: queryJoin([
+							queryJoin(
+								queryCombinations(
+									['nuevo flamenco', 'flamenco', 'rumba flamenca'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							queryJoin(
+								queryCombinations(
+									['electronic', 'rock'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							globQuery.fav
+						], 'AND'),
+						_LIBRARY_2: queryJoin([
+							queryJoin(
+								queryCombinations(
+									['nuevo flamenco', 'flamenco', 'rumba flamenca'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							queryJoin(
+								queryCombinations(
+									['hip-hop'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
+						], 'AND'),
+						_LIBRARY_3: queryJoin([
+							queryJoin(
+								queryCombinations(
+									['nuevo flamenco', 'flamenco', 'rumba flamenca', 'rumba'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							queryJoin(
+								queryCombinations(
+									['hip-hop', 'trap', 'latin trap', 'electronic', 'urban breaks'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
+						], 'AND'),
+						_LIBRARY_4: queryJoin([
+							queryJoin(
+								queryCombinations(
+									['nuevo flamenco', 'flamenco', 'rumba flamenca', 'rumba catalana'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							queryJoin(
+								queryCombinations(
+									['folk-rock', 'folk', 'pop'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							_qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
+							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
+						], 'AND'),
+						_LIBRARY_5: queryJoin([
+							queryJoin([
+								queryJoin(
+									queryCombinations(['nuevo flamenco', 'flamenco', 'rumba flamenca'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+								queryJoin(
+									queryCombinations(['female vocal'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+							], 'AND'),
+							globQuery.ratingGr2
+						], 'AND'),
+					},
+					toPls: 'Flamenco flow',
+					smartShuffle: 'ARTIST'
+				}
+			},
+			{	// Rock Classics (until 90s)
 				name: 'Rock Classics (until 90s)',
 				folder: 'Genre mixes',
 				pool: {
@@ -689,7 +816,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// 60s & 70s Rock Classics
 				name: '60s & 70s Rock Classics',
 				folder: 'Genre mixes',
 				pool: {
@@ -719,7 +846,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// 60s Psychedelic Pills
 				name: '60s Psychedelic Pills',
 				folder: 'Genre mixes',
 				pool: {
@@ -749,7 +876,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// 80s Hits
 				name: '80s Hits',
 				folder: 'Genre mixes',
 				pool: {
@@ -779,7 +906,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Gothic Rock
 				name: 'Gothic Rock',
 				folder: 'Genre mixes',
 				pool: {
@@ -803,7 +930,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Gothic Metal
 				name: 'Gothic Metal',
 				folder: 'Genre mixes',
 				pool: {
@@ -833,7 +960,107 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Sadcore Post-Punk
+				name: 'Sadcore Post-Punk',
+				folder: 'Genre mixes',
+				pool: {
+					fromPls: {
+						_LIBRARY_0: tenth * 2,
+						_LIBRARY_1: tenth,
+						_LIBRARY_2: Math.ceil(tenth * 1.6),
+						_LIBRARY_3: Math.ceil(tenth * 1.6),
+						_LIBRARY_4: tenth,
+						_LIBRARY_5: tenth,
+						_LIBRARY_6: tenth
+					},
+					query: {
+						_LIBRARY_0: queryJoin([
+							queryJoin(
+								queryCombinations(
+									['shoegaze', 'sadcore', 'post-punk', 'emo rock', 'darkwave', 'gothic rock'],
+									[globTags.genre, globTags.style],
+									'OR'
+								),
+								'OR'
+							),
+							globQuery.fav
+						], 'AND'),
+						_LIBRARY_1: queryJoin([
+							queryJoin(
+								queryCombinations(['sadcore'], [globTags.genre, globTags.style], 'OR'),
+								'OR'
+							),
+							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
+						], 'AND'),
+						_LIBRARY_2: queryJoin([
+							queryJoin(
+								queryCombinations(['darkwave'], [globTags.genre, globTags.style], 'OR'),
+								'OR'
+							),
+							globTags.rating + ' IS 4 OR ' + globTags.rating + ' IS 3'
+						], 'AND'),
+						_LIBRARY_3: queryJoin([
+							queryJoin([
+								queryJoin(
+									queryCombinations(['shoegaze'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+								queryJoin(
+									queryCombinations(['female vocal'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+							], 'AND'),
+							globQuery.ratingGr2
+						], 'AND'),
+						_LIBRARY_4: queryJoin([
+							queryJoin([
+								queryJoin([
+									queryJoin(
+										queryCombinations(['folk metal'], [globTags.genre, globTags.style], 'OR'),
+										'OR'
+									),
+									queryJoin(queryCombinations(['instrumental', 'acoustic', 'folk'], [globTags.genre, globTags.style], 'OR'), 'OR'),
+									'AND'
+								]),
+								queryJoin(
+									queryCombinations(['shoegaze', 'sadcore', 'post-punk', 'emo rock', 'darkwave', 'gothic rock'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+							], 'AND NOT'),
+							globQuery.ratingGr2
+						], 'AND'),
+						_LIBRARY_5: queryJoin([
+							queryJoin([
+								queryJoin(
+									queryCombinations(['shoegaze', 'sadcore', 'post-punk', 'emo rock', 'darkwave', 'gothic rock'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+								queryJoin(
+									queryCombinations(['instrumental'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+							], 'AND'),
+							globQuery.ratingGr2
+						], 'AND'),
+						_LIBRARY_6: queryJoin([
+							queryJoin([
+								queryJoin(
+									queryCombinations(['shoegaze', 'sadcore', 'post-punk', 'emo rock', 'darkwave', 'gothic rock'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+								queryJoin(
+									queryCombinations(['female vocal'], [globTags.genre, globTags.style], 'OR'),
+									'OR'
+								),
+							], 'AND'),
+							globQuery.ratingGr2
+						], 'AND'),
+					},
+					toPls: 'Sadcore Post-Punk',
+					smartShuffle: 'ARTIST'
+				}
+			},
+			{	// Acoustic Bal Folk
 				name: 'Acoustic Bal Folk',
 				folder: 'Genre mixes',
 				pool: {
@@ -910,7 +1137,7 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			},
-			{
+			{	// Acoustic for Reading
 				name: 'Acoustic for Reading',
 				folder: 'Genre mixes',
 				pool: {
