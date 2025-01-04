@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//24/12/24
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -38,7 +38,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	forcedQuery: ['Forced query to filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	checkDuplicatesBy: ['Tags to look for duplicates', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
 	bAdvTitle: ['Advanced RegEx title matching', true, { func: isBoolean }, true],
-	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
+	bMultiple: ['Partial multi-value tag matching', true, { func: isBoolean }, true],
 	sameBy: ['Tags to look for similarity', JSON.stringify([[globTags.style], [globTags.mood]]), { func: isJSON }, JSON.stringify([[globTags.style], [globTags.mood]])],
 	playlistName: ['Playlist name', 'Search...', { func: isString }, 'Search...'],
 	presets: ['Presets', JSON.stringify([
@@ -106,7 +106,7 @@ addButton({
 				this, true, ['buttons_search_by_tags_queries.js'],
 				{
 					bAdvTitle: { popup: globRegExp.title.desc },
-					bMultiple: { popup: 'Partial Multi-value tag matching when removing duplicates.' }
+					bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' }
 				},
 				void (0),
 				(menu) => {

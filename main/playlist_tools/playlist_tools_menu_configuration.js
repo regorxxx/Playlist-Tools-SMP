@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//24/12/24
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -184,7 +184,7 @@
 				});
 				menu.newCheckMenuLast(() => menu_properties.bAdvTitle[1]);
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Partial Multi-value tag matching', func: () => {
+					menuName: subMenuName, entryText: 'Partial multi-value tag matching', func: () => {
 						defaultArgs.bMultiple = !defaultArgs.bMultiple;
 						menu_properties.bMultiple[1] = defaultArgs.bMultiple;
 						fb.ShowPopupMessage(

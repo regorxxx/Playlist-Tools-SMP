@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//24/12/24
 
 /*
 	Playlist Tools Menu
@@ -75,7 +75,7 @@ var menu_properties = { // NOSONAR [global]
 	checkDuplicatesBy: ['Remove duplicates by', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
 	bAdvTitle: ['Duplicates RegExp title matching', true, { func: isBoolean }, true],
 	sortBias: ['Duplicates track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
-	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
+	bMultiple: ['Partial multi-value tag matching', true, { func: isBoolean }, true],
 };
 // Global properties set only once per panel even if there are multiple buttons of the same script
 const menu_panelProperties = {

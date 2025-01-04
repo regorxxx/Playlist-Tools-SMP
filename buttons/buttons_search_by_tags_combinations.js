@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//24/12/24
 
 /*
 	Search same by v 1.0 24/08/22
@@ -94,7 +94,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	forcedQuery: ['Forced query to filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	checkDuplicatesBy: ['Tags to look for duplicates', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
 	bAdvTitle: ['Advanced RegEx title matching', true, { func: isBoolean }, true],
-	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
+	bMultiple: ['Partial multi-value tag matching', true, { func: isBoolean }, true],
 	sameBy: ['Tags to look for similarity', JSON.stringify({
 		[globTags.genre.toUpperCase()]: 1,
 		[globTags.style.toUpperCase()]: 2,
@@ -201,7 +201,7 @@ addButton({
 				this, true, ['buttons_search_by_tags_combinations.js'],
 				{
 					bAdvTitle: { popup: globRegExp.title.desc },
-					bMultiple: { popup: 'Partial Multi-value tag matching when removing duplicates.' }
+					bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' }
 				},
 				void (0),
 				(menu) => {

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//24/12/24
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -45,7 +45,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	sortBias: ['Track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
 	nAllowed: ['Number of duplicates allowed (n + 1)', 1, { greaterEq: 0, func: isInt }, 1],
 	bAdvTitle: ['Advanced RegEx title matching', true, { func: isBoolean }, true],
-	bMultiple: ['Partial Multi-value tag matching', true, { func: isBoolean }, true],
+	bMultiple: ['Partial multi-value tag matching', true, { func: isBoolean }, true],
 	presets: ['Presets', JSON.stringify([
 		{ name: 'By Artist', settings: { checkInputA: '', checkInputB: globTags.artist, checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Title', settings: { checkInputA: globTags.title, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
