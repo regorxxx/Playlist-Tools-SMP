@@ -1,9 +1,9 @@
 ﻿'use strict';
-//28/11/24
+//04/01/24
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, multipleSelectedFlagsReorder:readable, isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, playlistCountFlags:readable, selectedFlagsAddRem:readable, _p:readable, _q:readable, range:readable, focusInPlaylist:readable, isInt:readable, addLock:readable, selectedFlagsReorder:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, selectedFlags:readable, playlistCountFlagsRem:readable, isFunction:readable, selectedFlagsRem:readable, _t:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, multipleSelectedFlagsReorder:readable, isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, playlistCountFlags:readable, selectedFlagsAddRem:readable, _p:readable, _q:readable, range:readable, focusInPlaylist:readable, isInt:readable, addLock:readable, selectedFlagsReorder:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, selectedFlags:readable, playlistCountFlagsRem:readable, isFunction:readable, selectedFlagsRem:readable, _t:readable, getHandleListTagsTyped:readable */
 
 // Selection manipulation
 {
@@ -1297,7 +1297,7 @@
 						try { pos = Number(utils.InputBox(window.ID, 'Move to position:\n(from 1 [beginning] to ' + total + ' [end] or -1 [end] to -' + total + ' [beginning]))\n\nNon-contiguous selection is kept unless extremes can not move (use negative values to send from end without compacting it).', scriptName + ': ' + name, 1, true)); }
 						catch (e) { return; }
 						if (pos === 0) { return; }
-						if (pos < 0) { bReverse = true; pos = -pos;}
+						if (pos < 0) { bReverse = true; pos = -pos; }
 						const first = bReverse
 							? getPlaylistSelectedIndexLast(ap)
 							: getPlaylistSelectedIndexFirst(ap);
@@ -1466,7 +1466,7 @@
 			}
 		}
 		{	// Select (for use with macros!!)
-			const name = 'Select';
+			const name = 'Select (# tracks)';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED });
@@ -1526,7 +1526,7 @@
 					}, flags: playlistCountFlags
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Select random # tracks', func: () => {
+					menuName: subMenuName, entryText: 'Select random tracks', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
 						const numbers = range(0, plman.PlaylistItemCount(ap), 1).shuffle(); // Get indexes randomly sorted
@@ -1546,7 +1546,7 @@
 					}, flags: playlistCountFlags
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Select next # tracks...', func: () => {
+					menuName: subMenuName, entryText: 'Select next X tracks...', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
 						let input = menu_properties.playlistLength[1];
@@ -1572,7 +1572,7 @@
 					}, flags: selectedFlagsRem
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Delete Non selected tracks', func: () => {
+					menuName: subMenuName, entryText: 'Delete non-selected tracks', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
 						plman.UndoBackup(ap);
@@ -1604,6 +1604,160 @@
 							const count = plman.PlaylistItemCount(ap);
 							const start = count * args.start;
 							const end = Math.floor(count * args.end);
+							plman.ClearPlaylistSelection(ap);
+							plman.SetPlaylistSelection(ap, range(start, end, 1), true);
+						}, flags: playlistCountFlags
+					});
+				});
+			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
+		}
+		{	// Select (for use with macros!!)
+			const name = 'Select (by time)';
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				const subMenuName = menu.newMenu(name, menuName);
+				menu.newEntry({ menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED });
+				menu.newSeparator(subMenuName);
+				menu.newEntry({
+					menuName: subMenuName, entryText: () => { return 'Select random ' + Math.round(menu_properties.playlistLength[1] * 3) + ' minutes'; }, func: () => {
+						const ap = plman.ActivePlaylist;
+						if (ap === -1) { return; }
+						const [handleArr, idxArr] = Array.shuffle(plman.GetPlaylistItems(ap).Convert(), range(0, plman.PlaylistItemCount(ap) - 1));
+						const timeArr = getHandleListTagsTyped(
+							new FbMetadbHandleList(handleArr),
+							[{ name: 'LENGTH_SECONDS', type: 'number' }],
+							{ bMerged: true }
+						).flat();
+						const time = Math.round(menu_properties.playlistLength[1] * 3 * 60);
+						const sel = [];
+						let acc = 0;
+						timeArr.forEach((trackTime, i) => {
+							if (acc === time) { return; }
+							if (acc + trackTime <= time) { acc += trackTime; sel.push((idxArr[i])); }
+						});
+						plman.ClearPlaylistSelection(ap);
+						plman.SetPlaylistSelection(ap, sel.sort(), true); // NOSONAR
+					}, flags: playlistCountFlags
+				});
+				menu.newEntry({
+					menuName: subMenuName, entryText: 'Select random X minutes...', func: () => {
+						const ap = plman.ActivePlaylist;
+						if (ap === -1) { return; }
+						const input = Input.number('int', Math.round(menu_properties.playlistLength[1] * 3), 'Enter num of minutes to select from current playlist:', scriptName + ': ' + name, 60) || Input.lastInput;
+						if (!input) { return; }
+						const time = Math.abs(input) * 60;
+						const [handleArr, idxArr] = Array.shuffle(plman.GetPlaylistItems(ap).Convert(), range(0, plman.PlaylistItemCount(ap) - 1));
+						const timeArr = getHandleListTagsTyped(
+							new FbMetadbHandleList(handleArr),
+							[{ name: 'LENGTH_SECONDS', type: 'number' }],
+							{ bMerged: true }
+						).flat();
+						const sel = [];
+						let acc = 0;
+						timeArr.forEach((trackTime, i) => {
+							if (acc === time) { return; }
+							if (acc + trackTime <= time) { acc += trackTime; sel.push((idxArr[i])); }
+						});
+						plman.ClearPlaylistSelection(ap);
+						plman.SetPlaylistSelection(ap, sel.sort(), true); // NOSONAR
+					}, flags: playlistCountFlags
+				});
+				menu.newEntry({
+					menuName: subMenuName, entryText: 'Select next X minutes...', func: () => {
+						const ap = plman.ActivePlaylist;
+						if (ap === -1) { return; }
+						const input = Input.number('int', Math.round(menu_properties.playlistLength[1] * 3), 'Enter num of next minutes to select from focused item:\n(< 0 will go backwards)', scriptName + ': ' + name, 60) || Input.lastInput;
+						if (!input) { return; }
+						const endTime = Math.abs(input) * 60;
+						const handleList = plman.GetPlaylistItems(ap);
+						const timeArr = getHandleListTagsTyped(
+							handleList,
+							[{ name: 'LENGTH_SECONDS', type: 'number' }],
+							{ bMerged: true }
+						).flat();
+						const start = plman.GetPlaylistFocusItemIndex(ap);
+						let acc = 0;
+						const idx = (input > 0
+							? timeArr.slice(start)
+							: timeArr.slice(0, start).reverse()
+						).findIndex((trackTime) => {
+							acc += trackTime;
+							return acc > endTime;
+						});
+						const end = input > 0
+							? Math.max(
+								idx === -1
+									? handleList.Count - 1
+									: (idx - 1) + start,
+								0
+							)
+							: Math.min(
+								idx === -1
+									? 0
+									: start - (idx - 1),
+								start
+							);
+						plman.ClearPlaylistSelection(ap);
+						plman.SetPlaylistSelection(ap, input > 0 ? range(start, end) : range(end, start), true);
+					}, flags: playlistCountFlags
+				});
+				menu.newSeparator(subMenuName);
+				const subMenuHalf = menu.newMenu('By halves', subMenuName);
+				menu.newSeparator(subMenuName);
+				const subMenuThird = menu.newMenu('By thirds', subMenuName);
+				menu.newSeparator(subMenuName);
+				const subMenuQuarter = menu.newMenu('By quarters', subMenuName);
+				const selArgs = [
+					{ name: 'Select first Half', menu: subMenuHalf, args: { n: 0, group: 2 } },
+					{ name: 'Select second Half', menu: subMenuHalf, args: { n: 1, group: 2 } },
+					{ name: 'Select first Third', menu: subMenuThird, args: { n: 0, group: 3 } },
+					{ name: 'Select second Third', menu: subMenuThird, args: { n: 1, group: 3 } },
+					{ name: 'Select third Third', menu: subMenuThird, args: { n: 2, group: 3 } },
+					{ name: 'Select first Quarter', menu: subMenuQuarter, args: { n: 0, group: 4 } },
+					{ name: 'Select second Quarter', menu: subMenuQuarter, args: { n: 1, group: 4 } },
+					{ name: 'Select third Quarter', menu: subMenuQuarter, args: { n: 2, group: 4 } },
+					{ name: 'Select fourth Quarter', menu: subMenuQuarter, args: { n: 3, group: 4 } }
+				];
+				selArgs.forEach((selArg) => {
+					menu.newEntry({
+						menuName: selArg.menu, entryText: selArg.name, func: (args = selArg.args) => {
+							const ap = plman.ActivePlaylist;
+							if (ap === -1) { return; }
+							const handleList = plman.GetPlaylistItems(ap);
+							const timeArr = getHandleListTagsTyped(
+								handleList,
+								[{ name: 'LENGTH_SECONDS', type: 'number' }],
+								{ bMerged: true }
+							).flat();
+							timeArr.forEach((curr, i) => timeArr[i] += (i !== 0 ? timeArr[i - 1] : 0));
+							const limits = range(0, args.group)
+								.map((() => {
+									const left = timeArr[0];
+									const range = timeArr.slice(-1)[0] - left;
+									return (i) => {
+										const time = i === 0
+											? timeArr[0]
+											: range / args.group * i + left;
+										const idx = timeArr.indexOf(time);
+										return { idx, time };
+									};
+								})());
+							limits.forEach((limit, i) => {
+								if (limit.idx !== -1) { return; }
+								let diff = Infinity;
+								let j = i !== 0 ? limits[i - 1].idx + 1 : 0;
+								for (let time of timeArr.slice(j)) {
+									if (!diff) { break; }
+									const newDiff = Math.abs(time - limit.time);
+									if (newDiff < diff) {
+										diff = newDiff;
+										limit.idx = j;
+										j++;
+									} else { break; }
+								}
+								limit.time = timeArr[limit.idx];
+							});
+							const start = limits[args.n].idx + (args.n !== 0 ? 1 : 0);
+							const end = limits[args.n + 1].idx;
 							plman.ClearPlaylistSelection(ap);
 							plman.SetPlaylistSelection(ap, range(start, end, 1), true);
 						}, flags: playlistCountFlags
