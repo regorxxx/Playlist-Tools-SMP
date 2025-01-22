@@ -3,7 +3,7 @@
 [![CodeFactor][codefactor_badge]](https://www.codefactor.io/repository/github/regorxxx/Playlist-Tools-SMP/overview/main)
 [![CodacyBadge][codacy_badge]](https://www.codacy.com/gh/regorxxx/Playlist-Tools-SMP/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=regorxxx/Playlist-Tools-SMP&amp;utm_campaign=Badge_Grade)
 ![GitHub](https://img.shields.io/github/license/regorxxx/Playlist-Tools-SMP)  
-A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel) Scripts for [foobar2000](https://www.foobar2000.org), built within a menu, which serves as a hub for 'usage examples' and shortcuts to the most requested foobar missing functionalities: remove duplicates by tags, revive dead items, check errors on tags, spotify-like playlist creation, advanced queries, etc.
+A collection of [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel)/[JSplitter](https://foobar2000.ru/forum/viewtopic.php?t=6378) Scripts for [foobar2000](https://www.foobar2000.org), built within a menu, which serves as a hub for 'usage examples' and shortcuts to the most requested foobar missing functionalities: remove duplicates by tags, revive dead items, check errors on tags, spotify-like playlist creation, advanced queries, etc.
 
 **WARNING: MOST OF THESE TOOLS FULLFILL MY PERSONAL NEEDS AND/OR OFFER FEATURES I CONSIDER NOT COVERED BY NATIVE FOOBAR2000, OUTDATED PLUGINS OR ARE LIMITED IN THEIR ORIGINAL COMPONENTS. THESE ARE ADVANCED TOOLS, IF YOU ARE EXPECTING A FOOLPROOF TOOL, LOOK ELSEWHERE. PLEASE, WHILE BUG REPORTS AND CONSTRUCTIVE FEEDBACK ARE WELCOME, DON'T COMPLAIN ABOUT THINGS BEING TOO COMPLEX. THEY ARE MEANT THIS WAY. IF YOU WANT SOMETHING DESIGNED JUST FOR YOU, FEEL FREE TO CONTACT ME FOR PAID WORK.**
 
@@ -134,9 +134,22 @@ The menus are highly customizable. They are created on demand according to the s
  
 ![pt_Toprated](https://user-images.githubusercontent.com/83307074/176501329-aa16d757-9b91-4e92-a4ff-23334589185e.gif)
 
+## Requirements
+ 1. [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel): Component required to install this javaScript addon. Only x32.
+ 2. [JSplitter](https://foobar2000.ru/forum/viewtopic.php?t=6378): Component required to install this javaScript addon. Both x32 and x64.
+ 3. FontAwesome: found at ’.\ resources\fontawesome-webfont.ttf’. See installation notes.
+
 ## Installation
-See [_TIPS and INSTALLATION (txt)](https://github.com/regorxxx/Playlist-Tools-SMP/blob/main/_TIPS%20and%20INSTALLATION.txt) and the [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Installation).
+See [_INSTALLATION (txt)](https://github.com/regorxxx/Playlist-Tools-SMP/blob/main/_INSTALLATION.txt) and the [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Installation).
 Not properly following the installation instructions will result in scripts not working as intended. Please don't report errors before checking this.
+
+## Support
+ 1. [Issues tracker](https://github.com/regorxxx/Playlist-Tools-SMP/issues).
+ 2. [Hydrogenaudio forum](https://hydrogenaud.io/index.php/topic,120978.0.html).
+ 3. [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki).
+
+## Nightly releases
+Zip file [from GitHub](https://github.com/regorxxx/Playlist-Tools-SMP/archive/refs/heads/main.zip) (using the latest commit).
 
 [changelog]: CHANGELOG.md
 [version_badge]: https://img.shields.io/github/release/regorxxx/Playlist-Tools-SMP.svg
