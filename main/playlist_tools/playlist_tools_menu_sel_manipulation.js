@@ -1,5 +1,5 @@
 ﻿'use strict';
-//04/01/24
+//20/01/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1614,11 +1614,12 @@
 		{	// Select (for use with macros!!)
 			const name = 'Select (by time)';
 			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\selection_time.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED });
 				menu.newSeparator(subMenuName);
 				menu.newEntry({
-					menuName: subMenuName, entryText: () => { return 'Select random ' + Math.round(menu_properties.playlistLength[1] * 3) + ' minutes'; }, func: () => {
+					menuName: subMenuName, entryText: () => { return 'Select rand ' + Math.round(menu_properties.playlistLength[1] * 3) + ' minutes'; }, func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
 						const [handleArr, idxArr] = Array.shuffle(plman.GetPlaylistItems(ap).Convert(), range(0, plman.PlaylistItemCount(ap) - 1));
@@ -1639,11 +1640,13 @@
 					}, flags: playlistCountFlags
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Select random X minutes...', func: () => {
+					menuName: subMenuName, entryText: 'Select rand X minutes (crossfade)...', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
-						const input = Input.number('int', Math.round(menu_properties.playlistLength[1] * 3), 'Enter num of minutes to select from current playlist:', scriptName + ': ' + name, 60) || Input.lastInput;
+						const input = Input.number('int positive', Math.round(menu_properties.playlistLength[1] * 3), 'Enter num of minutes to select from current playlist:\n(int number > 0)', scriptName + ': ' + name, 60) || Input.lastInput;
 						if (!input) { return; }
+						const crossfade = Input.number('real positive', 0, 'Enter crossfade duration in s: (real number > 0)\n\n(0 to ignore it)', scriptName + ': ' + name, 3) || Input.lastInput;
+						if (crossfade === null) { return; }
 						const time = Math.abs(input) * 60;
 						const [handleArr, idxArr] = Array.shuffle(plman.GetPlaylistItems(ap).Convert(), range(0, plman.PlaylistItemCount(ap) - 1));
 						const timeArr = getHandleListTagsTyped(
@@ -1655,18 +1658,22 @@
 						let acc = 0;
 						timeArr.forEach((trackTime, i) => {
 							if (acc === time) { return; }
-							if (acc + trackTime <= time) { acc += trackTime; sel.push((idxArr[i])); }
+							const newTime = trackTime - (i !== 0 ? crossfade : 0);
+							if (acc + newTime <= time) { acc += newTime; sel.push((idxArr[i])); }
 						});
+						console.log('Playlist Tools: Selected time ' + utils.FormatDuration(acc) + ' (+' + crossfade * Math.max(sel.length - 1, 0) + 's crossfade)');
 						plman.ClearPlaylistSelection(ap);
 						plman.SetPlaylistSelection(ap, sel.sort(), true); // NOSONAR
 					}, flags: playlistCountFlags
 				});
 				menu.newEntry({
-					menuName: subMenuName, entryText: 'Select next X minutes...', func: () => {
+					menuName: subMenuName, entryText: 'Select next X minutes (crossfade)...', func: () => {
 						const ap = plman.ActivePlaylist;
 						if (ap === -1) { return; }
-						const input = Input.number('int', Math.round(menu_properties.playlistLength[1] * 3), 'Enter num of next minutes to select from focused item:\n(< 0 will go backwards)', scriptName + ': ' + name, 60) || Input.lastInput;
+						const input = Input.number('int', Math.round(menu_properties.playlistLength[1] * 3), 'Enter num of next minutes to select from focused item:\n(int number)\n\n(< 0 will go backwards)', scriptName + ': ' + name, 60) || Input.lastInput;
 						if (!input) { return; }
+						const crossfade = Input.number('real positive', 0, 'Enter crossfade duration in s: (real number > 0)\n\n(0 to ignore it)', scriptName + ': ' + name, 3) || Input.lastInput;
+						if (crossfade === null) { return; }
 						const endTime = Math.abs(input) * 60;
 						const handleList = plman.GetPlaylistItems(ap);
 						const timeArr = getHandleListTagsTyped(
@@ -1679,9 +1686,15 @@
 						const idx = (input > 0
 							? timeArr.slice(start)
 							: timeArr.slice(0, start).reverse()
-						).findIndex((trackTime) => {
-							acc += trackTime;
-							return acc > endTime;
+						).findIndex((trackTime, i) => {
+							const newTime = trackTime - (i !== 0 ? crossfade : 0);
+							acc += newTime;
+							if (acc > endTime) {
+								console.log('Playlist Tools: Selected time ' + utils.FormatDuration(acc - newTime) + ' (+' + crossfade * Math.max((i - 1), 0) + 's crossfade)');
+								return true;
+							} else {
+								return false;
+							}
 						});
 						const end = input > 0
 							? Math.max(
