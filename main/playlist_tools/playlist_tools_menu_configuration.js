@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/24
+//27/01/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -344,7 +344,7 @@
 						const readme = 'Backup ' + new Date().toString();
 						if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g, '\r\n'))) {
 							_explorer(path);
-							console.log('Playlist tools: presets backup saved at ' + path);
+							console.log('Playlist tools: presets backup saved at\n\t ' + path);
 						}
 					}
 				}
@@ -365,8 +365,8 @@
 							_recycleFile(path, true);
 							const readme = 'Backup ' + new Date().toString();
 							if (_save(path, JSON.stringify({ readme, ...presets }, null, '\t').replace(/\n/g, '\r\n'))) {
-								console.log('Playlist tools: presets backup saved at ' + path);
-							} else { console.log('Playlist tools: failed to create backup of presets at ' + path); }
+								console.log('Playlist tools: presets backup saved at\n\t ' + path);
+							} else { console.log('Playlist tools: failed to create backup of presets at\n\t ' + path); }
 							presets = {}; // NOSONAR
 						}
 						// For the current instance
@@ -425,12 +425,12 @@
 									if (_isFile(value)) {
 										const readme = _open(value, utf8);
 										if (readme.length) { fb.ShowPopupMessage(readme, key); }
-									} else { console.log('Readme not found: ' + value); }
+									} else { console.log('Playlist Tools: Readme not found\n\t ' + value); }
 								}, flags
 							});
 							iCount++;
 						}
-					} else { console.log('Readme not found: ' + value); }
+					} else { console.log('Playlist Tools: Readme not found\n\t ' + value); }
 				});
 				// Entry to open all readmes
 				menu.newCondEntry({
@@ -444,7 +444,7 @@
 										else if (_isFile(value)) {
 											const readme = _open(value, utf8);
 											if (readme.length) { fb.ShowPopupMessage(readme, key); }
-										} else { console.log('Readme not found: ' + value); }
+										} else { console.log('Playlist Tools: Readme not found\n\t ' + value); }
 									});
 								}
 							});
