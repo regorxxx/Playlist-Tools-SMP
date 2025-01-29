@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//29/01/25
 
 /* exported _pools */
 
@@ -258,7 +258,9 @@ function _pools({
 				case plsName.startsWith('_SEARCHBYGRAPH_'): { // Search by GRAPH
 					if (this.bEnableSearchDistance && typeof searchByDistance !== 'undefined') {
 						// Get arguments
-						const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
+						const recipe = isString(pool.recipe[plsName])
+							? _jsonParseFileCheck(folders.userPresets + 'recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8)
+							: pool.recipe[plsName];
 						// Check
 						if (!recipe) { return; }
 						// Get reference (instead of selection)
@@ -291,7 +293,9 @@ function _pools({
 				case plsName.startsWith('_SEARCHBYWEIGHT_'): { // Search by WEIGHT
 					if (this.bEnableSearchDistance && typeof searchByDistance !== 'undefined') {
 						// Get arguments
-						const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
+						const recipe = isString(pool.recipe[plsName])
+							? _jsonParseFileCheck(folders.userPresets + 'recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8)
+							: pool.recipe[plsName];
 						// Check
 						if (!recipe) { return; }
 						// Get reference (instead of selection)
@@ -317,7 +321,9 @@ function _pools({
 				case plsName.startsWith('_SEARCHBYDYNGENRE_'): { // Search by DYNGENRE
 					if (this.bEnableSearchDistance && typeof searchByDistance !== 'undefined') {
 						// Get arguments
-						const recipe = isString(pool.recipe[plsName]) ? _jsonParseFileCheck(folders.xxx + 'presets\\Search by\\recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8) : pool.recipe[plsName];
+						const recipe = isString(pool.recipe[plsName])
+							? _jsonParseFileCheck(folders.userPresets + 'recipes\\' + pool.recipe[plsName], 'Recipe json', scriptName, utf8)
+							: pool.recipe[plsName];
 						// Check
 						if (!recipe) { return; }
 						// Get reference (instead of selection)
