@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//10/02/25
 
 /* exported ThemedButton, getUniquePrefix, addButton, getButtonVersion */
 
@@ -148,8 +148,12 @@ function ThemedButton(
 	this.gFontIcon = gFontIcon;
 	this.description = description;
 	this.text = text;
-	this.textWidth = isFunction(this.text) ? (parent) => { return _gr.CalcTextWidth(this.text(parent), gFont); } : _gr.CalcTextWidth(this.text, gFont);
-	this.textHeight = isFunction(this.text) ? (parent) => { return _gr.CalcTextHeight(this.text(parent), gFont); } : _gr.CalcTextHeight(this.text, gFont);
+	this.textWidth = isFunction(this.text)
+		? (parent) => _gr.CalcTextWidth(this.text(parent), gFont)
+		: _gr.CalcTextWidth(this.text, gFont);
+	this.textHeight = isFunction(this.text)
+		? (parent) => _gr.CalcTextHeight(this.text(parent), gFont)
+		: _gr.CalcTextHeight(this.text, gFont);
 	this.iconImage = this.gFontIcon === null;
 	if (this.iconImage) {
 		this.icon = icon;
@@ -160,15 +164,19 @@ function ThemedButton(
 		// if using the default font, then it has probably failed to load the right one, skip icon
 		this.icon = this.gFontIcon.Name !== 'Microsoft Sans Serif' ? icon : null;
 		this.iconWidth = isFunction(this.icon)
-			? (parent) => { return _gr.CalcTextWidth(this.icon(parent), gFontIcon); }
+			? (parent) => _gr.CalcTextWidth(this.icon(parent), gFontIcon)
 			: _gr.CalcTextWidth(this.icon, gFontIcon);
 		this.iconHeight = isFunction(this.icon)
-			? (parent) => { return _gr.CalcTextHeight(this.icon(parent), gFontIcon); }
+			? (parent) => _gr.CalcTextHeight(this.icon(parent), gFontIcon)
 			: _gr.CalcTextHeight(this.icon, gFontIcon);
 	}
 	this.func = func;
 	this.prefix = prefix; // This let us identify properties later for different instances of the same button, like an unique ID
-	this.descriptionWithID = isFunction(this.description) ? (parent) => { return (this.prefix ? this.prefix.replace('_', '') + ': ' + this.description(parent) : this.description(parent)); } : () => { return (this.prefix ? this.prefix.replace('_', '') + ': ' + this.description : this.description); }; // Adds prefix to description, whether it's a func or a string
+	this.descriptionWithID = isFunction(this.description)
+		? (parent) => this.prefix
+			? this.prefix.replace('_', '') + ': ' + this.description(parent)
+			: this.description(parent)
+		: () => { return (this.prefix ? this.prefix.replace('_', '') + ': ' + this.description : this.description); }; // Adds prefix to description, whether it's a func or a string
 	this.buttonsProperties = { ...buttonsProperties }; // Clone properties for later use
 	this.bIconMode = false;
 	this.bIconModeExpand = false;
@@ -232,7 +240,9 @@ function ThemedButton(
 
 	this.headerText = function () {
 		const name = (isFunction(this.text) ? this.text(this) : this.text) || (this.defText && isFunction(this.defText) ? this.defText(this) : this.defText || '');
-		return (this.isIconMode() ? name + '\n-----------------------------------------------------\n' : '');
+		return Object.hasOwn(this, 'bIconMode') && this.isIconMode()
+			? name + '\n-----------------------------------------------------\n'
+			: '';
 	};
 
 	this.tooltipText = function () { // ID or just description, according to string or func.
@@ -1035,7 +1045,7 @@ function moveButton(fromKey, toKey) {
 	buttonsPath.splice(toPos, 0, buttonsPath.splice(fromPos, 1)[0]);
 	buttonsBar.list.splice(toPos, 0, buttonsBar.list.splice(fromPos, 1)[0]);
 	const fileNames = buttonsPath.map((path) => { return path.split('\\').pop(); });
-	_save(folders.data + barProperties.name[1] + '.json', JSON.stringify(fileNames, null, '\t').replace(/\n/g,'\r\n')); // NOSONAR
+	_save(folders.data + barProperties.name[1] + '.json', JSON.stringify(fileNames, null, '\t').replace(/\n/g, '\r\n')); // NOSONAR
 	// Since properties have a prefix according to their loading order, when there are multiple instances of the same
 	// script, moving a button when there are other 'clones' means the other buttons may get their properties names
 	// shifted by one. They need to be adjusted or buttons at greater indexes will inherit properties from lower ones!
@@ -1084,6 +1094,8 @@ function addButton(newButtons) {
 		// Add icons mode
 		if (Object.hasOwn(button.buttonsProperties, 'bIconMode')) {
 			button.bIconMode = button.buttonsProperties.bIconMode[1];
+		} else {
+			delete button.bIconMode;
 		}
 	}
 	buttonsBar.buttons = { ...buttonsBar.buttons, ...newButtons };
