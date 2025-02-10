@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/01/25
+//10/02/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -374,7 +374,17 @@
 										const input = inputScatter();
 										if (!input) { return; }
 										// Execute
-										if (input.args.tagValue !== null) { scatterByTags(input.args); } else { intercalateByTags(input.args); }
+										if (input.args.tagValue !== null) {
+											scatterByTags({
+												...defaultArgs,
+												...input.args
+											});
+										} else {
+											intercalateByTags({
+												...defaultArgs,
+												...input.args
+											});
+										}
 										// For internal use original object
 										selArg.args = input.args;
 										menu_properties['scatterCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
@@ -474,7 +484,17 @@
 										const input = inputIntercalate();
 										if (!input) { return; }
 										// Execute
-										if (input.args.tagValue !== null) { scatterByTags(input.args); } else { intercalateByTags(input.args); }
+										if (input.args.tagValue !== null) {
+											scatterByTags({
+												...defaultArgs,
+												...input.args
+											});
+										} else {
+											intercalateByTags({
+												...defaultArgs,
+												...input.args
+											});
+										}
 										// For internal use original object
 										selArg.args = input.args;
 										menu_properties['intercalateCustomArg'][1] = JSON.stringify(selArg); // And update property with new value
@@ -567,10 +587,10 @@
 									menu.newEntry({
 										menuName: subMenuName, entryText: shuffleName, func: () => {
 											shuffleByTags({
+												...defaultArgs,
 												...shuffleObj.args,
 												bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
-												sortBias: menu_properties.smartShuffleSortBias[1],
-												bDebug: defaultArgs.bDebug
+												sortBias: menu_properties.smartShuffleSortBias[1]
 											});
 										}, flags: multipleSelectedFlagsReorder
 									});
@@ -588,7 +608,12 @@
 										const input = inputShuffle();
 										if (!input) { return; }
 										// Execute
-										shuffleByTags({ ...input.args, bDebug: defaultArgs.bDebug });
+										shuffleByTags({
+											...defaultArgs,
+											...input.args,
+											bAdvancedShuffle: menu_properties.bSmartShuffleAdvc[1],
+											sortBias: menu_properties.smartShuffleSortBias[1]
+										});
 										// For internal use original object
 										selArg.args = input.args;
 										menu_properties['shuffleCustomArg'][1] = JSON.stringify(selArg); // And update property with new value

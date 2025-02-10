@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/01/25
+//10/02/25
 
 /* exported _pools */
 
@@ -486,6 +486,7 @@ function _pools({
 				bSendToActivePls: false,
 				bAdvancedShuffle: this.bAdvancedShuffle,
 				sortBias: this.smartShuffleSortBias,
+				bMultiple: this.bMultiple,
 				bDebug: this.bDebug
 			});
 			if (shuffle) {
