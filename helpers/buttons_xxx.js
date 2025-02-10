@@ -272,7 +272,7 @@ function ThemedButton(
 					: RGB(255, 255, 255)
 			: buttonsBar.config.hoverColor;
 	};
-
+	let iconCache = null;
 	this.draw = function (gr, x = this.x, y = this.y, w = this.w, h = this.h, bAlign = false) {
 		// Draw?
 		if (this.state === buttonStates.hide) {
@@ -484,22 +484,25 @@ function ThemedButton(
 				const iconDarkMode = iconCalculatedDarkMode && !bMask
 					? gdi.Image(iconCalculatedDarkMode)
 					: null;
-				iconImage = bMask
+				iconImage = iconCache || (bMask
 					? gdi.CreateImage(iconWidthCalculated, iconHeightCalculated)
-					: iconDarkMode || gdi.Image(iconCalculated);
+					: iconDarkMode || gdi.Image(iconCalculated));
 				if (iconImage) {
-					if (bMask) {
-						const iconGr = iconImage.GetGraphics();
-						iconGr.FillSolidRect(0, 0, iconImage.Width, iconImage.Height, this.active ? buttonsBar.config.activeColor : buttonsBar.config.textColor);
-						iconImage.ReleaseGraphics(iconGr);
-						let iconMask = gdi.Image(iconCalculated.replace(/(icons\\.*)(\..*$)/i, '$1_mask$2'));
-						if (iconMask) {
-							iconMask = iconMask.Resize(iconWidthCalculated, iconHeightCalculated, InterpolationMode.NearestNeighbor);
-							iconImage.ApplyMask(iconMask);
+					if (!iconCache) {
+						if (bMask) {
+							const iconGr = iconImage.GetGraphics();
+							iconGr.FillSolidRect(0, 0, iconImage.Width, iconImage.Height, this.active ? buttonsBar.config.activeColor : buttonsBar.config.textColor);
+							iconImage.ReleaseGraphics(iconGr);
+							let iconMask = gdi.Image(iconCalculated.replace(/(icons\\.*)(\..*$)/i, '$1_mask$2'));
+							if (iconMask) {
+								iconMask = iconMask.Resize(iconWidthCalculated, iconHeightCalculated, InterpolationMode.NearestNeighbor);
+								iconImage.ApplyMask(iconMask);
+							}
+						} else {
+							if (buttonsBar.config.bIconInvert || iconCalculatedDarkMode && !iconDarkMode) { iconImage = iconImage.InvertColours(); }
+							iconImage = iconImage.Resize(iconWidthCalculated, iconHeightCalculated, InterpolationMode.NearestNeighbor);
 						}
-					} else {
-						if (buttonsBar.config.bIconInvert || iconCalculatedDarkMode && !iconDarkMode) { iconImage = iconImage.InvertColours(); }
-						iconImage = iconImage.Resize(iconWidthCalculated, iconHeightCalculated, InterpolationMode.NearestNeighbor);
+						iconCache = iconImage;
 					}
 					if (bVerticalAlignIcon) {
 						iconCoords.x += wCalc / 2 - iconImage.Width * 1 / 2;
@@ -628,6 +631,7 @@ function ThemedButton(
 	};
 
 	this.changeScale = function (scale) {
+		iconCache = null;
 		const newScale = scale / buttonsBar.config.scale;
 		this.w *= newScale;
 		this.h *= newScale;
@@ -642,6 +646,7 @@ function ThemedButton(
 			: _gr.CalcTextWidth(this.text, this.gFont);
 	};
 	this.changeIconScale = function (scale) {
+		iconCache = null;
 		const newScale = scale / buttonsBar.config.iconScale;
 		if (!this.iconImage) {
 			this.gFontIcon = _gdiFont(this.gFontIcon.Name, this.gFontIcon.Size * newScale);
