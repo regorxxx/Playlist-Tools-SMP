@@ -36,7 +36,7 @@ buttonsBar.list.push(newButtonsProperties);
 addButton({
 	'Volume control mute': new ThemedButton({ x: 0, y: 0, w: 0, h: 22 }, '', function () {
 		fb.VolumeMute();
-	}, null, void (0), () => fb.Volume ? 'Click to mute' : 'Click to unmute', prefix, newButtonsProperties, chars.speaker, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
+	}, null, void (0), () => fb.Volume > -100 ? 'Mute' : 'Unmute', prefix, newButtonsProperties, () => fb.Volume > -100 ? chars.speaker : chars.speakerOff, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
 	'Volume control down': new ThemedButton({ x: 0, y: 0, w: 0, h: 22 }, '', function () {
 		fb.VolumeDown();
 	}, null, void (0), () => 'Volume down', prefix, newButtonsProperties, chars.minus, void (0), void (0), {
