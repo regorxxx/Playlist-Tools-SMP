@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/25
+//12/02/25
 
 /*
 	Output device selector
@@ -8,7 +8,7 @@
  */
 
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable */
+/* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, getButtonVersion:readable, buttonStates:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -68,7 +68,7 @@ addButton({
 	'Volume display': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('100', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 8 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, () => (100 + fb.Volume).toFixed(0), function () {
 		if (!this.isInput) { this.startInput(); }
 		else { this.applyInput(); }
-	}, null, void (0), () => 'Current volume: ' + fb.Volume.toFixed(2) + ' dBs', prefix, newButtonsProperties, null, void (0), {
+	}, null, _gdiFont(globFonts.button.name, globFonts.button.size * 1.2 * buttonsBar.config.textScale, FontStyle.Bold), () => 'Current volume: ' + fb.Volume.toFixed(2) + ' dBs', prefix, newButtonsProperties, null, void (0), {
 		volumeFunc: () => (100 + fb.Volume).toFixed(0),
 		inputFunc: () => '|',
 		getVolume: (parent, v) => Math.max(0, Math.min(Number(v), 100)),
