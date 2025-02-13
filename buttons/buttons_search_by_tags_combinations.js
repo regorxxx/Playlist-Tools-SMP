@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/24
+//13/02/25
 
 /*
 	Search same by v 1.0 24/08/22
@@ -194,125 +194,133 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Search Same By Tags (Combinations)': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
-		if (mask === MK_SHIFT) {
-			const oldName = this.buttonsProperties.customName[1].toString();
-			settingsMenu(
-				this, true, ['buttons_search_by_tags_combinations.js'],
-				{
-					bAdvTitle: { popup: globRegExp.title.desc },
-					bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' }
-				},
-				void (0),
-				(menu) => {
-					menu.newSeparator();
-					const subMenuName = menu.newMenu('Presets');
-					JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
-						// Add separators
-						if (menu.isSeparator(entry)) {
-							menu.newSeparator(subMenuName);
-						} else {
-							menu.newEntry({
-								menuName: subMenuName, entryText: entry.name, func: () => {
-									for (const key in entry.settings) {
-										if (Object.hasOwn(this.buttonsProperties, key)) {
-											this.buttonsProperties[key][1] = typeof (entry.settings[key]) === 'object'
-												? JSON.stringify(entry.settings[key])
-												: entry.settings[key];
+	'Search Same By Tags (Combinations)': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: newButtonsProperties.customName[1],
+		func: function (mask) {
+			if (mask === MK_SHIFT) {
+				const oldName = this.buttonsProperties.customName[1].toString();
+				settingsMenu(
+					this, true, ['buttons_search_by_tags_combinations.js'],
+					{
+						bAdvTitle: { popup: globRegExp.title.desc },
+						bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' }
+					},
+					void (0),
+					(menu) => {
+						menu.newSeparator();
+						const subMenuName = menu.newMenu('Presets');
+						JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+							// Add separators
+							if (menu.isSeparator(entry)) {
+								menu.newSeparator(subMenuName);
+							} else {
+								menu.newEntry({
+									menuName: subMenuName, entryText: entry.name, func: () => {
+										for (const key in entry.settings) {
+											if (Object.hasOwn(this.buttonsProperties, key)) {
+												this.buttonsProperties[key][1] = typeof (entry.settings[key]) === 'object'
+													? JSON.stringify(entry.settings[key])
+													: entry.settings[key];
+											}
 										}
+										overwriteProperties(this.buttonsProperties);
 									}
-									overwriteProperties(this.buttonsProperties);
-								}
-							});
-							menu.newCheckMenuLast(
-								() => Object.keys(entry.settings).every(
-									(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
-								)
-							);
-						}
-					});
-					menu.newSeparator(subMenuName);
-					_createSubMenuEditEntries(menu, subMenuName, {
-						name: 'Search Same By Tags (Combinations)',
-						list: JSON.parse(this.buttonsProperties.presets[1]),
-						defaults: JSON.parse(this.buttonsProperties.presets[3]),
-						input: () => {
-							const entry = {
-								settings: {
-									sameBy: this.buttonsProperties.sameBy[1],
-									forcedQuery: this.buttonsProperties.forcedQuery[1],
-									checkDuplicatesBy: this.buttonsProperties.checkDuplicatesBy[1],
-									bAdvTitle: this.buttonsProperties.bAdvTitle[1],
-									bMultiple: this.buttonsProperties.bMultiple[1]
-								},
-							};
-							return entry;
-						},
-						bNumbered: true,
-						bCopyCurrent: true,
-						onBtnUp: (presets) => {
-							this.buttonsProperties.presets[1] = JSON.stringify(presets);
-							overwriteProperties(this.buttonsProperties);
-						}
-					});
-				}
-			).btn_up(this.currX, this.currY + this.currH);
-			const newName = this.buttonsProperties.customName[1].toString();
-			if (oldName !== newName) { this.adjustNameWidth(newName); }
-		} else if (mask === MK_SHIFT + MK_CONTROL) {
-			const menu = new _menu();
-			menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
-			menu.newSeparator();
-			JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
-				menu.newEntry({
-					entryText: entry.name, func: () => {
-						const preset = entry;
-						console.log(preset.settings);
-						searchSameByCombs({
-							checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
-							bAdvTitle: this.buttonsProperties.bAdvTitle[1],
-							playlistLength: Number(this.buttonsProperties.playlistLength[1]),
-							...preset.settings,
-							bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
+								});
+								menu.newCheckMenuLast(
+									() => Object.keys(entry.settings).every(
+										(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
+									)
+								);
+							}
+						});
+						menu.newSeparator(subMenuName);
+						_createSubMenuEditEntries(menu, subMenuName, {
+							name: 'Search Same By Tags (Combinations)',
+							list: JSON.parse(this.buttonsProperties.presets[1]),
+							defaults: JSON.parse(this.buttonsProperties.presets[3]),
+							input: () => {
+								const entry = {
+									settings: {
+										sameBy: this.buttonsProperties.sameBy[1],
+										forcedQuery: this.buttonsProperties.forcedQuery[1],
+										checkDuplicatesBy: this.buttonsProperties.checkDuplicatesBy[1],
+										bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+										bMultiple: this.buttonsProperties.bMultiple[1]
+									},
+								};
+								return entry;
+							},
+							bNumbered: true,
+							bCopyCurrent: true,
+							onBtnUp: (presets) => {
+								this.buttonsProperties.presets[1] = JSON.stringify(presets);
+								overwriteProperties(this.buttonsProperties);
+							}
 						});
 					}
+				).btn_up(this.currX, this.currY + this.currH);
+				const newName = this.buttonsProperties.customName[1].toString();
+				if (oldName !== newName) { this.adjustNameWidth(newName); }
+			} else if (mask === MK_SHIFT + MK_CONTROL) {
+				const menu = new _menu();
+				menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
+				menu.newSeparator();
+				JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+					menu.newEntry({
+						entryText: entry.name, func: () => {
+							const preset = entry;
+							console.log(preset.settings);
+							searchSameByCombs({
+								checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
+								bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+								playlistLength: Number(this.buttonsProperties.playlistLength[1]),
+								...preset.settings,
+								bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
+							});
+						}
+					});
 				});
-			});
-			menu.btn_up(this.currX, this.currY + this.currH);
-		} else {
-			// Try to match a preset (for complex usage) or just use the standard arg
-			const preset =JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
+				menu.btn_up(this.currX, this.currY + this.currH);
+			} else {
+				// Try to match a preset (for complex usage) or just use the standard arg
+				const preset = JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
+					.find((entry) =>
+						Object.keys(entry.settings).every(
+							(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
+						)
+					);
+				console.log(((preset || { settings: { sameBy: JSON.parse(this.buttonsProperties.sameBy[1]) } }).settings));
+				searchSameByCombs({
+					checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
+					bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+					playlistLength: Number(this.buttonsProperties.playlistLength[1]),
+					...((preset || { settings: { sameBy: JSON.parse(this.buttonsProperties.sameBy[1]) } }).settings),
+					bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
+				});
+			}
+		},
+		description: function () {
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const preset = JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
 				.find((entry) =>
 					Object.keys(entry.settings).every(
 						(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
 					)
 				);
-			console.log(((preset || {settings: {sameBy: JSON.parse(this.buttonsProperties.sameBy[1])}}).settings));
-			searchSameByCombs({
-				checkDuplicatesBy: JSON.parse(this.buttonsProperties.checkDuplicatesBy[1]),
-				bAdvTitle: this.buttonsProperties.bAdvTitle[1],
-				playlistLength: Number(this.buttonsProperties.playlistLength[1]),
-				...((preset || {settings: {sameBy: JSON.parse(this.buttonsProperties.sameBy[1])}}).settings),
-				bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false
-			});
-		}
-	}, null, void (0), (parent) => {
-		const bShift = utils.IsKeyPressed(VK_SHIFT);
-		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		const preset =JSON.parse(parent.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
-			.find((entry) =>
-				Object.keys(entry.settings).every(
-					(key) => !Object.hasOwn(parent.buttonsProperties, key) || parent.buttonsProperties[key][1] === JSON.stringify(entry.settings[key])
-				)
-			);
-		let info = 'Random playlist matching from currently selected track:';
-		info += preset ? '\nName:\t\t' + preset.name : '';
-		info += '\nTF (at least):\t' + parent.buttonsProperties.sameBy[1].cut(50);
-		if (bShift || bInfo) {
-			info += '\n-----------------------------------------------------';
-			info += '\n(Shift + L. Click to open config menu)';
-			info += '\n(Shift + Ctrl + L. Click to search by preset)';
-		}
-		return info;
-	}, prefix, newButtonsProperties, chars.searchPlus, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
+			let info = 'Random playlist matching from currently selected track:';
+			info += preset ? '\nName:\t\t' + preset.name : '';
+			info += '\nTF (at least):\t' + this.buttonsProperties.sameBy[1].cut(50);
+			if (bShift || bInfo) {
+				info += '\n-----------------------------------------------------';
+				info += '\n(Shift + L. Click to open config menu)';
+				info += '\n(Shift + Ctrl + L. Click to search by preset)';
+			}
+			return info;
+		},
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.searchPlus,
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });

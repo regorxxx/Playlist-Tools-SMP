@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//13/02/25
 
 /*
 	Quicksearch for same....
@@ -110,91 +110,101 @@ newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
-// Create dynamic menus
-if (newButtonsProperties.bDynamicMenus[1]) {
-	bindDynamicMenus({
-		menu: quickSearchMenu.bind({ buttonsProperties: newButtonsProperties, prefix: '' }),
-		parentName: 'Quicksearch',
-		entryCallback: (entry) => {
-			const prefix = 'Quicksearch' + (/begins.*/i.test(entry.menuName)
-				? ' Begins with: '
-				: /partial.*/i.test(entry.menuName)
-					? ' Partial: '
-					: ': '
-			);
-			return prefix + entry.entryText.replace(/\t.*/, '').replace(/&&/g, '&');
-		}
-	});
-}
 
 addButton({
-	'Quicksearch': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Quicksearch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Quicksearch', function (mask) {
-		if (mask === MK_SHIFT) {
-			const menu = settingsMenu(
-				this, true, ['buttons_search_quicksearch.js'],
-				{
-					bDynamicMenus:
-						{ popup: 'Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)' }
-				},
-				{
-					bDynamicMenus:
-						(value) => {
-							if (value) {
-								bindDynamicMenus({
-									menu: quickSearchMenu.bind(this),
-									parentName: 'Quicksearch',
-									entryCallback: (entry) => {
-										const prefix = 'Quicksearch' + (/begins.*/i.test(entry.menuName)
-											? ' Begins with: '
-											: /partial.*/i.test(entry.menuName)
-												? ' Partial: '
-												: ': '
-										);
-										return prefix + entry.entryText.replace(/\t.*/, '').replace(/&&/g, '&');
-									}
-								});
-							} else { deleteMainMenuDynamic('Quicksearch'); }
-						}
-				},
-				(menu) => {
-					menu.newSeparator();
-					_createSubMenuEditEntries(menu, void (0), {
-						name: 'Quicksearch',
-						list: JSON.parse(this.buttonsProperties.entries[1]),
-						defaults: JSON.parse(this.buttonsProperties.entries[3]),
-						input: () => {
-							const entry = {
-								query: Input.string('string', '',
-									'Enter dynamic query:\n\n#TAG# will be replaced with values from selected track(s).\nRemember TF functions -like "$year()"- need quotes.\n\n' +
-									'Ex:\nTITLE IS #TITLE#\n"$year(%DATE%)" IS #$year(%DATE%)#'
-									, 'Quicksearch', 'TITLE IS #TITLE#', void (0), true),
-							};
-							if (!entry.query) { return; }
-							return entry;
-						},
-						bNumbered: true,
-						onBtnUp: (entries) => {
-							this.buttonsProperties.entries[1] = JSON.stringify(entries);
-							overwriteProperties(this.buttonsProperties);
-						}
-					});
-				}
-			);
-			menu.btn_up(this.currX, this.currY + this.currH);
-		} else {
-			quickSearchMenu.bind(this)().btn_up(this.currX, this.currY + this.currH);
-		}
-	}, null, void (0), () => {
-		const bShift = utils.IsKeyPressed(VK_SHIFT);
-		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		let info = 'Quicksearch using selection as reference:';
-		info += '\nSelected\t ' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count : 0) + ' items.';
-		if (bShift || bInfo) {
-			info += '\n-----------------------------------------------------';
-			info += '\n(Shift + L. Click to open config menu)';
-		}
-		return info;
-	}, '', newButtonsProperties, chars.search, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
+	'Quicksearch': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('Quicksearch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: 'Quicksearch',
+		func: function (mask) {
+			if (mask === MK_SHIFT) {
+				const menu = settingsMenu(
+					this, true, ['buttons_search_quicksearch.js'],
+					{
+						bDynamicMenus:
+							{ popup: 'Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)' }
+					},
+					{
+						bDynamicMenus:
+							(value) => {
+								if (value) {
+									bindDynamicMenus({
+										menu: quickSearchMenu.bind(this),
+										parentName: 'Quicksearch',
+										entryCallback: (entry) => {
+											const prefix = 'Quicksearch' + (/begins.*/i.test(entry.menuName)
+												? ' Begins with: '
+												: /partial.*/i.test(entry.menuName)
+													? ' Partial: '
+													: ': '
+											);
+											return prefix + entry.entryText.replace(/\t.*/, '').replace(/&&/g, '&');
+										}
+									});
+								} else { deleteMainMenuDynamic('Quicksearch'); }
+							}
+					},
+					(menu) => {
+						menu.newSeparator();
+						_createSubMenuEditEntries(menu, void (0), {
+							name: 'Quicksearch',
+							list: JSON.parse(this.buttonsProperties.entries[1]),
+							defaults: JSON.parse(this.buttonsProperties.entries[3]),
+							input: () => {
+								const entry = {
+									query: Input.string('string', '',
+										'Enter dynamic query:\n\n#TAG# will be replaced with values from selected track(s).\nRemember TF functions -like "$year()"- need quotes.\n\n' +
+										'Ex:\nTITLE IS #TITLE#\n"$year(%DATE%)" IS #$year(%DATE%)#'
+										, 'Quicksearch', 'TITLE IS #TITLE#', void (0), true),
+								};
+								if (!entry.query) { return; }
+								return entry;
+							},
+							bNumbered: true,
+							onBtnUp: (entries) => {
+								this.buttonsProperties.entries[1] = JSON.stringify(entries);
+								overwriteProperties(this.buttonsProperties);
+							}
+						});
+					}
+				);
+				menu.btn_up(this.currX, this.currY + this.currH);
+			} else {
+				quickSearchMenu.bind(this)().btn_up(this.currX, this.currY + this.currH);
+			}
+		},
+		description: function () {
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			let info = 'Quicksearch using selection as reference:';
+			info += '\nSelected\t ' + (plman.ActivePlaylist !== -1 ? plman.GetPlaylistSelectedItems(plman.ActivePlaylist).Count : 0) + ' items.';
+			if (bShift || bInfo) {
+				info += '\n-----------------------------------------------------';
+				info += '\n(Shift + L. Click to open config menu)';
+			}
+			return info;
+		},
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.search,
+		onInit: function () {
+			// Create dynamic menus
+			if (this.buttonsProperties.bDynamicMenus[1]) {
+				bindDynamicMenus({
+					menu: quickSearchMenu.bind({ buttonsProperties: this.buttonsProperties, prefix: '' }),
+					parentName: 'Quicksearch',
+					entryCallback: (entry) => {
+						const prefix = 'Quicksearch' + (/begins.*/i.test(entry.menuName)
+							? ' Begins with: '
+							: /partial.*/i.test(entry.menuName)
+								? ' Partial: '
+								: ': '
+						);
+						return prefix + entry.entryText.replace(/\t.*/, '').replace(/&&/g, '&');
+					}
+				});
+			}
+		},
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });
 
 function quickSearchMenu({ bSimulate = false } = {}) {

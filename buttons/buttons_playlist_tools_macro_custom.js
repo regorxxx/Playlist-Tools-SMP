@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//13/02/25
 
 /*
 	Playlist Tools Macro custom
@@ -33,86 +33,93 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0); // A
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Macros (CUSTOM)': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, newButtonsProperties.customName[1], function (mask) {
-		if (isPlaylistToolsLoaded()) {
-			if (mask === MK_SHIFT) {
-				const configMenu = new _menu();
-				const scriptDefaultArgs = { properties: [{ ...menu_properties }, () => { return menu_prefix; }] };
-				const Macros = menu.Macros;
-				configMenu.newCondEntry({
-					entryText: 'Macros', condFunc: (args = { ...scriptDefaultArgs, ...defaultArgs }) => {
-						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-						let propMacros = JSON.parse(args.properties['macros'][1]);
-						Macros.set(propMacros); // Restore macros list on first init
-						configMenu.newEntry({ entryText: 'Execute macros:', func: null, flags: MF_GRAYED });
-						configMenu.newSeparator();
-						configMenu.newEntry({
-							entryText: 'None', func: () => {
-								this.buttonsProperties['macro'][1] = '';
-								overwriteProperties(this.buttonsProperties);
-							}
-						});
-						configMenu.newSeparator();
-						// List
-						propMacros.forEach((macro) => {
-							if (menu.isSeparator(macro)) { // Create separators
-								configMenu.newSeparator();
-							} else {
-								configMenu.newEntry({
-									entryText: macro.name, func: () => {
-										this.buttonsProperties['macro'][1] = 'Macros\\' + macro.name;
-										overwriteProperties(this.buttonsProperties); // Force overwriting
-									}
-								});
-							}
-						});
-						configMenu.newCheckMenuLast((o) => {
-							const name = this.buttonsProperties['macro'][1].replace('Macros\\', '');
-							const idx = o.findIndex((macro) => macro.name === name);
-							return idx !== -1 ? idx + 1 : 0;
-						}, propMacros);
-						if (!propMacros.length) { configMenu.newEntry({ entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-						configMenu.newSeparator();
-						configMenu.newEntry({
-							entryText: 'Button name...', func: () => {
-								const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();
-								if (!newName.length) {
-									return;
-								} else {
-									this.buttonsProperties.customName[1] = newName;
-									overwriteProperties(this.buttonsProperties); // Force overwriting
-									this.adjustNameWidth(newName);
+	'Playlist Tools Macros (CUSTOM)': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: newButtonsProperties.customName[1],
+		func: function (mask) {
+			if (isPlaylistToolsLoaded()) {
+				if (mask === MK_SHIFT) {
+					const configMenu = new _menu();
+					const scriptDefaultArgs = { properties: [{ ...menu_properties }, () => { return menu_prefix; }] };
+					const Macros = menu.Macros;
+					configMenu.newCondEntry({
+						entryText: 'Macros', condFunc: (args = { ...scriptDefaultArgs, ...defaultArgs }) => {
+							args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+							let propMacros = JSON.parse(args.properties['macros'][1]);
+							Macros.set(propMacros); // Restore macros list on first init
+							configMenu.newEntry({ entryText: 'Execute macros:', func: null, flags: MF_GRAYED });
+							configMenu.newSeparator();
+							configMenu.newEntry({
+								entryText: 'None', func: () => {
+									this.buttonsProperties['macro'][1] = '';
+									overwriteProperties(this.buttonsProperties);
 								}
-							}
-						});
+							});
+							configMenu.newSeparator();
+							// List
+							propMacros.forEach((macro) => {
+								if (menu.isSeparator(macro)) { // Create separators
+									configMenu.newSeparator();
+								} else {
+									configMenu.newEntry({
+										entryText: macro.name, func: () => {
+											this.buttonsProperties['macro'][1] = 'Macros\\' + macro.name;
+											overwriteProperties(this.buttonsProperties); // Force overwriting
+										}
+									});
+								}
+							});
+							configMenu.newCheckMenuLast((o) => {
+								const name = this.buttonsProperties['macro'][1].replace('Macros\\', '');
+								const idx = o.findIndex((macro) => macro.name === name);
+								return idx !== -1 ? idx + 1 : 0;
+							}, propMacros);
+							if (!propMacros.length) { configMenu.newEntry({ entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
+							configMenu.newSeparator();
+							configMenu.newEntry({
+								entryText: 'Button name...', func: () => {
+									const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();
+									if (!newName.length) {
+										return;
+									} else {
+										this.buttonsProperties.customName[1] = newName;
+										overwriteProperties(this.buttonsProperties); // Force overwriting
+										this.adjustNameWidth(newName);
+									}
+								}
+							});
+						}
+					});
+					configMenu.btn_up(this.currX, this.currY + this.currH);
+				} else {
+					if (this.buttonsProperties['customName'][1] === 'Customize!') { // NOSONAR
+						const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button').toString();
+						if (!newName.length) {
+							return;
+						} else {
+							this.buttonsProperties.customName[1] = newName;
+							overwriteProperties(this.buttonsProperties); // Force overwriting
+							this.adjustNameWidth(newName);
+						}
+					} else if (this.buttonsProperties['macro'][1].length) {
+						menu.btn_up(void (0), void (0), void (0), this.buttonsProperties['macro'][1]); // Don't clear menu on last call
 					}
-				});
-				configMenu.btn_up(this.currX, this.currY + this.currH);
-			} else {
-				if (this.buttonsProperties['customName'][1] === 'Customize!') { // NOSONAR
-					const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button').toString();
-					if (!newName.length) {
-						return;
-					} else {
-						this.buttonsProperties.customName[1] = newName;
-						overwriteProperties(this.buttonsProperties); // Force overwriting
-						this.adjustNameWidth(newName);
-					}
-				} else if (this.buttonsProperties['macro'][1].length) {
-					menu.btn_up(void (0), void (0), void (0), this.buttonsProperties['macro'][1]); // Don't clear menu on last call
 				}
-			}
-		} else { fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
-	}, null, void (0), (parent) => {
-		return (isPlaylistToolsLoaded()
-			? 'Executes Playlist Tools Menu assigned macros:\nEntry:\t' + (parent.buttonsProperties.macro[1] || '-None-') +
-			(
-				getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
-					? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)'
-					: ''
-			)
-			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
-	}, null, newButtonsProperties, chars.hourglassHalf),
+			} else { fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
+		},
+		description: function () {
+			return (isPlaylistToolsLoaded()
+				? 'Executes Playlist Tools Menu assigned macros:\nEntry:\t' + (this.buttonsProperties.macro[1] || '-None-') +
+				(
+					getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
+						? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)'
+						: ''
+				)
+				: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
+		},
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.hourglassHalf
+	}),
 });
 
 // Helpers

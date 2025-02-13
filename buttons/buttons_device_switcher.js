@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//13/02/25
 
 /*
 	Output device selector
@@ -37,29 +37,37 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Output device switcher': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Devices', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Devices', function () {
-		const menu = new _menu();
-		menu.newEntry({ entryText: 'Select output:', func: null, flags: MF_GRAYED });
-		menu.newSeparator();
-		const devices = JSON.parse(fb.GetOutputDevices()); // Reformat with tabs
-		const menuName = menu.getMainMenuName;
-		devices.forEach((device) => {
-			let name = device.name || '';
-			name = name ? name.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '') : '- no name -';
-			menu.newEntry({
-				menuName, entryText: name, func: () => {
-					fb.SetOutputDevice(device.output_id, device.device_id);
-				}
+	'Output device switcher': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('Devices', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: 'Devices',
+		func: function () {
+			const menu = new _menu();
+			menu.newEntry({ entryText: 'Select output:', func: null, flags: MF_GRAYED });
+			menu.newSeparator();
+			const devices = JSON.parse(fb.GetOutputDevices()); // Reformat with tabs
+			const menuName = menu.getMainMenuName;
+			devices.forEach((device) => {
+				let name = device.name || '';
+				name = name ? name.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '') : '- no name -';
+				menu.newEntry({
+					menuName, entryText: name, func: () => {
+						fb.SetOutputDevice(device.output_id, device.device_id);
+					}
+				});
+				menu.newCheckMenu(menuName, name, void (0), () => { return device.active; });
 			});
-			menu.newCheckMenu(menuName, name, void (0), () => { return device.active; });
-		});
-		menu.btn_up(this.currX, this.currY + this.currH);
-	}, null, void (0), () => {
-		const devices = JSON.parse(fb.GetOutputDevices());
-		const currDevice = devices.find((device) => { return device.active; });
-		const currDeviceName = currDevice ? currDevice.name : '';
-		let info = 'Select output device:';
-		info += '\nDevice:\t' + currDeviceName.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '');
-		return info;
-	}, prefix, newButtonsProperties, chars.speaker, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
+			menu.btn_up(this.currX, this.currY + this.currH);
+		},
+		description: function () {
+			const devices = JSON.parse(fb.GetOutputDevices());
+			const currDevice = devices.find((device) => { return device.active; });
+			const currDeviceName = currDevice ? currDevice.name : '';
+			let info = 'Select output device:';
+			info += '\nDevice:\t' + currDeviceName.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '');
+			return info;
+		},
+		prefix,	buttonsProperties: newButtonsProperties,
+		icon: chars.speaker,
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });

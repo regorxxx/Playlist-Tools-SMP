@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/24
+//13/02/25
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -50,7 +50,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ name: 'sep' },
 		{ name: 'By Artist - Title - Date', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: globTags.date, bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Artist - Title', settings: { checkInputA: globTags.artist, checkInputB: globTags.title, checkInputC: '', bAdvTitle: true, bMultiple: true } },
-		{ name: 'By MBID', settings: { checkInputA: 'MUSICBRAINZ_TRACKID', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: ''  } },
+		{ name: 'By MBID', settings: { checkInputA: 'MUSICBRAINZ_TRACKID', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: '' } },
 		{ name: 'sep' },
 		{ name: 'By Genre', settings: { checkInputA: globTags.genre, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Style', settings: { checkInputA: globTags.style, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
@@ -59,7 +59,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ name: 'sep' },
 		{ name: 'By Album', settings: { checkInputA: 'ALBUM', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Album version', settings: { checkInputA: 'ALBUM', checkInputB: 'COMMENT', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: '' } },
-		{ name: 'By Path', settings: { checkInputA: '$directory(%PATH%,3)\\$directory(%PATH%,2)', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: ''  } },
+		{ name: 'By Path', settings: { checkInputA: '$directory(%PATH%,3)\\$directory(%PATH%,2)', checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true, sortBias: '' } },
 	]), { func: isJSON }],
 	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
@@ -69,131 +69,139 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Show Duplicates': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Show duplicates', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Show duplicates', function (mask) {
-		if (mask === MK_SHIFT) {
-			settingsMenu(
-				this, true, ['buttons_playlist_show_duplicates.js'],
-				{
-					bAdvTitle: { popup: globRegExp.title.desc },
-					bMultiple: {
-						popup: 'When this option is enabled, multi-value tags are parsed independently and a track may be considered a duplicate if at least one of those values match (instead of requiring all to match in the same order).\n\nSo for \'[ARTIST, DATE, TITLE]\' tags, these are duplicates with this option enabled:\n' +
-							'\nJimi Hendrix - 1969 - Blabla' +
-							'\nJimi Hendrix experience, Jimi Hendrix - 1969 - Blabla' +
-							'\nBand of Gypys, Jimi Hendrix - 1969 - Blabla' +
-							'\n\nWith multi-value parsing disabled, these are considered non-duplicated tracks since not all artists match.'
-					}
-				},
-				void (0),
-				(menu) => {
-					menu.newSeparator();
-					const subMenuName = menu.newMenu('Presets');
-					JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
-						// Add separators
-						if (menu.isSeparator(entry)) {
-							menu.newSeparator(subMenuName);
-						} else {
-							menu.newEntry({
-								menuName: subMenuName, entryText: entry.name, func: () => {
-									for (const key in entry.settings) {
-										this.buttonsProperties[key][1] = entry.settings[key];
-									}
-									overwriteProperties(this.buttonsProperties);
-								}
-							});
-							menu.newCheckMenuLast(
-								() => Object.keys(entry.settings).every(
-									(key) => this.buttonsProperties[key][1] === entry.settings[key]
-								)
-							);
+	'Show Duplicates': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('Show duplicates', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: 'Show duplicates',
+		func: function (mask) {
+			if (mask === MK_SHIFT) {
+				settingsMenu(
+					this, true, ['buttons_playlist_show_duplicates.js'],
+					{
+						bAdvTitle: { popup: globRegExp.title.desc },
+						bMultiple: {
+							popup: 'When this option is enabled, multi-value tags are parsed independently and a track may be considered a duplicate if at least one of those values match (instead of requiring all to match in the same order).\n\nSo for \'[ARTIST, DATE, TITLE]\' tags, these are duplicates with this option enabled:\n' +
+								'\nJimi Hendrix - 1969 - Blabla' +
+								'\nJimi Hendrix experience, Jimi Hendrix - 1969 - Blabla' +
+								'\nBand of Gypys, Jimi Hendrix - 1969 - Blabla' +
+								'\n\nWith multi-value parsing disabled, these are considered non-duplicated tracks since not all artists match.'
 						}
-					});
-					menu.newSeparator(subMenuName);
-					_createSubMenuEditEntries(menu, subMenuName, {
-						name: 'Show Duplicates',
-						list: JSON.parse(this.buttonsProperties.presets[1]),
-						defaults: JSON.parse(this.buttonsProperties.presets[3]),
-						input: () => {
-							const entry = {
-								settings: {
-									checkInputA: this.buttonsProperties.checkInputA[1],
-									checkInputB: this.buttonsProperties.checkInputB[1],
-									checkInputC: this.buttonsProperties.checkInputC[1],
-									bAdvTitle: this.buttonsProperties.bAdvTitle[1],
-									bMultiple: this.buttonsProperties.bMultiple[1],
-									sortBias: this.buttonsProperties.sortBias[1]
-								},
-							};
-							return entry;
-						},
-						bNumbered: true,
-						bCopyCurrent: true,
-						onBtnUp: (presets) => {
-							this.buttonsProperties.presets[1] = JSON.stringify(presets);
-							overwriteProperties(this.buttonsProperties);
-						}
-					});
-				}
-			).btn_up(this.currX, this.currY + this.currH);
-		} else {
-			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => { return key.startsWith('check'); })
-				.map((key) => { return this.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
-			const sortBias = this.buttonsProperties.sortBias[1];
-			const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
-			const bMultiple = this.buttonsProperties.bMultiple[1];
-			if (mask === MK_CONTROL) {
-				removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
-			} else if (mask === (MK_SHIFT + MK_CONTROL)) {
-				const menu = new _menu();
-				menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
-				menu.newSeparator();
-				JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
-					// Add separators
-					if (menu.isSeparator(entry)) {
+					},
+					void (0),
+					(menu) => {
 						menu.newSeparator();
-					} else {
-						menu.newEntry({
-							entryText: entry.name, func: () => {
-								const preset = { ...entry.settings };
-								['checkInputA', 'checkInputB', 'checkInputC'].forEach((k) => {
-									if (Object.hasOwn(preset, k) && preset[k].length) {
-										if (!Object.hasOwn(preset, 'checkKeys')) { preset.checkKeys = []; }
-										preset.checkKeys.push(preset[k]);
-										delete preset[k];
+						const subMenuName = menu.newMenu('Presets');
+						JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+							// Add separators
+							if (menu.isSeparator(entry)) {
+								menu.newSeparator(subMenuName);
+							} else {
+								menu.newEntry({
+									menuName: subMenuName, entryText: entry.name, func: () => {
+										for (const key in entry.settings) {
+											this.buttonsProperties[key][1] = entry.settings[key];
+										}
+										overwriteProperties(this.buttonsProperties);
 									}
 								});
-								showDuplicates({ checkKeys, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false, ...preset });
+								menu.newCheckMenuLast(
+									() => Object.keys(entry.settings).every(
+										(key) => this.buttonsProperties[key][1] === entry.settings[key]
+									)
+								);
+							}
+						});
+						menu.newSeparator(subMenuName);
+						_createSubMenuEditEntries(menu, subMenuName, {
+							name: 'Show Duplicates',
+							list: JSON.parse(this.buttonsProperties.presets[1]),
+							defaults: JSON.parse(this.buttonsProperties.presets[3]),
+							input: () => {
+								const entry = {
+									settings: {
+										checkInputA: this.buttonsProperties.checkInputA[1],
+										checkInputB: this.buttonsProperties.checkInputB[1],
+										checkInputC: this.buttonsProperties.checkInputC[1],
+										bAdvTitle: this.buttonsProperties.bAdvTitle[1],
+										bMultiple: this.buttonsProperties.bMultiple[1],
+										sortBias: this.buttonsProperties.sortBias[1]
+									},
+								};
+								return entry;
+							},
+							bNumbered: true,
+							bCopyCurrent: true,
+							onBtnUp: (presets) => {
+								this.buttonsProperties.presets[1] = JSON.stringify(presets);
+								overwriteProperties(this.buttonsProperties);
 							}
 						});
 					}
-				});
-				menu.btn_up(this.currX, this.currY + this.currH);
+				).btn_up(this.currX, this.currY + this.currH);
 			} else {
-				showDuplicates({ checkKeys, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+				const checkKeys = Object.keys(this.buttonsProperties).filter((key) => { return key.startsWith('check'); })
+					.map((key) => { return this.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
+				const sortBias = this.buttonsProperties.sortBias[1];
+				const bAdvTitle = this.buttonsProperties.bAdvTitle[1];
+				const bMultiple = this.buttonsProperties.bMultiple[1];
+				if (mask === MK_CONTROL) {
+					removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+				} else if (mask === (MK_SHIFT + MK_CONTROL)) {
+					const menu = new _menu();
+					menu.newEntry({ entryText: 'Select a preset to apply:', flags: MF_GRAYED });
+					menu.newSeparator();
+					JSON.parse(this.buttonsProperties.presets[1]).forEach((entry) => {
+						// Add separators
+						if (menu.isSeparator(entry)) {
+							menu.newSeparator();
+						} else {
+							menu.newEntry({
+								entryText: entry.name, func: () => {
+									const preset = { ...entry.settings };
+									['checkInputA', 'checkInputB', 'checkInputC'].forEach((k) => {
+										if (Object.hasOwn(preset, k) && preset[k].length) {
+											if (!Object.hasOwn(preset, 'checkKeys')) { preset.checkKeys = []; }
+											preset.checkKeys.push(preset[k]);
+											delete preset[k];
+										}
+									});
+									showDuplicates({ checkKeys, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false, ...preset });
+								}
+							});
+						}
+					});
+					menu.btn_up(this.currX, this.currY + this.currH);
+				} else {
+					showDuplicates({ checkKeys, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+				}
 			}
-		}
-	}, null, void (0), (parent) => {
-		const checkKeys = Object.keys(parent.buttonsProperties).filter((key) => { return key.startsWith('check'); })
-			.map((key) => { return parent.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
-		const bShift = utils.IsKeyPressed(VK_SHIFT);
-		const bCtrl = utils.IsKeyPressed(VK_CONTROL);
-		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		const preset =JSON.parse(parent.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
-			.find((entry) =>
-				Object.keys(entry.settings).every(
-					(key) => !Object.hasOwn(parent.buttonsProperties, key) || parent.buttonsProperties[key][1] === entry.settings[key]
-				)
-			);
-		let info = 'Show duplicates according to equal:';
-		info += preset ? '\nName:\t' + preset.name : '';
-		info += '\nTF:\t' + checkKeys.join('|').cut(50);
-		info += '\nBias:\t' + parent.buttonsProperties.sortBias[1].cut(50);
-		info += '\nRegExp:\t' + parent.buttonsProperties.bAdvTitle[1];
-		if (bShift || bCtrl || bInfo) {
-			info += '\n-----------------------------------------------------';
-			info += '\n(Ctrl + L. Click to remove duplicates)';
-			info += '\n(Shift + L. Click to open config menu)';
-			info += '\n(Shift + Ctrl + L. Click to show duplicates by preset)';
-		}
-		return info;
-	}, prefix, newButtonsProperties, chars.duplicates, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
+		},
+		description: function () {
+			const checkKeys = Object.keys(this.buttonsProperties).filter((key) => { return key.startsWith('check'); })
+				.map((key) => { return this.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bCtrl = utils.IsKeyPressed(VK_CONTROL);
+			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const preset = JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
+				.find((entry) =>
+					Object.keys(entry.settings).every(
+						(key) => !Object.hasOwn(this.buttonsProperties, key) || this.buttonsProperties[key][1] === entry.settings[key]
+					)
+				);
+			let info = 'Show duplicates according to equal:';
+			info += preset ? '\nName:\t' + preset.name : '';
+			info += '\nTF:\t' + checkKeys.join('|').cut(50);
+			info += '\nBias:\t' + this.buttonsProperties.sortBias[1].cut(50);
+			info += '\nRegExp:\t' + this.buttonsProperties.bAdvTitle[1];
+			if (bShift || bCtrl || bInfo) {
+				info += '\n-----------------------------------------------------';
+				info += '\n(Ctrl + L. Click to remove duplicates)';
+				info += '\n(Shift + L. Click to open config menu)';
+				info += '\n(Shift + Ctrl + L. Click to show duplicates by preset)';
+			}
+			return info;
+		},
+		prefix,	buttonsProperties: newButtonsProperties,
+		icon: chars.duplicates,
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/02/25
+//13/02/25
 
 /*
 	Output device selector
@@ -34,88 +34,118 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Volume control mute': new ThemedButton({ x: 0, y: 0, w: 0, h: 22 }, '', function () {
-		fb.VolumeMute();
-	}, null, void (0), () => fb.Volume > -100 ? 'Mute' : 'Unmute', prefix, newButtonsProperties, () => fb.Volume > -100 ? chars.speaker : chars.speakerOff, void (0), void (0), void (0), void (0), { scriptName: 'Playlist-Tools-SMP', version }),
-	'Volume control down': new ThemedButton({ x: 0, y: 0, w: 0, h: 22 }, '', function () {
-		fb.VolumeDown();
-	}, null, void (0), () => 'Volume down', prefix, newButtonsProperties, chars.minus, void (0), void (0), {
-		on_mouse_lbtn_down: function () {
-			setTimeout(() => {
-				if (this.state === buttonStates.down) {
-					const id = setInterval(() => {
-						if (this.state === buttonStates.down) { fb.VolumeDown(); }
-						else { clearInterval(id); }
-					}, 60);
-				}
-			}, 100);
+	'Volume control mute': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: 0, h: 22 },
+		func: function () {
+			fb.VolumeMute();
+		},
+		description: () => fb.Volume > -100 ? 'Mute' : 'Unmute',
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: () => fb.Volume > -100 ? chars.speaker : chars.speakerOff,
+	}),
+	'Volume control down': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: 0, h: 22 },
+		func: function () {
+			fb.VolumeDown();
+		},
+		description: () => 'Volume down',
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.minus,
+		listener: {
+			on_mouse_lbtn_down: function () {
+				setTimeout(() => {
+					if (this.state === buttonStates.down) {
+						const id = setInterval(() => {
+							if (this.state === buttonStates.down) { fb.VolumeDown(); }
+							else { clearInterval(id); }
+						}, 60);
+					}
+				}, 100);
+			}
 		}
-	}, void (0), { scriptName: 'Playlist-Tools-SMP', version }),
-	'Volume control up': new ThemedButton({ x: 0, y: 0, w: 0, h: 22 }, '', function () {
-		fb.VolumeUp();
-	}, null, void (0), () => 'Volume up', prefix, newButtonsProperties, chars.plus, void (0), void (0), {
-		on_mouse_lbtn_down: function () {
-			setTimeout(() => {
-				if (this.state === buttonStates.down) {
-					const id = setInterval(() => {
-						if (this.state === buttonStates.down) { fb.VolumeUp(); }
-						else { clearInterval(id); }
-					}, 60);
-				}
-			}, 100);
+	}),
+	'Volume control up': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: 0, h: 22 },
+		func: function () {
+			fb.VolumeUp();
+		},
+		description: () => 'Volume up',
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.plus,
+		listener: {
+			on_mouse_lbtn_down: function () {
+				setTimeout(() => {
+					if (this.state === buttonStates.down) {
+						const id = setInterval(() => {
+							if (this.state === buttonStates.down) { fb.VolumeUp(); }
+							else { clearInterval(id); }
+						}, 60);
+					}
+				}, 100);
+			}
 		}
-	}, void (0), { scriptName: 'Playlist-Tools-SMP', version }),
-	'Volume display': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('100', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 8 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, () => (100 + fb.Volume).toFixed(0), function () {
-		if (!this.isInput) { this.startInput(); }
-		else { this.applyInput(); }
-	}, null, _gdiFont(globFonts.button.name, globFonts.button.size * 1.2 * buttonsBar.config.textScale, FontStyle.Bold), () => 'Current volume: ' + fb.Volume.toFixed(2) + ' dBs', prefix, newButtonsProperties, null, void (0), {
-		volumeFunc: () => (100 + fb.Volume).toFixed(0),
-		inputFunc: () => '|',
-		getVolume: (parent, v) => Math.max(0, Math.min(Number(v), 100)),
-		startInput: function () {
-			this.isInput = true;
-			this.text = this.inputFunc;
-			this.setTimeout();
+	}),
+	'Volume display': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('100', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 8 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: () => (100 + fb.Volume).toFixed(0),
+		func: function () {
+			if (!this.isInput) { this.startInput(); }
+			else { this.applyInput(); }
 		},
-		applyInput: function () {
-			this.clearTimeout();
-			if (isFunction(this.text)) { return; }
-			const volume = this.getVolume(this.text);
-			this.isInput = false;
-			this.text = this.volumeFunc;
-			fb.Volume = volume - 100;
+		gFont: _gdiFont(globFonts.button.name, globFonts.button.size * 1.2 * buttonsBar.config.textScale, FontStyle.Bold),
+		description: () => 'Current volume: ' + fb.Volume.toFixed(2) + ' dBs',
+		prefix, buttonsProperties: newButtonsProperties,
+		variables: {
+			volumeFunc: () => (100 + fb.Volume).toFixed(0),
+			inputFunc: () => '|',
+			getVolume: (parent, v) => Math.max(0, Math.min(Number(v), 100)),
+			startInput: function () {
+				this.isInput = true;
+				this.text = this.inputFunc;
+				this.setTimeout();
+			},
+			applyInput: function () {
+				this.clearTimeout();
+				if (isFunction(this.text)) { return; }
+				const volume = this.getVolume(this.text);
+				this.isInput = false;
+				this.text = this.volumeFunc;
+				fb.Volume = volume - 100;
+			},
+			abortInput: function () {
+				if (isFunction(this.text)) { this.isInput = false; return; }
+				else if (this.text.length) { this.applyInput(); }
+			},
+			inputTimeout: null,
+			setTimeout: function () {
+				this.inputTimeout = setTimeout(() => this.isInput && this.abortInput(), 2000);
+			},
+			clearTimeout: function () {
+				if (this.inputTimeout) { clearTimeout(this.inputTimeout); this.inputTimeout = null; }
+			}
 		},
-		abortInput: function () {
-			if (isFunction(this.text)) { this.isInput = false; return; }
-			else if (this.text.length) { this.applyInput(); }
-		},
-		inputTimeout: null,
-		setTimeout: function () {
-			this.inputTimeout = setTimeout(() => this.isInput && this.abortInput(), 2000);
-		},
-		clearTimeout: function () {
-			if (this.inputTimeout) { clearTimeout(this.inputTimeout); this.inputTimeout = null; }
-		}
-	}, {
-		on_volume_change: () => window.Repaint(),
-		on_key_up: function (parent, vkey) {
-			if (this.isInput && vkey === VK_RETURN) { this.applyInput(); }
-		},
-		on_char: function (parent, code) {
-			if (this.isInput) {
-				const char = String.fromCharCode(code);
-				if (/\d/.test(char)) {
-					if (isFunction(this.text)) { this.text = ''; }
-					const volume = this.getVolume(this.text + '' + String.fromCharCode(code));
-					this.text = volume.toFixed(0);
-					if (volume === 100 || volume === 0) { this.abortInput(); }
-					else {
-						window.Repaint();
-						this.clearTimeout();
-						this.setTimeout();
+		listener: {
+			on_volume_change: () => window.Repaint(),
+			on_key_up: function (parent, vkey) {
+				if (this.isInput && vkey === VK_RETURN) { this.applyInput(); }
+			},
+			on_char: function (parent, code) {
+				if (this.isInput) {
+					const char = String.fromCharCode(code);
+					if (/\d/.test(char)) {
+						if (isFunction(this.text)) { this.text = ''; }
+						const volume = this.getVolume(this.text + '' + String.fromCharCode(code));
+						this.text = volume.toFixed(0);
+						if (volume === 100 || volume === 0) { this.abortInput(); }
+						else {
+							window.Repaint();
+							this.clearTimeout();
+							this.setTimeout();
+						}
 					}
 				}
 			}
-		}
-	}, void (0), { scriptName: 'Playlist-Tools-SMP', version }),
+		},
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });

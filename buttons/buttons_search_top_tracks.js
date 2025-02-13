@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//13/02/25
 
 /*
 	Top Tracks
@@ -28,35 +28,43 @@ include('..\\main\\search\\top_tracks.js');
 var prefix = 'tt'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try {window.DefineScript('Top Tracks Button', {author:'regorxxx', version, features: {drag_n_drop: false}});} catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Top Tracks Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	playlistLength:	['Length of playlist', 25, {greater: 0, func: isInt}, 25],
-	forcedQuery: 	['Forced query to pre-filter database', globQuery.notLowRating, {func: (query) => {return checkQuery(query, true);}}, globQuery.notLowRating],
-	bIconMode:		['Icon-only mode', false, {func: isBoolean}, false]
+	playlistLength: ['Length of playlist', 25, { greater: 0, func: isInt }, 25],
+	forcedQuery: ['Forced query to pre-filter database', globQuery.notLowRating, { func: (query) => { return checkQuery(query, true); } }, globQuery.notLowRating],
+	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Top Tracks': new ThemedButton({x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) /_scale(buttonsBar.config.scale), h: 22}, (parent) => {return 'Top ' + parent.buttonsProperties.playlistLength[1] + ' Tracks';}, function (mask) {
-		if (mask === MK_SHIFT) {
-			settingsMenu(this, true, ['buttons_search_top_tracks.js']).btn_up(this.currX, this.currY + this.currH);
-		} else {
-			topTracks({playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1], bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false});
-		}
-	}, null, void(0), (parent) => {
-		const bShift = utils.IsKeyPressed(VK_SHIFT);
-		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		let info = 'Playlist with Tracks most played (without duplicates).';
-		info += '\nTracks:\t' + parent.buttonsProperties.playlistLength[1];
-		info += '\nFilter:\t' + parent.buttonsProperties.forcedQuery[1];
-		if (bShift || bInfo) {
-			info += '\n-----------------------------------------------------';
-			info += '\n(Shift + L. Click to open config menu)';
-		}
-		return info;
-	}, prefix, newButtonsProperties, chars.heartOff, void(0), void(0), void(0), void(0), {scriptName: 'Playlist-Tools-SMP', version}),
+	'Top Tracks': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('Top ' + newButtonsProperties.playlistLength[1] + ' Tracks', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: function () { return 'Top ' + this.buttonsProperties.playlistLength[1] + ' Tracks'; },
+		func: function (mask) {
+			if (mask === MK_SHIFT) {
+				settingsMenu(this, true, ['buttons_search_top_tracks.js']).btn_up(this.currX, this.currY + this.currH);
+			} else {
+				topTracks({ playlistLength: Number(this.buttonsProperties.playlistLength[1]), forcedQuery: this.buttonsProperties.forcedQuery[1], bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+			}
+		},
+		description: function () {
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			let info = 'Playlist with Tracks most played (without duplicates).';
+			info += '\nTracks:\t' + this.buttonsProperties.playlistLength[1];
+			info += '\nFilter:\t' + this.buttonsProperties.forcedQuery[1];
+			if (bShift || bInfo) {
+				info += '\n-----------------------------------------------------';
+				info += '\n(Shift + L. Click to open config menu)';
+			}
+			return info;
+		},
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.heartOff,
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });

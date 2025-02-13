@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//13/05/25
 
 /*
 	Quickmatch same....
@@ -65,7 +65,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		},
 		{
 			name: 'By Folksonomy',
-			tf:  [...new Set([globTags.folksonomy, 'FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', globTags.locale, 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'])]
+			tf: [...new Set([globTags.folksonomy, 'FOLKSONOMY', 'OCCASION', 'ALBUMOCCASION', globTags.locale, 'LOCALE', 'LOCALE LAST.FM', 'DATE', 'LOCALE WORLD MAP'])]
 		},
 		{
 			name: 'By Mood & Theme(s)',
@@ -82,75 +82,81 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Quickmatch': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Quickmatch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Quickmatch', function (mask) {
-		if (mask === MK_SHIFT) {
-			const menu = settingsMenu(
-				this, true, ['buttons_search_quickmatch.js'], void (0), void (0),
-				(menu) => {
-					menu.newSeparator();
-					_createSubMenuEditEntries(menu, void (0), {
-						name: 'Quickmatch',
-						list: JSON.parse(this.buttonsProperties.entries[1]),
-						defaults: JSON.parse(this.buttonsProperties.entries[3]),
-						input: () => {
-							const entry = {
-								tf: Input.json('array strings', '',
-									'Enter tag names:\n\n' +
-									'Ex:\n' + JSON.stringify(['ARTIST', 'ALBUM ARTIST'])
-									, 'Quickmatch', JSON.stringify(['ARTIST', 'ALBUM ARTIST']), void (0), true),
-							};
-							if (!entry.tf) { return; }
-							return entry;
-						},
-						bNumbered: true,
-						onBtnUp: (entries) => {
-							this.buttonsProperties.entries[1] = JSON.stringify(entries);
-							overwriteProperties(this.buttonsProperties);
-						}
-					});
-				}
-			);
-			menu.btn_up(this.currX, this.currY + this.currH);
-		} else {
-			quickmatchMenu.bind(this)().btn_up(this.currX, this.currY + this.currH);
-		}
-	}, null, void (0), (parent) => {
-		const bShift = utils.IsKeyPressed(VK_SHIFT);
-		const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-		const sel = fb.GetFocusItem();
-		let info = '';
-		if (sel) {
-			let tfo = fb.TitleFormat(
-				'$puts(info,' + globTags.artist + ' / %TRACK% - %TITLE%)' +
-				'Current track:	$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
-				'$crlf()Date:		' + _b(globTags.date) +
-				'$puts(info,' + _b(_t(globTags.genre)) + ')' +
-				'$crlf()Genres:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
-				// ['Album Genre AllMusic', 'Artist Genre AllMusic', 'Album Genre Wikipedia', 'Artist Genre Wikipedia'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ') +
-				'$puts(info,' + _b(_t(globTags.style)) + ')' +
-				'$crlf()Styles:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
-				'$puts(info,' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%])' +
-				'$crlf()Moods:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))'
-				// ['Album Mood AllMusic', 'Album Theme AllMusic'].map((t) => parent.bioTags[t]).flat(Infinity).filter(Boolean).join(', ')
-			);
-			info += tfo.EvalWithMetadb(sel);
-		} else { info += 'No track selected'; }
-		info += '\nBio tags:	' + (parent.buttonsProperties.bBioTags[1]
-			? Object.keys(parent.bioTags).length
-				? 'Found'
-				: 'Not found'
-			: 'Disabled');
-		info += parent.bioSelectionMode === 'Prefer nowplaying' ? ' (now playing)' : ' (selection)';
-		if (bShift || bInfo) {
-			info += '\n-----------------------------------------------------';
-			info += '\n(Shift + L. Click to open config menu)';
-		}
-		return info;
-	}, '', newButtonsProperties, chars.search, void (0),
-	{ bioSelectionMode: 'Prefer nowplaying', bioTags: {} },
-	lastfmListeners,
-	void (0), { scriptName: 'Playlist-Tools-SMP', version }
-	),
+	'Quickmatch': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('Quickmatch', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: 'Quickmatch',
+		func: function (mask) {
+			if (mask === MK_SHIFT) {
+				const menu = settingsMenu(
+					this, true, ['buttons_search_quickmatch.js'], void (0), void (0),
+					(menu) => {
+						menu.newSeparator();
+						_createSubMenuEditEntries(menu, void (0), {
+							name: 'Quickmatch',
+							list: JSON.parse(this.buttonsProperties.entries[1]),
+							defaults: JSON.parse(this.buttonsProperties.entries[3]),
+							input: () => {
+								const entry = {
+									tf: Input.json('array strings', '',
+										'Enter tag names:\n\n' +
+										'Ex:\n' + JSON.stringify(['ARTIST', 'ALBUM ARTIST'])
+										, 'Quickmatch', JSON.stringify(['ARTIST', 'ALBUM ARTIST']), void (0), true),
+								};
+								if (!entry.tf) { return; }
+								return entry;
+							},
+							bNumbered: true,
+							onBtnUp: (entries) => {
+								this.buttonsProperties.entries[1] = JSON.stringify(entries);
+								overwriteProperties(this.buttonsProperties);
+							}
+						});
+					}
+				);
+				menu.btn_up(this.currX, this.currY + this.currH);
+			} else {
+				quickmatchMenu.bind(this)().btn_up(this.currX, this.currY + this.currH);
+			}
+		},
+		description: function () {
+			const bShift = utils.IsKeyPressed(VK_SHIFT);
+			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const sel = fb.GetFocusItem();
+			let info = '';
+			if (sel) {
+				let tfo = fb.TitleFormat(
+					'$puts(info,' + globTags.artist + ' / %TRACK% - %TITLE%)' +
+					'Current track:	$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+					'$crlf()Date:		' + _b(globTags.date) +
+					'$puts(info,' + _b(_t(globTags.genre)) + ')' +
+					'$crlf()Genres:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+					// ['Album Genre AllMusic', 'Artist Genre AllMusic', 'Album Genre Wikipedia', 'Artist Genre Wikipedia'].map((t) => this.bioTags[t]).flat(Infinity).filter(Boolean).join(', ') +
+					'$puts(info,' + _b(_t(globTags.style)) + ')' +
+					'$crlf()Styles:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))' +
+					'$puts(info,' + _b(_t(globTags.mood)) + '[,%THEME%][,%ALBUMMOOD%])' +
+					'$crlf()Moods:		$ifgreater($len($get(info)),50,$cut($get(info),50)...,$get(info))'
+					// ['Album Mood AllMusic', 'Album Theme AllMusic'].map((t) => this.bioTags[t]).flat(Infinity).filter(Boolean).join(', ')
+				);
+				info += tfo.EvalWithMetadb(sel);
+			} else { info += 'No track selected'; }
+			info += '\nBio tags:	' + (this.buttonsProperties.bBioTags[1]
+				? Object.keys(this.bioTags).length
+					? 'Found'
+					: 'Not found'
+				: 'Disabled');
+			info += this.bioSelectionMode === 'Prefer nowplaying' ? ' (now playing)' : ' (selection)';
+			if (bShift || bInfo) {
+				info += '\n-----------------------------------------------------';
+				info += '\n(Shift + L. Click to open config menu)';
+			}
+			return info;
+		},
+		prefix, buttonsProperties: newButtonsProperties,
+		icon: chars.search,
+		variables: { bioSelectionMode: 'Prefer nowplaying', bioTags: {} },
+		listener: lastfmListeners,
+		update: { scriptName: 'Playlist-Tools-SMP', version }
+	}),
 });
 
 function quickmatchMenu() {
@@ -207,8 +213,8 @@ function quickmatchMenu() {
 		});
 		// Similar artists tags
 		[
-			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist},
-			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist}
+			{ file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist },
+			{ file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist }
 		].forEach((option) => {
 			const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + option.file;
 			if (_isFile(path)) {

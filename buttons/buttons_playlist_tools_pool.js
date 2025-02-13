@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/12/24
+//13/02/25
 
 /*
 	Playlist Tools Pools
@@ -32,43 +32,50 @@ newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
 
 addButton({
-	'Playlist Tools Pools': new ThemedButton({ x: 0, y: 0, w: _gr.CalcTextWidth('Pools', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 }, 'Pools', function () {
-		if (isPlaylistToolsLoaded()) {
-			const configMenu = new _menu();
-			const scriptDefaultArgs = { properties: [{ ...menu_properties }, () => { return menu_prefix; }] };
-			configMenu.newCondEntry({
-				entryText: 'Pools', condFunc: (args = { ...scriptDefaultArgs, ...defaultArgs }) => {
-					args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
-					let propPools = JSON.parse(args.properties['pools'][1]);
-					configMenu.newEntry({ entryText: 'Playlist creation:', func: null, flags: MF_GRAYED });
-					configMenu.newSeparator();
-					// List
-					propPools.forEach((pool) => {
-						if (menu.isSeparator(pool)) { // Create separators
-							configMenu.newSeparator();
-						} else {
-							configMenu.newEntry({
-								entryText: pool.name, func: () => {
-									menu.btn_up(void (0), void (0), void (0), 'Pools\\' + pool.name); // Don't clear menu on last call
-								}
-							});
-						}
-					});
-					if (!propPools.length) { configMenu.newEntry({ entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
-				}
-			});
-			configMenu.btn_up(this.currX, this.currY + this.currH);
-		} else { fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
-	}, null, void (0), () => {
-		return (isPlaylistToolsLoaded()
-			? 'Executes Playlist Tools Menu pool' +
-			(
-				getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
-					? '\n-----------------------------------------------------\n(L. Click to show list)'
-					: ''
-			)
-			: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
-	}, prefix, newButtonsProperties, chars.music),
+	'Playlist Tools Pools': new ThemedButton({
+		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth('Pools', _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 30 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
+		text: 'Pools',
+		func: function () {
+			if (isPlaylistToolsLoaded()) {
+				const configMenu = new _menu();
+				const scriptDefaultArgs = { properties: [{ ...menu_properties }, () => { return menu_prefix; }] };
+				configMenu.newCondEntry({
+					entryText: 'Pools', condFunc: (args = { ...scriptDefaultArgs, ...defaultArgs }) => {
+						args.properties = getPropertiesPairs(args.properties[0], args.properties[1](), 0); // Update properties from the panel. Note () call on second arg
+						let propPools = JSON.parse(args.properties['pools'][1]);
+						configMenu.newEntry({ entryText: 'Playlist creation:', func: null, flags: MF_GRAYED });
+						configMenu.newSeparator();
+						// List
+						propPools.forEach((pool) => {
+							if (menu.isSeparator(pool)) { // Create separators
+								configMenu.newSeparator();
+							} else {
+								configMenu.newEntry({
+									entryText: pool.name, func: () => {
+										menu.btn_up(void (0), void (0), void (0), 'Pools\\' + pool.name); // Don't clear menu on last call
+									}
+								});
+							}
+						});
+						if (!propPools.length) { configMenu.newEntry({ entryText: '(none saved yet)', func: null, flags: MF_GRAYED }); }
+					}
+				});
+				configMenu.btn_up(this.currX, this.currY + this.currH);
+			} else { fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
+		},
+		description: function () {
+			return (isPlaylistToolsLoaded()
+				? 'Executes Playlist Tools Menu pool' +
+				(
+					getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
+						? '\n-----------------------------------------------------\n(L. Click to show list)'
+						: ''
+				)
+				: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
+		},
+		prefix, button: newButtonsProperties,
+		icon: chars.music
+	}),
 });
 
 // Helpers
