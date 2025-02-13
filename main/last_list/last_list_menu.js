@@ -1,5 +1,5 @@
 'use strict';
-//15/11/24
+//13/02/25
 
 /* exported _lastListMenu */
 
@@ -20,7 +20,10 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 	const parent = this.lastList;
 	const cache = this.cache || { lastDate: '', lastTag: '', lastArtist: '', lastURL: '' };
 	const bioTags = this.buttonsProperties.bBioTags[1] ? this.bioTags || {} : {};
-	if (bSimulate) { return _lastListMenu.bind({ sel: null })({ bSimulate: false, bDynamicMenu: true }); }
+	if (bSimulate) {
+		this.sel = null;
+		return _lastListMenu.bind(this)({ bSimulate: false, bDynamicMenu: true });
+	}
 	const menu = new _menu();
 	// Get current selection and metadata
 	const sel = this.sel || plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;

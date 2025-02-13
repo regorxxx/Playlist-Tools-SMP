@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//13/02/25
 
 /* exported mainMenuSMP, executeByName */
 
@@ -226,7 +226,8 @@
 													if (answer === popup.no) { return; }
 												}
 												if (entry.func(idx)) {
-													fb.RegisterMainMenuCommand(onMainMenuDynamicEntries.length, onMainMenuEntries[idx].name, onMainMenuEntries[idx].name);
+													const entryName = 'Playlist Tools: ' + onMainMenuEntries[idx].name.split('\t').map((s) => s.cut(70)).join('\t');
+													fb.RegisterMainMenuCommand(onMainMenuDynamicEntries.length, entryName, onMainMenuEntries[idx].name);
 													onMainMenuDynamicEntries.push({ ...onMainMenuEntries[idx], onMainMenuEntries: true, parent: scriptName });
 													menu_properties['mainMenuSMP'][1] = JSON.stringify(mainMenuSMP);
 													overwriteMenuProperties(); // Updates panel
@@ -305,15 +306,7 @@
 									} else {
 										deleteMainMenuDynamic(scriptName);
 										exportMainMenuDynamic();
-										mainMenuSMP.forEach((entry, index) => {
-											if (entry) {
-												onMainMenuEntries[index + 1] = entry;
-												if (!menu_panelProperties.bDynamicMenus[1]) {
-													fb.RegisterMainMenuCommand(index, entry.name, entry.name);
-													onMainMenuDynamicEntries.push({ ...entry, parent: scriptName });
-												}
-											}
-										});
+										createMainMenuDynamic();
 									}
 								}, flags
 							});
