@@ -1,0 +1,8 @@
+﻿Selects tracks which fit into desired time, having into account crossfade
+between tracks: https://hydrogenaud.io/index.php?topic=127167
+
+Entries marked with '(crossfade)' show an input box where crossfade time
+can be specified in seconds (float numbers allowed).
+
+Any other entry just considers the track length in seconds. The predefined
+entry for random X minutes is based on the global playlist size set.
