@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/05/24
+//22/02/25
 
 /*
 	Add Skip Tag From Playback
@@ -16,14 +16,21 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 	if (typeof selItem !== 'undefined' && selItem !== null) {
 		const countItems = selItem.Count;
 		if (countItems === 0) {
-			console.log('No tracks selected.');
+			console.log('Skip Tag: No tracks selected.');
 			return;
 		}
 		if (countItems > 1) {
-			console.log('More than 1 track selected, playback time can only be used for one track at once.');
+			console.log('Skip Tag: More than 1 track selected, playback time can only be used for one track at once.');
 			return;
 		}
 	} else { return; }
+	if (fb.PlaybackTime < 1) {
+		console.popup('Tried to add SKIP tag at beginning of track (0:00.00). Tagging has been skipped.', 'Skip Tag');
+		return;
+	} else if (fb.PlaybackTime >= fb.PlaybackLength) {
+		console.popup('Tried to add SKIP tag at end of track. Tagging has been skipped.', 'Skip Tag');
+		return;
+	}
 	let bAppend = utils.IsKeyPressed(0x10); // Append tag instead of replace when pressing shift
 	const currentPlayback = fb.PlaybackTime * 1000;
 	const time = new Date(currentPlayback).toUTCString().substring(20, 25) + '.00'; // doesn't care about ms
@@ -46,9 +53,9 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 	SKIP.push((bEnd ? '' : '-') + time);
 	selItem.UpdateFileInfoFromJSON(JSON.stringify([{ SKIP }]));
 	console.log(
-		(bAppend ? 'Adding' : 'Setting') +
-		' SKIP tag on current track: ' +
-		time + (bEnd ? ' (skips end)' : ' (skips start)') +
+		'Skip Tag - ' + (bAppend ? 'Adding' : 'Setting') +
+		' SKIP tag on current track:\n' +
+		'\t ' + time + (bEnd ? ' (skips end)' : ' (skips start)') +
 		' -> ' +
 		selItem[0].Path.split('\\').pop() + (selItem[0].SubSong !== 0 ? ',' + selItem[0].SubSong : '')
 	);
