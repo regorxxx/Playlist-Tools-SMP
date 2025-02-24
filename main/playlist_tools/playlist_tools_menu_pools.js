@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//24/02/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -92,7 +92,7 @@
 											const queryNoSort = stripSort(pool.query[key]);
 											const sortedBy = pool.query[key] === queryNoSort
 												? ''
-												: pool.query[key].replace(queryNoSort, '');
+												: pool.query[key].replace(queryNoSort, ''); // Includes space at left
 											pool.query[key] = '(' + queryNoSort + ') AND (' + defaultArgs.forcedQuery + ')' + sortedBy;
 										} else if (!pool.query[key].length) { // Empty uses forced query or ALL
 											pool.query[key] = defaultArgs.forcedQuery;
@@ -242,7 +242,7 @@
 											const queryNoSort = stripSort(pool.query[key]);
 											const sortedBy = pool.query[key] === queryNoSort
 												? ''
-												: pool.query[key].replace(queryNoSort, '');
+												: pool.query[key].replace(queryNoSort, ''); // Includes space at left
 											pool.query[key] = '(' + queryNoSort + ') AND (' + defaultArgs.forcedQuery + ')' + sortedBy;
 										} else if (!pool.query[key].length) { // Empty uses forced query or ALL
 											pool.query[key] = defaultArgs.forcedQuery;
