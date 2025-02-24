@@ -70,6 +70,7 @@
 - Selection manipulation\Select (by time): new tool to set selection by specified time (rounded to tracks actual time). As 'Selection manipulation\Select (# tracks)' it also allows to select half, a third or a quarter of the total time of a playlist, random X minutes, or next X minutes. There are also additional entries to take into consideration crossfade between tracks.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
+- Script Integration\Add SKIP tag at current playback: added warnings when trying to add SKIP tag to the end of start of a track.
 - Buttons: new 'utils_volume' button which may be used to display and control foobar2000 volume.
 - Buttons: 'utils_main_menu' button now has additional settings to save and handle button states, either internally or by main menu checks.
 - Buttons: added more presets to remove/show duplicates and filter playlist buttons.
