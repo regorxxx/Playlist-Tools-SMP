@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/02/25
+//26/02/25
 
 /* exported dynamicTags, numericTags, cyclicTags, keyTags, sanitizeTagIds, sanitizeTagValIds, queryCombinations, queryReplaceWithCurrent, checkQuery, getHandleTags, getHandleListTags ,getHandleListTagsV2, getHandleListTagsTyped, cyclicTagsDescriptor, isQuery, fallbackTagsQuery */
 
@@ -128,7 +128,7 @@ function sanitizeTagValIds(val, bSpace = true) {
  */
 function fallbackTagsQuery(tag, value, logic = 'IS') {
 	return /%?ALBUM ARTIST%?/i.test(tag)
-		? '(ALBUM ARTIST PRESENT AND (ALBUM ARTIST ' + logic + ' ' + value + ')) OR (ALBUM ARTIST MISSING AND (ARTIST ' + logic + ' ' +  value + '))'
+		? '(ALBUM ARTIST PRESENT AND (ALBUM ARTIST ' + logic + ' ' + value + ')) OR (ALBUM ARTIST MISSING AND (ARTIST ' + logic + ' ' + value + '))'
 		: tag + ' ' + logic + ' ' + value;
 }
 
@@ -159,9 +159,10 @@ function queryReplaceWithCurrent(query, handle, tags = {}, options = { expansion
 	let bStatic = false;
 	if (/#MONTH#|#YEAR#|#DAY#/g.test(query)) {
 		const date = new Date();
-		query = query.replace(/#MONTH#/g, (date.getMonth() + 1).toString());
 		query = query.replace(/#YEAR#/g, date.getFullYear().toString());
+		query = query.replace(/#MONTH#/g, (date.getMonth() + 1).toString());
 		query = query.replace(/#DAY#/g, date.getDate().toString());
+		query = query.replace(/#NOW#/g, date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString() + '-' + date.getDate().toString());
 		bStatic = true;
 	}
 	// With handle
