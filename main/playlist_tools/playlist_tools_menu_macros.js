@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//28/02/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
 
@@ -39,7 +39,7 @@
 					'Duplicates and tag filtering\\Remove duplicates by title, artist, year',
 					'Query filtering\\Filter playlist by Rating > 2',
 					'Harmonic mix\\Harmonic mix from playlist',
-					'Select\\Select All',
+					'Select (# tracks)\\Select All',
 					'Advanced sort\\Incremental genre/styles (DynGenre)',
 					'Advanced sort\\Incremental key (Camelot Wheel)',
 					'Scatter by tags\\Scatter acoustic tracks',
@@ -72,7 +72,7 @@
 					'Dynamic Queries\\By... (query)',
 					'Duplicates and tag filtering\\Filter playlist by... (tags)',
 					'Query filtering\\Filter playlist by... (query)',
-					'Select\\Select All',
+					'Select (# tracks)\\Select All',
 					'Sort\\By... (expression)',
 					'Scatter by tags\\By... (tag-value)',
 					'Intercalate by tags\\By... (tag)',
@@ -90,12 +90,12 @@
 				{name: 'sep'},
 				{name: 'Report library tags errors', entry: [
 					'Standard Queries\\Entire library',
-					'Select\\Select All',
+					'Select (# tracks)\\Select All',
 					'Check tags\\Report errors by comparison'
 				], bAsync: true},
 				{name: 'Report all library tags', entry: [
 					'Standard Queries\\Entire library',
-					'Select\\Select All',
+					'Select (# tracks)\\Select All',
 					'Check tags\\Report all tags by comparison'
 				], bAsync: true}
 			];
