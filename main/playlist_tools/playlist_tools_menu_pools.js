@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/02/25
+//28/02/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -119,7 +119,7 @@
 											bProfile: defaultArgs.bProfile
 										}).processPool(pool, menu_properties);
 									},
-									flags: folderCount[subMenu] % 10 === 0 ? MF_MENUBARBREAK : MF_STRING
+									flags: folderCount[subMenu] % 10 === 0 && folderCount[subMenu] !== 0 ? MF_MENUBARBREAK : MF_STRING
 								});
 							}
 						});
@@ -269,7 +269,7 @@
 											bProfile: defaultArgs.bProfile
 										}).processPool(pool, menu_properties);
 									},
-									flags: folderCount[subMenu] % 10 === 0 ? MF_MENUBARBREAK : MF_STRING
+									flags: folderCount[subMenu] % 10 === 0 && folderCount[subMenu] !== 0 ? MF_MENUBARBREAK : MF_STRING
 								});
 							}
 						});

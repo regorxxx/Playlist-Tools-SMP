@@ -106,6 +106,7 @@
 - Last.fm: fix malformed youTube links.
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
 - UI: '&' being displayed as '_' on tooltips.
+- UI: removed extra menu bar break on pools submenus.
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 - Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
 - Presets: minor error on queries using decades.
