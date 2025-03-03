@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/25
+//26/02/25
 
 /* exported _pools */
 
@@ -55,14 +55,29 @@ function _pools({
 	this.bProfile = bProfile;
 	this.title = title;
 	let scriptName = '';
-
+	/**
+	 * Retrieves valid sources for pools according to settings.
+	 * @property
+	 * @name validSources
+	 * @kind method
+	 * @memberof _pools
+	 * @returns {string[]}
+	*/
 	this.validSources = () => [
 		'Playlists names',
 		'_LIBRARY_',
 		'_GROUP_',
 		...(this.bEnableSearchDistance ? ['_SEARCHBYGRAPH_', '_SEARCHBYWEIGHT_', '_SEARCHBYDYNGENRE_'] : [])
 	];
-
+	/**
+	 * Updates instance settings.
+	 * @property
+	 * @name changeConfig
+	 * @kind method
+	 * @memberof _pools
+	 * @param {object} config
+	 * @returns {this}
+	*/
 	this.changeConfig = (config) => {
 		for (let key in config) {
 			if (Object.hasOwn(this, key)) { this[key] = config[key]; }
@@ -70,23 +85,71 @@ function _pools({
 		this.updateTitle();
 		return this;
 	};
-
+	/**
+	 * Updates instance tittle.
+	 * @property
+	 * @name updateTitle
+	 * @kind method
+	 * @memberof _pools
+	 * @returns {void(0)}
+	*/
 	this.updateTitle = () => {
 		scriptName = (this.title ? this.title + ' ' : '') + 'Pools';
 	};
-
+	/**
+	 * Available picking methods for sources.
+	 * @name insertMethods
+	*/
 	this.pickMethods = {
+		/**
+		 * Picks n random tracks from source, by shuffling the idx (Fisher–Yates algorithm).
+		 * @param {FbMetadbHandleList} handleListFrom - Handlelist from Source.
+		 * @param {number} num - Number of tracks to pick.
+		 * @param {number} count - Max idx range.
+		 * @returns {FbMetadbHandleList}
+		*/
 		random: (handleListFrom, num, count) => {
 			const numbers = range(0, count - 1, 1).shuffle().slice(0, count > num ? num : count); // n randomly sorted. sort + random, highly biased!!
 			const handleListFromClone = handleListFrom.Clone().Convert();
-			return new FbMetadbHandleList(numbers.flatMap((i) => { return handleListFromClone.slice(i, i + 1); }));
+			return new FbMetadbHandleList(numbers.flatMap((i) => handleListFromClone.slice(i, i + 1)));
 		},
+		/**
+		 * Picks n first tracks from source.
+		 * @param {FbMetadbHandleList} handleListFrom - Handlelist from Source.
+		 * @param {number} num - Number of tracks to pick.
+		 * @param {number} count - Source handlelist count.
+		 * @returns {FbMetadbHandleList}
+		*/
 		start: (handleListFrom, num, count) => { if (count > num) { handleListFrom.RemoveRange(num, count); } return handleListFrom; },
+		/**
+		 * Picks n last tracks from source.
+		 * @param {FbMetadbHandleList} handleListFrom - Handlelist from Source.
+		 * @param {number} num - Number of tracks to pick.
+		 * @param {number} count - Source handlelist count.
+		 * @returns {FbMetadbHandleList}
+		*/
 		end: (handleListFrom, num, count) => { if (count > num) { handleListFrom.RemoveRange(0, count - num); } return handleListFrom; },
 	};
+	/**
+	 * Available insertion methods for sources.
+	 * @name insertMethods
+	*/
 	this.insertMethods = {
+		/**
+		 * Appends tracks at end of destination handlelist.
+		 * @param {FbMetadbHandleList} handleListFrom - Handlelist from Source.
+		 * @param {FbMetadbHandleList} handleListTo - Destination handleList.
+		 * @returns {void(0)}
+		*/
 		standard: (handleListFrom, handleListTo) => { handleListTo.InsertRange(handleListTo.Count, handleListFrom); },
-		intercalate: (handleListFrom, handleListTo, n) => { // Source 1 Track 1, Source 2  Track 2, Source 3  Track 3, Source 1 Track 2, ...
+		/**
+		 * Intercalates tracks with destination handlelist. i.e. Source 1 Track 1, Source 2  Track 2, Source 3  Track 3, Source 1 Track 2, ...
+		 * @param {FbMetadbHandleList} handleListFrom - Handlelist from Source.
+		 * @param {FbMetadbHandleList} handleListTo - Destination handleList.
+		 * @param {number} n
+		 * @returns {void(0)}
+		*/
+		intercalate: (handleListFrom, handleListTo, n) => {
 			if (!handleListTo.Count || !n) { this.insertMethods.standard(handleListFrom, handleListTo); }
 			else {
 				handleListFrom.Convert().forEach((handle, idx) => {
@@ -96,6 +159,19 @@ function _pools({
 			}
 		},
 	};
+	/**
+	 * Deduplicates tracks from a given source (and against the destination playlist).
+	 * @property
+	 * @name deDuplicate
+	 * @kind method
+	 * @memberof _pools
+	 * @param {object} o - Arguments.
+	 * @param {FbMetadbHandleList} o.handleList - Handlelist from Source.
+	 * @param {FbMetadbHandle[]} o.prevListArr - Destination handleList as array.
+	 * @param {FbMetadbHandleList} o.prevListHandle - Destination handleList.
+	 * @param {string[]} o.checkKeys - Duplicates removal tags.
+	 * @returns {FbMetadbHandleList}
+	*/
 	this.deDuplicate = ({ handleList, prevListArr, prevListHandle, checkKeys } = {}) => {
 		handleList = removeDuplicates({ handleList, checkKeys, sortBias: this.sortBias, bPreserveSort: false, bAdvTitle: this.bAdvTitle, bMultiple: this.bMultiple });
 		// Filter against current list
@@ -122,6 +198,18 @@ function _pools({
 		}
 		return handleList;
 	};
+	/**
+	 * Replaces tracks from different sources with preferred version.
+	 * @property
+	 * @name sortBiasReplace
+	 * @kind method
+	 * @memberof _pools
+	 * @param {object} o - Arguments.
+	 * @param {FbMetadbHandleList} o.handleListFrom - Handlelist from Source.
+	 * @param {FbMetadbHandleList} o.handleListTo - Destination handleList.
+	 * @param {string[]} o.checkKeys - Sorting tags.
+	 * @returns {void(0)}
+	*/
 	this.sortBiasReplace = ({ handleListFrom, handleListTo, checkKeys } = {}) => {
 		let replaceByTF;
 		checkKeys.forEach((check, i) => {
@@ -134,7 +222,7 @@ function _pools({
 		const matches = [];
 		tfoFrom.intersection(tfoTo).forEach((from) => {
 			let j = 0;
-			for (let to of tfoTo) {
+			for (const to of tfoTo) {
 				if (from === to) { matches.push({ fromIdx: idxMap.get(from), toIdx: j }); break; }
 				j++;
 			}
@@ -147,6 +235,17 @@ function _pools({
 			});
 		}
 	};
+	/**
+	 * Executes a pool preset and returns a handelist.
+	 * @property
+	 * @name processPool
+	 * @kind method
+	 * @memberof _pools
+	 * @param {object} pool - JSON parsed pool preset.
+	 * @param {object} properties - Properties object-like for Search By Distance processing. Can be skipped otherwise.
+	 * @param {{toPls: boolean}} options - Settings.
+	 * @returns {FbMetadbHandleList}
+	*/
 	this.processPool = async (pool, properties, options = { toPls: true }) => {
 		options = { toPls: true, ...(options || {}) };
 		const profiler = this.bProfile ? new FbProfiler('processPool') : null;
@@ -200,7 +299,7 @@ function _pools({
 						const queryNoSort = stripSort(query);
 						const sortedBy = query === queryNoSort
 							? null
-							: query.replace(queryNoSort, '');
+							: queryReplaceWithCurrent(query.replace(queryNoSort, '').trimStart(), fb.GetFocusItem(true));
 						const sortObj = sortedBy
 							? getSortObj(sortedBy)
 							: null;
@@ -390,7 +489,7 @@ function _pools({
 					}
 				}
 			}
-			if (!handleListFrom || !handleListFrom.Count) { return; }
+			if (!handleListFrom || !handleListFrom.Count) { continue; }
 			// Only apply to non-classic pool
 			if (!plsName.startsWith('_GROUP_')) {
 				// Filter
@@ -399,7 +498,7 @@ function _pools({
 					const queryNoSort = stripSort(query);
 					const sortedBy = query === queryNoSort
 						? null
-						: query.replace(queryNoSort, '');
+						: queryReplaceWithCurrent(query.replace(queryNoSort, '').trimStart(), fb.GetFocusItem(true));
 					const sortObj = sortedBy
 						? getSortObj(sortedBy)
 						: null;
@@ -518,7 +617,7 @@ function _pools({
 		try {
 			fromPls = utils.InputBox(
 				window.ID,
-				'Enter playlist source(s) (pairs):\n(source,# tracks;source,# tracks)\n\nValid sources: Playlist names, ' + this.validSources().map(n => '\'' + n +'\'').slice(1, 3).join(', ') + '.\nSources left empty will be replaced with \'_LIBRARY_#\'.\nSources without an Id (#) will be automatically numbered.',
+				'Enter playlist source(s) (pairs):\n(source,# tracks;source,# tracks)\n\nValid sources: Playlist names, ' + this.validSources().map(n => '\'' + n + '\'').slice(1, 3).join(', ') + '.\nSources left empty will be replaced with \'_LIBRARY_#\'.\nSources without an Id (#) will be automatically numbered.',
 				(this.title ? this.title + ': ' : '') + 'Pools',
 				Object.hasOwn(last, 'fromPls')
 					? Object.keys(last.fromPls).reduce((total, key) => { return total + (total.length ? ';' : '') + key + ',' + last.fromPls[key]; }, '')

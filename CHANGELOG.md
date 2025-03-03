@@ -92,7 +92,8 @@
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
-- Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*'
+- Pools: support for dynamic queries within SORT BY expressions for sources. i.e. 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,#DATE#)' -> 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,2000)' (when the reference track has a date tag equal to '2000').
+- Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*' (when the reference track has an artist tag equal to 'A')
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
 - Helpers: updated helpers.
