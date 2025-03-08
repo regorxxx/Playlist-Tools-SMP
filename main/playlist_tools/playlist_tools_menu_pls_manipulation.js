@@ -3,7 +3,7 @@
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, isInt:readable, addLock:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, playlistCountFlagsRem:readable, isString:readable, globQuery:readable, checkQuery:readable, _q:readable, _p:readable, playlistCountFlags:readable, multipleSelectedFlags:readable, MF_STRING:readable, MF_CHECKED:readable, _t:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, isInt:readable, addLock:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, playlistCountFlagsRem:readable, isString:readable, globQuery:readable, checkQuery:readable, _qCond:readable, _p:readable, playlistCountFlags:readable, multipleSelectedFlags:readable, MF_STRING:readable, MF_CHECKED:readable, _t:readable */
 
 // Playlist manipulation...
 {
@@ -121,6 +121,13 @@
 					let queryFilter = [
 						{ name: 'Rating > 2', query: globQuery.notLowRating },
 						{ name: 'Rating > 3', query: globQuery.ratingGr3 },
+						{ name: 'sep' },
+						{ name: 'Not recently listened', query: 'NOT ' + globQuery.recent },
+						{ name: 'Daily listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
+						{ name: 'Weekly listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
+						{ name: 'Monthly listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
+						{ name: 'Yearly listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
+						{ name: 'sep' },
 						{ name: 'Not instrumental', query: globQuery.noInstrumental },
 						{ name: 'Not live (none)', query: globQuery.noLiveNone },
 						{ name: 'Not live (except Hi-Fi)', query: globQuery.noLive },
@@ -130,7 +137,7 @@
 						{ name: 'Global forced query', query: defaultArgs['forcedQuery'] },
 						{ name: 'sep' },
 						{ name: 'Same title than sel', query: globQuery.compareTitle },
-						{ name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globQuery.compareTitle + ' AND ' + _q(globTags.date) + ' IS #' + globTags.date + '#' },
+						{ name: 'Same song than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '# AND ' + globQuery.compareTitle + ' AND ' + _qCond(globTags.date) + ' IS #' + globTags.date + '#' },
 						{ name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#' },
 						{ name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#' },
