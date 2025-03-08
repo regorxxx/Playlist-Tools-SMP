@@ -3,7 +3,7 @@
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _q:readable, checkQuery:readable, isJSON:readable*/
+/* global MF_GRAYED:readable, MF_STRING:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _qCond:readable, checkQuery:readable, isJSON:readable, WshShell:readable, popup:readable */
 
 // Dynamic queries
 {
@@ -28,12 +28,12 @@
 					},
 					{
 						name: 'Duplicates on library',
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'
+						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _qCond(globTags.date) + ' IS #' + globTags.date + '#)'
 					},
 					{ name: 'sep' },
 					{
 						name: 'Same date (any track/artist)',
-						query: _q(globTags.date) + ' IS #' + globTags.date + '#'
+						query: _qCond(globTags.date) + ' IS #' + globTags.date + '#'
 					},
 					{
 						name: 'Same artist(s)',
@@ -57,6 +57,31 @@
 						name: 'Rated >2 tracks (by artist)',
 						query: globTags.rating + ' GREATER 2 AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'
 					},
+					{ name: 'sep' },
+					{
+						name: 'Daily listen rate > 1',
+						query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1',
+						sort: { tfo: globTags.playCountRateGlobalDay, direction: -1 },
+						bStatic: true
+					},
+					{
+						name: 'Weekly listen rate > 1',
+						query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1',
+						sort: { tfo: globTags.playCountRateGlobalWeek, direction: -1 },
+						bStatic: true
+					},
+					{
+						name: 'Monthly listen rate > 1',
+						query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1',
+						sort: { tfo: globTags.playCountRateGlobalMonth, direction: -1 },
+						bStatic: true
+					},
+					{
+						name: 'Yearly listen rate > 1',
+						query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1',
+						sort: { tfo: globTags.playCountRateGlobalYear, direction: -1 },
+						bStatic: true
+					}
 				];
 				const queryFilterDefaults = [...queryFilter];
 				let selArg = { query: queryFilter[0].query };
@@ -72,7 +97,7 @@
 						return { query: selArg.query };
 					} else {
 						let query = '';
-						try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
+						try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
 						catch (e) { return; }
 						if (!query.length) { return; }
 						let tfo = '';
@@ -83,10 +108,11 @@
 						catch (e) { return; }
 						if (isNaN(direction)) { return; }
 						direction = direction > 0 ? 1 : -1;
+						const bStatic = WshShell.Popup('Force evaluation even when no selection is available?', 0, window.Name, popup.question + popup.yes_no) === popup.yes;
 						// Final check
-						try { if (!dynamicQuery({ query, bSendToPls: false })) { throw new Error(); } }
+						try { if (!dynamicQuery({ query, bSendToPls: false, bForceStatic: bStatic })) { throw new Error(); } }
 						catch (e) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; }
-						return { query, sort: { tfo, direction } };
+						return { query, sort: { tfo, direction }, bStatic };
 					}
 				};
 				// Menus
@@ -116,15 +142,18 @@
 								menu.newEntry({
 									menuName, entryText: queryName, func: () => {
 										let query = queryObj.query;
-										if (query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, scriptName); return; }
+										if (!queryObj.bStatic && query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + queryObj.query, scriptName); return; }
 										if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {  // With forced query enabled
 											if (query.length && query.toUpperCase() !== 'ALL') { // ALL query never uses forced query!
 												query = '(' + query + ') AND (' + defaultArgs.forcedQuery + ')';
 											} else if (!query.length) { query = defaultArgs.forcedQuery; } // Empty uses forced query or ALL
 										} else if (!query.length) { query = 'ALL'; } // Otherwise empty is replaced with ALL
-										if (bEvalSel) { dynamicQuery({ query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist) }) } // eslint-disable-line semi
-										else { dynamicQuery({ query, sort: queryObj.sort }); }
-									}, flags: selectedFlags
+										if (!queryObj.bStatic && bEvalSel) {
+											dynamicQuery({ query, sort: queryObj.sort, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist) });
+										} else {
+											dynamicQuery({ query, sort: queryObj.sort, bForceStatic: queryObj.bStatic });
+										}
+									}, flags: queryObj.bStatic ? MF_STRING : selectedFlags
 								});
 							}
 						});
@@ -132,22 +161,31 @@
 						{ // Static menu: user configurable
 							menu.newEntry({
 								menuName, entryText: 'By... (query)', func: () => {
-									// On first execution, must update from property
-									selArg.query = menu_properties['dynamicQueriesCustomArg'][1];
-									// Input
 									let input = '';
-									try { input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
-									catch (e) { return; }
-									if (input.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return; }
-									// Playlist
-									const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
-									const handleList = bEvalSel ? dynamicQuery({ query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist) }) : dynamicQuery({ query });
-									if (!handleList) { fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return; }
-									// For internal use original object
-									selArg.query = input;
-									menu_properties['dynamicQueriesCustomArg'][1] = input; // And update property with new value
-									overwriteMenuProperties(); // Updates panel
-								}, flags: selectedFlags
+									if (selectedFlags === MF_STRING) {
+										// On first execution, must update from property
+										selArg.query = menu_properties['dynamicQueriesCustomArg'][1];
+										// Input
+										try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
+										catch (e) { return; }
+										if (input.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return; }
+										// Playlist
+										const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
+										const handleList = bEvalSel ? dynamicQuery({ query, handleList: plman.GetPlaylistSelectedItems(plman.ActivePlaylist) }) : dynamicQuery({ query });
+										if (!handleList) { fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return; }
+										// For internal use original object
+										selArg.query = input;
+										menu_properties['dynamicQueriesCustomArg'][1] = input; // And update property with new value
+										overwriteMenuProperties(); // Updates panel
+									} else { // Skip using cached value without selection
+										try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables (which don\'t require a selection), like #NOW#, which will be replaced before execution.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, '"$year(%DATE%)" IS #YEAR#', true); }
+										catch (e) { return; }
+										// Playlist
+										const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
+										const handleList = dynamicQuery({ query, bForceStatic: true });
+										if (!handleList) { fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return; }
+									}
+								}
 							});
 							// Menu to configure property
 							menu.newSeparator(menuName);
