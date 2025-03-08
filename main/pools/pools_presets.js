@@ -342,6 +342,28 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST',
 				}
 			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Forgotten tracks (yearly rate)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' SORT ASCENDING BY ' + _qCond(globTags.playCountRateGlobalYear) },
+					toPls: 'Forgotten tracks (by yearly listen rate)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Forgotten top tracks (yearly rate)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' AND  (' + globQuery.ratingGr3 + ' OR ' + globQuery.loved + ') SORT ASCENDING BY ' + _qCond(globTags.playCountRateGlobalYear) },
+					toPls: 'Forgotten top tracks (by yearly listen rate)',
+					smartShuffle: 'ARTIST',
+				}
+			},
 			{ folder: 'Radio (Alistral)', name: 'sep' },
 			{
 				folder: 'Radio (Alistral)',
