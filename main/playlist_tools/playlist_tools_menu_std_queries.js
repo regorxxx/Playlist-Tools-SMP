@@ -1,5 +1,5 @@
 ﻿'use strict';
-//21/11/24
+//08/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, globQuery:readable */
 
@@ -26,8 +26,10 @@
 					{ name: 'Rating 5', query: globQuery.ratingTop , sort: { tfo: globTags.rating, direction: 1 } },
 					{ name: 'Fav tracks', query: globQuery.fav , sort: { tfo: globTags.playCount, direction: 1 } },
 					{ name: 'sep' },
-					{ name: 'Recently played', query: globQuery.recent, sort: { tfo: globTags.sortLastPlayed , direction: -1 } },
+					{ name: 'Recently listened', query: globQuery.recent, sort: { tfo: globTags.sortLastPlayed , direction: -1 } },
 					{ name: 'Recently added', query: globQuery.added, sort: { tfo: globTags.sortAdded, direction: -1 } },
+					{ name: 'Not recently listened', query: 'NOT ' + globQuery.recent, sort: { tfo: globTags.sortLastPlayed , direction: -1 } },
+					{ name: 'Not recently added', query: 'NOT ' + globQuery.added, sort: { tfo: globTags.sortAdded, direction: -1 } },
 					{ name: 'sep' },
 					{ name: 'Rock tracks', query: globTags.genre + ' IS rock OR ' + globTags.genre + ' IS alt. rock OR ' + globTags.genre + ' IS progressive rock OR ' + globTags.genre + ' IS hard rock OR ' + globTags.genre + ' IS rock & roll', sort: { tfo: '$rand()', direction: 1 } },
 					{ name: 'Psychedelic tracks', query: globTags.genre + ' IS psychedelic rock OR ' + globTags.genre + ' IS psychedelic OR ' + globTags.style + ' IS neo-psychedelia OR ' + globTags.style + ' IS psychedelic Folk', sort: { tfo: '$rand()', direction: 1 } },
@@ -112,7 +114,13 @@
 									try { query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true); }
 									catch (e) { return; }
 									// Playlist
-									let handleList = dynamicQuery({ query: forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (query.length && query.toUpperCase() !== 'ALL' ? '(' + query + ') AND (' + defaultArgs.forcedQuery + ')' : query) : (!query.length ? 'ALL' : query) });
+									let handleList = dynamicQuery({
+										query: forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length
+											? (query.length && query.toUpperCase() !== 'ALL'
+												? '(' + query + ') AND (' + defaultArgs.forcedQuery + ')'
+												: query	)
+											: (!query.length ? 'ALL' : query)
+									});
 									if (!handleList) { fb.ShowPopupMessage('Query failed:\n' + query, scriptName); return; }
 									// For internal use original object
 									selArg.query = query;
