@@ -30,9 +30,10 @@ Special variables:
 -------------
 Don't require a track to be evaluated (i.e. they always work with
 themes):
-	- #DAY# 	-> 14 (current day)
-	- #MONTH#	-> 11 (current month)
-	- #YEAR#	-> 2023 (current year)
+	- #DAY# 	-> 8 (current day)
+	- #MONTH#	-> 3 (current month)
+	- #YEAR#	-> 2025 (current year)
+	- #NOW#		-> 2023-3-8 (current date)
 
 Some examples:
 -------------

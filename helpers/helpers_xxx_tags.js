@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/02/25
+//08/03/25
 
 /* exported dynamicTags, numericTags, cyclicTags, keyTags, sanitizeTagIds, sanitizeTagValIds, queryCombinations, queryReplaceWithCurrent, checkQuery, getHandleTags, getHandleListTags ,getHandleListTagsV2, getHandleListTagsTyped, cyclicTagsDescriptor, isQuery, fallbackTagsQuery */
 
@@ -157,7 +157,7 @@ function queryReplaceWithCurrent(query, handle, tags = {}, options = { expansion
 	}
 	// global queries without handle required
 	let bStatic = false;
-	if (/#MONTH#|#YEAR#|#DAY#/g.test(query)) {
+	if (/#(MONTH|YEAR|DAY|NOW)#/.test(query)) {
 		const date = new Date();
 		query = query.replace(/#YEAR#/g, date.getFullYear().toString());
 		query = query.replace(/#MONTH#/g, (date.getMonth() + 1).toString());
