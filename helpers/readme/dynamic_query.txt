@@ -1,17 +1,21 @@
 ﻿Filters the library by query and sends results to a new playlist.
 Similar to what foobar search or some search/filter plugins do.
-Dynamic queries are also allowed in Query filtering and Pools.
+
+Dynamic queries usage are supported in multiple scripts and tools
+like Playlist Tools's Query filtering, Pools and Sort, Search by
+Distance's pre-analysis filters, etc. (shown on the input popup)
 
 For filtering purposes:
--------------
+-----------------------
 - Empty query will try to apply global forced query if enabled,
 otherwise gets replaced with 'ALL'.
 - 'ALL' will never apply forced query, even if enabled.
 
 Rules:
--------------
+------
 - Dynamic variables are allowed too, enclosed on '#': #ARTIST#,
 #$year(%date%)#, ...
+- Dynamic variables are not case sensitive. i.e. #TAG# or #tag#.
 - There are a few special variables, which are not evaluated against
 a track but globally. For ex: #YEAR# -> 2023
 - These placeholders will be replaced with focused item\'s TF result on
@@ -26,21 +30,40 @@ enclosed on parenthesis to work.
 - In any case queries are tested before using it, so errors will be
 shown as a popup.
 
-Special variables:
--------------
-Don't require a track to be evaluated (i.e. they always work with
-themes):
-	- #DAY# 	-> 8 (current day)
-	- #MONTH#	-> 3 (current month)
-	- #YEAR#	-> 2025 (current year)
-	- #NOW#		-> 2023-3-8 (current date)
+Special global variables:
+-------------------------
+Doesn't requires a track to be evaluated (i.e. they always work):
+	- #DAY# 		-> 8 (current day)
+	- #MONTH#		-> 3 (current month)
+	- #YEAR#		-> 2025 (current year)
+	- #NOW#			-> 2023-3-8 (current date)
+	- #VOLUME#		-> 100 (volume from 0 to 100, rounded)
+	- #VOLUMEDB#	-> -7.53 dB (volume from -100 to 0 dB)
+	- #VERSION#		-> 1.4.1 (foobar version)
+	- #SELTYPE#		-> active playlist (selection type)
+
+Special selection variables:
+----------------------------
+Requires a selection to be evaluated:
+	- #SELTRACKS#	-> 10 (number of selected tracks)
+	- #SELDURATION#	-> 3:09:37 (duration of selected tracks)
+	- #SELSIZE#		-> 1.88 GB (size of selected tracks)
+
+Special active playlist variables:
+----------------------------------
+Requires an active playlist to be evaluated:
+	- #PLSNAME#		-> My playlist (name)
+	- #PLSTRACKS#	-> 1.88 GB (number of tracks)
+	- #PLSISAUTOPLS#-> 1 (1 for AutoPlaylists, 0 otherwise)
+	- #PLSISLOCKED#	-> 1 (1 if locked, 0 otherwise)
+	- #PLSDURATION#	-> 3:09:37 (total duration)
+	- #PLSSIZE#		-> 1.88 GB (total size)
 
 Some examples:
--------------
+--------------
 For a rock track:
 GENRE IS #GENRE# -> GENRE IS Rock.
 The entire library would be filtered with tracks from that genre.
-
 
 For a rock and electronic track, it would translate into:
 GENRE IS #GENRE# -> (GENRE IS Rock) AND (GENRE IS Electronic)
@@ -64,7 +87,6 @@ used to limit dynamic expansion.
 (((GENRE IS Psychedelic Rock) AND (GENRE IS Hard Rock)) OR ((STYLE
 IS Acid Rock) AND (STYLE IS Live)))
 
-
 On other cases parenthesis may be redundant (but valid):
 ((DATE IS #DATE#) OR (DATE IS #$add(%DATE%,1)#))
 ->
@@ -77,7 +99,7 @@ expansion does not apply here:
 (DATE IS 1969 OR DATE IS 1970)
 
 Common errors:
--------------
+--------------
 Queries don't allow TF expressions after IS/HAS/GREATER/... terms.
 
 For ex:

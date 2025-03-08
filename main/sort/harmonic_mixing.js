@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/05/24
+//08/03/25
 
 /* exported harmonicMixing, queryReplaceKeys, harmonicMixingCycle */
 /* global globTags:readable */
@@ -201,18 +201,18 @@ function queryReplaceKeys(query, handle, bDebug = false) {
 		if ((query.match(/#/g) || []).length >= 2) { console.log('queryReplaceKeys(): handle is null'); return; }
 		else { return query; }
 	}
-	if (/#NEXTKEY#|#PREVKEY#/.test(query)) {
-		const keyTag = query.match(/(\S+) \S* #NEXTKEY#|#PREVKEY#/)[1] || '';
+	if (/#NEXTKEY#|#PREVKEY#/i.test(query)) {
+		const keyTag = query.match(/(\S+) \S* #NEXTKEY#|#PREVKEY#/i)[1] || '';
 		const key = fb.TitleFormat(_bt(keyTag)).EvalWithMetadb(handle);
 		const keyObj = key.length ? camelotWheel.getKeyNotationObjectCamelot(key) : null;
 		if (keyObj) {
 			const nextKeys = camelotWheel.translateToNotation(camelotWheel.energyBoost(keyObj), ['flat', 'sharp', 'open', 'camelot']);
 			const prevKeys = camelotWheel.translateToNotation(camelotWheel.energyDrop(keyObj), ['flat', 'sharp', 'open', 'camelot']);
 			query = query
-				.replace(/(\S+ \S* )#NEXTKEY#/g, _p(nextKeys.map((val) => '$1' + val).join(' OR ')))
-				.replace(/(\S+ \S* )#PREVKEY#/g, _p(prevKeys.map((val) => '$1' + val).join(' OR ')));
+				.replace(/(\S+ \S* )#NEXTKEY#/gi, _p(nextKeys.map((val) => '$1' + val).join(' OR ')))
+				.replace(/(\S+ \S* )#PREVKEY#/gi, _p(prevKeys.map((val) => '$1' + val).join(' OR ')));
 		} else {
-			query = query.replace(/(\S+) \S* #NEXTKEY#|#PREVKEY#/g, 'NOT $1 PRESENT');
+			query = query.replace(/(\S+) \S* #NEXTKEY#|#PREVKEY#/gi, 'NOT $1 PRESENT');
 		}
 	}
 	return query;
