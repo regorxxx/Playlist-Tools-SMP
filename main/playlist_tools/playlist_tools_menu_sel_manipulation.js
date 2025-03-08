@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/02/25
+//08/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -43,7 +43,7 @@
 						if (bCopyCurrent) {
 							tfo = selArg.tfo;
 						} else {
-							try { tfo = utils.InputBox(window.ID, 'Enter TF expression:', scriptName + ': ' + name, selArg.tfo, true); }
+							try { tfo = utils.InputBox(window.ID, 'Enter TF expression:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.tfo, true); }
 							catch (e) { return; }
 						}
 						if (!tfo.length) { return; }
@@ -82,7 +82,12 @@
 											const ap = plman.ActivePlaylist;
 											if (ap === -1) { return; }
 											plman.UndoBackup(ap);
-											plman.SortByFormat(ap, sortObj.tfo, true);
+											const focusHandle = fb.GetFocusItem(false);
+											const tfo = focusHandle && sortObj.tfo.includes('#')
+												? queryReplaceWithCurrent(sortObj.tfo, focusHandle)
+												: sortObj.tfo;
+											console.log('Playlist Tools: sorted selection by\n\t ' + tfo);
+											plman.SortByFormat(ap, tfo, true);
 										}, flags: multipleSelectedFlagsReorder
 									});
 								}
@@ -98,9 +103,13 @@
 										// Input
 										const input = inputSort();
 										if (!input) { return; }
-										const tfo = input.tfo;
 										// Execute
 										plman.UndoBackup(ap);
+										const focusHandle = fb.GetFocusItem(false);
+										const tfo = focusHandle && input.tfo.includes('#')
+											? queryReplaceWithCurrent(input.tfo, focusHandle)
+											: input.tfo;
+										console.log('Playlist Tools: sorted selection by\n\t ' + tfo);
 										plman.SortByFormat(ap, tfo, true);
 										// For internal use original object
 										selArg.tfo = tfo;

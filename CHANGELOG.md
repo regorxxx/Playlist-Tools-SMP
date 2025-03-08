@@ -91,6 +91,7 @@
 - Selection manipulation\Select (# tracks): 'Selection manipulation\Select' renamed to 'Selection manipulation\Select (# tracks)'.
 - Selection manipulation\Intercalate by tags: now handles multi-value tags without joining them. i.e. it will try to intercalate the most frequent tag value for every track on the entire selection. For ex. for a track with 2 artists, the one which appears more in the entire selection will be preferred.
 - Selection manipulation\Shuffle by tags: now handles multi-value tags without joining them. The same behavior applies to pools using this feature. See above. 
+- Selection manipulation\Sort: support for dynamic queries. While they will be evaluated to focused item, it's probably more useful for special variables like #NOW#, #MONTH#, etc.
 - Pools: music graph mixes moved to their own submenu 'Pools (Music Graph)'.
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
