@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/12/24
+//28/02/25
 
 /* exported createPoolPresets */
 
@@ -16,7 +16,7 @@ function createPoolPresets({ size = 50 } = {}) {
 	const eighth = Math.floor(size / 8) || 1;
 	const tenth = Math.floor(size / 10) || 1;
 	return [
-		...[ // Top tracks by rating
+		...[	// Top tracks by rating
 			{
 				folder: 'Top tracks (rating)',
 				name: 'Top tracks mix', pool: {
@@ -142,7 +142,7 @@ function createPoolPresets({ size = 50 } = {}) {
 		...[	// Top tracks by playcount
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Recently played tracks mix', pool: {
+				name: 'Rec. played mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -153,14 +153,14 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + globQuery.recent,
 						_LIBRARY_2: globQuery.ratingTop + ' AND ' + globQuery.recent
 					},
-					toPls: 'Top recently played tracks mix',
+					toPls: 'Top recently played mix',
 					sort: '',
 				}
 			},
 			{ folder: 'Top tracks (playcount)', name: 'sep' },
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Not recently played tracks mix', pool: {
+				name: 'Not rec. played mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -171,13 +171,13 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent,
 						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent
 					},
-					toPls: 'Top not played tracks mix',
+					toPls: 'Top not recently played mix',
 					sort: '',
 				}
 			},
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Not recently played this year tracks mix', pool: {
+				name: 'Not rec. played this year mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -188,13 +188,13 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
 						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#'
 					},
-					toPls: 'Top not played this year tracks mix',
+					toPls: 'Top not recently played this year mix',
 					sort: '',
 				}
 			},
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Not recently played last 5 years tracks mix', pool: {
+				name: 'Not rec. played last 5 years mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -205,14 +205,14 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
 						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#'
 					},
-					toPls: 'Top not recently played last 5 years tracks mix',
+					toPls: 'Top not recently played last 5 years mix',
 					sort: '',
 				}
 			},
 			{ folder: 'Top tracks (playcount)', name: 'sep' },
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Least played tracks mix', pool: {
+				name: 'Least played mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -223,13 +223,13 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 SORT ASCENDING BY ' + _qCond(globTags.playCount),
 						_LIBRARY_2: globQuery.ratingTop + ' SORT ASCENDING BY ' + _qCond(globTags.playCount)
 					},
-					toPls: 'Top least played tracks mix',
+					toPls: 'Top least played mix',
 					sort: '',
 				}
 			},
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Least played this year tracks mix', pool: {
+				name: 'Least played this year mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -240,13 +240,13 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)# SORT ASCENDING BY ' + _qCond(globTags.playCount),
 						_LIBRARY_2: globQuery.ratingTop + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)# SORT ASCENDING BY ' + _qCond(globTags.playCount)
 					},
-					toPls: 'Top least played this year tracks mix',
+					toPls: 'Top least played this year mix',
 					sort: '',
 				}
 			},
 			{
 				folder: 'Top tracks (playcount)',
-				name: 'Least played last 5 years tracks mix', pool: {
+				name: 'Least played last 5 years mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
 						_LIBRARY_1: fourth,
@@ -257,8 +257,134 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)# SORT ASCENDING BY ' + _qCond(globTags.playCount),
 						_LIBRARY_2: globQuery.ratingTop + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)# SORT ASCENDING BY ' + _qCond(globTags.playCount)
 					},
-					toPls: 'Top least played last 5 years tracks mix',
+					toPls: 'Top least played last 5 years mix',
 					sort: '',
+				}
+			},
+		],
+		{ name: 'sep' },
+		...[	// Radio (Alistral) algorithms
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Artist circles', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0' },
+					toPls: 'Artist circles',
+					sort: '',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Artist circles (unlistened)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' IS 0' },
+					toPls: 'Artist circles (unlistened)',
+					sort: '',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Artist circles (top tracks)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND  (' + globQuery.ratingGr3 + ' OR ' + globQuery.loved + ')' },
+					toPls: 'Artist circles (top tracks)',
+					sort: '',
+				}
+			},
+			{ folder: 'Radio (Alistral)', name: 'sep' },
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Forgotten tracks (since added)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' SORT ASCENDING BY ' + _qCond(globTags.playCountRateSinceAdded) },
+					toPls: 'Forgotten tracks (since added)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Forgotten top tracks (since added)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' AND  (' + globQuery.ratingGr3 + ' OR ' + globQuery.loved + ') SORT ASCENDING BY ' + _qCond(globTags.playCountRateSinceAdded) },
+					toPls: 'Forgotten top tracks (since added)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Forgotten tracks (since played)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' SORT ASCENDING BY ' + _qCond(globTags.playCountRateSincePlayed) },
+					toPls: 'Forgotten tracks (since played)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Forgotten top tracks (since played)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' AND  (' + globQuery.ratingGr3 + ' OR ' + globQuery.loved + ') SORT ASCENDING BY ' + _qCond(globTags.playCountRateSincePlayed) },
+					toPls: 'Forgotten top tracks (since last played)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{ folder: 'Radio (Alistral)', name: 'sep' },
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Overdue tracks (since added)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCountExpectedSinceAdded) },
+					toPls: 'Overdue tracks (since added)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Overdue top tracks (since added)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' AND  (' + globQuery.ratingGr3 + ' OR ' + globQuery.loved + ') SORT DESCENDING BY ' + _qCond(globTags.playCountExpectedSinceAdded) },
+					toPls: 'Overdue top tracks (since added)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Overdue tracks (since played)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCountExpectedSincePlayed) },
+					toPls: 'Overdue tracks (since played)',
+					smartShuffle: 'ARTIST',
+				}
+			},
+			{
+				folder: 'Radio (Alistral)',
+				name: 'Overdue top tracks (since played)', pool: {
+					fromPls: { _GROUP_0: size },
+					group: { _GROUP_0: globTags.artist },
+					limit: { _GROUP_0: 1 },
+					query: { _GROUP_0: _qCond(globTags.playCount) + ' GREATER 0 AND NOT ' + globQuery.recent  +  ' AND  (' + globQuery.ratingGr3 + ' OR ' + globQuery.loved + ') SORT DESCENDING BY ' + _qCond(globTags.playCountExpectedSincePlayed) },
+					toPls: 'Overdue top tracks (since played)',
+					smartShuffle: 'ARTIST',
 				}
 			},
 		],
@@ -415,19 +541,19 @@ function createPoolPresets({ size = 50 } = {}) {
 		...[	// Classic Pools
 			{
 				folder: 'Classic Pools',
-				name: 'Classic Pools (50 artists current genre)', pool: {
-					fromPls: { _GROUP_0: 50 },
+				name: 'Classic Pools (' + size + ' artists current genre)', pool: {
+					fromPls: { _GROUP_0: size },
 					group: { _GROUP_0: globTags.artist },
 					limit: { _GROUP_0: 3 },
-					query: { _GROUP_0: '' + globTags.genre + ' IS #' + globTags.genre + '#' },
+					query: { _GROUP_0: globTags.genre + ' IS #' + globTags.genre + '#' },
 					toPls: 'Classic Pools (50 artists current genre)',
 					sort: '',
 				}
 			},
 			{
 				folder: 'Classic Pools',
-				name: 'Classic Pools (50 random artists)', pool: {
-					fromPls: { _GROUP_0: 50 },
+				name: 'Classic Pools (' + size + ' random artists)', pool: {
+					fromPls: { _GROUP_0: size },
 					group: { _GROUP_0: globTags.artist },
 					limit: { _GROUP_0: 3 },
 					query: { _GROUP_0: '' },

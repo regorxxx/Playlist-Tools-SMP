@@ -65,6 +65,8 @@
 
 ## [Unreleased][]
 ### Added
+- Pools: added 'Radio (Alistral)' pools presets, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
+- Selection manipulation\Sort: added sorting methods for listen rates and overdue listens, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
 - Selection manipulation\Move selection to: new entry 'Move selection to\To specified position...' is added which moves the selection to an absolute index. 'Move selection to\By delta...' moves by delta value (previous behavior). Both support non-contiguous selections unless the extremes can not move anymore (thus they start to compact) but allow to use positive or negative values to choose where to start from (top or bottom of playlist) to avoid it. All this info is shown in the input popup.
 - Selection manipulation\Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
 - Selection manipulation\Select (by time): new tool to set selection by specified time (rounded to tracks actual time). As 'Selection manipulation\Select (# tracks)' it also allows to select half, a third or a quarter of the total time of a playlist, random X minutes, or next X minutes. There are also additional entries to take into consideration crossfade between tracks.

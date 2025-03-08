@@ -24,7 +24,11 @@
 					let sortLegacy = [
 						{ name: 'Sort by Mood', tfo: '%' + globTags.mood + '%' },
 						{ name: 'Sort by Date', tfo: globTags.date },
-						{ name: 'Sort by BPM', tfo: '%' + globTags.bpm + '%' }
+						{ name: 'Sort by BPM', tfo: '%' + globTags.bpm + '%' },
+						{ name: 'Sort by Listen Rate (added)', tfo: globTags.playCountRateSinceAdded },
+						{ name: 'Sort by Listen Rate (played)', tfo: globTags.playCountRateSincePlayed },
+						{ name: 'Sort by Overdue listens (added)', tfo: globTags.playCountExpectedSinceAdded },
+						{ name: 'Sort by Overdue listens (played)', tfo: globTags.playCountExpectedSincePlayed }
 					];
 					let selArg = { name: 'Custom', tfo: sortLegacy[0].tfo };
 					const sortLegacyDefaults = [...sortLegacy];
