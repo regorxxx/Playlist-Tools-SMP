@@ -270,20 +270,6 @@ function queryReplaceWithCurrent(query, handle, tags = {}, options = { expansion
 	return query;
 }
 
-console.log(queryReplaceWithCurrent('#VOLUMEDB#'));
-console.log(queryReplaceWithCurrent('#VERSION#'));
-console.log(queryReplaceWithCurrent('#VOLUME#'));
-console.log(queryReplaceWithCurrent('#NOW#'));
-console.log(queryReplaceWithCurrent('#SELTRACKS#'));
-console.log(queryReplaceWithCurrent('#SELDURATION#'));
-console.log(queryReplaceWithCurrent('#SELSIZE#'));
-console.log(queryReplaceWithCurrent('#PLSNAME#'));
-console.log(queryReplaceWithCurrent('#PLSTRACKS#'));
-console.log(queryReplaceWithCurrent('#PLSISAUTOPLS#'));
-console.log(queryReplaceWithCurrent('#PLSISLOCKED#'));
-console.log(queryReplaceWithCurrent('#PLSDURATION#'));
-console.log(queryReplaceWithCurrent('#PLSSIZE#'));
-
 /**
  * Replace #strTF# with static values, where 'strTF' is a TF expression which will be evaluated against a list of special variables.
  * Use try/catch to test validity of the query output
