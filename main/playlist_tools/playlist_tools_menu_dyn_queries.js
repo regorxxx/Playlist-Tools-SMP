@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//08/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -72,7 +72,7 @@
 						return { query: selArg.query };
 					} else {
 						let query = '';
-						try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true); }
+						try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
 						catch (e) { return; }
 						if (!query.length) { return; }
 						let tfo = '';
@@ -136,7 +136,7 @@
 									selArg.query = menu_properties['dynamicQueriesCustomArg'][1];
 									// Input
 									let input = '';
-									try { input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.'), scriptName + ': ' + name, selArg.query, true); }
+									try { input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
 									catch (e) { return; }
 									if (input.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return; }
 									// Playlist

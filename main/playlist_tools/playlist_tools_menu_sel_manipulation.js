@@ -43,7 +43,7 @@
 						if (bCopyCurrent) {
 							tfo = selArg.tfo;
 						} else {
-							try { tfo = utils.InputBox(window.ID, 'Enter TF expression:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.tfo, true); }
+							try { tfo = utils.InputBox(window.ID, 'Enter TF expression:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.tfo, true); }
 							catch (e) { return; }
 						}
 						if (!tfo.length) { return; }
@@ -1387,7 +1387,7 @@
 						if (bCopyCurrent) {
 							query = selArg.query;
 						} else {
-							try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
+							try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, '', true); }
 							catch (e) { return; }
 							if (!query.includes('#')) { // Try the query only if it is not a dynamic one
 								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
@@ -1453,7 +1453,7 @@
 								menuName: subMenuName, entryText: 'Select by... (query)', func: () => {
 									selArg.query = menu_properties['selQueryFilterCustomArg'][1];
 									let input;
-									try { input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true); }
+									try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
 									catch (e) { return; }
 									// Forced query
 									let query = input;

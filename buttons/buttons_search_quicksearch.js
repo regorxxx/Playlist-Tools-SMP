@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//08/03/25
 
 /*
 	Quicksearch for same....
@@ -281,7 +281,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 			entryText: 'By... (query)', func: () => {
 				// Input
 				let query = '';
-				try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (this.buttonsProperties.bEvalSel[1] ? 'selected items\' values.' : 'focused item\'s value.') + '\n\nPressing Shift while clicking on \'OK\' will open the search window.\nPressing Ctrl will create an AutoPlaylist.', 'Quicksearch', this.buttonsProperties.lastQuery[1] || 'TITLE IS #TITLE#', true); }
+				try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (this.buttonsProperties.bEvalSel[1] ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)' + '\n\nPressing Shift while clicking on \'OK\' will open the search window.\nPressing Ctrl will create an AutoPlaylist.', 'Quicksearch', this.buttonsProperties.lastQuery[1] || 'TITLE IS #TITLE#', true); }
 				catch (e) { return; }
 				if (query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, 'Quicksearch'); return; }
 				if (!query.length) { return; }

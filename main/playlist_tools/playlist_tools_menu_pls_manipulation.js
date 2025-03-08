@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/11/24
+//08/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -152,7 +152,7 @@
 						if (bCopyCurrent) {
 							query = selArg.query;
 						} else {
-							try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, '', true); }
+							try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, '', true); }
 							catch (e) { return; }
 							if (!query.includes('#')) { // Try the query only if it is not a dynamic one
 								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
@@ -218,7 +218,7 @@
 								menuName: subMenuName, entryText: 'Filter playlist by... (query)', func: () => {
 									selArg.query = menu_properties['queryFilterCustomArg'][1];
 									let input;
-									try { input = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.', scriptName + ': ' + name, selArg.query, true); }
+									try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
 									catch (e) { return; }
 									// Forced query
 									let query = input;
