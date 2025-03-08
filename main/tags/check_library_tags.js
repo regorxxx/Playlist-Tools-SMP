@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/12/24
+//07/03/25
 
 /*
 	Check Library Tags
@@ -70,12 +70,12 @@ include('..\\..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https:
 const checkTags_properties = {
 	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE', 'ALBUM'].join(',')],
 	tagsToCompare: ['Tags to compare against (\'tag name,...\')', [[globTags.genre, globTags.style].join(','), [...new Set([globTags.composer, globTags.artistRaw, 'ARTIST', 'INVOLVEDPEOPLE'])]].join(';')],
-	tagValuesExcludedPath: ['File listing tag values to be excluded', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'check_library_tags_exclusion.json'],
+	tagValuesExcludedPath: ['File listing tag values to be excluded', '.\\profile\\' + folders.dataName + 'check_library_tags_exclusion.json'],
 	tagNamesExcludedDic: ['Tags to be excluded at dictionary checking (\'tag name,...\')', [...new Set([globTags.composer, globTags.titleRaw, globTags.artistRaw, 'INVOLVEDPEOPLE', 'ARTIST', 'ALBUM'])].join(',')],
 	bAskForConfigTags: ['Enables popup asking to config excluded tags', false],
 	bUseDic: ['Enables dictionary checking for every tag value (slow!)', false],
 	dictName: ['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
-	dictPath: ['Path to all dictionaries', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? folders.xxx.replace(fb.ProfilePath, '.\\profile\\') : folders.xxx) + 'helpers-external\\typo\\dictionaries'],
+	dictPath: ['Path to all dictionaries', '.\\helpers-external\\typo\\dictionaries\\'],
 	bUseGraphGenres: ['Use genre checking on Graph', false],
 };
 checkTags_properties['tagNamesToCheck'].push({ func: isString }, checkTags_properties['tagNamesToCheck'][1]);
@@ -89,10 +89,25 @@ var checkTags_prefix = 'ct_'; // NOSONAR
 
 // Load dictionary
 const dictSettings = {
-	dictName: checkTags_properties['dictName'][1],
-	dictPath: checkTags_properties['dictPath'][1],
-	affPath() { return this.dictPath + '\\' + this.dictName + '\\' + this.dictName + '.aff'; },
-	dicPath() { return this.dictPath + '\\' + this.dictName + '\\' + this.dictName + '.dic'; },
+	dictName: checkTags_properties.dictName[1],
+	dictPath: checkTags_properties.dictPath[1] + (checkTags_properties.dictPath[1].endsWith('\\') ? '' : '\\'),
+	getDictPath() {
+		return (this.dictPath.startsWith('.\\profile\\')
+			? this.dictPath.replace('.\\profile\\', fb.ProfilePath)
+			: this.dictPath.startsWith('.\\')
+				? this.dictPath.replace('.\\', folders.xxx)
+				: this.dictPath
+		);
+	},
+	getLangPath() {
+		return this.getDictPath() + this.dictName + '\\';
+	},
+	getAffPath() {
+		return this.getLangPath() + this.dictName + '.aff';
+	},
+	getDicPath() {
+		return this.getLangPath() + this.dictName + '.dic';
+	},
 };
 var dictionary; // NOSONAR
 
@@ -100,9 +115,9 @@ if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') 
 	// With const var creating new properties is needed, instead of reassigning using A = {...A,...B}
 	setProperties(checkTags_properties, checkTags_prefix);
 	if (getPropertyByKey(checkTags_properties, 'bUseDic', checkTags_prefix)) {
-		if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
-			dictionary = new Typo(dictSettings.dictName, _open(dictSettings.affPath()), _open(dictSettings.dicPath()));
-		} else { fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name); }
+		if (_isFile(dictSettings.getDicPath()) && _isFile(dictSettings.getAffPath())) {
+			dictionary = new Typo(dictSettings.dictName, _open(dictSettings.getAffPath()), _open(dictSettings.getDicPath()));
+		} else { fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name); }
 	}
 } else {  // With buttons, set these properties only once per panel
 	dictionary = new Typo(); // Load dict later at first use
@@ -132,15 +147,17 @@ function checkTags({
 	if (typeof music_graph_descriptors === 'undefined') { bUseGraphGenres = false; }
 	// Load dictionary if required (and not loaded previously)
 	if (bUseDic) {
-		if (dictionary.dictionary !== properties['dictName'][1]) {
-			dictSettings['dictName'] = properties['dictName'][1];
-			dictSettings['dictPath'] = properties['dictPath'][1];
-			if (_isFile(dictSettings.dicPath()) && _isFile(dictSettings.affPath())) {
-				dictionary = new Typo(dictSettings.dictName, _open(dictSettings.affPath()), _open(dictSettings.dicPath()));
-				// Warn if not found
-			} else { fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name); return; }
-		} else if (!_isFile(dictSettings.dicPath()) || !_isFile(dictSettings.affPath())) {
-			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.dicPath() + '\n' + dictSettings.affPath(), window.Name); return;
+		if (dictionary.dictionary !== properties.dictName[1]) {
+			dictSettings.dictName = properties.dictName[1];
+			dictSettings.dictPath = properties.dictPath[1] + (properties['dictName'][1].endsWith('\\') ? '' : '\\');
+			if (_isFile(dictSettings.getDicPath()) && _isFile(dictSettings.getAffPath())) { // Warn if not found
+				dictionary = new Typo(dictSettings.dictName, _open(dictSettings.getAffPath()), _open(dictSettings.getDicPath()));
+			} else {
+				fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name);
+				return;
+			}
+		} else if (!_isFile(dictSettings.getDicPath()) || !_isFile(dictSettings.getAffPath())) {
+			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name); return;
 		}
 	}
 	// Constants

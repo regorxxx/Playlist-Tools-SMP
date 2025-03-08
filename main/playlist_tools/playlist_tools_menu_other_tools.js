@@ -1,9 +1,9 @@
 ﻿'use strict';
-//25/11/24
+//07/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable */
 
 // Other tools
 {
@@ -13,7 +13,7 @@
 		let menuName = menu.newMenu(name);
 		{	// Check tags
 			const scriptPath = folders.xxx + 'main\\tags\\check_library_tags.js';
-			/* global checkTags_properties:readable, checkTags:readable, addTagsToExclusion:readable */
+			/* global checkTags_properties:readable, checkTags:readable, addTagsToExclusion:readable, dictSettings:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Check tags';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
@@ -138,22 +138,32 @@
 						});
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Set dictionary...', func: () => {
-								const input = utils.InputBox(window.ID, 'Dictionary name:\n(available: de_DE, en_GB, en_US, fr_FR)\n', scriptName + ': ' + name, menu_properties['dictName'][1]);
-								if (menu_properties['dictName'][1] === input) { return; }
-								if (!input.length) { return; }
-								const dictPath = menu_properties['dictPath'][1] + '\\' + input;
-								if (!_isFolder(dictPath)) { fb.ShowPopupMessage('Folder does not exist:\n' + dictPath, scriptName); return; }
-								menu_properties['dictName'][1] = input;
+								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.getDictPath()).sort().join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
+								if (menu_properties.dictName[1] === input) { return; }
+								if (!input.length) { input = menu_properties.dictName[3]; }
+								dictSettings.dictName = input;
+								if (!_isFolder(dictSettings.getLangPath())) {
+									fb.ShowPopupMessage('Folder does not exist:\n' + dictSettings.getLangPath(), scriptName);
+									dictSettings.dictName = menu_properties.dictName[1];
+									return;
+								}
+								menu_properties.dictName[1] = dictSettings.dictName;
 								overwriteMenuProperties(); // Updates panel
 							}
 						});
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: () => {
-								let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(set to empty to restore default path)', scriptName + ': ' + name, menu_properties['dictPath'][1]);
-								if (menu_properties['dictPath'][1] === input) { return; }
-								if (!input.length) { input = menu_properties['dictPath'][3]; }
-								if (!_isFolder(input)) { fb.ShowPopupMessage('Folder does not exist:\n' + input, scriptName); return; }
-								menu_properties['dictPath'][1] = input;
+								let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(leave it empty to restore default path)\n\nPaths starting with \'.\\profile\\\' are relative to the profile folder.\nPaths starting with \'.\\\' are relative to the script\\package root folder.', scriptName + ': ' + name, menu_properties.dictPath[1]);
+								if (input.length && !input.endsWith('\\')) { input += '\\'; }
+								if (menu_properties.dictPath[1] === input) { return; }
+								if (!input.length) { input = menu_properties.dictPath[3]; }
+								dictSettings.dictPath = input;
+								if (!_isFolder(dictSettings.getDictPath())) {
+									fb.ShowPopupMessage('Folder does not exist:\n' + dictSettings.getDictPath(), scriptName);
+									dictSettings.dictPath = menu_properties.dictPath[1] + (menu_properties.dictPath[1].endsWith('\\') ? '' : '\\');
+									return;
+								}
+								menu_properties.dictPath[1] = dictSettings.dictPath;
 								overwriteMenuProperties(); // Updates panel
 							}
 						});
@@ -326,7 +336,7 @@
 					{	// Submenu
 						const subMenuName = menu.newMenu(name, menuName);
 						// Create new properties with previous args
-						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' : fb.ProfilePath) + folders.dataName + 'track_list_to_import.txt'];
+						menu_properties['importPlaylistPath'] = ['\'Other tools\\Import track list\' path', '.\\profile\\' + folders.dataName + 'track_list_to_import.txt'];
 						menu_properties['importPlaylistMask'] = ['\'Other tools\\Import track list\' pattern', JSON.stringify(['. ', '%TITLE%', ' - ', globTags.artist])];
 						menu_properties['importPlaylistFilters'] = ['\'Other tools\\Import track list\' filters', JSON.stringify([globQuery.stereo, globQuery.notLowRating, globQuery.noLive, globQuery.noLiveNone])];
 						// Checks

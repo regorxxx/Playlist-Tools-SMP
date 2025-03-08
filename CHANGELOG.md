@@ -83,6 +83,7 @@
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support for locked playlists.
 - Script Integration\SMP Dynamic menu: changed names for the numbered menu entries, which are now prefixed with 'Playlist Tools: '. Adjust external buttons if needed to new path.
 - Script Integration\SMP Dynamic menu: improved menu (un)registering logic; now the numbered menu entries are always registered first (so they maintain their ID no matter if dynamic menus are enabled or not), thus not altering external buttons functionality. Note in any case the ID is still linked to button registering order, so other script buttons loaded first may alter the ID order if they also register their own menus (same than previous behavior).
+- Other Tools\Check tags: input popups to set dictionary now display the current list of dictionaries found (more may be installed by the user).
 - Other tools\Write Tags: renamed to 'Tagger'.
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
