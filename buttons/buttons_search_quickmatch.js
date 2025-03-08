@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/05/25
+//07/03/25
 
 /*
 	Quickmatch same....
@@ -216,7 +216,7 @@ function quickmatchMenu() {
 			{ file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist },
 			{ file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist }
 		].forEach((option) => {
-			const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + option.file;
+			const path = '.\\profile\\' + folders.dataName + option.file; // TODO Expose paths at properties
 			if (_isFile(path)) {
 				const dataId = option.dataId;
 				const dataTag = option.tag;
@@ -243,7 +243,7 @@ function quickmatchMenu() {
 			}
 		});
 		// World map tags
-		const worldMapPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
+		const worldMapPath = '.\\profile\\' + folders.dataName + 'worldMap.json'; // TODO Expose paths at properties
 		if (_isFile(worldMapPath)) {
 			const dataId = 'artist';
 			const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
@@ -295,7 +295,7 @@ function quickmatchMenu() {
 							// Search by Distance tags
 							if (queryObj.tf.some((tag) => tag.toUpperCase().includes('LOCALE'))) {
 								// World map tags
-								const worldMapPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
+								const worldMapPath = '.\\profile\\' + folders.dataName + 'worldMap.json'; // TODO Expose paths at properties
 								if (_isFile(worldMapPath)) {
 									const dataId = 'artist';
 									const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];

@@ -1,5 +1,5 @@
 'use strict';
-//13/02/25
+//07/03/25
 
 /* exported _lastListMenu */
 
@@ -83,7 +83,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist},
 			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist}
 		].forEach((option) => {
-			const path = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + option.file;
+			const path = '.\\profile\\' + folders.dataName + option.file; // TODO Expose paths at properties
 			if (_isFile(path)) {
 				const dataId = option.dataId;
 				const dataTag = option.tag;
@@ -110,7 +110,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			}
 		});
 		// World map tags
-		const worldMapPath = (_isFile(fb.FoobarPath + 'portable_mode_enabled') ? '.\\profile\\' + folders.dataName : folders.data) + 'worldMap.json';
+		const worldMapPath = '.\\profile\\' + folders.dataName + 'worldMap.json'; // TODO Expose paths at properties
 		if (_isFile(worldMapPath)) {
 			const dataId = 'artist';
 			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
