@@ -70,6 +70,9 @@
 - Selection manipulation\Move selection to: new entry 'Move selection to\To specified position...' is added which moves the selection to an absolute index. 'Move selection to\By delta...' moves by delta value (previous behavior). Both support non-contiguous selections unless the extremes can not move anymore (thus they start to compact) but allow to use positive or negative values to choose where to start from (top or bottom of playlist) to avoid it. All this info is shown in the input popup.
 - Selection manipulation\Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
 - Selection manipulation\Select (by time): new tool to set selection by specified time (rounded to tracks actual time). As 'Selection manipulation\Select (# tracks)' it also allows to select half, a third or a quarter of the total time of a playlist, random X minutes, or next X minutes. There are also additional entries to take into consideration crossfade between tracks.
+- Playlist manipulation\Query filtering: added filtering methods based on listen rates. Restore defaults to load the new presets.
+- Dynamic queries: new presets based on listen rates. Restore defaults to load the new presets.
+- Standard queries: new presets based on playcount. Restore defaults to load the new presets.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
 - Script Integration\Add SKIP tag at current playback: added warnings when trying to add SKIP tag to the end of start of a track.
@@ -99,6 +102,8 @@
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
 - Pools: support for dynamic queries within SORT BY expressions for sources. i.e. 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,#DATE#)' -> 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,2000)' (when the reference track has a date tag equal to '2000').
+- Dynamic queries: 'By... (query)' entry is now available even when no track has been selected. In such case the input popup warns about only static variables being available (some examples below). i.e. '"$year(%DATE%)" IS #YEAR#' can be used but not 'ARTIST IS #ARTIST#'.
+- Dynamic queries: when creating a new preset entry, a popup asks if it should be available even when no track is selected (i.e. a static entry -see above-).
 - Dynamic queries: support for '#NOW#' variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#' variables. See dynamic queries readme for more info.
 - Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#' variables for selections. See dynamic queries readme for more info.
