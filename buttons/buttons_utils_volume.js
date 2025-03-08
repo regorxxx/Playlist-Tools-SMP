@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//08/03/25
 
 /*
 	Output device selector
@@ -93,7 +93,7 @@ addButton({
 			else { this.applyInput(); }
 		},
 		gFont: _gdiFont(globFonts.button.name, globFonts.button.size * 1.2 * buttonsBar.config.textScale, FontStyle.Bold),
-		description: () => 'Current volume: ' + fb.Volume.toFixed(2) + ' dBs',
+		description: () => 'Current volume: ' + fb.Volume.toFixed(2) + ' dB',
 		prefix, buttonsProperties: newButtonsProperties,
 		variables: {
 			volumeFunc: () => (100 + fb.Volume).toFixed(0),
