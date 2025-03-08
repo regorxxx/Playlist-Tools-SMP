@@ -120,6 +120,7 @@
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
 						{ name: 'Rating > 2', query: globQuery.notLowRating },
+						{ name: 'Rating > 3', query: globQuery.ratingGr3 },
 						{ name: 'Not instrumental', query: globQuery.noInstrumental },
 						{ name: 'Not live (none)', query: globQuery.noLiveNone },
 						{ name: 'Not live (except Hi-Fi)', query: globQuery.noLive },
