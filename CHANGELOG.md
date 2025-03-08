@@ -78,6 +78,7 @@
 - Readmes: Ctrl + L. Click on any entry within 'Add button' submenu on toolbar now opens directly their associated readme (without actually adding the button).
 - Playlist Manager integration: added support for [foo_playcount_2003](https://marc2k3.github.io/component/playcount-2003/) tags in Smart Playlists. i.e. '%2003_ADDED%', '%2003_LAST_PLAYED%', '%2003_PLAYCOUNT%' and '%2003_RATING%'.
 ### Changed
+- Installation: script may now be installed at any path within the foobar profile folder, no longer limited to '[FOOBAR PROFILE FOLDER]\scripts\SMP\xxx-scripts\' folder. Obviously it may still be installed at such place, which may be preferred if updating an older version.
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support for locked playlists.
 - Script Integration\SMP Dynamic menu: changed names for the numbered menu entries, which are now prefixed with 'Playlist Tools: '. Adjust external buttons if needed to new path.
 - Script Integration\SMP Dynamic menu: improved menu (un)registering logic; now the numbered menu entries are always registered first (so they maintain their ID no matter if dynamic menus are enabled or not), thus not altering external buttons functionality. Note in any case the ID is still linked to button registering order, so other script buttons loaded first may alter the ID order if they also register their own menus (same than previous behavior).
