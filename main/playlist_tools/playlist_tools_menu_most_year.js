@@ -1,9 +1,9 @@
 ﻿'use strict';
-//15/11/24
+//08/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isEnhPlayCount:readable, timeKeys:readable, isPlayCount:readable, _q:readable, globTags:readable, VK_SHIFT:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isEnhPlayCount:readable, timeKeys:readable, isPlayCount:readable, _qCond:readable, globTags:readable, VK_SHIFT:readable */
 
 // Most played tracks at year
 {
@@ -139,9 +139,9 @@
 						const queryDateAndName = (selArgs, selYear) => {
 							let dateQuery = '';
 							if (selYear.length === 2) {
-								dateQuery = _q(globTags.date) + ' GREATER ' + (selYear[0] - 1) + ' AND ' + _q(globTags.date) + ' LESS ' + (selYear[1] + 1);
+								dateQuery = _qCond(globTags.date) + ' GREATER ' + (selYear[0] - 1) + ' AND ' + _qCond(globTags.date) + ' LESS ' + (selYear[1] + 1);
 							} else {
-								dateQuery = _q(globTags.date) + ' IS ' + selYear;
+								dateQuery = _qCond(globTags.date) + ' IS ' + selYear;
 							}
 							if (!forcedQueryMenusEnabled[name]) { selArgs.forcedQuery = ''; }
 							dateQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;
@@ -208,9 +208,9 @@
 						const queryDateAndName = (selArgs, selYear) => {
 							let dateQuery = '';
 							if (selYear.length === 2) {
-								dateQuery = _q(globTags.date) + ' GREATER ' + (selYear[0] - 1) + ' AND ' + _q(globTags.date) + ' LESS ' + (selYear[1] + 1);
+								dateQuery = _qCond(globTags.date) + ' GREATER ' + (selYear[0] - 1) + ' AND ' + _qCond(globTags.date) + ' LESS ' + (selYear[1] + 1);
 							} else {
-								dateQuery = _q(globTags.date) + ' IS ' + selYear;
+								dateQuery = _qCond(globTags.date) + ' IS ' + selYear;
 							}
 							if (!forcedQueryMenusEnabled[name]) { selArgs.forcedQuery = ''; }
 							dateQuery = selArgs.forcedQuery.length ? '(' + dateQuery + ') AND (' + selArgs.forcedQuery + ')' : dateQuery;

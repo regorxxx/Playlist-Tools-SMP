@@ -19,7 +19,7 @@ include('..\\helpers\\menu_xxx_extras.js');
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isString:readable, isStringWeak:readable, isJSON:readable, _q:readable */
+/* global isBoolean:readable, isString:readable, isStringWeak:readable, isJSON:readable, _qCond:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
@@ -46,7 +46,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	entries: ['Quicksearch entries', JSON.stringify([
 		{
 			name: 'Same Date',
-			query: _q(globTags.date) + ' IS #' + globTags.date + '#'
+			query: _qCond(globTags.date) + ' IS #' + globTags.date + '#'
 		},
 		{
 			name: 'Same Album',
@@ -100,7 +100,7 @@ var newButtonsProperties = { // NOSONAR[global]
 		},
 		{
 			name: 'Same Title, Artist(s) & Date',
-			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _q(globTags.date) + ' IS #' + globTags.date + '#)'
+			query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _qCond(globTags.date) + ' IS #' + globTags.date + '#)'
 		}
 	]), { func: isJSON }],
 	sortTF: ['Sorting TF expression', globTags.artist + '|%ALBUM%|%TRACK%', { func: isStringWeak }, globTags.artist + '|%ALBUM%|%TRACK%'],
@@ -281,7 +281,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 			entryText: 'By... (query)', func: () => {
 				// Input
 				let query = '';
-				try { query = utils.InputBox(window.ID, 'Enter query:\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (this.buttonsProperties.bEvalSel[1] ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)' + '\n\nPressing Shift while clicking on \'OK\' will open the search window.\nPressing Ctrl will create an AutoPlaylist.', 'Quicksearch', this.buttonsProperties.lastQuery[1] || 'TITLE IS #TITLE#', true); }
+				try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (this.buttonsProperties.bEvalSel[1] ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)' + '\n\nPressing Shift while clicking on \'OK\' will open the search window.\nPressing Ctrl will create an AutoPlaylist.', 'Quicksearch', this.buttonsProperties.lastQuery[1] || 'TITLE IS #TITLE#', true); }
 				catch (e) { return; }
 				if (query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, 'Quicksearch'); return; }
 				if (!query.length) { return; }
