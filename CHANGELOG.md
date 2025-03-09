@@ -74,6 +74,7 @@
 - Dynamic queries: new presets based on listen rates. Restore defaults to load the new presets.
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
+- Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
 - Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
 - Script Integration\Add SKIP tag at current playback: added warnings when trying to add SKIP tag to the end of start of a track.
 - Buttons: new 'utils_volume' button which may be used to display and control foobar2000 volume.
