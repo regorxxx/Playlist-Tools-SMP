@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/12/24
+//09/03/25
 
 /*
 	Automatic tagging...
@@ -21,7 +21,7 @@ include('..\\..\\helpers\\helpers_xxx_file.js');
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
-/* global getHandleListTags:readable */
+/* global getHandleListTags:readable, isSubsong:readable */
 
 function Tagger({
 	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: false, drMeter: true, LRA: true, KEY: true, bpmAnaly: false } */,
@@ -206,8 +206,8 @@ function Tagger({
 			// Check if there dsf files
 			const exts = this.selItems.Convert().map((handle) => handle.Path.split('.').slice(-1)[0]);
 			this.check.dsf = exts.some((ext) => ext === 'dsf');
-			// Check if there are ISO/CUE files (which can not be piped to ffmpeg)
-			this.check.subSong = this.selItems.Convert().some((handle, i) => handle.SubSong !== 0 && exts[i] !== 'dsf');
+			// Check if there are ISO/CUE/container files (which can not be piped to ffmpeg)
+			this.check.subSong = this.selItems.Convert().some((handle, i) => isSubsong(handle, exts[i]));
 			// Check if there are MP3 files (which have no MD5 tag)
 			const md5TF = fb.TitleFormat('[%__MD5%]');
 			this.check.md5 = this.selItems.Convert().some((handle) => !md5TF.EvalWithMetadb(handle).length);
@@ -242,7 +242,7 @@ function Tagger({
 						this.bFormatPopups && console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (%' + globTags.key + '%, %LRA%, %DACENESS%, %' + globTags.bpm + '%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 						// Remove old tags
 						{	// Update problematic tracks with safe tools
-							this.selItemsByCheck.subSong.present = new FbMetadbHandleList(handleArr.filter((handle) => handle.SubSong !== 0));
+							this.selItemsByCheck.subSong.present = new FbMetadbHandleList(handleArr.filter((handle) => isSubsong(handle)));
 							this.selItemsByCheck.subSong.present.Sort();
 							let arr = [];
 							const cleanTags = getCleanTags(true);
@@ -253,7 +253,7 @@ function Tagger({
 							}
 						}
 						{	// And then other tracks with the rest
-							this.selItemsByCheck.subSong.missing = new FbMetadbHandleList(handleArr.filter((handle) => handle.SubSong === 0 ));
+							this.selItemsByCheck.subSong.missing = new FbMetadbHandleList(handleArr.filter((handle) => !isSubsong(handle)));
 							this.selItemsByCheck.subSong.missing.Sort();
 							let arr = [];
 							const cleanTags = getCleanTags(false);

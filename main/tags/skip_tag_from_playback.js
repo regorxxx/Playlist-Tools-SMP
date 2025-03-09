@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/02/25
+//09/03/25
 
 /*
 	Add Skip Tag From Playback
@@ -12,7 +12,15 @@
 
 /* exported skipTagFromPlayback */
 
+/* global isSubsong:readable */
+
 function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying())) {
+	const isHandleSubsong = typeof isSubsong !== 'undefined'
+		? isSubsong
+		: (handle, ext = '') => {
+			const blackList = new Set(['.dsf']);
+			return handle.SubSong !== 0 && !blackList.has(ext || handle.Path.split('.').pop());
+		};
 	if (typeof selItem !== 'undefined' && selItem !== null) {
 		const countItems = selItem.Count;
 		if (countItems === 0) {
@@ -52,12 +60,14 @@ function skipTagFromPlayback(selItem = new FbMetadbHandleList(fb.GetNowPlaying()
 	}
 	SKIP.push((bEnd ? '' : '-') + time);
 	selItem.UpdateFileInfoFromJSON(JSON.stringify([{ SKIP }]));
+	const path = selItem[0].Path.split('\\').pop();
+	const ext = path.split('.').pop();
 	console.log(
 		'Skip Tag - ' + (bAppend ? 'Adding' : 'Setting') +
 		' SKIP tag on current track:\n' +
 		'\t ' + time + (bEnd ? ' (skips end)' : ' (skips start)') +
 		' -> ' +
-		selItem[0].Path.split('\\').pop() + (selItem[0].SubSong !== 0 ? ',' + selItem[0].SubSong : '')
+		path + (isHandleSubsong(selItem[0], ext) ? ',' + selItem[0].SubSong : '')
 	);
 	if (bEnd) { fb.Next(); }
 	return time;
