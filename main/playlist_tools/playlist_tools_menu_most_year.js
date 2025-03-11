@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -68,7 +68,7 @@
 						const selYear = new Date().getFullYear();
 						let input;
 						try { input = Number(utils.InputBox(window.ID, 'Enter year:', scriptName + ': ' + name, selYear, true)); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!Number.isSafeInteger(input)) { return; }
 						const args = { ...defaultArgs, year: input, bUseLast: false };
 						if (!forcedQueryMenusEnabled[name]) { args.forcedQuery = ''; }
@@ -81,7 +81,7 @@
 					menuName, entryText: 'Since last...', func: () => {
 						let input;
 						try { input = utils.InputBox(window.ID, 'Enter a number and time-unit. Can be:\n' + Object.keys(timeKeys).join(', '), scriptName + ': ' + name, '4 WEEKS', true).trim(); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!input.length) { return; }
 						const args = { ...defaultArgs, last: input, bUseLast: true };
 						if (!forcedQueryMenusEnabled[name]) { args.forcedQuery = ''; }
@@ -167,7 +167,7 @@
 								menuName, entryText: 'From year...', func: () => {
 									let selYear = new Date().getFullYear();
 									try { selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', scriptName + ': ' + name, selYear, true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									if (!selYear.length) { return; }
 									selYear = selYear.split(','); // May be a range or a number
 									for (let i = 0; i < selYear.length; i++) {
@@ -236,7 +236,7 @@
 								menuName, entryText: 'From year...', func: () => {
 									let selYear = new Date().getFullYear();
 									try { selYear = utils.InputBox(window.ID, 'Enter year or range of years\n(pair separated by comma)', scriptName + ': ' + name, selYear, true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									if (!selYear.length) { return; }
 									selYear = selYear.split(','); // May be a range or a number
 									for (let i = 0; i < selYear.length; i++) {

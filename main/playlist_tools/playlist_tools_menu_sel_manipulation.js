@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -54,7 +54,7 @@
 							tfo = selArg.tfo;
 						} else {
 							try { tfo = utils.InputBox(window.ID, 'Enter TF expression:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.tfo, true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 						}
 						if (!tfo.length) { return; }
 						return { tfo };
@@ -345,10 +345,10 @@
 							if (!tagValue.length || !tagName.length) { return; }
 						} else {
 							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (!tagName.length) { return; }
 							try { tagValue = utils.InputBox(window.ID, 'Enter tag values to match:\n(multiple values may be separated by \',\')', scriptName + ': ' + name, selArg.args.tagValue, true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (!tagValue.length) { return; }
 						}
 						return { args: { tagName, tagValue } };
@@ -458,7 +458,7 @@
 							tagName = selArg.args.tagName;
 						} else {
 							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 						}
 						if (!tagName.length) { return; }
 						return { args: { tagName, tagValue: null } };
@@ -576,7 +576,7 @@
 							if (!tagName.length) { return; }
 						} else {
 							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (!tagName.length) { return; }
 							tagName = tagName.split(/[;,]/g);
 						}
@@ -753,7 +753,7 @@
 							if (!tagName.length) { return; }
 						} else {
 							try { tagName = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, selArg.args.tagName, true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (!tagName.length) { return; }
 							tagName = tagName.split(/[;,]/g);
 						}
@@ -1325,7 +1325,7 @@
 						if (ap === -1) { return; }
 						let pos = 0;
 						try { pos = utils.InputBox(window.ID, 'Move by delta value:\n(positive or negative)\n\nNon-contiguous selection is kept unless extremes can not move.', scriptName + ': ' + name, 1, true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!pos) { return; }
 						plman.UndoBackup(ap);
 						plman.MovePlaylistSelection(ap, pos);
@@ -1339,7 +1339,7 @@
 						let bReverse = false;
 						const total = plman.PlaylistItemCount(ap);
 						try { pos = Number(utils.InputBox(window.ID, 'Move to position:\n(from 1 [beginning] to ' + total + ' [end] or -1 [end] to -' + total + ' [beginning]))\n\nNon-contiguous selection is kept unless extremes can not move (use negative values to send from end without compacting it).', scriptName + ': ' + name, 1, true)); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (pos === 0) { return; }
 						if (pos < 0) { bReverse = true; pos = -pos; }
 						const first = bReverse
@@ -1398,10 +1398,10 @@
 							query = selArg.query;
 						} else {
 							try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, '', true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (!query.includes('#')) { // Try the query only if it is not a dynamic one
 								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
+								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; } // eslint-disable-line no-unused-vars
 							}
 						}
 						if (!query.length) { return; }
@@ -1451,7 +1451,7 @@
 												} else if (!query.length) { query = defaultArgs.forcedQuery; } // Empty uses forced query or ALL
 											} else if (!query.length) { query = 'ALL'; } // Otherwise empty is replaced with ALL
 											try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; }
+											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; } // eslint-disable-line no-unused-vars
 											// Execute
 											selectByQuery(null, query);
 										}, flags: playlistCountFlagsAddRem
@@ -1464,7 +1464,7 @@
 									selArg.query = menu_properties['selQueryFilterCustomArg'][1];
 									let input;
 									try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									// Forced query
 									let query = input;
 									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
@@ -1483,7 +1483,7 @@
 										}
 									}
 									try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; }
+									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; } // eslint-disable-line no-unused-vars
 									// Execute
 									selectByQuery(null, query);
 									// For internal use original object
@@ -1595,7 +1595,7 @@
 						if (ap === -1) { return; }
 						let input = menu_properties.playlistLength[1];
 						try { input = Number(utils.InputBox(window.ID, 'Enter num of next items to select from focused item:\n(< 0 will go backwards)\n(= 1 will only select the focused item)', scriptName + ': ' + name, input, true)); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!Number.isFinite(input)) { return; }
 						if (!input) { return; }
 						let start = plman.GetPlaylistFocusItemIndex(ap);
@@ -1849,7 +1849,7 @@
 						name: 'By... (tags)', args: () => {
 							let input = globTags.artist + ';%ALBUM%';
 							try { input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true); }
-							catch (e) { return []; }
+							catch (e) { return []; } // eslint-disable-line no-unused-vars
 							return input.length ? input.split(';') : [];
 						}
 					},
@@ -1908,7 +1908,7 @@
 						name: 'By... (tags)', args: () => {
 							let input = globTags.artist + ';%ALBUM%';
 							try { input = utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(multiple values may be separated by \';\')', scriptName + ': ' + name, input, true); }
-							catch (e) { return []; }
+							catch (e) { return []; } // eslint-disable-line no-unused-vars
 							return input.length ? input.split(';') : [];
 						}
 					},

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, globQuery:readable */
 
@@ -49,20 +49,20 @@
 				menu_properties['searchCustomArg'].push({ func: isJSON }, menu_properties['searchCustomArg'][1]);
 				// Helpers
 				const inputStdQuery = (bCopyCurrent = false) => {
-					if (bCopyCurrent) {
+					if (bCopyCurrent) { // NOSONAR
 						return { query: selArg.query };
 					} else {
 						let query = '';
 						try { query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!query.length) { return; }
 						if (!checkQuery(query, true)) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; }
 						let tfo = '';
 						try { tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						let direction = 1;
 						try { direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true)); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (isNaN(direction)) { return; }
 						direction = direction > 0 ? 1 : -1;
 						return { query, sort: { tfo, direction } };
@@ -112,7 +112,7 @@
 									// Input
 									let query;
 									try { query = utils.InputBox(window.ID, 'Enter query:', scriptName + ': ' + name, selArg.query, true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									// Playlist
 									let handleList = dynamicQuery({
 										query: forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length

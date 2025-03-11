@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -37,23 +37,23 @@
 				menu_properties['sameByQueries'].push({ func: isJSON }, menu_properties['sameByQueries'][1]);
 				menu_properties['sameByCustomArg'].push({ func: isString }, menu_properties['sameByCustomArg'][1]);
 				// Helpers
-				const inputSameByQuery = (bCopyCurrent = false) => {
-					if (bCopyCurrent) {
+				const inputSameByQuery = (bCopyCurrent = false) => { // NOSONAR
+					if (bCopyCurrent) { // NOSONAR
 						return { args: selArg.args };
 					} else {
 						let input = '';
 						try { input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!input.length) { return; }
 						if (!input.includes(',')) { return; }
 						if (input.includes(';')) { return; }
 						let logic = 'AND';
 						try { logic = utils.InputBox(window.ID, 'Enter logical operator to combine queries for each different tag.\n', scriptName + ': ' + name, logic, true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!logic.length) { return; }
 						let remap;
 						try { remap = utils.InputBox(window.ID, 'Remap tags to apply the same query to both.\nEnter \'mainTagA,toTag,...;mainTagB,...\'\nSeparated by \',\' and \';\'.\n', scriptName + ': ' + name, '', true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						let bOnlyRemap = false;
 						if (remap.length) {
 							const answer = WshShell.Popup('Instead of applying the same query remapped tags, the original tag may be remapped to the desired track. Forcing that Tag B should match TagA.\nFor example: Finds tracks where involved people matches artist from selection', 0, scriptName + ': ' + name, popup.question + popup.yes_no);
@@ -66,7 +66,7 @@
 							const selInfo = sel.GetFileInfo();
 							if (!Object.keys(input.args.sameBy).every((key) => { return selInfo.MetaFind(key) === -1; })) {
 								try { if (!searchSameByCombs({ ...input.args, bSendToPls: false })) { throw new Error(); } }
-								catch (e) { fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName); return; }
+								catch (e) { fb.ShowPopupMessage('Arguments not valid, check them and try again:\n' + JSON.stringify(input), scriptName); return; } // eslint-disable-line no-unused-vars
 							}
 						}
 						return input;
@@ -118,7 +118,7 @@
 									// Input
 									let input;
 									try { input = utils.InputBox(window.ID, 'Enter pairs of \'tag, number of matches\', separated by comma.\n', scriptName + ': ' + name, convertObjectToString(selArg.args.sameBy, ','), true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									if (!input.length) { return; }
 									// For internal use original object
 									selArg.args.sameBy = convertStringToObject(input, 'number', ',');

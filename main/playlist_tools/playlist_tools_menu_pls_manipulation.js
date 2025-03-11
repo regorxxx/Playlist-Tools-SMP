@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -59,12 +59,12 @@
 								menuName: subMenuName, entryText: 'Filter playlist by... (tags)', func: () => {
 									let tags;
 									try { tags = utils.InputBox(window.ID, 'Enter list of tags separated by comma', scriptName + ': ' + name, sortInputDuplic.join('|'), true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									if (!tags.length) { return; }
 									tags = tags.split(',').filter((val) => val);
 									let n;
 									try { n = Number(utils.InputBox(window.ID, 'Number of duplicates allowed (n + 1)', scriptName + ': ' + name, nAllowed, true)); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									if (!Number.isSafeInteger(n)) { return; }
 									filterDuplicates({ checkKeys: tags, sortBias, nAllowed: n, bAdvTitle, bMultiple });
 								}, flags: playlistCountFlagsAddRem
@@ -161,10 +161,10 @@
 							query = selArg.query;
 						} else {
 							try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, '', true); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (!query.includes('#')) { // Try the query only if it is not a dynamic one
 								try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; }
+								catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName + ': ' + name); return; } // eslint-disable-line no-unused-vars
 							}
 						}
 						if (!query.length) { return; }
@@ -214,7 +214,7 @@
 												} else if (!query.length) { query = defaultArgs.forcedQuery; } // Empty uses forced query or ALL
 											} else if (!query.length) { query = 'ALL'; } // Otherwise empty is replaced with ALL
 											try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; }
+											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; } // eslint-disable-line no-unused-vars
 											// Execute
 											filterByQuery(null, query);
 										}, flags: playlistCountFlagsAddRem
@@ -227,7 +227,7 @@
 									selArg.query = menu_properties['queryFilterCustomArg'][1];
 									let input;
 									try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									// Forced query
 									let query = input;
 									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) { // With forced query enabled
@@ -246,7 +246,7 @@
 										}
 									}
 									try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; }
+									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, scriptName); return; } // eslint-disable-line no-unused-vars
 									// Execute
 									filterByQuery(null, query);
 									// For internal use original object
@@ -430,7 +430,7 @@
 					menuName, entryText: name, func: () => {
 						let input;
 						try { input = utils.InputBox(window.ID, 'Enter name:', scriptName + ': ' + name, 'New playlist', true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!input.length) { return; }
 						plman.ActivePlaylist = plman.FindOrCreatePlaylist(input, false);
 					}

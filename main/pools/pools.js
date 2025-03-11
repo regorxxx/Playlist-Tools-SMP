@@ -624,7 +624,7 @@ function _pools({
 					: '_LIBRARY_0,15;_LIBRARY_1,15;_LIBRARY_2,15',
 				true
 			);
-		} catch (e) { return; }
+		} catch (e) { return; } // eslint-disable-line no-unused-vars
 		if (!fromPls.length) { console.log('Input was empty'); return; }
 		if (!fromPls.includes(',')) { console.log('Input was not a pair separated by \',\''); return; }
 		fromPls = fromPls.split(';');
@@ -666,7 +666,7 @@ function _pools({
 					: Object.keys(fromPls).reduce((total, key) => { return total + (total.length ? ';' : '') + key + ',' + 'ALL'; }, ''),
 				true
 			);
-		} catch (e) { return; }
+		} catch (e) { return; } // eslint-disable-line no-unused-vars
 		if (!query.length) { console.log('Input was empty'); return; }
 		if (!query.includes(',')) { console.log('Input was not a pair separated by \',\''); return; }
 		query = query.split(';');
@@ -695,7 +695,7 @@ function _pools({
 					: Object.keys(fromPls).reduce((total, key) => { return total + (total.length ? ';' : '') + key + ',' + pickMethodsKeys[0]; }, ''),
 				true
 			);
-		} catch (e) { return; }
+		} catch (e) { return; } // eslint-disable-line no-unused-vars
 		if (!pickMethod.length) { console.log('Input was empty'); return; }
 		if (!pickMethod.includes(',')) { console.log('Input was not a pair separated by \',\''); return; }
 		pickMethod = pickMethod.split(';');
@@ -710,12 +710,12 @@ function _pools({
 		// Destination
 		let toPls;
 		try { toPls = utils.InputBox(window.ID, 'Enter playlist destination:', (this.title ? this.title + ': ' : '') + 'Pools', 'Playlist C', true); }
-		catch (e) { return; }
+		catch (e) { return; } // eslint-disable-line no-unused-vars
 		if (!toPls.length) { console.log('Input was empty'); return; }
 		// Sort
 		let sort = '';
 		try { sort = utils.InputBox(window.ID, 'Enter final sorting:\n(empty to randomize)', (this.title ? this.title + ': ' : '') + 'Pools', '%PLAYLIST_INDEX%', true); }
-		catch (e) { return; }
+		catch (e) { return; } // eslint-disable-line no-unused-vars
 		return { pool: { fromPls, query, toPls, sort, pickMethod } };
 	};
 

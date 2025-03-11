@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//11/03/25
 
 /* exported mainMenuSMP, executeByName */
 
@@ -91,7 +91,7 @@
 								if (entryName.length) {
 									try {
 										menu.btn_up(void (0), void (0), void (0), entryName);
-									} catch (e) { console.log('executeByName: Error evaluating: ' + entryName + ' from menu.'); }
+									} catch (e) { console.log('executeByName: Error evaluating: ' + entryName + ' from menu.'); } // eslint-disable-line no-unused-vars
 								} else { console.log('executeByName: Entry has no name property: ' + entry); }
 							});
 						} else { console.log('executeByName: Error reading source file(s): ' + ajQueryFile); }
@@ -148,11 +148,11 @@
 										name: 'Custom menu', func: (idx = onMainMenuEntries.length) => {
 											let funcName = '';
 											try { funcName = utils.InputBox(window.ID, 'Enter menu entry:\n(subMenu\\Entry)\n\nMenu names may be easily retrieved by simulating menu execution with Ctrl + L. Click, which copies entry names to clipboard.', 'Playlist Tools: ' + toolName, '', true); }
-											catch (e) { return false; }
+											catch (e) { return false; } // eslint-disable-line no-unused-vars
 											if (!funcName.length) { return false; }
 											let name = '';
 											try { name = utils.InputBox(window.ID, 'Enter description (name)', 'Playlist Tools: ' + toolName, funcName, true); }
-											catch (e) { return false; }
+											catch (e) { return false; } // eslint-disable-line no-unused-vars
 											if (!name.length) { return false; }
 											let icon = '';
 											// Add icons
@@ -177,15 +177,15 @@
 										name: 'Custom function (+ include script)', func: (idx = onMainMenuEntries.length) => {
 											let path = '';
 											try { path = utils.InputBox(window.ID, 'Enter script path:\n(Use \'.\\\' for relative paths at ' + folders.xxx + ')', 'Playlist Tools: ' + toolName, '.\\main\\tags\\skip_tag_from_playback.js', true); }
-											catch (e) { return false; }
+											catch (e) { return false; } // eslint-disable-line no-unused-vars
 											if (!path.length) { return false; }
 											let funcName = '';
 											try { funcName = utils.InputBox(window.ID, 'Enter function name:', 'Playlist Tools: ' + toolName, '', true); }
-											catch (e) { return false; }
+											catch (e) { return false; } // eslint-disable-line no-unused-vars
 											if (!funcName.length) { return false; }
 											let name = '';
 											try { name = utils.InputBox(window.ID, 'Enter description (name):', 'Playlist Tools: ' + toolName, funcName, true); }
-											catch (e) { return false; }
+											catch (e) { return false; } // eslint-disable-line no-unused-vars
 											if (!name.length) { return false; }
 											onMainMenuEntries[idx] = mainMenuSMP[mainMenuSMP.length] = { name, funcName, path };
 											return true;
@@ -353,7 +353,7 @@
 						const scriptIncluded = JSON.parse(properties['scriptIncluded'][1]);
 						scriptIncluded.forEach((scrObj) => {
 							try { include(scrObj.path); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 						});
 					}
 				});
@@ -387,11 +387,11 @@
 									let input;
 									let path = '';
 									try { path = utils.InputBox(window.ID, 'Enter script path:\nIts use is done at your own responsibility.', scriptName + ': ' + name, '', true); }
-									catch (e) { return; }
+									catch (e) { return; } // eslint-disable-line no-unused-vars
 									if (menu.isSeparator(path)) { input = { name: path }; } // Add separator
 									else if (_isFile(path)) { // or new entry
 										try { include(path); }
-										catch (e) { return; }
+										catch (e) { return; } // eslint-disable-line no-unused-vars
 										const arr = utils.SplitFilePath(path);
 										const name = (arr[1].endsWith(arr[2])) ? arr[1] : arr[1] + arr[2]; // <1.4.0 Bug: [directory, filename + filename_extension,
 										input = { name, path };
