@@ -1,9 +1,9 @@
 ﻿'use strict';
-//07/03/25
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable, _resolvePath:readable */
 
 // Other tools
 {
@@ -138,7 +138,7 @@
 						});
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Set dictionary...', func: () => {
-								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.getDictPath()).sort().join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
+								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.dictPath).sort((a, b) => a.localeCompare(b)).join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
 								if (menu_properties.dictName[1] === input) { return; }
 								if (!input.length) { input = menu_properties.dictName[3]; }
 								dictSettings.dictName = input;
@@ -153,13 +153,13 @@
 						});
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Sets dictionaries folder...', func: () => {
-								let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(leave it empty to restore default path)\n\nPaths starting with \'.\\profile\\\' are relative to the profile folder.\nPaths starting with \'.\\\' are relative to the script\\package root folder.', scriptName + ': ' + name, menu_properties.dictPath[1]);
+								let input = utils.InputBox(window.ID, 'Path to all dictionaries subfolders:\n(leave it empty to restore default path)\n\nPaths starting with \'.\\profile\\\' are relative to foobar profile folder.\nPaths starting with \'' + folders.xxxRootName + '\' are relative to this script\'s folder.', scriptName + ': ' + name, menu_properties.dictPath[1]);
 								if (input.length && !input.endsWith('\\')) { input += '\\'; }
 								if (menu_properties.dictPath[1] === input) { return; }
 								if (!input.length) { input = menu_properties.dictPath[3]; }
 								dictSettings.dictPath = input;
-								if (!_isFolder(dictSettings.getDictPath())) {
-									fb.ShowPopupMessage('Folder does not exist:\n' + dictSettings.getDictPath(), scriptName);
+								if (!_isFolder(dictSettings.dictPath)) {
+									fb.ShowPopupMessage('Folder does not exist:\n' + _resolvePath(dictSettings.dictPath), scriptName);
 									dictSettings.dictPath = menu_properties.dictPath[1] + (menu_properties.dictPath[1].endsWith('\\') ? '' : '\\');
 									return;
 								}
@@ -358,7 +358,7 @@
 								let discardMask = '';
 								let path;
 								try { path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true); }
-								catch (e) { return; }
+								catch (e) { return; } // eslint-disable-line no-unused-vars
 								if (!_isFile(path) && !path.includes('http://') && !path.includes('https://')) {
 									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': ' + name);
 									return;
@@ -384,7 +384,7 @@
 									// Parse mask
 									formatMask = JSON.parse(formatMask);
 								}
-								catch (e) { console.log('Playlist Tools: Invalid format mask'); return; }
+								catch (e) { console.log('Playlist Tools: Invalid format mask'); return; } // eslint-disable-line no-unused-vars
 								if (!formatMask) { return; }
 								if (!bPresetUsed) {
 									discardMask = Input.string(
@@ -424,10 +424,10 @@
 							menuName: subMenuName, entryText: 'Configure filters...', func: () => {
 								let input;
 								try { input = utils.InputBox(window.ID, 'Enter array of queries to apply as consecutive conditions:\n\n[\'%CHANNELS% LESS 3\', \'' + globTags.rating + ' GREATER 2\']\n\nThe example would try to find matches with 2 or less channels, then filter those results with rating > 2. In case the later filter does not output at least a single track, then will be skipped and only the previous filter applied (channels)... and so on (for more filters).', scriptName + ': ' + name, menu_properties.importPlaylistFilters[1].replace(/"/g, '\''), true).replace(/'/g, '"'); }
-								catch (e) { return; }
+								catch (e) { return; } // eslint-disable-line no-unused-vars
 								if (!input.length) { input = '[]'; }
 								try { JSON.parse(input); }
-								catch (e) { console.log('Playlist Tools: Invalid filter array'); return; }
+								catch (e) { console.log('Playlist Tools: Invalid filter array'); return; } // eslint-disable-line no-unused-vars
 								if (input !== menu_properties.importPlaylistFilters[1]) { menu_properties.importPlaylistFilters[1] = input; }
 								overwriteMenuProperties(); // Updates panel
 							}

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/03/25
+//11/03/25
 
 /*
 	Check Library Tags
@@ -54,7 +54,7 @@
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, iStepsLibrary:readable, iDelayLibrary:readable, popup:readable, globTags:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
-/* global _isFile:readable, utf8:readable, _open:readable, WshShell:readable, _jsonParseFileCheck:readable, _save:readable */
+/* global _isFile:readable, utf8:readable, _open:readable, WshShell:readable, _jsonParseFileCheck:readable, _save:readable, _resolvePath:readable */
 include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
@@ -75,7 +75,7 @@ const checkTags_properties = {
 	bAskForConfigTags: ['Enables popup asking to config excluded tags', false],
 	bUseDic: ['Enables dictionary checking for every tag value (slow!)', false],
 	dictName: ['Dictionary name (available: de_DE, en_GB, en_US, fr_FR)', 'en_US'],
-	dictPath: ['Path to all dictionaries', '.\\helpers-external\\typo\\dictionaries\\'],
+	dictPath: ['Path to all dictionaries', folders.xxxRootName + 'helpers-external\\typo\\dictionaries\\'],
 	bUseGraphGenres: ['Use genre checking on Graph', false],
 };
 checkTags_properties['tagNamesToCheck'].push({ func: isString }, checkTags_properties['tagNamesToCheck'][1]);
@@ -91,16 +91,8 @@ var checkTags_prefix = 'ct_'; // NOSONAR
 const dictSettings = {
 	dictName: checkTags_properties.dictName[1],
 	dictPath: checkTags_properties.dictPath[1] + (checkTags_properties.dictPath[1].endsWith('\\') ? '' : '\\'),
-	getDictPath() {
-		return (this.dictPath.startsWith('.\\profile\\')
-			? this.dictPath.replace('.\\profile\\', fb.ProfilePath)
-			: this.dictPath.startsWith('.\\')
-				? this.dictPath.replace('.\\', folders.xxx)
-				: this.dictPath
-		);
-	},
 	getLangPath() {
-		return this.getDictPath() + this.dictName + '\\';
+		return _resolvePath(this.dictPath) + this.dictName + '\\';
 	},
 	getAffPath() {
 		return this.getLangPath() + this.dictName + '.aff';
