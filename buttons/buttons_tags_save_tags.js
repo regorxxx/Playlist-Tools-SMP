@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//11/03/25
 
 /*
 	-> EDIT
@@ -23,7 +23,7 @@ include('..\\main\\tags\\save_tags.js');
 var prefix = 'st_'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Save tags button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Save tags button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { // NOSONAR[global]
@@ -43,7 +43,7 @@ addButton({
 			if (readme.length) { fb.ShowPopupMessage(readme, 'Save tags and comparison'); }
 			let file;
 			try { file = utils.InputBox(window.ID, 'Path to save tags file:', 'Tags file', folders.data + 'tags.json', true); }
-			catch (e) { return; }
+			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!file.length) { return; }
 			saveTags({ file });
 		},
@@ -57,17 +57,17 @@ addButton({
 		func: function () {
 			let file;
 			try { file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true); }
-			catch (e) { return; }
+			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!file.length) { return; }
 			const toTags = _jsonParseFileCheck(file, 'Tags file', 'Save tags', utf8);
 			if (!toTags || !toTags.length) { return; }
 			let toTagsFolder;
 			try { toTagsFolder = utils.InputBox(window.ID, 'Root path of the original file tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true); }
-			catch (e) { return; }
+			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!toTagsFolder.length) { return; }
 			let selItemsFolder;
 			try { selItemsFolder = utils.InputBox(window.ID, 'Root path of the current tracks:', 'Current root path', toTagsFolder, true); }
-			catch (e) { return; }
+			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!selItemsFolder.length) { return; }
 			compareTags({ toTags, toTagsFolder, selItemsFolder });
 		},

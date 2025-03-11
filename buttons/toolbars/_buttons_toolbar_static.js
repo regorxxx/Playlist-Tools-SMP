@@ -1,5 +1,5 @@
 ﻿'use strict';
-//31/10/24
+//11/03/25
 
 /*
 	This is an example of how merging buttons works. Just include them...
@@ -35,7 +35,8 @@ include('..\\..\\helpers\\helpers_xxx_UI.js');
 /* global RGB:readable */
 include('..\\..\\helpers\\buttons_merged_menu.js');
 
-try {window.DefinePanel('Merged Buttons bar', {author:'xxx'});} catch (e) {console.log('Merged Buttons loaded.');} //May be loaded along other buttons
+//May be loaded along other buttons
+try {window.DefinePanel('Merged Buttons bar', {author:'xxx'});} catch (e) {console.log('Merged Buttons loaded.');} // eslint-disable-line no-unused-vars
 
 // Global toolbar color
 buttonsBar.config.bToolbar = true; // Change this on buttons bars files to set the background color
