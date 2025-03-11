@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//11/03/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -93,25 +93,25 @@
 				menu_properties['dynamicQueriesCustomArg'].push({ func: (query) => { return checkQuery(query, true); } }, menu_properties['dynamicQueriesCustomArg'][1]);
 				// Helper
 				const inputDynQuery = (bCopyCurrent = false) => {
-					if (bCopyCurrent) {
+					if (bCopyCurrent) { // NOSONAR
 						return { query: selArg.query };
 					} else {
 						let query = '';
 						try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with focused item\'s value.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!query.length) { return; }
 						let tfo = '';
 						try { tfo = utils.InputBox(window.ID, 'Enter TF expression for sorting:', scriptName + ': ' + name, '', true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						let direction = 1;
 						try { direction = Number(utils.InputBox(window.ID, 'Direction:\n(-1 or 1)', scriptName + ': ' + name, 1, true)); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (isNaN(direction)) { return; }
 						direction = direction > 0 ? 1 : -1;
 						const bStatic = WshShell.Popup('Force evaluation even when no selection is available?', 0, window.Name, popup.question + popup.yes_no) === popup.yes;
 						// Final check
 						try { if (!dynamicQuery({ query, bSendToPls: false, bForceStatic: bStatic })) { throw new Error(); } }
-						catch (e) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; }
+						catch (e) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; } // eslint-disable-line no-unused-vars
 						return { query, sort: { tfo, direction }, bStatic };
 					}
 				};
@@ -162,12 +162,12 @@
 							menu.newEntry({
 								menuName, entryText: 'By... (query)', func: () => {
 									let input = '';
-									if (selectedFlags === MF_STRING) {
+									if (selectedFlags() === MF_STRING) {
 										// On first execution, must update from property
 										selArg.query = menu_properties['dynamicQueriesCustomArg'][1];
 										// Input
 										try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (bEvalSel ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, selArg.query, true); }
-										catch (e) { return; }
+										catch (e) { return; } // eslint-disable-line no-unused-vars
 										if (input.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + input, scriptName); return; }
 										// Playlist
 										const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
@@ -179,7 +179,7 @@
 										overwriteMenuProperties(); // Updates panel
 									} else { // Skip using cached value without selection
 										try { input = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables (which don\'t require a selection), like #NOW#, which will be replaced before execution.\n(see \'Dynamic queries\' readme for more info)', scriptName + ': ' + name, '"$year(%DATE%)" IS #YEAR#', true); }
-										catch (e) { return; }
+										catch (e) { return; } // eslint-disable-line no-unused-vars
 										// Playlist
 										const query = forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length ? (input.length && input.toUpperCase() !== 'ALL' ? '(' + input + ') AND (' + defaultArgs.forcedQuery + ')' : input) : (!input.length ? 'ALL' : input);
 										const handleList = dynamicQuery({ query, bForceStatic: true });

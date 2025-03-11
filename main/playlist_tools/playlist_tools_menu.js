@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//11/03/25
 
 /*
 	Playlist Tools Menu
@@ -120,7 +120,12 @@ const defaultArgs = {
 const defaultArgsClean = () => {
 	return Object.fromEntries(Object.keys(defaultArgs).filter((key) => key !== 'parent').map((key) => [key, defaultArgs[key]]));
 };
-const newReadmeSep = (() => { let i = 0; return (bFull = false) => { return (bFull ? { ['sep' + ++i]: 'sep' } : ['sep' + ++i]); }; })();
+const newReadmeSep = (() => {
+	let i = 0;
+	return (bFull = false) => { // NOSONAR
+		return (bFull ? { ['sep' + ++i]: 'sep' } : ['sep' + ++i]); // NOSONAR
+	};
+})();
 // {scriptName: path} or {arbitraryKey: 'sep'}
 var readmes = { // NOSONAR [global]
 	'Playlist Tools Menu': folders.xxx + 'helpers\\readme\\playlist_tools_menu.txt',
@@ -572,14 +577,14 @@ function createMainMenuDynamic() {
 			// Cut names
 			menuList = menuList.map((item) => {
 				item.fullName = item.name;
-				item.name = item.name.replaceAll('&&','&').split('\t').map((s) => s.cut(70)).join('\t');
+				item.name = item.name.replaceAll('&&', '&').split('\t').map((s) => s.cut(70)).join('\t');
 				return item;
 			});
 		}
 		// Create dynamic menus
 		dynamicMenuList.forEach((menu, i) => {
 			const entry = 'Playlist Tools: ' +
-				menu.name.replaceAll('&&','&').split('\t').map((s) => s.cut(70)).join('\t');
+				menu.name.replaceAll('&&', '&').split('\t').map((s) => s.cut(70)).join('\t');
 			if (menu_panelProperties.bDebug[1]) {
 				lastEntry = 'Playlist Tools: registering menu...\n\t Entry: ' + entry + '\n\t Description: ' + menu.name;
 			}

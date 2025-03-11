@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//11/03/25
 
 /* exported onMainMenuEntries, bindDynamicMenus */
 
@@ -74,10 +74,10 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 					entry.path = '';
 				}
 				try { eval(entry.funcName)(); }
-				catch (e) { console.popup('Error evaluating: ' + entry.funcName + ' from script (' + (entry.path.length ? entry.path : 'parent') + ').', 'SMP Dynamic menu'); }
+				catch (e) { console.popup('Error evaluating: ' + entry.funcName + ' from script (' + (entry.path.length ? entry.path : 'parent') + ').', 'SMP Dynamic menu'); } // eslint-disable-line no-unused-vars
 			} else if (Object.hasOwn(entry, 'menuName')) {
 				try { eval(entry.menuName).btn_up(void (0), void (0), void (0), entry.funcName); }
-				catch (e) { console.popup('Error evaluating: ' + entry.funcName + ' from menu (' + entry.menuName + ').', 'SMP Dynamic menu'); }
+				catch (e) { console.popup('Error evaluating: ' + entry.funcName + ' from menu (' + entry.menuName + ').', 'SMP Dynamic menu'); } // eslint-disable-line no-unused-vars
 			}
 		} else {
 			const isFunction = (obj) => !!(obj && obj.constructor && obj.call && obj.apply);
@@ -85,10 +85,10 @@ addEventListener('on_main_menu_dynamic', (idx) => {
 			if (Object.hasOwn(entry, 'parentMenu') && entry.parentMenu) { // Other buttons
 				try {
 					(entry.args ? entry.parentMenu(entry.args) : entry.parentMenu()).btn_up(void (0), void (0), void (0), name);
-				} catch (e) { console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu'); }
+				} catch (e) { console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu'); } // eslint-disable-line no-unused-vars
 			} else { // Playlist Tools
 				try { menu.btn_up(void (0), void (0), void (0), name); }
-				catch (e) { console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu'); }
+				catch (e) { console.popup('Error evaluating: ' + name + '.', 'SMP Dynamic menu'); } // eslint-disable-line no-unused-vars
 			}
 		}
 	}

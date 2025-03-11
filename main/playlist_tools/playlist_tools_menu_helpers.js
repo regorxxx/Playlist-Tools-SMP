@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/11/24
+//11/03/25
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -44,7 +44,7 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 	propObject['playlistLength'][1] = Number(propObject['playlistLength'][1]);
 	if (!Number.isSafeInteger(propObject['playlistLength'][1]) || propObject['playlistLength'][1] <= 0) { fb.ShowPopupMessage('Playlist length must be a positive integer.\n' + propObject['playlistLength'].slice(0, 2), scriptName); }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), propObject['forcedQuery'][1]); }
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + propObject['forcedQuery'], scriptName); }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + propObject['forcedQuery'], scriptName); } // eslint-disable-line no-unused-vars
 	// Info Popup
 	let panelPropObject = (typeof buttonsBar !== 'undefined') ? getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0) : propObject;
 	if (!panelPropObject['firstPopup'][1]) {
@@ -162,7 +162,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				const oriEntry = JSON.stringify(entry);
 				let newEntry = oriEntry;
 				try { newEntry = utils.InputBox(window.ID, 'Edit entry as JSON:', scriptName + ': ' + options.name, oriEntry, true); }
-				catch (e) { return; }
+				catch (e) { return; } // eslint-disable-line no-unused-vars
 				if (newEntry === oriEntry) { return; }
 				if (!newEntry || !newEntry.length) { fb.ShowPopupMessage('Input: ' + newEntry + '\n\nNon valid entry.', 'JSON error'); return; }
 				try { newEntry = JSON.parse(newEntry); } catch (e) { fb.ShowPopupMessage('Input: ' + newEntry.toString() + '\n\n' + e, 'JSON error'); return; }
@@ -194,7 +194,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			menuName: subMenuThirdName, entryText: 'Move entry...', func: () => {
 				let pos = 1;
 				try { pos = Number(utils.InputBox(window.ID, 'Move up X indexes (negative is down):\n', scriptName + ': ' + options.name, pos, true)); }
-				catch (e) { return; }
+				catch (e) { return; } // eslint-disable-line no-unused-vars
 				if (pos === 0 || !Number.isSafeInteger(pos)) { return; }
 				if (index - pos < 0) { pos = 0; }
 				else if (index - pos >= options.list.length) { pos = options.list.length; }
@@ -213,7 +213,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 					let entryName = '';
 					if (menu.isNotSeparator(entry)) {
 						try { entryName = utils.InputBox(window.ID, 'Enter new name for cloned menu entry:', scriptName + ': ' + options.name, '', true); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (!entryName.length) { return; }
 						if (menu.isSeparator({ name: entryName })) { return; } // Add separator
 						else { // or new entry
@@ -294,7 +294,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				let input;
 				let entryName = '';
 				try { entryName = utils.InputBox(window.ID, 'Enter name for menu entry\nWrite \'sep\' to add a line.', scriptName + ': ' + options.name, '', true); }
-				catch (e) { return; }
+				catch (e) { return; } // eslint-disable-line no-unused-vars
 				if (!entryName.length) { return; }
 				if (menu.isSeparator({ name: entryName })) { input = { name: entryName }; } // Add separator
 				else { // or new entry
@@ -359,7 +359,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 function importPreset(path = folders.data + 'playlistTools_presets.json') {
 	let file;
 	try { file = utils.InputBox(window.ID, 'Do you want to import a presets file?\nWill not overwrite current ones.\n(input path to file)', scriptName + ': ' + configMenu, path, true); }
-	catch (e) { return false; }
+	catch (e) { return false; } // eslint-disable-line no-unused-vars
 	if (!file.length) { return false; }
 	const newPresets = _jsonParseFileCheck(file, 'Presets', scriptName, utf8);
 	if (!newPresets) { return false; }

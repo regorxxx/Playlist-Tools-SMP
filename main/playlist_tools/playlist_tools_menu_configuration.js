@@ -66,7 +66,7 @@
 									const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, menu_properties['forcedQuery'][1]);
 									if (menu_properties['forcedQuery'][1] === input) { return; }
 									try { fb.GetQueryItems(new FbMetadbHandleList(), input); } // Sanity check
-									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return; }
+									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return; } // eslint-disable-line no-unused-vars
 									defaultArgs.forcedQuery = input;
 									menu_properties['forcedQuery'][1] = input;
 									overwriteMenuProperties(); // Updates panel
@@ -116,7 +116,7 @@
 												input = menu_properties['forcedQuery'][1].length ? _p(menu_properties['forcedQuery'][1]) + input : input;
 											}
 											try { fb.GetQueryItems(new FbMetadbHandleList(), input); } // Sanity check
-											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, 'Search by distance'); return; }
+											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, 'Search by distance'); return; } // eslint-disable-line no-unused-vars
 											menu_properties['forcedQuery'][1] = input;
 											overwriteMenuProperties(); // Updates panel
 										}
@@ -158,7 +158,7 @@
 					menuName: subMenuName, entryText: 'Configure Tags or TF expression...', func: () => {
 						let input = [];
 						try { input = JSON.parse(utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(sep by comma)', scriptName + ': ' + configMenu, JSON.stringify(defaultArgs.checkDuplicatesBy), true)); }
-						catch (e) { return; }
+						catch (e) { return; } // eslint-disable-line no-unused-vars
 						if (input) { input = input.filter((n) => n); }
 						if (isArrayEqual(defaultArgs.checkDuplicatesBy, input)) { return; }
 						defaultArgs.checkDuplicatesBy = input;
@@ -222,7 +222,7 @@
 							fb.ShowPopupMessage('Note this will NOT work on entries which apply queries like\n\'Search same by tags...\' since those queries are saved as text.\n\nIf you want to change tags at those tools, use the appropriate menus\nto remove/add your own entries.\n\nOtherwise, for a global change, edit the default tags and queries,\nwhich are used internally. Don\'t forget to reload the\npanels or restart foobar2000 and \'Restore defaults\' on all relevant buttons\nand menus to use the new values. Files may be found at:\nFOOBAR PROFILE FOLDER]\\js_data\\presets\\global\n\n\nAlternatively, you may look at the properties panel to directly edit\nthe menus and tags associated to queries.\n\nIt would not make any sense to remap tags at those places since the tags\n(and entries) are already directly configurable...', scriptName + ': ' + configMenu);
 							let input;
 							try { input = JSON.parse(utils.InputBox(window.ID, 'Enter tag(s) or TF expression(s):\n(In some cases merging multiple tags is allowed, check the readme)\n(JSON)', scriptName + ': ' + configMenu, menu_properties[key][1], true)); }
-							catch (e) { return; }
+							catch (e) { return; } // eslint-disable-line no-unused-vars
 							if (input) { input = input.filter((n) => n); }
 							if (isArrayEqual(JSON.parse(menu_properties[key][1]), input)) { return; }
 							menu_properties[key][1] = JSON.stringify(input);
