@@ -78,7 +78,7 @@
 - Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
 - Script Integration\Add SKIP tag at current playback: added warnings when trying to add SKIP tag to the end of start of a track.
 - Buttons: new separator element which may be added (multiple times) to the toolbar.
-- Buttons: new 'utils_volume' button which may be used to display and control foobar2000 volume.
+- Buttons: new 'display_volume' button which may be used to display and control foobar2000 volume.
 - Buttons: 'utils_main_menu' button now has additional settings to save and handle button states, either internally or by main menu checks.
 - Buttons: added more presets to remove/show duplicates and filter playlist buttons.
 - Readmes: added readme for 'buttons_device_switcher.js' button.
