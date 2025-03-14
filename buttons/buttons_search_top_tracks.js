@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//12/03/25
 
 /*
 	Top Tracks
@@ -28,7 +28,7 @@ include('..\\main\\search\\top_tracks.js');
 var prefix = 'tt'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Top Tracks Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Top Tracks Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]

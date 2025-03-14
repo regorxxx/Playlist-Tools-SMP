@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//12/03/25
 
 /*
 	Output device selector
@@ -23,7 +23,7 @@ include('..\\helpers\\helpers_xxx_properties.js');
 var prefix = 'ds'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Output device switcher button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Output device switcher button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 
 checkCompatible('1.6.1', 'smp');
 checkCompatible('1.4.0', 'fb');

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//12/03/25
 
 /*
 	-> EDIT
@@ -42,12 +42,12 @@ addButton({
 			const readme = _open(readmePath, utf8);
 			if (readme.length) { fb.ShowPopupMessage(readme, 'Save tags and comparison'); }
 			let file;
-			try { file = utils.InputBox(window.ID, 'Path to save tags file:', 'Tags file', folders.data + 'tags.json', true); }
+			try { file = utils.InputBox(window.ID, 'Path to save JSON tags file:', 'Tags file', folders.data + 'tags.json', true); }
 			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!file.length) { return; }
 			saveTags({ file });
 		},
-		description: 'Save all tags from selected tracks to json',
+		description: 'Save all tags from selected tracks to json.',
 		prefix, buttonsProperties: newButtonsProperties,
 		icon: chars.save
 	}),
@@ -56,22 +56,22 @@ addButton({
 		text: 'Compare tags',
 		func: function () {
 			let file;
-			try { file = utils.InputBox(window.ID, 'Path to tags file to load:', 'Tags file', folders.data + 'tags.json', true); }
+			try { file = utils.InputBox(window.ID, 'JSON tags file to load:', 'Tags file', folders.data + 'tags.json', true); }
 			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!file.length) { return; }
 			const toTags = _jsonParseFileCheck(file, 'Tags file', 'Save tags', utf8);
 			if (!toTags || !toTags.length) { return; }
 			let toTagsFolder;
-			try { toTagsFolder = utils.InputBox(window.ID, 'Root path of the original file tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true); }
+			try { toTagsFolder = utils.InputBox(window.ID, 'Root of the source tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true); }
 			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!toTagsFolder.length) { return; }
 			let selItemsFolder;
-			try { selItemsFolder = utils.InputBox(window.ID, 'Root path of the current tracks:', 'Current root path', toTagsFolder, true); }
+			try { selItemsFolder = utils.InputBox(window.ID, 'Root of the destination tracks:', 'Current root path', toTagsFolder, true); }
 			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!selItemsFolder.length) { return; }
 			compareTags({ toTags, toTagsFolder, selItemsFolder });
 		},
-		description: 'Compares all tags from selected tracks with tags from a json file\nFor backup comparison purporse or to copy tags between libraries.',
+		description: 'Compare all tags from selected tracks with tags from a JSON file.\nFor backup comparison or to copy tags between libraries.',
 		prefix, buttonsProperties: newButtonsProperties,
 		icon: chars.exchange,
 		update: { scriptName: 'Playlist-Tools-SMP', version }

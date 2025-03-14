@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//12/03/25
 
 /*
 	Search same by v 1.0 24/08/22
@@ -85,7 +85,7 @@ include('..\\main\\search\\search_same_by.js');
 var prefix = 'ssbytc'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Search Same By Tags (Combinations) Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Search Same By Tags (Combinations) Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]

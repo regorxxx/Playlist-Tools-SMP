@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/03/25
+//12/03/25
 
 /*
 	Quickmatch same....
@@ -40,7 +40,7 @@ include('..\\main\\bio\\bio_tags.js');
 var prefix = 'qm'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Quickmatch button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Quickmatch button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }  // eslint-disable-line no-unused-vars
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]

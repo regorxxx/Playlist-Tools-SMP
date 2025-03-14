@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//12/03/25
 
 /*
 	Quicksearch for same....
@@ -34,7 +34,7 @@ include('..\\main\\main_menu\\main_menu_custom.js');
 var prefix = 'qs'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Quicksearch button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {  /* May be loaded along other buttons */ }
+try { window.DefineScript('Quicksearch button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) {  /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
@@ -282,7 +282,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				// Input
 				let query = '';
 				try { query = utils.InputBox(window.ID, 'Enter query:\n\nAlso allowed dynamic variables, like #ARTIST#, which will be replaced with ' + (this.buttonsProperties.bEvalSel[1] ? 'selected items\' values.' : 'focused item\'s value.') + '\n(see \'Dynamic queries\' readme for more info)' + '\n\nPressing Shift while clicking on \'OK\' will open the search window.\nPressing Ctrl will create an AutoPlaylist.', 'Quicksearch', this.buttonsProperties.lastQuery[1] || 'TITLE IS #TITLE#', true); }
-				catch (e) { return; }
+				catch (e) { return; } // eslint-disable-line no-unused-vars
 				if (query.includes('#') && !fb.GetFocusItem(true)) { fb.ShowPopupMessage('Can not evaluate query without a selection:\n' + query, 'Quicksearch'); return; }
 				if (!query.length) { return; }
 				// Playlist

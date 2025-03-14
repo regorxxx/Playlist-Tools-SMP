@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//12/03/25
 
 /*
 	Playlist Tools Macros
@@ -76,7 +76,7 @@ addButton({
 		},
 		description: function () {
 			return (isPlaylistToolsLoaded()
-				? 'Executes Playlist Tools Menu macros' +
+				? 'Execute Playlist Tools Menu macros' +
 				(
 					getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
 						? '\n-----------------------------------------------------\n(L. Click to show list)'

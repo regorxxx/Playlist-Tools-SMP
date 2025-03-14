@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//12/03/25
 
 /*
 	Playlist Tools Menu
@@ -15,9 +15,9 @@ var version = '4.6.0'; // NOSONAR [shared on files]
 
 /* global menu_panelProperties:readable */
 /* global globFonts:readable, MK_SHIFT:readable, doOnce:readable, debounce:readable, MK_CONTROL:readable */
-try { include('..\\helpers\\buttons_xxx.js'); } catch (e) { include('helpers\\buttons_xxx.js'); }
+try { include('..\\helpers\\buttons_xxx.js'); } catch (e) { include('helpers\\buttons_xxx.js'); } // eslint-disable-line no-unused-vars
 /* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
-try { window.DefineScript('Playlist Tools: Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Playlist Tools: Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 
 {
 	const dependencies = [
@@ -31,7 +31,7 @@ try { window.DefineScript('Playlist Tools: Button', { author: 'regorxxx', versio
 	/* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 	/* global updateCache:readable */
 	let bIncludeRel = true;
-	try { include('..\\helpers\\helpers_xxx_dummy.js'); } catch (e) { bIncludeRel = false; }
+	try { include('..\\helpers\\helpers_xxx_dummy.js'); } catch (e) { bIncludeRel = false; } // eslint-disable-line no-unused-vars
 	if (bIncludeRel) { dependencies.forEach((file) => { include('..\\' + file); }); }
 	else { dependencies.forEach((file) => { include(file); }); }
 }
