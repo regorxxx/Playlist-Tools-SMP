@@ -77,6 +77,7 @@
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
 - Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
 - Script Integration\Add SKIP tag at current playback: added warnings when trying to add SKIP tag to the end of start of a track.
+- Buttons: new separator element which may be added (multiple times) to the toolbar.
 - Buttons: new 'utils_volume' button which may be used to display and control foobar2000 volume.
 - Buttons: 'utils_main_menu' button now has additional settings to save and handle button states, either internally or by main menu checks.
 - Buttons: added more presets to remove/show duplicates and filter playlist buttons.
@@ -124,6 +125,7 @@
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
 - UI: '&' being displayed as '_' on tooltips.
 - UI: removed extra menu bar break on pools submenus.
+- UI: fixed icons alignment in different layouts and orientations.
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 - Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
 - Presets: minor error on queries using decades.
