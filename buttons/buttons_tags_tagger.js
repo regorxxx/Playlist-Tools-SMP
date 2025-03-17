@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//17/03/25
 
 /*
 	Automatic tagging...
@@ -15,7 +15,7 @@
 include('..\\helpers\\menu_xxx.js');
 /* global _menu:readable  */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, soFeat:readable, MK_SHIFT:readable, MF_STRING:readable, MF_GRAYED:readable, VK_SHIFT:readable */
+/* global globFonts:readable, soFeat:readable, MK_CONTROL:readable, MF_STRING:readable, MF_GRAYED:readable, VK_SHIFT:readable, VK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable,  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -30,7 +30,7 @@ include('..\\main\\tags\\tagger.js');
 var prefix = 'ta'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Tagger', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Tagger', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
@@ -53,7 +53,7 @@ buttonsBar.list.push(newButtonsProperties);
 			text: 'Tagger',
 			func: function (mask) {
 				const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
-				if (mask === MK_SHIFT) {
+				if (mask === MK_CONTROL) {
 					if (!this.tAut.isRunning() && handleList.Count) { this.tAut.run(); }
 					else { this.tAut.nextStepTag(); }
 				} else {
@@ -168,11 +168,11 @@ buttonsBar.list.push(newButtonsProperties);
 				const font = buttonsBar.tooltipButton.font;
 				info = _gr.EstimateLineWrap(info, _gdiFont(font.name, font.size), 400).filter(isString).join('\n');
 				// Modifiers
-				const bShift = utils.IsKeyPressed(VK_SHIFT);
+				const bCtrl = utils.IsKeyPressed(VK_CONTROL);
 				const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-				if (bShift || bInfo) {
+				if (bCtrl || bInfo) {
 					info += '\n-----------------------------------------------------';
-					info += this.tAut.isRunning() ? '\n(Shift + L. Click to force next step)' : '\n(Shift + L. Click to directly run on selection)';
+					info += this.tAut.isRunning() ? '\n(Ctrl + L. Click to force next step)' : '\n(Ctrl + L. Click to directly run on selection)';
 				}
 				return info;
 			},
