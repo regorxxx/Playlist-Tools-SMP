@@ -1,5 +1,5 @@
 'use strict';
-//03/01/23
+//17/03/25
 
 /*
 	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp
@@ -35,7 +35,7 @@ class LastList {
 			if (!url) {
 				try {
 					url = utils.InputBox(0, 'Enter the URL:', 'Download', this.url, true);
-				} catch (e) {
+				} catch (e) { // eslint-disable-line no-unused-vars
 					throw new InputError('Canceled Input');
 				}
 
@@ -62,7 +62,7 @@ class LastList {
 			if (!pages || isNaN(pages) || pages < 1) {
 				try {
 					pages = utils.InputBox(0, 'Enter the number of pages:', 'Download', this.pages, true);
-				} catch (e) {
+				} catch (e) { // eslint-disable-line no-unused-vars
 					throw new InputError('Canceled Input');
 				}
 
@@ -75,7 +75,7 @@ class LastList {
 			if (!playlistName) {
 				try {
 					playlistName = utils.InputBox(0, 'Enter the playlist name:', 'Download', this.playlistName, true);
-				} catch (e) {
+				} catch (e) { // eslint-disable-line no-unused-vars
 					throw new InputError('Canceled Input');
 				}
 
@@ -106,7 +106,7 @@ class LastList {
 		let libItems;
 		if (forcedQuery.length) {
 			try { libItems = fb.GetQueryItems(fb.GetLibraryItems(), forcedQuery).Convert(); } // Sanity check
-			catch (e) { libItems = fb.GetLibraryItems().Convert(); }
+			catch (e) { libItems = fb.GetLibraryItems().Convert(); } // eslint-disable-line no-unused-vars
 		} else { libItems = fb.GetLibraryItems().Convert(); }
 		libItems.forEach((item) => {
 			let fileInfo = item.GetFileInfo();
