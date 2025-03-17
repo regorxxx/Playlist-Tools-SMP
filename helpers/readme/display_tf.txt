@@ -1,0 +1,20 @@
+﻿Evaluates and display any custom Title Format expression against now
+playing, or selected track(s). It also works with global variables
+related to volume, playing state or playlists.
+
+Notes:
+	- Also works with dynamic queries, which add extra variables like
+	#NOW# (current date), #MONTH#, #PLSNAME# (playlist name), etc.
+
+	- All special variables can be found on 'Dynamic queries' readme.
+
+	- Has a fallback expression which is evaluated when there is no
+	track available (no selection, no playing and empty playlist).
+
+	- Also allows direct input over the button (but only basic actions,
+	i.e. writing char, delete and enter). Use menus in any other case.
+
+	- Font size, alignment, style, etc. can be set via menus.
+
+	- Display area size can be set by a fixed amount or percentage of
+	total panel width.
