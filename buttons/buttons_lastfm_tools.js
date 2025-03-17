@@ -1,5 +1,5 @@
 'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -80,6 +80,12 @@ addButton({
 				settingsMenu(
 					this, true, ['buttons_lastfm_tools.js'],
 					{
+						lastURL: { bHide: true },
+						lastArtist: { bHide: true },
+						lastDate: { bHide: true },
+						lastTag: { bHide: true },
+						lastUser: { bHide: true },
+						lastAlbum: { bHide: true },
 						bBioTags: {
 							popup: 'Used along WilB\'s Biography Script, if selection mode on bio panel is set' +
 								'\nto \'Follow selected track\', additional tags are shown on the submenus' +
@@ -94,6 +100,13 @@ addButton({
 							popup: 'Remember to set different panel names to every buttons toolbar, otherwise' +
 								'\nmenus will not be properly associated to a single panel.' +
 								'\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)'
+						},
+						tags: {
+							input: 'Enter value:\n(JSON)\n\nUse the \'Tag remap\' submenu to easily set individual tags.',
+							bHide: true
+						},
+						cacheTime: {
+							input: 'Enter number:\n(ms)'
 						}
 					},
 					{
@@ -209,7 +222,7 @@ addButton({
 			bioTags: {}
 		},
 		listener: lastfmListeners,
-		onInit: function() {
+		onInit: function () {
 			// Create dynamic menus
 			if (this.buttonsProperties.bDynamicMenus[1]) {
 				bindDynamicMenus({
