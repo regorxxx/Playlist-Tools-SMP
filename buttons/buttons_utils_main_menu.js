@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//17/03/25
 
 /*
 	Main Menu shortcut
@@ -13,7 +13,7 @@
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, MF_GRAYED:readable, clone:readable, MF_STRING:readable, tryMethod:readable, compareObjects:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, showButtonReadme:readable */
 include('..\\helpers\\menu_xxx.js');
 /* global _menu:readable  */
 include('..\\helpers\\menu_xxx_extras.js');
@@ -30,7 +30,7 @@ include('..\\helpers\\helpers_xxx_input.js');
 var prefix = 'mms'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
-try { window.DefineScript('Main Menu Shortcut Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ }
+try { window.DefineScript('Main Menu Shortcut Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
@@ -251,6 +251,8 @@ buttonsBar.list.push(newButtonsProperties);
 							window.Repaint();
 						}
 					});
+					menu.newSeparator();
+					menu.newEntry({ entryText: 'Readme...', func: () => showButtonReadme('buttons_utils_main_menu.js') });
 					menu.btn_up(this.currX, this.currY + this.currH);
 				} else {
 					const serial = funcs =>
