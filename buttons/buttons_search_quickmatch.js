@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Quickmatch same....
@@ -88,7 +88,10 @@ addButton({
 		func: function (mask) {
 			if (mask === MK_SHIFT) {
 				const menu = settingsMenu(
-					this, true, ['buttons_search_quickmatch.js'], void (0), void (0),
+					this, true, ['buttons_search_quickmatch.js'],
+					{
+						entries: { bHide: true }
+					}, void (0),
 					(menu) => {
 						menu.newSeparator();
 						_createSubMenuEditEntries(menu, void (0), {

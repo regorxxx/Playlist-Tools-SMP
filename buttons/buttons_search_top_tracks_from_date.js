@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Top Tracks
@@ -32,7 +32,7 @@ try { window.DefineScript('Top Tracks Button', { author: 'regorxxx', version, fe
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
-	playlistLength: ['Length of playlist', 25, { greater: 0, func: isInt }, 25],
+	playlistLength: ['Playlist size', 50, { greater: 0, func: isInt }, 50],
 	forcedQuery: ['Forced query to pre-filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	year: ['Year', 0, { greaterEq: 0, func: isInt }, 0],
 	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Quicksearch for same....
@@ -120,8 +120,10 @@ addButton({
 				const menu = settingsMenu(
 					this, true, ['buttons_search_quicksearch.js'],
 					{
+						lastQuery: { bHide: true },
 						bDynamicMenus:
-							{ popup: 'Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)' }
+							{ popup: 'Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)' },
+						entries: { bHide: true }
 					},
 					{
 						bDynamicMenus:
