@@ -65,6 +65,7 @@
 
 ## [Unreleased][]
 ### Added
+- Toolbar: new preset 'Statust bar' available for empty toolbars. This preset creates a statust bar similar to the one found at DUI/CUI at bottom, but it may be tweaked with any TF (even for the volume or selection size fields), like the 'display_tf' button (see below).
 - Pools: added 'Radio (Alistral)' pools presets, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
 - Selection manipulation\Sort: added sorting methods for listen rates and overdue listens, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
 - Selection manipulation\Move selection to: new entry 'Move selection to\To specified position...' is added which moves the selection to an absolute index. 'Move selection to\By delta...' moves by delta value (previous behavior). Both support non-contiguous selections unless the extremes can not move anymore (thus they start to compact) but allow to use positive or negative values to choose where to start from (top or bottom of playlist) to avoid it. All this info is shown in the input popup.
@@ -93,6 +94,7 @@
 - Script Integration\SMP Dynamic menu: improved menu (un)registering logic; now the numbered menu entries are always registered first (so they maintain their ID no matter if dynamic menus are enabled or not), thus not altering external buttons functionality. Note in any case the ID is still linked to button registering order, so other script buttons loaded first may alter the ID order if they also register their own menus (same than previous behavior).
 - Other Tools\Check tags: input popups to set dictionary now display the current list of dictionaries found (more may be installed by the user).
 - Other tools\Write Tags: renamed to 'Tagger'.
+- Other tools\Write Tags: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Selection manipulation\Select by Query: if query returns no tracks, then selection is cleared (instead of maintaining the previous selection).
@@ -108,8 +110,8 @@
 - Dynamic queries: 'By... (query)' entry is now available even when no track has been selected. In such case the input popup warns about only static variables being available (some examples below). i.e. '"$year(%DATE%)" IS #YEAR#' can be used but not 'ARTIST IS #ARTIST#'.
 - Dynamic queries: when creating a new preset entry, a popup asks if it should be available even when no track is selected (i.e. a static entry -see above-).
 - Dynamic queries: support for '#NOW#' variable, which resolves to current date (2025-3-8).
-- Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#' variables. See dynamic queries readme for more info.
-- Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#' variables for selections. See dynamic queries readme for more info.
+- Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#' variables. See dynamic queries readme for more info.
+- Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#', '#SELPLAYING#' variables for selections. See dynamic queries readme for more info.
 - Dynamic queries: support for '#PLSNAME#', '#PLSTRACKS#, '#PLSISAUTOPLS#, '#PLSISLOCKED#', '#PLSDURATION#', '#PLSSIZE#' variables for playlists. See dynamic queries readme for more info.
 - Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*' (when the reference track has an artist tag equal to 'A').
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
