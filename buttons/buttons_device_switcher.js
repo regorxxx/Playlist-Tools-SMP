@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Output device selector
@@ -66,7 +66,7 @@ addButton({
 			info += '\nDevice:\t' + currDeviceName.replace('DS : ', '').replace('ASIO : ', '').replace('Default : ', '');
 			return info;
 		},
-		prefix,	buttonsProperties: newButtonsProperties,
+		prefix, buttonsProperties: newButtonsProperties,
 		icon: chars.speaker,
 		update: { scriptName: 'Playlist-Tools-SMP', version }
 	}),

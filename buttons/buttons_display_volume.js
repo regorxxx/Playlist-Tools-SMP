@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/03/25
+//14/03/25
 
 /*
 	Volume controls and display
@@ -19,7 +19,7 @@ include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable */
 
-var prefix = 'dv'; // NOSONAR[global]
+var prefix = 'dvo'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
 try { window.DefineScript('Volume control button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars
