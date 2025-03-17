@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
@@ -34,7 +34,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	customName: ['Name for the custom UI button', 'Search Same By... (q)', { func: isStringWeak }, 'Search Same By... (q)'],
-	playlistLength: ['Max Playlist Mix length', 50, { greater: 0, func: isInt }, 50],
+	playlistLength: ['Playlist size', 50, { greater: 0, func: isInt }, 50],
 	forcedQuery: ['Forced query to filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	checkDuplicatesBy: ['Tags to look for duplicates', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
 	bAdvTitle: ['Advanced RegEx title matching', true, { func: isBoolean }, true],
@@ -102,14 +102,15 @@ addButton({
 	'Search Same By Tags (Queries)': new ThemedButton({
 		coordinates: { x: 0, y: 0, w: _gr.CalcTextWidth(newButtonsProperties.customName[1], _gdiFont(globFonts.button.name, globFonts.button.size * buttonsBar.config.scale)) + 25 * _scale(1, false) / _scale(buttonsBar.config.scale), h: 22 },
 		text: newButtonsProperties.customName[1],
-		fun: function (mask) {
+		func: function (mask) {
 			if (mask === MK_SHIFT) {
 				const oldName = this.buttonsProperties.customName[1].toString();
 				settingsMenu(
 					this, true, ['buttons_search_by_tags_queries.js'],
 					{
 						bAdvTitle: { popup: globRegExp.title.desc },
-						bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' }
+						bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' },
+						presets: { bHide: true }
 					},
 					void (0),
 					(menu) => {

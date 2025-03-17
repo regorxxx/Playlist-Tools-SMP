@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -87,7 +87,8 @@ addButton({
 								'\nJimi Hendrix experience, Jimi Hendrix - 1969 - Blabla' +
 								'\nBand of Gypys, Jimi Hendrix - 1969 - Blabla' +
 								'\n\nWith multi-value parsing disabled, these are considered non-duplicated tracks since not all artists match.'
-						}
+						},
+						presets: { bHide: true }
 					},
 					void (0),
 					(menu) => {

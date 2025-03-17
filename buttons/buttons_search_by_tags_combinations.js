@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//17/03/25
 
 /*
 	Search same by v 1.0 24/08/22
@@ -90,7 +90,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	customName: ['Name for the custom UI button', 'Search Same By... (c)', { func: isStringWeak }, 'Search Same By... (c)'],
-	playlistLength: ['Max Playlist Mix length', 50, { greater: 0, func: isInt }, 50],
+	playlistLength: ['Playlist size', 50, { greater: 0, func: isInt }, 50],
 	forcedQuery: ['Forced query to filter database', globQuery.filter, { func: (query) => { return checkQuery(query, true); } }, globQuery.filter],
 	checkDuplicatesBy: ['Tags to look for duplicates', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
 	bAdvTitle: ['Advanced RegEx title matching', true, { func: isBoolean }, true],
@@ -204,7 +204,8 @@ addButton({
 					this, true, ['buttons_search_by_tags_combinations.js'],
 					{
 						bAdvTitle: { popup: globRegExp.title.desc },
-						bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' }
+						bMultiple: { popup: 'Partial multi-value tag matching when removing duplicates.' },
+						presets: { bHide: true }
 					},
 					void (0),
 					(menu) => {
