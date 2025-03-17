@@ -38,26 +38,40 @@ Doesn't requires a track to be evaluated (i.e. they always work):
 	- #YEAR#		-> 2025 (current year)
 	- #NOW#			-> 2023-3-8 (current date)
 	- #VOLUME#		-> 100 (volume from 0 to 100, rounded)
-	- #VOLUMEDB#	-> -7.53 dB (volume from -100 to 0 dB)
+	- #VOLUMEDB#		-> -7.53 dB (volume from -100 to 0 dB)
 	- #VERSION#		-> 1.4.1 (foobar version)
+	- #ISPLAYING#		-> 1 (1 if playing, empty otherwise)
+	- #ISPAUSED#		-> 1 (1 if playing, empty otherwise)
 	- #SELTYPE#		-> active playlist (selection type)
 
 Special selection variables:
 ----------------------------
 Requires a selection to be evaluated:
-	- #SELTRACKS#	-> 10 (number of selected tracks)
-	- #SELDURATION#	-> 3:09:37 (duration of selected tracks)
+	- #SELTRACKS#		-> 10 (number of selected tracks)
+	- #SELDURATION#		-> 3:09:37 (duration of selected tracks)
 	- #SELSIZE#		-> 1.88 GB (size of selected tracks)
+	- #SELPLAYING#		-> 1 (1 if playing, empty otherwise)
+
+(*) Note this will return nothing while playing unless the focused track
+is also the playing track. Use #ISPLAYING# to globally evaluate if foobar
+is playing, or use %ISPLAYING% but only when following now playing (it will
+not work when evaluated on a selection).
 
 Special active playlist variables:
 ----------------------------------
 Requires an active playlist to be evaluated:
 	- #PLSNAME#		-> My playlist (name)
-	- #PLSTRACKS#	-> 1.88 GB (number of tracks)
-	- #PLSISAUTOPLS#-> 1 (1 for AutoPlaylists, 0 otherwise)
-	- #PLSISLOCKED#	-> 1 (1 if locked, 0 otherwise)
-	- #PLSDURATION#	-> 3:09:37 (total duration)
+	- #PLSTRACKS#		-> 1.88 GB (number of tracks)
+	- #PLSISAUTOPLS#	-> 1 (1 for AutoPlaylists, empty otherwise)
+	- #PLSISLOCKED#		-> 1 (1 if locked, empty otherwise)
+	- #PLSDURATION#		-> 3:09:37 (total duration)
 	- #PLSSIZE#		-> 1.88 GB (total size)
+
+Note on boolean values:
+-----------------------
+Variables like #ISPLAYING# return a number when they are true, but also
+an invisible "true" value, which can be evaluated with [] or other control
+flow functions ($if, ...).
 
 Some examples:
 --------------
