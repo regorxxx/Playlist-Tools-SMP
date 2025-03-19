@@ -66,6 +66,7 @@
 ## [Unreleased][]
 ### Added
 - Toolbar: new preset 'Statust bar' available for empty toolbars. This preset creates a statust bar similar to the one found at DUI/CUI at bottom, but it may be tweaked with any TF (even for the volume or selection size fields), like the 'display_tf' button (see below).
+- Toolbar: new entry on toolbar menu to share current UI settings across all toolbar panels on foobar2000. See [here](https://hydrogenaud.io/index.php/topic,120978.msg1061005.html#msg1061005).
 - Pools: added 'Radio (Alistral)' pools presets, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
 - Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
 - Pools: expanded 'Top tracks (...)' presets. Restore defaults at pools submenu to show them.
