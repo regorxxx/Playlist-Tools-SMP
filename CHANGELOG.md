@@ -67,6 +67,8 @@
 ### Added
 - Toolbar: new preset 'Statust bar' available for empty toolbars. This preset creates a statust bar similar to the one found at DUI/CUI at bottom, but it may be tweaked with any TF (even for the volume or selection size fields), like the 'display_tf' button (see below).
 - Pools: added 'Radio (Alistral)' pools presets, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
+- Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
+- Pools: expanded 'Top tracks (...)' presets. Restore defaults at pools submenu to show them.
 - Selection manipulation\Sort: added sorting methods for listen rates and overdue listens, based on [Alistral](https://github.com/RustyNova016/Alistral?tab=readme-ov-file#radio) radio algorithms (see link for more info). Restore defaults to load the new presets.
 - Selection manipulation\Move selection to: new entry 'Move selection to\To specified position...' is added which moves the selection to an absolute index. 'Move selection to\By delta...' moves by delta value (previous behavior). Both support non-contiguous selections unless the extremes can not move anymore (thus they start to compact) but allow to use positive or negative values to choose where to start from (top or bottom of playlist) to avoid it. All this info is shown in the input popup.
 - Selection manipulation\Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
@@ -110,7 +112,6 @@
 - Pools: music graph mixes moved to their own submenu 'Pools (Music Graph)'.
 - Pools: some presets reordered between 'Top tracks (rating)' and 'Top tracks (playcount)'.
 - Pools: added extra checks to pools before processing them, console will output any error or wrong source setting.
-- Pools: expanded 'Genre mixes' presets. Restore defaults at pools submenu to show them.
 - Pools: support for dynamic queries within SORT BY expressions for sources. i.e. 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,#DATE#)' -> 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,2000)' (when the reference track has a date tag equal to '2000').
 - Dynamic queries: 'By... (query)' entry is now available even when no track has been selected. In such case the input popup warns about only static variables being available (some examples below). i.e. '"$year(%DATE%)" IS #YEAR#' can be used but not 'ARTIST IS #ARTIST#'.
 - Dynamic queries: when creating a new preset entry, a popup asks if it should be available even when no track is selected (i.e. a static entry -see above-).

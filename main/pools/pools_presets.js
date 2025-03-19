@@ -82,6 +82,23 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
 						_LIBRARY_2: globQuery.ratingTop + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#'
 					},
+					toPls: 'Top this year tracks mix',
+					sort: '',
+				}
+			},
+			{
+				folder: 'Top tracks (rating)',
+				name: 'Last year tracks mix', pool: {
+					fromPls: {
+						_LIBRARY_0: fourth,
+						_LIBRARY_1: fourth,
+						_LIBRARY_2: half
+					},
+					query: {
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#',
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#',
+						_LIBRARY_2: globQuery.ratingTop + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#'
+					},
 					toPls: 'Top last year tracks mix',
 					sort: '',
 				}
@@ -194,6 +211,23 @@ function createPoolPresets({ size = 50 } = {}) {
 			},
 			{
 				folder: 'Top tracks (playcount)',
+				name: 'Not rec. played last year mix', pool: {
+					fromPls: {
+						_LIBRARY_0: fourth,
+						_LIBRARY_1: fourth,
+						_LIBRARY_2: half
+					},
+					query: {
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#',
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#',
+						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#'
+					},
+					toPls: 'Top not recently played last year mix',
+					sort: '',
+				}
+			},
+			{
+				folder: 'Top tracks (playcount)',
 				name: 'Not rec. played last 5 years mix', pool: {
 					fromPls: {
 						_LIBRARY_0: fourth,
@@ -241,6 +275,23 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: globQuery.ratingTop + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)# SORT ASCENDING BY ' + _qCond(globTags.playCount)
 					},
 					toPls: 'Top least played this year mix',
+					sort: '',
+				}
+			},
+			{
+				folder: 'Top tracks (playcount)',
+				name: 'Least played last year mix', pool: {
+					fromPls: {
+						_LIBRARY_0: fourth,
+						_LIBRARY_1: fourth,
+						_LIBRARY_2: half
+					},
+					query: {
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)# SORT ASCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)# SORT ASCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_2: globQuery.ratingTop + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)# SORT ASCENDING BY ' + _qCond(globTags.playCount)
+					},
+					toPls: 'Top least played last year mix',
 					sort: '',
 				}
 			},
