@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//19/03/25
 
 /*
 	Check Library Tags
@@ -530,6 +530,7 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 	textC += tipsText;
 	textA += tipsText;
 	// Popups with all texts
+	if (queryText.length) { fb.ShowLibrarySearchUI(''); }
 	fb.ShowPopupMessage(textC, popupTitle + ': queries');
 	fb.ShowPopupMessage(textB, popupTitle + ': tag pairs and exclusions');
 	fb.ShowPopupMessage(textA, popupTitle + ': possible errors');
