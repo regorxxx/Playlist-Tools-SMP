@@ -76,6 +76,11 @@
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
+- Dynamic queries: support for '#NOW#' variable, which resolves to current date (2025-3-8).
+- Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#', '#DEVICE#', '#DEVICEID#', '#SAC#', '#RGMODE#', '#PLAYMODE#', '#PLSCOUNT#' variables. See dynamic queries readme for more info.
+- Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#', '#SELPLAYING#', '#SELINLIBRARY#' variables for selections. See dynamic queries readme for more info.
+- Dynamic queries: support for '#PLSIDX#', '#PLSNAME#', '#PLSTRACKS#, '#PLSISAUTOPLS#, '#PLSISLOCKED#', '#PLSDURATION#', '#PLSSIZE#', '#PLSLOCKS#', '#PLSLOCKNAME#' variables for playlists. See dynamic queries readme for more info.
+- Dynamic queries: support for '#PLSPLAYIDX#', '#PLSPLAYNAME#', '#PLSPLAYTRACKS#, '#PLSPLAYDURATION#, '#PLSPLAYSIZE#' variables for playing playlist. See dynamic queries readme for more info.
 - Quicksearch: merged 'Beginning with', 'Partially includes' and 'Partial match' results into a new submenu named 'Similar match'.
 - Script Integration\Add SKIP tag at current playback: added warnings when trying to add SKIP tag to the end of start of a track.
 - Buttons: new separator element which may be added (multiple times) to the toolbar.
@@ -109,10 +114,6 @@
 - Pools: support for dynamic queries within SORT BY expressions for sources. i.e. 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,#DATE#)' -> 'GENRE IS rock SORT ASCENDING BY $sub(%DATE%,2000)' (when the reference track has a date tag equal to '2000').
 - Dynamic queries: 'By... (query)' entry is now available even when no track has been selected. In such case the input popup warns about only static variables being available (some examples below). i.e. '"$year(%DATE%)" IS #YEAR#' can be used but not 'ARTIST IS #ARTIST#'.
 - Dynamic queries: when creating a new preset entry, a popup asks if it should be available even when no track is selected (i.e. a static entry -see above-).
-- Dynamic queries: support for '#NOW#' variable, which resolves to current date (2025-3-8).
-- Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#' variables. See dynamic queries readme for more info.
-- Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#', '#SELPLAYING#' variables for selections. See dynamic queries readme for more info.
-- Dynamic queries: support for '#PLSNAME#', '#PLSTRACKS#, '#PLSISAUTOPLS#, '#PLSISLOCKED#', '#PLSDURATION#', '#PLSSIZE#' variables for playlists. See dynamic queries readme for more info.
 - Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*' (when the reference track has an artist tag equal to 'A').
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
