@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//19/03/25
 
 /*
 	Volume controls and display
@@ -7,9 +7,9 @@
 
 /* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable, MK_SHIFT:readable, VK_SHIFT:readable, VK_BACK:readable, DT_LEFT:readable, DT_CENTER:readable, DT_RIGHT:readable, DT_VCENTER:readable, DT_CALCRECT:readable, DT_NOPREFIX:readable, DT_END_ELLIPSIS:readable, DT_PATH_ELLIPSIS:readable, DT_WORD_ELLIPSIS:readable  */
+/* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable, MK_SHIFT:readable, VK_SHIFT:readable, VK_BACK:readable, DT_LEFT:readable, DT_CENTER:readable, DT_RIGHT:readable, DT_VCENTER:readable, DT_CALCRECT:readable, DT_NOPREFIX:readable, DT_END_ELLIPSIS:readable, DT_PATH_ELLIPSIS:readable, DT_WORD_ELLIPSIS:readable, DT_NOCLIP:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, getButtonVersion:readable, Flag:readable */
+/* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, getButtonVersion:readable, Flag:readable, buttonStates:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
@@ -34,11 +34,12 @@ var newButtonsProperties = { // NOSONAR[global]
 	tf: ['Title Format expression', '$pad($repeat(★,%RATING%), 5,✩)', { func: isStringWeak }, '$pad($repeat(★,%RATING%), 5,✩)'],
 	fallback: ['Fallback text', sanitizeTagTfo(chars.loveEmojiV2), { func: isStringWeak }, sanitizeTagTfo(chars.loveEmojiV2)],
 	bPlaying: ['Follow now playing', true, { func: isBoolean }, true],
+	refreshRate: ['Max. refresh rate (ms)', 50, { func: isInt }, 50],
 	buttonSize: ['Display area size', 120, { func: (v) => isFloat(v) || isInt(v) }, 120],
 	bRelSize: ['Relative size (window)', false, { func: isBoolean }, false],
 	fontSize: ['Font size scale', 1.2, { range: [[0, Infinity]], func: (v) => isFloat(v) || isInt(v) }, 1.2],
 	fontStyle: ['Font style', 'Bold', { func: new Function('s', 'return ' + JSON.stringify(Object.keys(FontStyle)) + '.includes(s);') }, 'Bold'],
-	textFlags: ['Text flags', DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS, { func: isInt }, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS],
+	textFlags: ['Text flags', DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_NOCLIP | DT_END_ELLIPSIS, { func: isInt }, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_NOCLIP | DT_NOPREFIX | DT_END_ELLIPSIS],
 };
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -59,7 +60,7 @@ addButton({
 		func: function (mask) {
 			if (mask === MK_SHIFT) {
 				settingsMenu(
-					this, true, ['buttons_display_tf.js','Dynamic queries'],
+					this, true, ['buttons_display_tf.js', 'Dynamic queries'],
 					{
 						tf: {
 							input: 'Enter TF expression:\n\nAlso allowed dynamic variables (which don\'t require a selection), like #NOW#, which will be replaced before execution.\n(see \'Dynamic queries\' readme for more info)'
@@ -94,6 +95,8 @@ addButton({
 									);
 								} else if (key === 'textFlags') {
 									this.textFlags = new Flag(value);
+								} else if (key === 'tf') {
+									this.tfSet();
 								}
 								this.repaint();
 							}
@@ -178,15 +181,20 @@ addButton({
 				? 'Playing item:'
 				: 'Focused item:';
 			info += '\n' + this.tfEval();
-			if (bShift || bInfo) {
+			const np = fb.IsPlaying && plman.GetPlayingItemLocation().IsValid;
+			if (np || bShift || bInfo) {
 				info += '\n-----------------------------------------------------';
-				info += '\n(Shift + L. Click to open config menu)';
+				if (np) {
+					info += '\n(Double + L. Click to show now playing)';
+				}
+				if (bShift || bInfo) {
+					info += '\n(Shift + L. Click to open config menu)';
+				}
 			}
 			return info;
 		},
 		prefix, buttonsProperties: newButtonsProperties,
 		variables: {
-			handleList: new FbMetadbHandleList(),
 			textFlags: new Flag(newButtonsProperties.textFlags[1]),
 			tf: fb.TitleFormat(queryReplaceWithStatic(newButtonsProperties.tf[1])),
 			handle: function () {
@@ -208,6 +216,17 @@ addButton({
 						? this.tf.EvalWithMetadb(selItem)
 						: this.fallbackGet().Eval(true);
 			},
+			throttleRefresh: (() => {
+				let timerId;
+				return function () {
+					if (timerId) { return; }
+					timerId = setTimeout(() => {
+						this.tfSet();
+						this.repaint();
+						timerId = null;
+					}, this.buttonsProperties.refreshRate[1]);
+				};
+			})(),
 			hasDynamicQueries: function () {
 				return this.buttonsProperties.tf[1].includes('#') || this.buttonsProperties.fallback[1].includes('#');
 			},
@@ -215,21 +234,24 @@ addButton({
 				const val = String(this.tfEval());
 				return val.length ? val : ' ';
 			},
-			inputFunc: function () { return this.tf.Expression + '|'; },
+			inputFunc: function () { return this.tf.Expression + this.sep; },
 			restoreDisplay: function () {
 				this.isInput = false;
 				this.text = this.displayFunc;
 			},
+			sep: '‎|‎',
+			inputRe: /([\x20-\xFF]+)/,
 			startInput: function () {
 				this.isInput = true;
-				this.text = this.inputFunc;
+				this.text = this.inputFunc();
+				this.repaint();
 				this.setTimeout();
+				this.setAnimation();
 			},
 			applyInput: function () {
 				this.clearTimeout();
 				if (isFunction(this.text)) { return; }
-				const sep = '‎|‎';
-				this.buttonsProperties.tf[1] = this.text.replace(sep, '');
+				this.buttonsProperties.tf[1] = this.text.replace(this.sep, '');
 				this.restoreDisplay();
 				overwriteProperties(this.buttonsProperties);
 			},
@@ -241,7 +263,9 @@ addButton({
 			inputTimeout: null,
 			setTimeout: function () {
 				this.inputTimeout = setTimeout(() => {
-					if (this.isInput) {
+					if (this.isInput && this.state === buttonStates.hover) {
+						this.setTimeout();
+					} else if (this.isInput) {
 						this.abortInput();
 						this.clearTimeout();
 						this.restoreDisplay();
@@ -249,6 +273,14 @@ addButton({
 						this.repaint();
 					}
 				}, 2000);
+			},
+			setAnimation: function () {
+				this.inputInterval = setInterval(() => {
+					this.text = this.text.includes(this.sep)
+						? this.text.replace(this.sep, '')
+						: this.text.replace(this.inputRe, '$1' + this.sep);
+					this.repaint();
+				}, 400);
 			},
 			clearTimeout: function () {
 				if (this.inputTimeout) {
@@ -261,60 +293,57 @@ addButton({
 		},
 		listener: {
 			on_volume_change: function () {
-				if (/#(VOLUME|VOLUMEDB)#/i.test(this.buttonsProperties.tf[1])) { this.tfSet(); this.repaint(); }
+				if (/#(VOLUME|VOLUMEDB)#/i.test(this.buttonsProperties.tf[1])) { this.throttleRefresh(); }
 			},
 			on_item_focus_change: function () {
-				if (!this.buttonsProperties.bPlaying[1] || !fb.IsPlaying || this.hasDynamicQueries()) { this.tfSet(); this.repaint(); }
+				if (!this.buttonsProperties.bPlaying[1] || !fb.IsPlaying || this.hasDynamicQueries()) { this.throttleRefresh(); }
 			},
 			on_playback_new_track: function () {
-				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.tfSet(); this.repaint(); }
+				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.throttleRefresh(); }
 			},
 			on_playback_time: function () {
-				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.tfSet(); this.repaint(); }
+				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.throttleRefresh(); }
 			},
 			on_playback_stop: function () {
-				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.tfSet(); this.repaint(); }
+				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.throttleRefresh(); }
 			},
 			on_playback_pause: function () {
-				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.tfSet(); this.repaint(); }
+				if (this.buttonsProperties.bPlaying[1] || !fb.GetFocusItem(true)) { this.throttleRefresh(); }
 			},
 			on_selection_changed: function () {
-				if (!this.buttonsProperties.bPlaying[1] || !fb.IsPlaying || this.hasDynamicQueries()) { this.tfSet(); this.repaint(); }
+				if (!this.buttonsProperties.bPlaying[1] || !fb.IsPlaying || this.hasDynamicQueries()) { this.throttleRefresh(); }
 			},
 			on_playlist_switch: function () {
-				if (!this.buttonsProperties.bPlaying[1] || !fb.IsPlaying || this.hasDynamicQueries()) { this.tfSet(); this.repaint(); }
+				if (!this.buttonsProperties.bPlaying[1] || !fb.IsPlaying || this.hasDynamicQueries()) { this.throttleRefresh(); }
+			},
+			on_mouse_lbtn_dblclk: function () {
+				if (fb.IsPlaying) {
+					const loc = plman.GetPlayingItemLocation();
+					if (loc.IsValid) {
+						plman.ActivePlaylist = loc.PlaylistIndex;
+						plman.SetPlaylistFocusItem(loc.PlaylistIndex, loc.PlaylistItemIndex);
+					}
+				}
 			},
 			on_key_up: function (parent, vkey) {
-				if (this.isInput && vkey === VK_RETURN) { this.applyInput(); this.tfSet(); this.repaint(); }
+				if (this.isInput && vkey === VK_RETURN) { this.applyInput(); this.throttleRefresh(); }
 			},
 			on_char: function (parent, code) {
 				if (this.isInput) {
 					const char = String.fromCharCode(code);
-					const re = /([\x20-\xFF]+)/;
-					const sep = '‎|‎';
 					if (isFunction(this.text)) { this.text = this.buttonsProperties.tf[1]; }
-					if (re.test(char)) {
-						this.text = this.text.replace(sep, '') + char + sep;
+					if (this.inputRe.test(char)) {
+						this.text = this.text.replace(this.sep, '') + char + this.sep;
 						this.repaint();
 						this.clearTimeout();
 						this.setTimeout();
-						this.inputInterval = setInterval(() => {
-							this.text = this.text.includes(sep)
-								? this.text.replace(sep, '')
-								: this.text.replace(re, '$1' + sep);
-							this.repaint();
-						}, 400);
+						this.setAnimation();
 					} else if (code === VK_BACK) {
-						this.text = this.text.replace(sep, '').slice(0, -1) + sep;
+						this.text = this.text.replace(this.sep, '').slice(0, -1) + this.sep;
 						this.repaint();
 						this.clearTimeout();
 						this.setTimeout();
-						this.inputInterval = setInterval(() => {
-							this.text = this.text.includes(sep)
-								? this.text.replace(sep, '')
-								: this.text.replace(re, '$1' + sep);
-							this.repaint();
-						}, 400);
+						this.setAnimation();
 					} else if (code !== VK_RETURN) {
 						this.abortInput();
 						this.clearTimeout();
