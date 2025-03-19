@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/03/25
+//19/03/25
 
 /* exported ThemedButton, getUniquePrefix, addButton, getButtonVersion, addButtonSeparator, showButtonReadme */
 
@@ -444,11 +444,13 @@ function ThemedButton({
 						const hoverColor = this.getHoverColor();
 						if (toolbarAlpha) { gr.FillRoundRect(x, y, w, h, arc, arc, opaqueColor(buttonsBar.config.buttonColor, Math.max(1, toolbarAlpha / 5))); }
 						if (buttonsBar.config.bHoverGrad) {
-							const alpha = buttonsBar.config.bToolbar ? (isDark(...toRGB(hoverColor)) ? 5 : 20) : 20;
+							const alpha = buttonsBar.config.bToolbar
+								? (isDark(...toRGB(hoverColor)) ? 10 : 20)
+								: 20;
 							gr.FillRoundRect(x, y + 1, w, h / 2 - 1, arc, arc, opaqueColor(hoverColor, alpha));
 							gr.FillRoundRect(x, y + h / 2, w, h / 2, arc, arc, opaqueColor(invert(hoverColor), 4));
 						} else {
-							gr.FillRoundRect(x, y, w, h, arc, arc, opaqueColor(hoverColor, 4));
+							gr.FillRoundRect(x, y, w, h, arc, arc, opaqueColor(hoverColor, buttonsBar.config.bDynHoverColor ? 5 : 75));
 						}
 					}
 					break;
