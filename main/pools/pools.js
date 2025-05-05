@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/02/25
+//22/03/25
 
 /* exported _pools */
 
@@ -459,13 +459,14 @@ function _pools({
 						let bDone = false;
 						let plsMatch = {};
 						if (this.bEnablePlsMan && typeof loadPlaylistsFromFolder !== 'undefined') {
+							const libItemsFallback = libItems ||fb.GetLibraryItems();
 							playlistPath.forEach((path) => { // Find first exact match
 								if (bDone) { return; }
 								const plsArr = loadPlaylistsFromFolder(path);
 								plsArr.forEach((plsObj) => {
 									if (bDone) { return; }
 									if (plsObj.name === plsName) {
-										handleListFrom = getHandlesFromPlaylist({ playlistPath: plsObj.path, relPath: path, bOmitNotFound: true }); // Load found handles, omit the rest instead of nothing
+										handleListFrom = getHandlesFromPlaylist({ playlistPath: plsObj.path, relPath: path, bOmitNotFound: true, poolItems: libItemsFallback }); // Load found handles, omit the rest instead of nothing
 										plsMatch = plsObj;
 										bDone = true;
 									}
@@ -474,7 +475,7 @@ function _pools({
 								plsArr.forEach((plsObj) => {
 									if (bDone) { return; }
 									if (plsObj.path.replace(path, '').startsWith(plsName)) {
-										handleListFrom = getHandlesFromPlaylist({ playlistPath: plsObj.path, relPath: path, bOmitNotFound: true }); // Load found handles, omit the rest instead of nothing
+										handleListFrom = getHandlesFromPlaylist({ playlistPath: plsObj.path, relPath: path, bOmitNotFound: true, poolItems: libItemsFallback }); // Load found handles, omit the rest instead of nothing
 										plsMatch = plsObj;
 										bDone = true;
 									}
