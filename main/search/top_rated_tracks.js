@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//07/04/25
 
 /*
 	Top Rated Tracks
@@ -61,7 +61,7 @@ function topRatedTracks({
 		currRating--;
 	}
 	// Output n tracks
-	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count - 1);
 	if (globTags.sortPlayCount !== sortBy) { outputHandleList.OrderByFormat(fb.TitleFormat(sortBy || '$rand()'), 1); }
 	if (bSendToPls) { sendToPlaylist(outputHandleList, playlistName); }
 	if (bProfile) { test.Print('Task #1: Top rated tracks', false); }

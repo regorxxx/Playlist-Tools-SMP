@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//07/04/25
 
 /*
 	Search same by
@@ -265,7 +265,7 @@ function searchSameByCombs({
 	}
 	const oldCount = outputHandleList.Count;
 	// Limit n tracks
-	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count - 1);
 	if (bSendToPls) {
 		console.log('Items retrieved by query: ' + oldCount + ' tracks');
 		sendToPlaylist(outputHandleList, playlistName);
@@ -343,7 +343,7 @@ function searchSameByQueries({
 		}
 		const oldCount = outputHandleList.Count;
 		//Limit n tracks
-		outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+		outputHandleList.RemoveRange(playlistLength, outputHandleList.Count - 1);
 		if (bSendToPls) {
 			console.log('Items retrieved by query: ' + oldCount + ' tracks');
 			sendToPlaylist(outputHandleList, playlistName);

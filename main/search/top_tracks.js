@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/05/24
+//07/04/25
 
 /*
 	Top Tracks
@@ -49,7 +49,7 @@ function topTracks({
 		outputHandleList = removeDuplicates({handleList: outputHandleList, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple});
 	}
 	// Output n tracks
-	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count);
+	outputHandleList.RemoveRange(playlistLength, outputHandleList.Count - 1);
 	if (globTags.sortPlayCount !== sortBy) {outputHandleList.OrderByFormat(fb.TitleFormat(sortBy ||'$rand()'), 1);}
 	if (bSendToPls) {sendToPlaylist(outputHandleList, playlistName);}
 	if (bProfile) {test.Print('Task #1: Top tracks from date', false);}
