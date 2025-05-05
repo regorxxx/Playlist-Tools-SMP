@@ -100,6 +100,9 @@
 - [JSplitter (SMP)](https://foobar2000.ru/forum/viewtopic.php?t=6378&start=360) support for locked playlists.
 - Script Integration\SMP Dynamic menu: changed names for the numbered menu entries, which are now prefixed with 'Playlist Tools: '. Adjust external buttons if needed to new path.
 - Script Integration\SMP Dynamic menu: improved menu (un)registering logic; now the numbered menu entries are always registered first (so they maintain their ID no matter if dynamic menus are enabled or not), thus not altering external buttons functionality. Note in any case the ID is still linked to button registering order, so other script buttons loaded first may alter the ID order if they also register their own menus (same than previous behavior).
+- Quickmatch: now properly handles selection from other sources different to active playlist.
+- Quicksearch: now properly handles selection from other sources different to active playlist.
+- Quicksearch: evaluation on multiple tracks limited to max 1000 first tracks selected.
 - Other Tools\Check tags: input popups to set dictionary now display the current list of dictionaries found (more may be installed by the user).
 - Other tools\Write Tags: renamed to 'Tagger'.
 - Other tools\Write Tags: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).

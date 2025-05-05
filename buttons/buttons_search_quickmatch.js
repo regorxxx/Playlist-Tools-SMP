@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//07/04/25
 
 /*
 	Quickmatch same....
@@ -124,7 +124,16 @@ addButton({
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
 			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
-			const sel = fb.GetFocusItem();
+			let sel = fb.GetSelectionType() > 1
+				? fb.GetSelections(1)
+				: plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
+			if (!sel || sel instanceof FbMetadbHandleList) {
+				if (!sel || !sel.Count) {
+					sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
+				} else {
+					sel = sel[0];
+				}
+			}
 			let info = '';
 			if (sel) {
 				let tfo = fb.TitleFormat(
@@ -164,7 +173,16 @@ addButton({
 
 function quickmatchMenu() {
 	// Get current selection and metadata
-	const sel = this.sel || plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
+	let sel = fb.GetSelectionType() > 1
+		? fb.GetSelections(1)
+		: plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
+	if (!sel || sel instanceof FbMetadbHandleList) {
+		if (!sel || !sel.Count) {
+			sel = plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;
+		} else {
+			sel = sel[0];
+		}
+	}
 	const info = sel ? sel.GetFileInfo() : null;
 	const entries = JSON.parse(this.buttonsProperties.entries[1]);
 	entries.forEach((tag) => {
