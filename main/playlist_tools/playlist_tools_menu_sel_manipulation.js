@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//12/05/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1843,7 +1843,7 @@
 					{ name: 'sep' },
 					{ name: 'By Directory', args: ['%DIRECTORYNAME%'] },
 					{ name: 'By Protocol', args: ['$left(%_PATH_RAW%,$strstr(%_PATH_RAW%,://))'] },
-					{ name: 'By File/Url', args: ['$strstr(%_PATH_RAW%,file:)'] },
+					{ name: 'By File/Url', args: ['$if3($strstr(%_PATH_RAW%,file:),$strstr(%_PATH_RAW%,file-relative:),0)'] },
 					{ name: 'sep' },
 					{
 						name: 'By... (tags)', args: () => {
@@ -1902,7 +1902,7 @@
 					{ name: 'sep' },
 					{ name: 'By Directory', args: ['%DIRECTORYNAME%'] },
 					{ name: 'By Protocol', args: ['$left(%_PATH_RAW%,$strstr(%_PATH_RAW%,://))'] },
-					{ name: 'By File/Url', args: ['$strstr(%_PATH_RAW%,file:)'] },
+					{ name: 'By File/Url', args: ['$if3($strstr(%_PATH_RAW%,file:),$strstr(%_PATH_RAW%,file-relative:),0)'] },
 					{ name: 'sep' },
 					{
 						name: 'By... (tags)', args: () => {

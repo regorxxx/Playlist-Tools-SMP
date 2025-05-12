@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//12/05/25
 
 /*
 	-> EDIT
@@ -62,7 +62,7 @@ addButton({
 			const toTags = _jsonParseFileCheck(file, 'Tags file', 'Save tags', utf8);
 			if (!toTags || !toTags.length) { return; }
 			let toTagsFolder;
-			try { toTagsFolder = utils.InputBox(window.ID, 'Root of the source tracks:', 'Original root path', toTags[0].rawPath.replace('file://', '').split('\\')[0] + '\\', true); }
+			try { toTagsFolder = utils.InputBox(window.ID, 'Root of the source tracks:', 'Original root path', toTags[0].rawPath.replace(/^file(-relative)?:\/\//i, '').split('\\')[0] + '\\', true); }
 			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!toTagsFolder.length) { return; }
 			let selItemsFolder;

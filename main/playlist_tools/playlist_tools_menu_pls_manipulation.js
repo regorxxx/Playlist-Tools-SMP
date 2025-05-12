@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//12/05/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -133,7 +133,7 @@
 						{ name: 'Not live (except Hi-Fi)', query: globQuery.noLive },
 						{ name: 'Not multichannel', query: globQuery.stereo },
 						{ name: 'Not SACD or DVD', query: globQuery.noSACD },
-						{ name: 'Not Links', query: '"$strstr(%_PATH_RAW%,file:)" PRESENT' },
+						{ name: 'Not Links', query: '"$strstr(%_PATH_RAW%,file:)" PRESENT OR "$strstr(%_PATH_RAW%,file-relative:)" PRESENT' },
 						{ name: 'Global forced query', query: defaultArgs['forcedQuery'] },
 						{ name: 'sep' },
 						{ name: 'Same title than sel', query: globQuery.compareTitle },
