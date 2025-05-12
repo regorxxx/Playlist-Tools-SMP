@@ -133,6 +133,7 @@
 - Remove duplicates: show duplicates feature sometimes reporting as duplicate tracks which only appeared once (by TF) when using partial Multi-value matching.
 - Last.fm: fix malformed youTube links.
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
+- UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - UI: '&' being displayed as '_' on tooltips.
 - UI: removed extra menu bar break on pools submenus.
 - UI: fixed icons alignment in different layouts and orientations.
