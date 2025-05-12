@@ -124,6 +124,7 @@
 - Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*' (when the reference track has an artist tag equal to 'A').
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
+- UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - Helpers: updated helpers.
 - Helpers: general code cleanup on menus internal code. Please report any bug on extra separators or menu entries not working as expected.
 ### Removed
@@ -134,7 +135,6 @@
 - Remove duplicates: show duplicates feature sometimes reporting as duplicate tracks which only appeared once (by TF) when using partial Multi-value matching.
 - Last.fm: fix malformed youTube links.
 - Pools: fix complex dynamic queries with static tags not working in some cases if there was no focused item.
-- UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - UI: '&' being displayed as '_' on tooltips.
 - UI: removed extra menu bar break on pools submenus.
 - UI: fixed icons alignment in different layouts and orientations.
