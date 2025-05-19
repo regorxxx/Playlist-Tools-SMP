@@ -110,6 +110,7 @@
 - Other tools\Write Tags: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
+- Buttons: 'utils_main_menu' button now displays the current state of main menu entries on tooltip (when button states are enabled).
 - Selection manipulation\Select by Query: if query returns no tracks, then selection is cleared (instead of maintaining the previous selection).
 - Selection manipulation\Select (# tracks): 'Selection manipulation\Select' renamed to 'Selection manipulation\Select (# tracks)'.
 - Selection manipulation\Intercalate by tags: now handles multi-value tags without joining them. i.e. it will try to intercalate the most frequent tag value for every track on the entire selection. For ex. for a track with 2 artists, the one which appears more in the entire selection will be preferred.
@@ -123,7 +124,6 @@
 - Dynamic queries: when creating a new preset entry, a popup asks if it should be available even when no track is selected (i.e. a static entry -see above-).
 - Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*' (when the reference track has an artist tag equal to 'A').
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
-- Buttons: 'utils_main_menu' button now displays the current state of main menu entries on tooltip (when button states are enabled).
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
 - UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - Helpers: updated helpers.
