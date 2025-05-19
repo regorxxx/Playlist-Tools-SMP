@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//19/05/25
 
 /*
 	Main Menu shortcut
@@ -38,7 +38,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	customName: ['Name for the custom UI button', 'Main Menu', { func: isStringWeak }, 'Main Menu'],
 	entries: ['Main menu entries', JSON.stringify([]), { func: isJSON }],
 	unloadCall: ['Call menus on unload options', JSON.stringify({ enabled: false, disabled: false }), { func: isJSON }],
-	indicator: ['Indicator options', JSON.stringify({ init: true, enabled: false, menuCheck: false }), { func: isJSON }],
+	indicator: ['Indicator options', JSON.stringify({ init: true, enabled: false, menuCheck: false, menuCheckInterval: 250 }), { func: isJSON }],
 	state: ['Current state', false, { func: isBoolean }, false],
 	icon: ['Button icon', chars.console, { func: isString }, chars.console],
 	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false]
@@ -205,6 +205,7 @@ buttonsBar.list.push(newButtonsProperties);
 							}, flags: indicator.enabled && !indicator.menuCheck ? MF_STRING : MF_GRAYED
 						});
 						menu.newCheckMenuLast(() => indicator.init);
+						menu.newSeparator(menuName);
 						{
 							const subMenuName = menu.newMenu('State checking', menuName, indicator.enabled ? MF_STRING : MF_GRAYED);
 							const options = [
@@ -215,11 +216,18 @@ buttonsBar.list.push(newButtonsProperties);
 								menu.newEntry({
 									menuName: subMenuName, entryText: opt.entryText, func: () => {
 										indicator.menuCheck = opt.val;
+										if (this.interval) {
+											clearInterval(this.interval);
+											this.interval = null;
+										}
 										if (indicator.menuCheck) {
 											indicator.init = true;
 											// Force check of current state
-											this.switchActive(indicator.menuCheck ? this.stateCheck() : void (0));
+											this.switchActive(indicator.menuCheck ? this.stateCheck().check : void (0));
 											this.buttonsProperties.state[1] = this.active;
+											if (indicator.menuCheckInterval) {
+												this.interval = setInterval(() => this.switchActive(this.stateCheck().check), indicator.menuCheckInterval);
+											}
 										}
 										this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
 										overwriteProperties(this.buttonsProperties); // Force overwriting
@@ -227,6 +235,24 @@ buttonsBar.list.push(newButtonsProperties);
 								});
 							});
 							menu.newCheckMenuLast(() => indicator.menuCheck ? 1 : 0, options);
+							menu.newSeparator(subMenuName);
+							menu.newEntry({
+								menuName: subMenuName, entryText: 'Syncing interval\t' + _b(indicator.menuCheckInterval), func: () => {
+									const input = Input.number('int positive', indicator.menuCheckInterval, 'Set syncing interval (in ms):\n(0 to disable)', 'Main menu checking interval', 250);
+									if (input !== null) {
+										indicator.menuCheckInterval = input;
+										this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
+										overwriteProperties(this.buttonsProperties); // Force overwriting
+										if (this.interval) {
+											clearInterval(this.interval);
+											this.interval = null;
+										}
+										if (indicator.menuCheckInterval) {
+											this.interval = setInterval(() => this.switchActive(this.stateCheck().check), indicator.menuCheckInterval);
+										}
+									}
+								}, flags: indicator.enabled ? MF_STRING : MF_GRAYED
+							});
 						}
 					}
 					menu.newSeparator();
@@ -255,6 +281,7 @@ buttonsBar.list.push(newButtonsProperties);
 					menu.newEntry({ entryText: 'Readme...', func: () => showButtonReadme('buttons_utils_main_menu.js') });
 					menu.btn_up(this.currX, this.currY + this.currH);
 				} else {
+					const bValidState = indicator.menuCheck ? this.stateCheck().bValid : true;
 					const serial = funcs =>
 						funcs.reduce((promise, func) =>
 							promise.then(result => func().then(Array.prototype.concat.bind(result))), Promise.resolve([]));
@@ -273,6 +300,13 @@ buttonsBar.list.push(newButtonsProperties);
 						if (Object.hasOwn(entry, 'idx')) {
 							plman.SetPlaylistFocusItem(plman.ActivePlaylist, entry.idx);
 						}
+						if (!bValidState) {
+							const menuState = tryMethod('IsMainMenuCommandChecked', fb, null)(entry.command);
+							if (menuState !== null && menuState !== this.active) {
+								console.log('Main Menu button: fixing entry state missmatch...');
+								return;
+							}
+						}
 						try { fb.RunMainMenuCommand(entry.command); } catch (e) { console.log(e); }
 						setTimeout(() => {
 							for (let key in cache) { fb[key] = cache[key]; }
@@ -285,7 +319,7 @@ buttonsBar.list.push(newButtonsProperties);
 					});
 					serial(funcs).then(() => {
 						if (indicator.enabled) {
-							this.switchActive(indicator.menuCheck ? this.stateCheck() : void (0));
+							this.switchActive(indicator.menuCheck ? this.stateCheck().check : void (0));
 							if (indicator.init) {
 								this.buttonsProperties.state[1] = this.active;
 								overwriteProperties(this.buttonsProperties); // Force overwriting
@@ -299,8 +333,16 @@ buttonsBar.list.push(newButtonsProperties);
 				const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
 				let info = 'Executes Main menu assigned entries:';
 				// Entries
-				const list = JSON.parse(this.buttonsProperties.entries[1]);
-				info += '\nEntries:\t' + list.map(e => e.name).joinEvery(', ', 2, '\n\t');
+				const entries = JSON.parse(this.buttonsProperties.entries[1]);
+				const indicator = JSON.parse(this.buttonsProperties.indicator[1]);
+				if (indicator.enabled) {
+					const results = entries.map((e) => { return { name: e.name, check: tryMethod('IsMainMenuCommandChecked', fb, null)(e.command) }; })
+						.filter((e) => e.check !== null)
+						.map((e) => e.name + ': ' + e.check);
+					info += '\nEntries:\n--->' + results.join('\n--->');
+				} else {
+					info += '\nEntries:\t' + entries.map(e => e.name).joinEvery(', ', 2, '\n\t');
+				}
 				if (bShift || bInfo) {
 					info += '\n-----------------------------------------------------';
 					info += '\n(Shift + L. Click to open config menu)';
@@ -311,28 +353,28 @@ buttonsBar.list.push(newButtonsProperties);
 			icon: newButtonsProperties.icon[1],
 			variables: {
 				defText: 'Main menu shortcut',
-				stateCheck: function () {
+				stateCheck: function (parent, bPopup) {
 					const entries = JSON.parse(this.buttonsProperties.entries[1]);
 					const results = entries.map((e) => {
 						return { command: e.command, check: tryMethod('IsMainMenuCommandChecked', fb, null)(e.command) };
 					}).filter((e) => e.check !== null);
-					console.log(entries.map((e) => {
-						return { command: e.command, check: tryMethod('IsMainMenuCommandChecked', fb, null)(e.command) };
-					}));
-					if (new Set(results.map((e) => e.check)).size !== 1) {
-						fb.ShowPopupMessage(
+					const bValid = new Set(results.map((e) => e.check)).size === 1;
+					if (!bValid && bPopup) {
+						doOnce('Menu check missmatch', () => fb.ShowPopupMessage(
 							'Main menu button: ' + this.buttonsProperties.customName[1] +
 							'\nEntries:' +
-							'\n\t' + results.map((e) => e.command + ' -> ' + e.check).join('\n\t'),
+							'\n\t' + results.map((e) => e.command + ' -> ' + e.check).join('\n\t') +
+							'\n\nCheck every menu entry listed above manually and click on them until all are set to the same state.',
 							'Main Menu button state mismatch'
-						);
+						))();
 					}
-					return results[0].check;
-				}
-
+					return { bValid, check: results.every((result) => result.check) };
+				},
+				interval: null,
 			},
 			listener: {
 				'on_script_unload': (parent) => {
+					if (this.interval) { clearInterval(this.interval); }
 					// Properties are not saved on unload
 					// https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/205
 					const unloadCall = JSON.parse(parent.buttonsProperties.unloadCall[1]);
@@ -345,8 +387,14 @@ buttonsBar.list.push(newButtonsProperties);
 				const indicator = JSON.parse(this.buttonsProperties.indicator[1]);
 				const unloadCall = JSON.parse(this.buttonsProperties.unloadCall[1]);
 				let bActive;
+				// Check defaults
+				if (!Object.hasOwn(indicator, 'menuCheckInterval')) {
+					indicator.menuCheckInterval = 0;
+					this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
+				}
 				if (indicator.menuCheck) {
-					bActive = this.stateCheck();
+					bActive = this.stateCheck().check;
+					if (indicator.menuCheckInterval) { this.interval = setInterval(() => this.switchActive(this.stateCheck().check), indicator.menuCheckInterval); }
 				} else {
 					bActive = this.buttonsProperties.state[1];
 					// On unload properties are not saved but some states are not possible and must be fixed
