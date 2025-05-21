@@ -94,8 +94,8 @@
 - Readmes: added readme for 'buttons_device_switcher.js' button.
 - Readmes: Ctrl + L. Click on any entry within 'Add button' submenu on toolbar now opens directly their associated readme (without actually adding the button).
 - Playlist Manager integration: added support for [foo_playcount_2003](https://marc2k3.github.io/component/playcount-2003/) tags in Smart Playlists. i.e. '%2003_ADDED%', '%2003_LAST_PLAYED%', '%2003_PLAYCOUNT%' and '%2003_RATING%'.
-- Configuration: added DANCENESS to the list of global tags, found at  '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
-- Configuration: added REPLAYGAIN_TRACK_RANGE to the list of global tags, found at  '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
+- Configuration: added DANCENESS to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
+- Configuration: added REPLAYGAIN_TRACK_RANGE (i.e. LRA) to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 ### Changed
 - Installation: added support for foobar v2.25+ file-relative protocols.
 - Installation: added popup warnings when scripts are installed outside foobar2000 profile folder. These checks can be tweaked at globSettings.json.
@@ -109,6 +109,7 @@
 - Quicksearch: evaluation on multiple tracks limited to max 1000 first tracks selected.
 - Other Tools\Check tags: input popups to set dictionary now display the current list of dictionaries found (more may be installed by the user).
 - Other tools\Write Tags: renamed to 'Tagger'.
+- Other tools\Write Tags: now uses the global tag remap set by user ('[foobar_profile]\foobar2000\js_data\presets\global\globTags.json') for danceness and LRA tags.
 - Other tools\Write Tags: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
@@ -287,8 +288,8 @@
 - Toolbar: new settings for text scale (now independent of button and icon scale).
 - Toolbar: new settings for icon scale (now independent of button and text scale).
 - Quicksearch: added new option 'Partially includes' which uses 'HAS' instead of 'IS' to find matches at any place of a tag.
-- Configuration: added COMPOSER to the list of global tags, found at  '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
-- Configuration: added LOCALE LAST.FM to the list of global tags, found at  '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
+- Configuration: added COMPOSER to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
+- Configuration: added LOCALE LAST.FM to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 - Configuration: added integrity checks to global user settings files, found at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\[...].json'. In particular queries are now check to ensure they are valid and will throw a popup at init otherwise. Other settings are check to ensure they contain valid values too.
 - Configuration: expanded user configurable file at '[FOOBAR PROFILE FOLDER]\js_data\presets\global\globSettings.json' with a new setting to output to console profiling logs at script init. They work globally. Disabled by default.
 ### Changed

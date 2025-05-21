@@ -1,5 +1,5 @@
 ﻿'use strict';
-//09/03/25
+//20/05/25
 
 /*
 	Automatic tagging...
@@ -19,7 +19,7 @@ include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_file.js');
 /* global WshShell:readable, _isFile:readable, testPath:readable, _isLink:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable */
+/* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable, _t:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable, isSubsong:readable */
 
@@ -75,7 +75,7 @@ function Tagger({
 			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true), bDefault: true
 		},
 		{
-			key: 'tpScan', tag: ['TRUEPEAK_SCANNER_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_TRUE_PEAK', 'TRUEPEAK_SCANNER_TRACK_GAIN', 'REPLAYGAIN_TRACK_TRUE_PEAK','TRUEPEAK_SCANNER_PEAK_POSITION','TRUEPEAK_SCANNER_CLIPPED_SAMPLES','TRUEPEAK_SCANNER_CLIPPED_SAMPLES_ALBUM'],
+			key: 'tpScan', tag: ['TRUEPEAK_SCANNER_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_TRUE_PEAK', 'TRUEPEAK_SCANNER_TRACK_GAIN', 'REPLAYGAIN_TRACK_TRUE_PEAK', 'TRUEPEAK_SCANNER_PEAK_POSITION', 'TRUEPEAK_SCANNER_CLIPPED_SAMPLES', 'TRUEPEAK_SCANNER_CLIPPED_SAMPLES_ALBUM'],
 			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true), bDefault: false
 		},
 		{
@@ -91,7 +91,7 @@ function Tagger({
 			title: 'DR (foo_dr_meter)', bAvailable: utils.CheckComponent('foo_dr_meter', true), bDefault: true
 		},
 		{
-			key: 'ffmpegLRA', tag: ['LRA'],
+			key: 'ffmpegLRA', tag: [globTags.lra],
 			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true
 		},
 		{
@@ -111,11 +111,11 @@ function Tagger({
 			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
 		},
 		{
-			key: 'essentiaDanceness', tag: ['DANCENESS'],
+			key: 'essentiaDanceness', tag: [globTags.danceness],
 			title: 'Danceness (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
 		},
 		{
-			key: 'essentiaLRA', tag: ['LRA'],
+			key: 'essentiaLRA', tag: [globTags.lra],
 			title: 'EBUR 128 Scanner (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
 		}
 	];
@@ -186,7 +186,7 @@ function Tagger({
 				console.log('No tracks selected (or all items were dead/links).');
 				return;
 			} else if (skippedCount !== 0) {
-				console.popup('Skipped ' + skippedCount + ' dead or link items.' , window.Name);
+				console.popup('Skipped ' + skippedCount + ' dead or link items.', window.Name);
 			}
 		} else { return; }
 		// Safety check for accidental button pressing
@@ -239,7 +239,7 @@ function Tagger({
 				if (this.check.subSong) {
 					const notAllowedTools = createCheck('subSong');
 					if (this.check.subSong) {
-						this.bFormatPopups && console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (%' + globTags.key + '%, %LRA%, %DACENESS%, %' + globTags.bpm + '%) and ffmpeg (%LRA%).\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
+						this.bFormatPopups && console.popup('Some of the selected tracks have a SubSong index different to zero, which means their container may be an ISO file, CUE, etc.\n\nThese tracks can not be used with the following tools (and will be omitted in such steps):\n' + notAllowedTools.join(', ') + '\n\nThis limitation may be bypassed converting the tracks into individual files, scanning them and finally copying back the tags. Only required for ChromaPrint (%' + globTags.acoustidFP + '%), Essentia (' + _t(globTags.key) + ', ' + _t(globTags.lra) + ', %DACENESS%, ' + _t(globTags.bpm) + ') and ffmpeg (' + _t(globTags.lra) + ').\nMore info and tips can be found here:\nhttps://github.com/regorxxx/Playlist-Tools-SMP/wiki/Known-problems-or-limitations#fingerprint-chromaprint-or-fooid-and-ebur-128-ffmpeg-tagging--fails-with-some-tracks', 'Tags Automation');
 						// Remove old tags
 						{	// Update problematic tracks with safe tools
 							this.selItemsByCheck.subSong.present = new FbMetadbHandleList(handleArr.filter((handle) => isSubsong(handle)));
@@ -285,7 +285,7 @@ function Tagger({
 							}
 						}
 						{	// And then other tracks with the rest
-							this.selItemsByCheck.md5.missing = new FbMetadbHandleList(handleArr.filter((handle) => md5TF.EvalWithMetadb(handle).length ));
+							this.selItemsByCheck.md5.missing = new FbMetadbHandleList(handleArr.filter((handle) => md5TF.EvalWithMetadb(handle).length));
 							this.selItemsByCheck.md5.missing.Sort();
 							if (this.check.subSong && this.selItemsByCheck.subSong.missing && this.selItemsByCheck.subSong.missing.Count) {
 								this.selItemsByCheck.md5.missing.MakeIntersection(this.selItemsByCheck.subSong.missing);
@@ -446,7 +446,8 @@ function Tagger({
 				break;
 			case 10:
 				if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
-					const tagName = ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA'].map((key) => { return this.toolsByKey[key] ? this.tagsByKey[key][0] : null; }).filter(Boolean);
+					const tagName = [ {name: 'KEY', tf: 'essentiaKey'}, {name: 'BPM', tf: 'essentiaBPM'}, {name: 'DANCENESS', tf: 'essentiaDanceness'}, {name: 'LRA', tf: 'essentiaLRA'}];
+					tagName.forEach((tag) => tag.tf = this.toolsByKey[tag.tf] ? this.tagsByKey[tag.tf][0] : '');
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
 							bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItemsByCheck.subSong.missing, tagName });
@@ -455,7 +456,7 @@ function Tagger({
 				} else { bSucess = false; }
 				break;
 			case 11: // These require user input before saving, so they are read only operations and can be done at the same time
-				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan || this.toolsByKey.bpmAnaly ) {
+				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan || this.toolsByKey.bpmAnaly) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
