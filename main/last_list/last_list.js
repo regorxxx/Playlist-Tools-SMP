@@ -1,5 +1,5 @@
 'use strict';
-//17/03/25
+//03/06/25
 
 /*
 	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp
@@ -12,6 +12,7 @@
 
 /* exported LastList */
 
+/* global folders:readable */
 /* global isYouTube:readable */
 include('last_list_input_error.js');
 /* global InputError:readable */
@@ -164,7 +165,9 @@ class LastList {
 
 				let urlToUse = `${url}${urlAppend}page=${i}`;
 
-				let cachePath = fb.ProfilePath + 'LastListCache\\';
+				let cachePath = typeof folders !== 'undefined' && folders.data
+					? folders.data + 'LastListCache\\'
+					: fb.ProfilePath + 'js_data\\LastListCache\\';
 				// check if cache valid
 				let urlHash = LastListHelpers.hashCode(urlToUse);
 				let cachedFilePath = cachePath + urlHash + '.json';
