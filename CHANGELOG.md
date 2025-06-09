@@ -145,6 +145,7 @@
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 - Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
 - Presets: minor error on queries using decades.
+- UI: multiple workarounds for rounded rectangles not being painted properly or producing crashes (SMP limitation).
 
 ## [4.6.0] - 2024-10-09
 ### Added
