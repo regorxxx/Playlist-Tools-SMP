@@ -94,6 +94,8 @@
 - Readmes: added readme for 'buttons_device_switcher.js' button.
 - Readmes: Ctrl + L. Click on any entry within 'Add button' submenu on toolbar now opens directly their associated readme (without actually adding the button).
 - Playlist Manager integration: added support for [foo_playcount_2003](https://marc2k3.github.io/component/playcount-2003/) tags in Smart Playlists. i.e. '%2003_ADDED%', '%2003_LAST_PLAYED%', '%2003_PLAYCOUNT%' and '%2003_RATING%'.
+- Installation: new panel menu, accessed through 'Ctrl + Win + R. Click' (which works globally on any script and panel, at any position), used to export/import panel settings and any other associated data. These entries may be used to fully backup the panel data, help when moving between different JS components (JSplitter <-> SMP) or even foobar2000 installations,, without needing to manually backup the panel properties or other external files (like .json, etc.).
+- UI: new menu entry to share current UI settings across all available Playlist Manager panels within foobar2000. It can be found at the settings menu 'Panel UI' submenu. Every other panel will be highlighted and show a popup asking to import the new settings or ignore them.
 - Configuration: added DANCENESS to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 - Configuration: added REPLAYGAIN_TRACK_RANGE (i.e. LRA) to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 ### Changed
