@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/03/25
+//11/06/25
 
 /* exported _pools */
 
@@ -273,13 +273,13 @@ function _pools({
 		});
 		if (bError) { fb.ShowPopupMessage('There are some errors processing the pool, check the console log.', scriptName); }
 		// Process
-		const libItems = Object.keys(pool.fromPls).some((key) => key.startsWith('_LIBRARY_') || key.startsWith('_GROUP_'))
+		const libItems = sources.some((key) => key.startsWith('_LIBRARY_') || key.startsWith('_GROUP_'))
 			? fb.GetLibraryItems()
 			: null;
 		let handleListTo = new FbMetadbHandleList();
 		let bAbort = false;
 		let n = 0;
-		for await (const plsName of Object.keys(pool.fromPls)) {
+		for (const plsName of sources) {
 			if (bAbort) { return; }
 			let handleListFrom;
 			let sourceCount = 0;
