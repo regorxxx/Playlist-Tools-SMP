@@ -37,6 +37,8 @@ Doesn't requires a track to be evaluated (i.e. they always work):
 	- #MONTH#	  -> 3 (current month)
 	- #YEAR#	  -> 2025 (current year)
 	- #NOW#		  -> 2023-3-8 (current date)
+	- #TODAY#	  -> Alias for #NOW#
+	- #YESTERDAY#	  -> 2023-3-07 (yesterday date)
 	- #VOLUME#	  -> 100 (volume from 0 to 100, rounded)
 	- #VOLUMEDB#	  -> -7.53 dB (volume from -100 to 0 dB)
 	- #VERSION#	  -> 1.4.1 (foobar version)

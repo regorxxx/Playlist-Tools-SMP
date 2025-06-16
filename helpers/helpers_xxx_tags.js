@@ -1,5 +1,5 @@
 ﻿'use strict';
-//14/03/25
+//16/06/25
 
 /* exported dynamicTags, numericTags, cyclicTags, keyTags, sanitizeTagIds, sanitizeTagValIds, queryCombinations, queryReplaceWithCurrent, checkQuery, getHandleTags, getHandleListTags ,getHandleListTagsV2, getHandleListTagsTyped, cyclicTagsDescriptor, isQuery, fallbackTagsQuery, isSubsong, isSubsongPath, fileRegex */
 
@@ -156,7 +156,7 @@ function queryReplaceWithCurrent(query, handle, tags = {}, options = { expansion
 	if (handle && handle instanceof FbMetadbHandleList) {
 		const queryArr = [...new Set(
 			handle.Convert().map((h) => queryReplaceWithCurrent(query, h, { bToLowerCase: true }))
-		)].sort((a, b) => a.localeCompare(b));
+		)].sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base' }));
 		return queryArr.length ? queryJoin(queryArr, 'OR') : '';
 	}
 	// global queries without handle required
@@ -289,12 +289,15 @@ function queryReplaceWithStatic(query, options = { bDebug: false, bBooleanForce:
 	if (options.bDebug) { console.log('Initial query:', query); }
 	if (!query.length) { console.log('queryReplaceWithStatic(): query is empty'); return ''; }
 	// Dates
-	if (/#(MONTH|YEAR|DAY|NOW)#/i.test(query)) {
+	if (/#(MONTH|YEAR|DAY|NOW|TODAY|YESTERDAY)#/i.test(query)) {
 		const date = new Date();
+		const yesterday = new Date(date);
+		yesterday.setDate(yesterday.getDate() - 1);
 		query = query.replace(/#YEAR#/gi, date.getFullYear().toString());
 		query = query.replace(/#MONTH#/gi, (date.getMonth() + 1).toString());
 		query = query.replace(/#DAY#/gi, date.getDate().toString());
-		query = query.replace(/#NOW#/gi, date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString() + '-' + date.getDate().toString());
+		query = query.replace(/#(NOW|TODAY)#/gi, date.toISOString().split('T')[0]);
+		query = query.replace(/#YESTERDAY#/gi, yesterday.toISOString().split('T')[0]);
 	}
 	// System
 	if (/#(VOLUME|VOLUMEDB|VERSION|ISPLAYING|ISPAUSED|SAC|PLSCOUNT)#/i.test(query)) {
@@ -374,7 +377,7 @@ function queryReplaceWithStatic(query, options = { bDebug: false, bBooleanForce:
 		query = query.replace(/#PLSTRACKS#/gi, pls !== -1 ? plman.PlaylistItemCount(pls) : '0');
 		query = query.replace(/#PLSISAUTOPLS#/gi, pls !== -1 ? (plman.IsAutoPlaylist(pls) ? 1 + (options.bBooleanForce ? '$not(0)' : '') : '') : '');
 		query = query.replace(/#PLSISLOCKED#/gi, pls !== -1 ? (plman.IsAutoPlaylist(pls) ? 1 + (options.bBooleanForce ? '$not(0)' : '') : '') : '');
-		query = query.replace(/#PLSLOCKS#/gi, pls !== -1 ? plman.GetPlaylistLockedActions(pls).sort((a, b) => a.localeCompare(b)).join(', ') : '');
+		query = query.replace(/#PLSLOCKS#/gi, pls !== -1 ? plman.GetPlaylistLockedActions(pls).sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base' })).join(', ') : '');
 		query = query.replace(/#PLSLOCKNAME#/gi, pls !== -1 ? plman.GetPlaylistLockName(pls) || '' : '');
 	}
 	if (/#(PLSPLAYIDX|PLSPLAYNAME|PLSPLAYTRACKS)#/i.test(query)) {

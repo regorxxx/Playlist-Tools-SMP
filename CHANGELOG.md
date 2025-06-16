@@ -79,7 +79,8 @@
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
-- Dynamic queries: support for '#NOW#' variable, which resolves to current date (2025-3-8).
+- Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
+- Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).
 - Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#', '#DEVICE#', '#DEVICEID#', '#SAC#', '#RGMODE#', '#PLAYMODE#', '#PLSCOUNT#' variables. See dynamic queries readme for more info.
 - Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#', '#SELPLAYING#', '#SELINLIBRARY#' variables for selections. See dynamic queries readme for more info.
 - Dynamic queries: support for '#PLSIDX#', '#PLSNAME#', '#PLSTRACKS#, '#PLSISAUTOPLS#, '#PLSISLOCKED#', '#PLSDURATION#', '#PLSSIZE#', '#PLSLOCKS#', '#PLSLOCKNAME#' variables for playlists. See dynamic queries readme for more info.
