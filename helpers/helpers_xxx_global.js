@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/05/25
+//16/06/25
 
 /* exported loadUserDefFile, addGlobValues, globFonts, globSettings*/
 
@@ -170,6 +170,8 @@ function addGlobValues(type) {
 				'|' + globTags.playCount;
 			globQuery.fav = '((' + globQuery.loved + ') OR (' + globQuery.ratingTop + '))';
 			globQuery.compareTitle = '"$stricmp(' + _t(globTags.title) + ',#' + globTags.title + '#)" IS 1';
+			globQuery.lastPlayedFunc = '((%LAST_PLAYED_ENHANCED% PRESENT AND %LAST_PLAYED_ENHANCED% #QUERYEXPRESSION#) OR (%LAST_PLAYED% PRESENT AND %LAST_PLAYED% #QUERYEXPRESSION#) OR (%2003_LAST_PLAYED% PRESENT AND %2003_LAST_PLAYED% #QUERYEXPRESSION#))';
+			globQuery.firstPlayedFunc = '((%FIRST_PLAYED_ENHANCED% PRESENT AND %FIRST_PLAYED_ENHANCED% #QUERYEXPRESSION#) OR (%FIRST_PLAYED% PRESENT AND %FIRST_PLAYED% #QUERYEXPRESSION#) OR (%2003_FIRST_PLAYED% PRESENT AND %2003_FIRST_PLAYED% #QUERYEXPRESSION#))';
 			break;
 		case 'All':
 			addGlobValues('tags');
