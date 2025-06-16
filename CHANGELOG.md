@@ -76,6 +76,7 @@
 - Selection manipulation\Select (by time): new tool to set selection by specified time (rounded to tracks actual time). As 'Selection manipulation\Select (# tracks)' it also allows to select half, a third or a quarter of the total time of a playlist, random X minutes, or next X minutes. There are also additional entries to take into consideration crossfade between tracks.
 - Playlist manipulation\Query filtering: added filtering methods based on listen rates. Restore defaults to load the new presets.
 - Dynamic queries: new presets based on listen rates. Restore defaults to load the new presets.
+- Dynamic queries: new presets based last played. Restore defaults to load the new presets.
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.

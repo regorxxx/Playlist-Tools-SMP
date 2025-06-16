@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//16/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -56,6 +56,19 @@
 					{
 						name: 'Rated >2 tracks (by artist)',
 						query: globTags.rating + ' GREATER 2 AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'
+					},
+					{ name: 'sep' },
+					{
+						name: 'Last played today',
+						query: globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING #NOW#'),
+						sort: { tfo: globTags.playCountRateGlobalDay, direction: -1 },
+						bStatic: true
+					},
+					{
+						name: 'Last played yesterday',
+						query: globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING #YESTERDAY#'),
+						sort: { tfo: globTags.playCountRateGlobalDay, direction: -1 },
+						bStatic: true
 					},
 					{ name: 'sep' },
 					{
