@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/02/25
+//15/06/25
 
 /* exported createPoolPresets */
 
@@ -1446,6 +1446,6 @@ function createPoolPresets({ size = 50 } = {}) {
 					smartShuffle: 'ARTIST'
 				}
 			}
-		].sort((a, b) => a.name.localeCompare(b.name))
+		].sort((a, b) => a.name.localeCompare(b.name, void(0), { sensitivity: 'base', numeric: true }))
 	];
 }

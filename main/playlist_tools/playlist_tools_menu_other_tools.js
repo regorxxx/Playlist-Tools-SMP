@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//15/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -138,7 +138,7 @@
 						});
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Set dictionary...', func: () => {
-								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.dictPath).sort((a, b) => a.localeCompare(b)).join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
+								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.dictPath).sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true })).join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
 								if (menu_properties.dictName[1] === input) { return; }
 								if (!input.length) { input = menu_properties.dictName[3]; }
 								dictSettings.dictName = input;

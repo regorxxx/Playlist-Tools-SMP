@@ -1,5 +1,5 @@
 'use strict';
-//07/03/25
+//15/06/25
 
 /* exported _lastListMenu */
 
@@ -80,8 +80,8 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 		});
 		// Similar artists tags
 		[
-			{file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist},
-			{file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist}
+			{ file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist },
+			{ file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist }
 		].forEach((option) => {
 			const path = '.\\profile\\' + folders.dataName + option.file; // TODO Expose paths at properties
 			if (_isFile(path)) {
@@ -230,7 +230,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 				const bSingle = tag.valSet.size <= 1;
 				const subMenu = bSingle ? menu.getMainMenuName() : menu.newMenu(tag.name);
 				if (tag.valSet.size === 0) { tag.valSet.add(''); }
-				[...tag.valSet].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })).forEach((val, i) => {
+				[...tag.valSet].sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base' })).forEach((val, i) => {
 					menu.newEntry({
 						menuName: subMenu, entryText: bSingle ? tag.name + '\t[' + (val.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : val.cut(25), func: () => {
 							const url = buildUrl(tag, val);
