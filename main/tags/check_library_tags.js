@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/03/25
+//15/06/25
 
 /*
 	Check Library Tags
@@ -579,7 +579,7 @@ function objectToPairs(inputObj) { // {A:[x,y],B:[z], ...} -> A,x;A,y;B,z;...
 		const arr = (Array.isArray(inputObj[key])
 			? inputObj[key]
 			: [...inputObj[key]]
-		).sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' }));
+		).sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true }));
 		for (let value of arr) {
 			if (value) { outputSet.add(key.toLowerCase() + ',' + value); }
 		}
@@ -598,7 +598,7 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 		if (!bSet) { outputObj[key].push(value); }
 		else { outputObj[key].add(value); }
 	});
-	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })); } }
+	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true })); } }
 	return outputObj;
 }
 
@@ -612,7 +612,7 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 	for (const key in obj) {
 		if (key !== key.toLowerCase()) {
 			obj[key.toLowerCase()] = [...new Set([...obj[key], ...(obj[key.toLowerCase()] || [])])]
-				.sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' }));
+				.sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true }));
 			delete obj[key];
 			bSave = true;
 		}

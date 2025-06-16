@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/04/25
+//15/06/25
 
 /*
 	Quickmatch same....
@@ -309,7 +309,7 @@ function quickmatchMenu() {
 				const bSingle = queryObj.valSet.size <= 1;
 				const menuName = bSingle ? menu.getMainMenuName() : menu.newMenu(queryObj.name);
 				if (queryObj.valSet.size === 0) { queryObj.valSet.add(''); }
-				[...queryObj.valSet].sort((a, b) => a.localeCompare(b, 'en', { 'sensitivity': 'base' })).forEach((tagVal, i) => {
+				[...queryObj.valSet].sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base' })).forEach((tagVal, i) => {
 					menu.newEntry({
 						menuName, entryText: bSingle ? queryObj.name + '\t[' + (tagVal.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : tagVal.cut(25), func: () => {
 							let query = queryJoin(queryObj.tf.map((key) => key + ' IS ' + tagVal), 'OR');

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/03/25
+//16/06/25
 
 /* exported dynamicQuery */
 
@@ -70,7 +70,7 @@ function dynamicQueryProcess({ query = 'ARTIST IS #ARTIST#', handle = fb.GetFocu
 	}
 	if (!bOmitChecks) {
 		try { fb.GetQueryItems(new FbMetadbHandleList(), query); }
-		catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'dynamicQuery'); return null; }
+		catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + query, 'dynamicQuery'); return null; } // eslint-disable-line no-unused-vars
 	}
 	return query;
 }
