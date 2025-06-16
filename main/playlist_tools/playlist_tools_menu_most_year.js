@@ -1,9 +1,9 @@
 ﻿'use strict';
-//11/03/25
+//16/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isEnhPlayCount:readable, timeKeys:readable, isPlayCount:readable, _qCond:readable, globTags:readable, VK_SHIFT:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isEnhPlayCount:readable, timeKeys:readable, isPlayCount:readable, _qCond:readable, globTags:readable, VK_SHIFT:readable, globQuery:readable, queryJoin:readable */
 
 // Most played tracks at year
 {
@@ -33,9 +33,37 @@
 					});
 				});
 				menu.newSeparator(menuName);
+				menu.newEntry({
+					menuName, entryText: 'Most played today', func: (args = { ...defaultArgs }) => {
+						if (!forcedQueryMenusEnabled[name]) { args.forcedQuery = ''; }
+						const todayQuery = globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING ' + new Date().toISOString().split('T')[0]);
+						topTracksFromDate({
+							...args,
+							 bUseLast: true,
+							 last: '1 DAYS',
+							 forcedQuery: queryJoin([todayQuery, args.forcedQuery], 'AND'),
+							 playlistName: 'Most played today'
+						});
+					}
+				});
+				menu.newEntry({
+					menuName, entryText: 'Most played yesterday', func: (args = { ...defaultArgs }) => {
+						if (!forcedQueryMenusEnabled[name]) { args.forcedQuery = ''; }
+						const now = new Date();
+						now.setDate(now.getDate() - 1);
+						const todayQuery = globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING ' + now.toISOString().split('T')[0]);
+						topTracksFromDate({
+							...args,
+							 bUseLast: true,
+							 last: '2 DAYS',
+							 forcedQuery: queryJoin([todayQuery, args.forcedQuery], 'AND'),
+							 playlistName: 'Most played yesterday'
+						});
+					}
+				});
 				const options = [
-					{ name: 'day', arg: '1 DAY' },
-					{ name: 'week', arg: '1 WEEK' },
+					{ name: 'day', arg: '1 DAYS' },
+					{ name: 'week', arg: '1 WEEKS' },
 					{ name: 'month', arg: '4 WEEKS' },
 					{ name: 'trimester', arg: '12 WEEKS' },
 					{ name: 'year', arg: '52 WEEKS' }

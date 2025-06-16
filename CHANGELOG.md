@@ -75,8 +75,9 @@
 - Selection manipulation\Move selection to: added 'To the top' and 'To the bottom' entries which move to the first and last index respectively. These options, along 'To the middle' will compact non-contiguous selections.
 - Selection manipulation\Select (by time): new tool to set selection by specified time (rounded to tracks actual time). As 'Selection manipulation\Select (# tracks)' it also allows to select half, a third or a quarter of the total time of a playlist, random X minutes, or next X minutes. There are also additional entries to take into consideration crossfade between tracks.
 - Playlist manipulation\Query filtering: added filtering methods based on listen rates. Restore defaults to load the new presets.
+- Most played tracks at: new presets for 'Most played today' and 'Most played yesterday'. Different than using 'DURING LAST 1 DAYS'. See [here](https://hydrogenaudio.org/index.php/topic,128019.msg1064589/topicseen.html#info_1064589).
 - Dynamic queries: new presets based on listen rates. Restore defaults to load the new presets.
-- Dynamic queries: new presets based last played. Restore defaults to load the new presets.
+- Dynamic queries: new presets based last played. Restore defaults to load the new presets. Different than using 'DURING LAST 1 DAYS'. See [here](https://hydrogenaudio.org/index.php/topic,128019.msg1064589/topicseen.html#info_1064589).
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
 - Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
@@ -138,6 +139,7 @@
 ### Removed
 - Quicksearch: removed entries with multi-value tags on queries on 'Partial match' submenu; they were never supported.
 ### Fixed
+- Most played tracks at: fix for 'last day' and 'last week'.
 - Script Integration\SMP Dynamic menu: fixed double '&' shown in some entries.
 - Script Integration\SMP Dynamic menu: fixed multiple errors on dynamic menus (un)registering.
 - Remove duplicates: show duplicates feature sometimes reporting as duplicate tracks which only appeared once (by TF) when using partial Multi-value matching.

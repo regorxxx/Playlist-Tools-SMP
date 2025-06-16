@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/04/25
+//16/06/25
 
 /*
 	Top X Tracks From Date
@@ -42,6 +42,7 @@ const timeKeys = { Days: daysBetween, Weeks: weeksBetween };
  * @returns {[FbMetadbHandleList, {idx:number; playCount:number; listens: Date[];}[]]}
  */
 function topTracksFromDate({
+	playlistName,
 	playlistLength = 25,
 	sortBy = globTags.sortPlayCount,
 	checkDuplicatesBy = globTags.remDupl,
@@ -60,7 +61,7 @@ function topTracksFromDate({
 	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name); return; }
 	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return; }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); }
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; } // eslint-disable-line no-unused-vars
 	let timeKey, timePeriod;
 	if (bUseLast) {
 		if (last && typeof last === 'string') { last = last.trim(); }
@@ -78,11 +79,11 @@ function topTracksFromDate({
 	const test = bProfile ? new FbProfiler('topTracksFromDate') : null;
 	// Load query
 	const query = bUseLast
-		? '%LAST_PLAYED_ENHANCED% DURING LAST ' + last.toUpperCase()
-		: '%LAST_PLAYED_ENHANCED% AFTER ' + year + '-01-01 AND NOT %FIRST_PLAYED_ENHANCED% AFTER ' + (year + 1) + '-01-01';
+		? globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING LAST ' + last.toUpperCase())
+		: globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + year + '-01-01') + ' AND NOT ' + globQuery.firstPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + (year + 1) + '-01-01');
 	let outputHandleList;
 	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query)); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return; } // eslint-disable-line no-unused-vars
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
 		outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple });
@@ -99,7 +100,9 @@ function topTracksFromDate({
 	if (dataPool.length > playlistLength) { dataPool.length = playlistLength; }
 	dataPool.forEach((item) => pool.push(outputHandleList[item.idx]));
 	outputHandleList = new FbMetadbHandleList(pool);
-	const playlistName = bUseLast ? 'Top ' + (playlistLength !== Infinity ? playlistLength + ' ' : '') + 'Tracks from last ' + timePeriod + ' ' + timeKey : 'Top ' + playlistLength + ' Tracks ' + year;
+	if (!playlistName)  {
+		playlistName = bUseLast ? 'Top ' + (playlistLength !== Infinity ? playlistLength + ' ' : '') + 'Tracks from last ' + timePeriod + ' ' + timeKey : 'Top ' + playlistLength + ' Tracks ' + year;
+	}
 	if (bSendToPls) { sendToPlaylist(outputHandleList, playlistName); }
 	if (bProfile) { test.Print('Task #1: Top tracks from date', false); }
 	return [outputHandleList, dataPool];
@@ -128,6 +131,7 @@ function topTracksFromDate({
  * @returns {Promise.<[FbMetadbHandleList, {idx:number; playCount:number; listens: Date[];}[]]>}
  */
 async function topTracksFromDateV2({
+	playlistName,
 	playlistLength = 25,
 	sortBy = globTags.sortPlayCount,
 	checkDuplicatesBy = globTags.remDupl,
@@ -147,7 +151,7 @@ async function topTracksFromDateV2({
 	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name); return; }
 	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return; }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); }
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; } // eslint-disable-line no-unused-vars
 	let timeKey, timePeriod;
 	if (bUseLast) {
 		if (last && typeof last === 'string') { last = last.trim(); }
@@ -165,11 +169,11 @@ async function topTracksFromDateV2({
 	const test = bProfile ? new FbProfiler('topTracksFromDate') : null;
 	// Load query
 	const query = bUseLast
-		? '%LAST_PLAYED_ENHANCED% DURING LAST ' + last.toUpperCase()
-		: '%LAST_PLAYED_ENHANCED% AFTER ' + year + '-01-01 AND NOT %FIRST_PLAYED_ENHANCED% AFTER ' + (year + 1) + '-01-01';
+		? globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING LAST ' + last.toUpperCase())
+		: globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + year + '-01-01') + ' AND NOT ' + globQuery.firstPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + (year + 1) + '-01-01');
 	let outputHandleList;
 	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query)); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query), 'topTracksFromDate'); return; } // eslint-disable-line no-unused-vars
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
 		outputHandleList = removeDuplicates({ handleList: outputHandleList, sortOutput: sortBy, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple });
@@ -186,7 +190,9 @@ async function topTracksFromDateV2({
 	if (dataPool.length > playlistLength) { dataPool.length = playlistLength; }
 	dataPool.forEach((item) => pool.push(outputHandleList[item.idx]));
 	outputHandleList = new FbMetadbHandleList(pool);
-	const playlistName = bUseLast ? 'Top ' + (playlistLength !== Infinity ? playlistLength + ' ' : '') + 'Tracks from last ' + timePeriod + ' ' + timeKey : 'Top ' + playlistLength + ' Tracks ' + year;
+	if (!playlistName)  {
+		playlistName = bUseLast ? 'Top ' + (playlistLength !== Infinity ? playlistLength + ' ' : '') + 'Tracks from last ' + timePeriod + ' ' + timeKey : 'Top ' + playlistLength + ' Tracks ' + year;
+	}
 	if (bSendToPls) { sendToPlaylist(outputHandleList, playlistName); }
 	if (bProfile) { test.Print('Task #1: Top tracks from date', false); }
 	return [outputHandleList, dataPool];
