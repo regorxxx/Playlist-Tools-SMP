@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/02/25
+//24/06/25
 
 /*
 	Playlist Tools Pools
@@ -61,7 +61,7 @@ addButton({
 					}
 				});
 				configMenu.btn_up(this.currX, this.currY + this.currH);
-			} else { fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
+			} else { fb.ShowPopupMessage('WARNING: CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
 		},
 		description: function () {
 			return (isPlaylistToolsLoaded()
@@ -71,7 +71,7 @@ addButton({
 						? '\n-----------------------------------------------------\n(L. Click to show list)'
 						: ''
 				)
-				: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
+				: 'WARNING: CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
 		},
 		prefix, button: newButtonsProperties,
 		icon: chars.music

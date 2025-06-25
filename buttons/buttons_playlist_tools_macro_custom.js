@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//24/06/25
 
 /*
 	Playlist Tools Macro custom
@@ -105,7 +105,7 @@ addButton({
 						menu.btn_up(void (0), void (0), void (0), this.buttonsProperties['macro'][1]); // Don't clear menu on last call
 					}
 				}
-			} else { fb.ShowPopupMessage('WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
+			} else { fb.ShowPopupMessage('WARNING: CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS', 'Playlist Tools'); }
 		},
 		description: function () {
 			return (isPlaylistToolsLoaded()
@@ -115,7 +115,7 @@ addButton({
 						? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)'
 						: ''
 				)
-				: 'WARNING! CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
+				: 'WARNING: CAN\'T USE THIS BUTTON WITHOUT PLAYLIST TOOLS');
 		},
 		prefix, buttonsProperties: newButtonsProperties,
 		icon: chars.hourglassHalf
