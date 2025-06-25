@@ -83,7 +83,8 @@
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
 - Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).
-- Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#', '#DEVICE#', '#DEVICEID#', '#SAC#', '#RGMODE#', '#PLAYMODE#', '#PLSCOUNT#' variables. See dynamic queries readme for more info.
+- Dynamic queries: support for '#NOW_TS#' and '#YESTERDAY_TS#' variables, which resolves to Unix timestamps in seconds (1750881508).
+- Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#','#PLAYSTATE#', '#DEVICE#', '#DEVICEID#', '#SAC#', '#RGMODE#', '#PLAYMODE#', '#PLSCOUNT#' variables. See dynamic queries readme for more info.
 - Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#', '#SELPLAYING#', '#SELINLIBRARY#' variables for selections. See dynamic queries readme for more info.
 - Dynamic queries: support for '#PLSIDX#', '#PLSNAME#', '#PLSTRACKS#, '#PLSISAUTOPLS#, '#PLSISLOCKED#', '#PLSDURATION#', '#PLSSIZE#', '#PLSLOCKS#', '#PLSLOCKNAME#' variables for playlists. See dynamic queries readme for more info.
 - Dynamic queries: support for '#PLSPLAYIDX#', '#PLSPLAYNAME#', '#PLSPLAYTRACKS#, '#PLSPLAYDURATION#, '#PLSPLAYSIZE#' variables for playing playlist. See dynamic queries readme for more info.
@@ -134,6 +135,8 @@
 - Dynamic queries: support for '*' wildcard (also for multi-value tags). i.e. 'ARTIST IS #ARTIST*#' -> 'ARTIST IS A*' (when the reference track has an artist tag equal to 'A').
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
+- Presets: unified presets along different query filtering tools.
+- Presets: changed all references to rating >x to ≥X+1. i.e. 'Rating ≥3' instead of 'Rating >2'
 - UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - Helpers: updated helpers.
 - Helpers: general code cleanup on menus internal code. Please report any bug on extra separators or menu entries not working as expected.
@@ -149,10 +152,12 @@
 - UI: '&' being displayed as '_' on tooltips.
 - UI: removed extra menu bar break on pools submenus.
 - UI: fixed icons alignment in different layouts and orientations.
+- UI: multiple workarounds for rounded rectangles not being painted properly or producing crashes (SMP limitation).
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 - Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
 - Presets: minor error on queries using decades.
-- UI: multiple workarounds for rounded rectangles not being painted properly or producing crashes (SMP limitation).
+- Other Tools\Check tags: fixed corrupted JSON output for EBUR 128 scanner (ffmpeg) with newest versions of ffmpeg (>5.0).
+- Fixed some inconsistencies with  [foo_playcount_2003](https://marc2k3.github.io/component/playcount-2003/) support.
 
 ## [4.6.0] - 2024-10-09
 ### Added
