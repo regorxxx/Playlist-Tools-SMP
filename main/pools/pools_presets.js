@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/06/25
+//19/06/25
 
 /* exported createPoolPresets */
 
@@ -147,9 +147,9 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: half
 					},
 					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND %ADDED% DURING LAST 4 WEEKS',
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND %ADDED% DURING LAST 4 WEEKS',
-						_LIBRARY_2: globQuery.ratingTop + ' AND %ADDED% DURING LAST 4 WEEKS'
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.recent,
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + globQuery.recent,
+						_LIBRARY_2: globQuery.ratingTop + ' AND ' + globQuery.recent
 					},
 					toPls: 'Top recently added tracks mix',
 					sort: '',
@@ -166,9 +166,9 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: half
 					},
 					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.recent,
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + globQuery.recent,
-						_LIBRARY_2: globQuery.ratingTop + ' AND ' + globQuery.recent
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_2: globQuery.ratingTop + ' AND ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCount)
 					},
 					toPls: 'Top recently played mix',
 					sort: '',
@@ -184,9 +184,9 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: half
 					},
 					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent,
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent,
-						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' SORT DESCENDING BY ' + _qCond(globTags.playCount)
 					},
 					toPls: 'Top not recently played mix',
 					sort: '',
@@ -201,9 +201,9 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: half
 					},
 					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#',
-						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)#'
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)# SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)# SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,1)# SORT DESCENDING BY ' + _qCond(globTags.playCount)
 					},
 					toPls: 'Top not recently played this year mix',
 					sort: '',
@@ -218,9 +218,9 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: half
 					},
 					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#',
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#',
-						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)#'
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)# SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)# SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' IS #$sub(#YEAR#,1)# SORT DESCENDING BY ' + _qCond(globTags.playCount)
 					},
 					toPls: 'Top not recently played last year mix',
 					sort: '',
@@ -235,9 +235,9 @@ function createPoolPresets({ size = 50 } = {}) {
 						_LIBRARY_2: half
 					},
 					query: {
-						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
-						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#',
-						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)#'
+						_LIBRARY_0: globTags.rating + ' EQUAL 3 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)# SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_1: globTags.rating + ' EQUAL 4 AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)# SORT DESCENDING BY ' + _qCond(globTags.playCount),
+						_LIBRARY_2: globQuery.ratingTop + ' AND NOT ' + globQuery.recent + ' AND ' + _qCond(globTags.date) + ' GREATER #$sub(#YEAR#,5)# SORT DESCENDING BY ' + _qCond(globTags.playCount)
 					},
 					toPls: 'Top not recently played last 5 years mix',
 					sort: '',
