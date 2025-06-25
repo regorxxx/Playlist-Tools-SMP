@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/05/25
+//17/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -119,14 +119,16 @@
 					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
-						{ name: 'Rating > 2', query: globQuery.notLowRating },
-						{ name: 'Rating > 3', query: globQuery.ratingGr3 },
+						{ name: 'Rating ≥3', query: globQuery.notLowRating },
+						{ name: 'Rating ≥4', query: globQuery.ratingGr3 },
+						{ name: 'Fav tracks', query: globQuery.fav },
+						{ name: 'Loved tracks', query: globQuery.loved },
 						{ name: 'sep' },
 						{ name: 'Not recently listened', query: 'NOT ' + globQuery.recent },
-						{ name: 'Daily listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
-						{ name: 'Weekly listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
-						{ name: 'Monthly listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
-						{ name: 'Yearly listen rate > 1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
+						{ name: 'Daily listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
+						{ name: 'Weekly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
+						{ name: 'Monthly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
+						{ name: 'Yearly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
 						{ name: 'sep' },
 						{ name: 'Not instrumental', query: globQuery.noInstrumental },
 						{ name: 'Not live (none)', query: globQuery.noLiveNone },
@@ -134,6 +136,7 @@
 						{ name: 'Not multichannel', query: globQuery.stereo },
 						{ name: 'Not SACD or DVD', query: globQuery.noSACD },
 						{ name: 'Not Links', query: '"$strstr(%_PATH_RAW%,file:)" PRESENT OR "$strstr(%_PATH_RAW%,file-relative:)" PRESENT' },
+						{ name: 'sep' },
 						{ name: 'Global forced query', query: defaultArgs['forcedQuery'] },
 						{ name: 'sep' },
 						{ name: 'Same title than sel', query: globQuery.compareTitle },

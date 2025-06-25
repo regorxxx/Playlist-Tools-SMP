@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/05/25
+//17/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -1366,12 +1366,24 @@
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\filter_by_query.txt';
 					forcedQueryMenusEnabled[name] = false;
 					let selQueryFilter = [
-						{ name: 'Rating > 2', query: globQuery.notLowRating },
+						{ name: 'Rating ≥3', query: globQuery.notLowRating },
+						{ name: 'Rating ≥4', query: globQuery.ratingGr3 },
+						{ name: 'Fav tracks', query: globQuery.fav },
+						{ name: 'Loved tracks', query: globQuery.loved },
+						{ name: 'sep' },
+						{ name: 'Not recently listened', query: 'NOT ' + globQuery.recent },
+						{ name: 'Daily listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
+						{ name: 'Weekly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
+						{ name: 'Monthly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
+						{ name: 'Yearly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
+						{ name: 'sep' },
 						{ name: 'Instrumental', query: globQuery.instrumental },
 						{ name: 'Live (all)', query: globQuery.live },
 						{ name: 'Live (Hi-Fi)', query: globQuery.liveHifi },
 						{ name: 'Multichannel', query: 'NOT ' + _p(globQuery.stereo) },
 						{ name: 'SACD or DVD', query: globQuery.SACD },
+						{ name: 'Links', query: 'NOT ("$strstr(%_PATH_RAW%,file:)" PRESENT OR "$strstr(%_PATH_RAW%,file-relative:)" PRESENT)' },
+						{ name: 'sep' },
 						{ name: 'Global forced query', query: defaultArgs['forcedQuery'] },
 						{ name: 'sep' },
 						{ name: 'Same title than sel', query: globQuery.compareTitle },
@@ -1379,6 +1391,7 @@
 						{ name: 'Same artist(s) than sel', query: globTags.artist + ' IS #' + globTags.artistRaw + '#' },
 						{ name: 'Same genre than sel', query: globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Same key than sel', query: globTags.key + ' IS #' + globTags.key + '#' },
+						{ name: 'Same decade than sel', query: '"$div(' + _t(globTags.date) + ',10)0s" IS #$div(' + _t(globTags.date) + ',10)0s#' },
 						{ name: 'sep' },
 						{ name: 'Different genre than sel', query: 'NOT ' + globTags.genre + ' IS #' + globTags.genre + '#' },
 						{ name: 'Different style than sel', query: 'NOT ' + globTags.style + ' IS #' + globTags.style + '#' }

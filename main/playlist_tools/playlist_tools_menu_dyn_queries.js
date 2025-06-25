@@ -1,9 +1,9 @@
 ﻿'use strict';
-//16/06/25
+//17/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
-/* global MF_GRAYED:readable, MF_STRING:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _qCond:readable, checkQuery:readable, isJSON:readable, WshShell:readable, popup:readable */
+/* global MF_GRAYED:readable, MF_STRING:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _qCond:readable, checkQuery:readable, isJSON:readable, WshShell:readable, popup:readable, queryJoin:readable */
 
 // Dynamic queries
 {
@@ -24,11 +24,11 @@
 					},
 					{
 						name: 'Same songs (by artist)',
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'
+						query: queryJoin([globQuery.compareTitle, globTags.artist + ' IS #' + globTags.artistRaw + '#'])
 					},
 					{
 						name: 'Duplicates on library',
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + _qCond(globTags.date) + ' IS #' + globTags.date + '#)'
+						query: queryJoin([globQuery.compareTitle, globTags.artist + ' IS #' + globTags.artistRaw + '#', _qCond(globTags.date) + ' IS #' + globTags.date + '#'])
 					},
 					{ name: 'sep' },
 					{
@@ -42,20 +42,28 @@
 					{ name: 'sep' },
 					{
 						name: 'Acoustic versions of song',
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + globTags.genre + ' IS acoustic OR ' + globTags.style + ' IS acoustic OR ' + globTags.mood + ' IS acoustic)'
+						query: queryJoin([globQuery.compareTitle, globTags.artist + ' IS #' + globTags.artistRaw + '#', globQuery.acoustic])
 					},
 					{
 						name: 'Live versions of song',
-						query: globQuery.compareTitle + ' AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#) AND (' + globTags.genre + ' IS live OR ' + globTags.style + ' IS live)'
+						query: queryJoin([globQuery.compareTitle, globTags.artist + ' IS #' + globTags.artistRaw + '#', globQuery.live])
 					},
 					{
 						name: 'Cover versions of song',
-						query: globQuery.compareTitle + ' AND NOT (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'
+						query: queryJoin([globQuery.compareTitle, globTags.artist + ' IS #' + globTags.artistRaw + '#'], 'AND NOT')
 					},
 					{ name: 'sep' },
 					{
-						name: 'Rated >2 tracks (by artist)',
-						query: globTags.rating + ' GREATER 2 AND (' + globTags.artist + ' IS #' + globTags.artistRaw + '#)'
+						name: 'Rated ≥3 tracks (by artist)',
+						query: queryJoin([globQuery.ratingGr2, globTags.artist + ' IS #' + globTags.artistRaw + '#'])
+					},
+					{
+						name: 'Fav tracks (by artist)',
+						query: queryJoin([globQuery.fav, globTags.artist + ' IS #' + globTags.artistRaw + '#'])
+					},
+					{
+						name: 'Loved tracks (by artist)',
+						query: queryJoin([globQuery.loved, globTags.artist + ' IS #' + globTags.artistRaw + '#'])
 					},
 					{ name: 'sep' },
 					{
@@ -72,25 +80,25 @@
 					},
 					{ name: 'sep' },
 					{
-						name: 'Daily listen rate > 1',
+						name: 'Daily listen rate >1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalDay, direction: -1 },
 						bStatic: true
 					},
 					{
-						name: 'Weekly listen rate > 1',
+						name: 'Weekly listen rate >1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalWeek, direction: -1 },
 						bStatic: true
 					},
 					{
-						name: 'Monthly listen rate > 1',
+						name: 'Monthly listen rate >1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalMonth, direction: -1 },
 						bStatic: true
 					},
 					{
-						name: 'Yearly listen rate > 1',
+						name: 'Yearly listen rate >1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalYear, direction: -1 },
 						bStatic: true

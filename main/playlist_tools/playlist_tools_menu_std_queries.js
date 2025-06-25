@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//17/06/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, globQuery:readable */
 
@@ -22,9 +22,10 @@
 					{ name: 'Entire library', query: 'ALL', sort: { tfo: '', direction: -1 } },
 					{ name: 'Entire library (forced query)', query: '', sort: { tfo: '', direction: -1 } },
 					{ name: 'sep' },
-					{ name: 'Rating 4-5', query: globQuery.ratingGr3 , sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Rating ≥4', query: globQuery.ratingGr3 , sort: { tfo: globTags.rating, direction: 1 } },
 					{ name: 'Rating 5', query: globQuery.ratingTop , sort: { tfo: globTags.rating, direction: 1 } },
-					{ name: 'Fav tracks', query: globQuery.fav , sort: { tfo: globTags.playCount, direction: 1 } },
+					{ name: 'Fav tracks', query: globQuery.fav , sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Loved tracks', query: globQuery.loved , sort: { tfo: globTags.rating, direction: 1 } },
 					{ name: 'sep' },
 					{ name: 'Recently listened', query: globQuery.recent, sort: { tfo: globTags.sortLastPlayed , direction: -1 } },
 					{ name: 'Recently added', query: globQuery.added, sort: { tfo: globTags.sortAdded, direction: -1 } },
