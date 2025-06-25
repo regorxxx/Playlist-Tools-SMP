@@ -8,7 +8,7 @@ SET useSed=TRUE
 IF NOT EXIST %sed% SET useSed=FALSE
 IF "%useSed%" == "TRUE" (
 	%ffPath% -hide_banner -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - >%2.temp 2>&1
-	%sed% 1,/^\[Parsed_loudnorm/d %2.temp >%2 2>&1
+	%sed% 1,/^\[Parsed_loudnorm/d;/^\[.*/d;/frame/d %2.temp >%2 2>&1
 ) ELSE (
 	%ffPath% -hide_banner -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - >%2.temp 2>&1
 	>%2  2>&1 FINDSTR /BIR "{ .*\" }" %2.temp
