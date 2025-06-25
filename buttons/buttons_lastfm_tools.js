@@ -1,5 +1,5 @@
 'use strict';
-//17/03/25
+//19/06/25
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
@@ -7,7 +7,7 @@
 
 /* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, doOnce:readable, MF_GRAYED:readable, VK_CONTROL:readable */
+/* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, doOnce:readable, MF_GRAYED:readable, VK_CONTROL:readable, folders:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
@@ -59,7 +59,13 @@ var newButtonsProperties = { // NOSONAR[global]
 		{ name: 'Mood & Theme(s)', tf: [...new Set([globTags.mood, 'MOOD', 'THEME', 'ALBUMMOOD', 'ALBUM THEME ALLMUSIC', 'ALBUM MOOD ALLMUSIC'])], type: 'TAG' },
 	])],
 	cacheTime: ['YouTube lookups cache expiration', 86400000, { func: isInt }, 86400000],
+	filePaths: ['External database paths', JSON.stringify({
+		listenBrainzArtists: '.\\profile\\' + folders.dataName + 'listenbrainz_artists.json',
+		searchByDistanceArtists: '.\\profile\\' + folders.dataName + 'searchByDistance_artists.json',
+		worldMapArtists: '.\\profile\\' + folders.dataName + 'worldMap.json'
+	})]
 };
+newButtonsProperties.tags.push({ func: isJSON }, newButtonsProperties.tags[1]);
 newButtonsProperties.tags.push({ func: isJSON }, newButtonsProperties.tags[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);

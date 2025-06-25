@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/06/25
+//19/06/25
 
 /*
 	Quickmatch same....
@@ -75,7 +75,13 @@ var newButtonsProperties = { // NOSONAR[global]
 	sortTF: ['Sorting TF expression', globTags.artist + '|%ALBUM%|%TRACK%', { func: isStringWeak }, globTags.artist + '|%ALBUM%|%TRACK%'],
 	bOmitSortPls: ['Omit sorting on playlist sources', true, { func: isBoolean }, true],
 	bBioTags: ['Use tags from Bio panel', false, { func: isBoolean }, false],
+	filePaths: ['External database paths', JSON.stringify({
+		listenBrainzArtists: '.\\profile\\' + folders.dataName + 'listenbrainz_artists.json',
+		searchByDistanceArtists: '.\\profile\\' + folders.dataName + 'searchByDistance_artists.json',
+		worldMapArtists: '.\\profile\\' + folders.dataName + 'worldMap.json'
+	})]
 };
+newButtonsProperties.filePaths.push({ func: isJSON }, newButtonsProperties.filePaths[1]);
 newButtonsProperties.entries.push(newButtonsProperties.entries[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
@@ -189,6 +195,7 @@ function quickmatchMenu() {
 		tag.val = [];
 		tag.valSet = new Set();
 	});
+	const filePaths = JSON.parse(this.buttonsProperties.filePaths[1]);
 	const bioTags = this.buttonsProperties.bBioTags[1] ? this.bioTags || {} : {};
 	if (info) {
 		entries.forEach((tag) => {
@@ -232,18 +239,18 @@ function quickmatchMenu() {
 				}
 			});
 		});
+
 		// Similar artists tags
 		[
-			{ file: 'listenbrainz_artists.json', dataId: 'artist', tag: globTags.lbSimilarArtist },
-			{ file: 'searchByDistance_artists.json', dataId: 'artist', tag: globTags.sbdSimilarArtist }
+			{ file: filePaths.listenBrainzArtists, dataId: 'artist', tag: globTags.lbSimilarArtist },
+			{ file: filePaths.searchByDistanceArtists, dataId: 'artist', tag: globTags.sbdSimilarArtist }
 		].forEach((option) => {
-			const path = '.\\profile\\' + folders.dataName + option.file; // TODO Expose paths at properties
-			if (_isFile(path)) {
+			if (_isFile(option.file)) {
 				const dataId = option.dataId;
 				const dataTag = option.tag;
 				const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 				if (selIds.length) {
-					const data = getSimilarDataFromFile(path);
+					const data = getSimilarDataFromFile(option.file);
 					const sdbData = new Set();
 					if (data) {
 						data.forEach((item) => {
@@ -264,12 +271,11 @@ function quickmatchMenu() {
 			}
 		});
 		// World map tags
-		const worldMapPath = '.\\profile\\' + folders.dataName + 'worldMap.json'; // TODO Expose paths at properties
-		if (_isFile(worldMapPath)) {
+		if (_isFile(filePaths.worldMapArtists)) {
 			const dataId = 'artist';
 			const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
-				const data = _jsonParseFileCheck(worldMapPath, 'Tags json', window.Name, utf8);
+				const data = _jsonParseFileCheck(filePaths.worldMapArtists, 'Tags json', window.Name, utf8);
 				const worldMapData = new Set();
 				if (data) {
 					data.forEach((item) => {
@@ -316,12 +322,11 @@ function quickmatchMenu() {
 							// Search by Distance tags
 							if (queryObj.tf.some((tag) => tag.toUpperCase().includes('LOCALE'))) {
 								// World map tags
-								const worldMapPath = '.\\profile\\' + folders.dataName + 'worldMap.json'; // TODO Expose paths at properties
-								if (_isFile(worldMapPath)) {
+								if (_isFile(filePaths.worldMapArtists)) {
 									const dataId = 'artist';
 									const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 									if (selIds.length) {
-										const data = _jsonParseFileCheck(worldMapPath, 'Tags json', window.Name, utf8);
+										const data = _jsonParseFileCheck(filePaths.worldMapArtists, 'Tags json', window.Name, utf8);
 										const worldMapData = new Set();
 										if (data) {
 											data.forEach((item) => {
