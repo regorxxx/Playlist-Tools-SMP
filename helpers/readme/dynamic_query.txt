@@ -38,12 +38,15 @@ Doesn't requires a track to be evaluated (i.e. they always work):
 	- #YEAR#	  -> 2025 (current year)
 	- #NOW#		  -> 2023-3-8 (current date)
 	- #TODAY#	  -> Alias for #NOW#
+	- #NOW_TS#	  -> 1750881508 (current Unix timestamp in s)
 	- #YESTERDAY#	  -> 2023-3-07 (yesterday date)
+	- #YESTERDAY_TS#  -> 1750881508 (yesterday Unix timestamp in s)
 	- #VOLUME#	  -> 100 (volume from 0 to 100, rounded)
 	- #VOLUMEDB#	  -> -7.53 dB (volume from -100 to 0 dB)
 	- #VERSION#	  -> 1.4.1 (foobar version)
 	- #ISPLAYING#	  -> 1 (1 if playing, empty otherwise)
 	- #ISPAUSED#	  -> 1 (1 if playing, empty otherwise)
+	- #PLAYSTATE#	  -> Paused (Paused|Playing|Stopped)
 	- #SELTYPE#	  -> active playlist (selection type)
 	- #DEVICE#	  -> Null Output (output device name)
 	- #DEVICEID#	  -> {5243F9AD-C84F-4723-8194-0788FC021BCC}
