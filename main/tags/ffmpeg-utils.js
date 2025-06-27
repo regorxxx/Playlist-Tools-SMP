@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/05/25
+//26/06/25
 
 /* exported ffprobeUtils */
 
@@ -26,6 +26,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 	if (!_isFile(ffmpegPath)) { fb.ShowPopupMessage('ffmpeg executable not found:\n' + ffmpegPath, 'EBUR 128 Scanner'); return false; }
 	const profile = bProfile ? new FbProfiler('EBUR 128 Scanner') : null;
 	const batFile = ffmpegPath.replace((soFeat.x64 ? '' : '_32') + '.exe', bWineBug ? '_wine.bat' : '.bat');
+	if (bDebug) { console.log(batFile); }
 	if (!_isFile(batFile)) { fb.ShowPopupMessage('ffmpeg bat file not found:\n' + batFile, 'EBUR 128 Scanner'); return false; }
 	const handleListArr = fromHandleList.Convert();
 	const totalTracks = handleListArr.length, numTracks = 25, maxCount = Math.ceil(totalTracks / numTracks);

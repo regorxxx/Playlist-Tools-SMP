@@ -16,7 +16,7 @@ IF NOT EXIST %sed% SET useSed=FALSE
 IF "%useSed%" == "TRUE" (
 	ECHO Processing: %1
 	ECHO.
-	%ffmpeg% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | %sed% 1,/^\[Parsed_loudnorm/d;/^\[.*/d;/frame/d
+	%ffmpeg% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null - 2>&1 | %sed% 1,/^^\[Parsed_loudnorm/d;/^^[^^{}[:space:]]/d
 ) ELSE (
 	%ffmpeg% -i %1 -af loudnorm=dual_mono=true:print_format=json -nostats -f null -
 )
