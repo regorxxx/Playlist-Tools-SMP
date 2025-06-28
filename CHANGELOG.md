@@ -84,6 +84,7 @@
 - Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).
 - Dynamic queries: support for '#NOW_TS#' and '#YESTERDAY_TS#' variables, which resolves to Unix timestamps in seconds (1750881508).
+- Dynamic queries: support for '#DECADE#', '#PREVDECADE#', '#PREVYEAR#', '#PREVMONTH#'.
 - Dynamic queries: support for '#VOLUME#', '#VOLUMEDB#, '#VERSION#', '#SELTYPE#', '#ISPLAYING#', '#ISPAUSED#','#PLAYSTATE#', '#DEVICE#', '#DEVICEID#', '#SAC#', '#RGMODE#', '#PLAYMODE#', '#PLSCOUNT#' variables. See dynamic queries readme for more info.
 - Dynamic queries: support for '#SELTRACKS#', '#SELDURATION#, '#SELSIZE#', '#SELPLAYING#', '#SELINLIBRARY#' variables for selections. See dynamic queries readme for more info.
 - Dynamic queries: support for '#PLSIDX#', '#PLSNAME#', '#PLSTRACKS#, '#PLSISAUTOPLS#, '#PLSISLOCKED#', '#PLSDURATION#', '#PLSSIZE#', '#PLSLOCKS#', '#PLSLOCKNAME#' variables for playlists. See dynamic queries readme for more info.

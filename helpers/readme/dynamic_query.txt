@@ -36,11 +36,17 @@ Doesn't requires a track to be evaluated (i.e. they always work):
 	- #DAY# 	  -> 8 (current day)
 	- #MONTH#	  -> 3 (current month)
 	- #YEAR#	  -> 2025 (current year)
+	- #DECADE#	  -> 2020s (current decade)
 	- #NOW#		  -> 2023-3-8 (current date)
 	- #TODAY#	  -> Alias for #NOW#
 	- #NOW_TS#	  -> 1750881508 (current Unix timestamp in s)
 	- #YESTERDAY#	  -> 2023-3-07 (yesterday date)
+	- #PREVDAY#	  -> Alias for #YESTERDAY#
 	- #YESTERDAY_TS#  -> 1750881508 (yesterday Unix timestamp in s)
+	- #PREVDAY_TS#	  -> Alias for #YESTERDAY_TS#
+	- #PREVMONTH#	  -> 2 (previous month)
+	- #PREVYEAR#	  -> 2024 (previous year)
+	- #PREVDECADE#	  -> 2010s (previous decade)
 	- #VOLUME#	  -> 100 (volume from 0 to 100, rounded)
 	- #VOLUMEDB#	  -> -7.53 dB (volume from -100 to 0 dB)
 	- #VERSION#	  -> 1.4.1 (foobar version)
@@ -99,6 +105,9 @@ flow functions ($if, ...).
 
 Some examples:
 --------------
+For tracks from this decade:
+"$div(%DATE%,10)0s" IS #DECADE# -> "$div(%DATE%,10)0s" IS 2020s
+
 For a rock track:
 GENRE IS #GENRE# -> GENRE IS Rock.
 The entire library would be filtered with tracks from that genre.
