@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/03/25
+//29/06/25
 
 /*
 	Volume controls and display
@@ -7,13 +7,13 @@
 
 /* global menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
-/* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable, MK_SHIFT:readable, VK_SHIFT:readable, VK_BACK:readable, DT_LEFT:readable, DT_CENTER:readable, DT_RIGHT:readable, DT_VCENTER:readable, DT_CALCRECT:readable, DT_NOPREFIX:readable, DT_END_ELLIPSIS:readable, DT_PATH_ELLIPSIS:readable, DT_WORD_ELLIPSIS:readable, DT_NOCLIP:readable */
+/* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable, MK_SHIFT:readable, VK_SHIFT:readable, VK_BACK:readable, DT_LEFT:readable, DT_CENTER:readable, DT_RIGHT:readable, DT_VCENTER:readable, DT_CALCRECT:readable, DT_NOPREFIX:readable, DT_END_ELLIPSIS:readable, DT_PATH_ELLIPSIS:readable, DT_WORD_ELLIPSIS:readable, DT_NOCLIP:readable, globTags:readable */
 include('..\\helpers\\buttons_xxx.js');
 /* global getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, getButtonVersion:readable, Flag:readable, buttonStates:readable */
 include('..\\helpers\\buttons_xxx_menu.js');
 /* global settingsMenu:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isFunction:readable, isBoolean:readable, isStringWeak:readable, isFloat:readable, isInt:readable */
+/* global isFunction:readable, isBoolean:readable, isStringWeak:readable, isFloat:readable, isInt:readable, _t:readable */
 include('..\\helpers\\helpers_xxx_tags.js');
 /* global queryReplaceWithStatic:readable, sanitizeTagTfo:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
@@ -31,7 +31,7 @@ checkCompatible('1.4.0', 'fb');
 
 prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 var newButtonsProperties = { // NOSONAR[global]
-	tf: ['Title Format expression', '$pad($repeat(★,%RATING%), 5,✩)', { func: isStringWeak }, '$pad($repeat(★,%RATING%), 5,✩)'],
+	tf: ['Title Format expression', '$pad($repeat(★,' + _t(globTags.rating) + '), 5,✩)', { func: isStringWeak }, '$pad($repeat(★,' + _t(globTags.rating) + '), 5,✩)'],
 	fallback: ['Fallback text', sanitizeTagTfo(chars.loveEmojiV2), { func: isStringWeak }, sanitizeTagTfo(chars.loveEmojiV2)],
 	bPlaying: ['Follow now playing', true, { func: isBoolean }, true],
 	refreshRate: ['Max. refresh rate (ms)', 50, { func: isInt }, 50],
