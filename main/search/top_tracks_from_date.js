@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/06/25
+//29/06/25
 
 /*
 	Top X Tracks From Date
@@ -79,7 +79,7 @@ function topTracksFromDate({
 	const test = bProfile ? new FbProfiler('topTracksFromDate') : null;
 	// Load query
 	const query = bUseLast
-		? globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING LAST ' + last.toUpperCase())
+		? globQuery.recentBy(last.toUpperCase())
 		: globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + year + '-01-01') + ' AND NOT ' + globQuery.firstPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + (year + 1) + '-01-01');
 	let outputHandleList;
 	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query)); } // Sanity check
@@ -169,7 +169,7 @@ async function topTracksFromDateV2({
 	const test = bProfile ? new FbProfiler('topTracksFromDate') : null;
 	// Load query
 	const query = bUseLast
-		? globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'DURING LAST ' + last.toUpperCase())
+		? globQuery.recentBy(last.toUpperCase())
 		: globQuery.lastPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + year + '-01-01') + ' AND NOT ' + globQuery.firstPlayedFunc.replaceAll('#QUERYEXPRESSION#', 'AFTER ' + (year + 1) + '-01-01');
 	let outputHandleList;
 	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), (forcedQuery.length ? _p(query) + ' AND ' + _p(forcedQuery) : query)); } // Sanity check
