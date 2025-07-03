@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//01/07/25
 
 /*
 	Automatic tagging...
@@ -36,6 +36,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	toolsByKey: ['Tools enabled', JSON.stringify(new Tagger({ bOutputDefTools: true }))],
+	quietByKey: ['Quiet mode', JSON.stringify({ audioMd5: false, rgScan: false, tpScan: false, bpmAnaly: false })],
 	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false],
 	bWineBug: ['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup],
 	bFormatPopups: ['Show format warning popups', true, { func: isBoolean }, true],
@@ -58,23 +59,22 @@ buttonsBar.list.push(newButtonsProperties);
 					else { this.tAut.nextStepTag(); }
 				} else {
 					const menu = new _menu({ iMaxEntryLen: 50 }); // To avoid collisions with other buttons and check menu
-					const firedFlags = () => { return this.tAut.isRunning() ? MF_STRING : MF_GRAYED; };
 					const selFlags = handleList.Count ? MF_STRING : MF_GRAYED;
-					const allFlags = () => { return (!this.tAut.isRunning() ? selFlags : MF_GRAYED); };
-					menu.newEntry({ entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED });
-					menu.newSeparator();
+					const allFlags = () => !this.tAut.isRunning() ? selFlags : MF_GRAYED;
 					menu.newEntry({
-						entryText: () => { return 'Add tags on batch to selected tracks' + (this.tAut.isRunning() ? ' (running)' : ''); }, func: () => {
+						entryText: () => { return 'Tag selected tracks' + (this.tAut.isRunning() ? ' (running)' : ''); }, func: () => {
 							this.tAut.run();
 							this.switchAnimation('Automate Tags', true, () => { return !this.tAut.isRunning(); });
 						}, flags: allFlags
 					});
-					menu.newSeparator();
-					menu.newEntry({ entryText: () => { return 'Manually force next step' + (this.tAut.isRunning() ? '' : ' (not running)'); }, func: this.tAut.nextStepTag, flags: firedFlags });
-					menu.newEntry({ entryText: () => { return 'Stop execution' + (this.tAut.isRunning() ? '' : ' (not running)'); }, func: this.tAut.stopStepTag, flags: firedFlags });
+					if (this.tAut.isRunning()) {
+						menu.newSeparator();
+						menu.newEntry({ entryText: () => { return 'Force next step'; }, func: this.tAut.nextStepTag });
+						menu.newEntry({ entryText: () => { return 'Stop execution'; }, func: this.tAut.stopStepTag });
+					}
 					menu.newSeparator();
 					{
-						const subMenu = menu.newMenu('Available tools...', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
+						const subMenu = menu.newMenu('Available tools', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
 						menu.newEntry({ menuName: subMenu, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED });
 						menu.newSeparator(subMenu);
 						this.tAut.tools.forEach((tool) => {
@@ -132,12 +132,27 @@ buttonsBar.list.push(newButtonsProperties);
 					}
 					menu.newSeparator();
 					{
-						const subMenu = menu.newMenu('Settings...', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
+						const subMenu = menu.newMenu('Settings', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
+						{
+							const subMenuTwo = menu.newMenu('Quiet mode', subMenu);
+							const quietByKey = JSON.parse(this.buttonsProperties.quietByKey[1]);
+							['audioMd5', 'rgScan', 'tpScan', 'bpmAnaly'].forEach((key) => {
+								menu.newEntry({
+									menuName: subMenuTwo, entryText: this.tAut.titlesByKey[key], func: () => {
+										this.tAut.quietByKey[key] = quietByKey[key] = !quietByKey[key];
+										this.buttonsProperties.quietByKey[1] = JSON.stringify(quietByKey);
+										overwriteProperties(this.buttonsProperties);
+									}
+								});
+								menu.newCheckMenuLast(() => this.tAut.quietByKey[key]);
+							});
+						}
+						menu.newSeparator(subMenu);
 						menu.newEntry({
 							menuName: subMenu, entryText: 'Wine ffmpeg bug workaround', func: () => {
 								this.buttonsProperties.bWineBug[1] = !this.buttonsProperties.bWineBug[1];
 								this.tAut.bWineBug = this.buttonsProperties.bWineBug[1];
-								overwriteProperties(this.buttonsProperties); // Force overwriting
+								overwriteProperties(this.buttonsProperties);
 							}
 						});
 						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () => { return this.buttonsProperties.bWineBug[1]; });
@@ -183,6 +198,7 @@ buttonsBar.list.push(newButtonsProperties);
 	};
 	newButton['Tagger'].tAut = new Tagger({
 		toolsByKey: JSON.parse(newButtonsProperties.toolsByKey[1]),
+		quietByKey: JSON.parse(newButtonsProperties.quietByKey[1]),
 		bWineBug: newButtonsProperties.bWineBug[1],
 		bFormatPopups: newButtonsProperties.bFormatPopups[1],
 		bToolPopups: newButtonsProperties.bToolPopups[1]

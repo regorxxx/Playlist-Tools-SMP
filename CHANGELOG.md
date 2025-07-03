@@ -79,7 +79,8 @@
 - Dynamic queries: new presets based on listen rates. Restore defaults to load the new presets.
 - Dynamic queries: new presets based last played. Restore defaults to load the new presets. Different than using 'DURING LAST 1 DAYS'. See [here](https://hydrogenaudio.org/index.php/topic,128019.msg1064589/topicseen.html#info_1064589).
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
-- Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
+- Other tools\Check tags: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
+- Other tools\Check tags: added quiet mode settings for some tools. On quiet mode they can be automatically run without user input (usually on report windows). Note you also have to enable quiet mode on their own component settings (ask for support in their respective threads if you need help). Enabling quiet mode on the components without also enabling it on the script will probably produce errors while tagging files due to them being in use; you must use the same settings at both places.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
 - Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).

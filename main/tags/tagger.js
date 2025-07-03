@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/05/25
+//01/07/25
 
 /*
 	Automatic tagging...
@@ -25,6 +25,7 @@ include('..\\..\\helpers\\helpers_xxx_tags.js');
 
 function Tagger({
 	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: false, drMeter: true, LRA: true, KEY: true, bpmAnaly: false } */,
+	quietByKey = null /* {audioMd5: true, rgScan: true, tpScan: true, bpmAnaly: false } */,
 	bOutputTools = false,
 	bOutputDefTools = false,
 	bWineBug = false,
@@ -47,7 +48,7 @@ function Tagger({
 	this.iStep = null;
 	this.currentTime = null;
 	this.listener = null;
-	this.timers = { debounce: 300, listener: 1000 };
+	this.timers = { debounce: 1000, listener: 2000 };
 	this.bWineBug = bWineBug;
 	this.bFormatPopups = bFormatPopups;
 	this.bToolPopups = bToolPopups;
@@ -56,72 +57,98 @@ function Tagger({
 	this.tools = [
 		{
 			key: 'biometric', tag: [globTags.fooidFP],
-			title: 'FooID Fingerprinting', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: false
+			title: 'FooID Fingerprint', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: false
 		},
 		{
 			key: 'chromaPrint', tag: [globTags.acoustidFP],
-			title: 'ChromaPrint Fingerprinting', bAvailable: _isFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && _isFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true
+			title: 'ChromaPrint Fingerprint', bAvailable: _isFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && _isFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'),
+			bDefault: true,
+			bQuiet: true
 		},
 		{
 			key: 'massTag', tag: ['AUDIOMD5'],
-			title: 'MD5', bAvailable: utils.CheckComponent('foo_masstag', true), bDefault: true
+			title: 'MD5 (masstag)', bAvailable: utils.CheckComponent('foo_masstag', true),
+			bDefault: true,
+			bQuiet: true
 		},
 		{
 			key: 'audioMd5', tag: ['MD5'],
-			title: 'AUDIOMD5', bAvailable: utils.CheckComponent('foo_audiomd5', true), bDefault: true
+			title: 'MD5 (foo_audiomd5)', bAvailable: utils.CheckComponent('foo_audiomd5', true),
+			bDefault: false,
+			bQuiet: false
 		},
 		{
 			key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'],
-			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true), bDefault: true
+			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true),
+			bDefault: true,
+			bQuiet: false
 		},
 		{
-			key: 'tpScan', tag: ['TRUEPEAK_SCANNER_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_TRUE_PEAK', 'TRUEPEAK_SCANNER_TRACK_GAIN', 'REPLAYGAIN_TRACK_TRUE_PEAK', 'TRUEPEAK_SCANNER_PEAK_POSITION', 'TRUEPEAK_SCANNER_CLIPPED_SAMPLES', 'TRUEPEAK_SCANNER_CLIPPED_SAMPLES_ALBUM'],
-			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true), bDefault: false
+			key: 'tpScan', tag: ['REPLAYGAIN_ALBUM_TRUE_PEAK', 'REPLAYGAIN_TRACK_TRUE_PEAK'],
+			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true),
+			bDefault: false,
+			bQuiet: false
 		},
 		{
 			key: 'bpmAnaly', tag: [globTags.bpm],
-			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true), bDefault: true
+			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true),
+			bDefault: true,
+			bQuiet: false
 		},
 		{
 			key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
-			title: 'DR (foo_dynamic_range)', bAvailable: utils.CheckComponent('foo_dynamic_range', true), bDefault: false
+			title: 'DR (foo_dynamic_range)', bAvailable: utils.CheckComponent('foo_dynamic_range', true),
+			bDefault: false,
+			bQuiet: true
 		},
 		{
 			key: 'drMeter', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
-			title: 'DR (foo_dr_meter)', bAvailable: utils.CheckComponent('foo_dr_meter', true), bDefault: true
+			title: 'DR (foo_dr_meter)', bAvailable: utils.CheckComponent('foo_dr_meter', true),
+			bDefault: true,
+			bQuiet: true
 		},
 		{
 			key: 'ffmpegLRA', tag: [globTags.lra],
-			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'), bDefault: true
+			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'),
+			bDefault: true,
+			bQuiet: true
 		},
 		{
 			key: 'folksonomy', tag: [globTags.folksonomy],
-			title: 'Folksonomy', bAvailable: false, bDefault: false
+			title: 'Folksonomy', bAvailable: false,
+			bDefault: false
 		},
 		{
 			key: 'essentiaFastKey', tag: [globTags.key],
-			title: 'Key (essentia fast)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: true
+			title: 'Key (essentia fast)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: true,
+			bQuiet: true
 		},
 		{
 			key: 'essentiaKey', tag: [globTags.key],
-			title: 'Key (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
+			title: 'Key (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
+			bQuiet: true
 		},
 		{
 			key: 'essentiaBPM', tag: [globTags.bpm],
-			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
+			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
+			bQuiet: true
 		},
 		{
 			key: 'essentiaDanceness', tag: [globTags.danceness],
-			title: 'Danceness (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
+			title: 'Danceness (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
+			bQuiet: true
 		},
 		{
 			key: 'essentiaLRA', tag: [globTags.lra],
-			title: 'EBUR 128 Scanner (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false
+			title: 'EBUR 128 Scanner (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'),
+			bDefault: false,
+			bQuiet: true
 		}
 	];
 	this.toolsByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.bAvailable && tool.bDefault]; }));
 	this.tagsByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.tag]; }));
 	this.titlesByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.title]; }));
+	this.quietByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.bQuiet]; }));
 	// Enabled tools?
 	if (toolsByKey) {
 		Object.keys(toolsByKey).forEach((key) => {
@@ -134,6 +161,13 @@ function Tagger({
 		else { this.tools.forEach((tool) => { this.toolsByKey[tool.key] = tool.bAvailable ? tool.bDefault : false; }); }
 		this.incompatibleTools.uniValues().forEach((tool) => { this.toolsByKey[tool] = false; });
 		return this.toolsByKey;
+	}
+	// Quiet mode
+	if (quietByKey) {
+		Object.keys(quietByKey).forEach((key) => {
+			if (Object.hasOwn(this.quietByKey, key)) { this.quietByKey[key] = quietByKey[key]; }
+			else { console.log('TagAutomation: tool key not recognized ' + key); }
+		});
 	}
 
 	this.description = () => {
@@ -221,6 +255,7 @@ function Tagger({
 				this.check[key] = this.check[key] && notAllowedTools.length;
 				return notAllowedTools;
 			};
+			// Remove old tags
 			const getCleanTags = (bCheck) => {
 				return bCheck
 					? Object.fromEntries(
@@ -329,11 +364,16 @@ function Tagger({
 						}
 					}
 				}
-			} else {
-				// Remove old tags
+			}
+			// The value of the checks may have changed at previous step
+			if (!this.checkKeys.some((checkKey) => this.check[checkKey])) {
 				let arr = [];
-				const cleanTags = Object.fromEntries(this.tools.map((tool) => { return this.toolsByKey[tool.key] ? tool.tag : null; })
-					.flat(Infinity).filter(Boolean).map((tag) => { return [tag, '']; }));
+				const cleanTags = Object.fromEntries(
+					this.tools.map((tool) => this.toolsByKey[tool.key] ? tool.tag : null)
+						.flat(Infinity)
+						.filter(Boolean)
+						.map((tag) => [tag, ''])
+				);
 				if (Object.keys(cleanTags).length) {
 					for (let i = 0; i < this.countItems; ++i) { arr.push(cleanTags); }
 					this.selItems.UpdateFileInfoFromJSON(JSON.stringify(arr));
@@ -446,7 +486,7 @@ function Tagger({
 				break;
 			case 10:
 				if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
-					const tagName = [ {name: 'KEY', tf: 'essentiaKey'}, {name: 'BPM', tf: 'essentiaBPM'}, {name: 'DANCENESS', tf: 'essentiaDanceness'}, {name: 'LRA', tf: 'essentiaLRA'}];
+					const tagName = [{ name: 'KEY', tf: 'essentiaKey' }, { name: 'BPM', tf: 'essentiaBPM' }, { name: 'DANCENESS', tf: 'essentiaDanceness' }, { name: 'LRA', tf: 'essentiaLRA' }];
 					tagName.forEach((tag) => tag.tf = this.toolsByKey[tag.tf] ? this.tagsByKey[tag.tf][0] : '');
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
@@ -455,8 +495,45 @@ function Tagger({
 					} else { bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName }); }
 				} else { bSucess = false; }
 				break;
-			case 11: // These require user input before saving, so they are read only operations and can be done at the same time
-				if (this.toolsByKey.audioMd5 || this.toolsByKey.rgScan || this.toolsByKey.tpScan || this.toolsByKey.bpmAnaly) {
+			case 11:
+				if (this.toolsByKey.audioMd5 && this.quietByKey.audioMd5) {
+					console.log('audioMd5');
+					const cacheSelItems = this.selItems;
+					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
+					const bSubSong = this.check.subSong;
+					if (bSubSong) {
+						if (cacheSelItemsNoSubSong.Count) {
+							bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
+								.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
+						}
+					} else {
+						bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
+							.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+					}
+				} else { bSucess = false; }
+				break;
+			case 12:
+				if (this.toolsByKey.rgScan && this.quietByKey.rgScan) {
+					console.log('rgScan');
+					const cacheSelItems = this.selItems;
+					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSelItems, 8);
+				} else { bSucess = false; }
+				break;
+			case 13:
+				if (this.toolsByKey.tpScan && this.quietByKey.tpScan) {
+					console.log('tpScan');
+					const cacheSelItems = this.selItems;
+					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan True Peaks and Positions (as albums)', cacheSelItems, 8);
+				} else { bSucess = false; }
+				break;
+			case 14:
+				if (this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly) {
+					const cacheSelItems = this.selItems;
+					bSucess = fb.RunContextCommandWithMetadb('Automatically analyse BPMs', cacheSelItems, 8);
+				} else { bSucess = false; }
+				break;
+			case 15: // These require user input before saving, so they are read only operations and can be done at the same time
+				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5 || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
@@ -505,6 +582,7 @@ function Tagger({
 	this.debouncedStep = debounce(this.stepTag, this.timers.debounce); // Only continues next step when last tag update was done > X ms ago
 
 	this.checkHandleList = () => {
+		if (!this.isRunning) { this.stopStepTag(); return; }
 		const i = this.iStep - 1;
 		if (i >= 0) {
 			const key = orderKeys[i];
