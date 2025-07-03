@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/25
+//02/07/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -80,25 +80,25 @@
 					},
 					{ name: 'sep' },
 					{
-						name: 'Daily listen rate >1',
+						name: 'Daily listen rate ≥1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalDay, direction: -1 },
 						bStatic: true
 					},
 					{
-						name: 'Weekly listen rate >1',
+						name: 'Weekly listen rate ≥1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalWeek, direction: -1 },
 						bStatic: true
 					},
 					{
-						name: 'Monthly listen rate >1',
+						name: 'Monthly listen rate ≥1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalMonth, direction: -1 },
 						bStatic: true
 					},
 					{
-						name: 'Yearly listen rate >1',
+						name: 'Yearly listen rate ≥1',
 						query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1',
 						sort: { tfo: globTags.playCountRateGlobalYear, direction: -1 },
 						bStatic: true

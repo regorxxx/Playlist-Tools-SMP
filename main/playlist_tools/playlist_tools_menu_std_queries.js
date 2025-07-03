@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/25
+//02/07/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, globQuery:readable */
 
@@ -19,11 +19,11 @@
 			const menuName = menu.newMenu(name);
 			{	// Dynamic menu
 				let queryFilter = [
-					{ name: 'Entire library', query: 'ALL', sort: { tfo: '', direction: -1 } },
-					{ name: 'Entire library (forced query)', query: '', sort: { tfo: '', direction: -1 } },
+					{ name: 'Media library', query: 'ALL', sort: { tfo: '', direction: -1 } },
+					{ name: 'Media library (forced query)', query: '', sort: { tfo: '', direction: -1 } },
 					{ name: 'sep' },
-					{ name: 'Rating ≥4', query: globQuery.ratingGr3 , sort: { tfo: globTags.rating, direction: 1 } },
-					{ name: 'Rating 5', query: globQuery.ratingTop , sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Rated ≥4 tracks', query: globQuery.ratingGr3 , sort: { tfo: globTags.rating, direction: 1 } },
+					{ name: 'Rated 5 tracks', query: globQuery.ratingTop , sort: { tfo: globTags.rating, direction: 1 } },
 					{ name: 'Fav tracks', query: globQuery.fav , sort: { tfo: globTags.rating, direction: 1 } },
 					{ name: 'Loved tracks', query: globQuery.loved , sort: { tfo: globTags.rating, direction: 1 } },
 					{ name: 'sep' },

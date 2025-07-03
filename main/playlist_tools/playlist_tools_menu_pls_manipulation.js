@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/25
+//02/07/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -119,16 +119,16 @@
 					forcedQueryMenusEnabled[name] = false;
 					const subMenuName = menu.newMenu(name, menuName);
 					let queryFilter = [
-						{ name: 'Rating ≥3', query: globQuery.notLowRating },
-						{ name: 'Rating ≥4', query: globQuery.ratingGr3 },
+						{ name: 'Rated ≥3 tracks', query: globQuery.notLowRating },
+						{ name: 'Rated ≥4 tracks', query: globQuery.ratingGr3 },
 						{ name: 'Fav tracks', query: globQuery.fav },
 						{ name: 'Loved tracks', query: globQuery.loved },
 						{ name: 'sep' },
 						{ name: 'Not recently listened', query: 'NOT ' + globQuery.recent },
-						{ name: 'Daily listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
-						{ name: 'Weekly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
-						{ name: 'Monthly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
-						{ name: 'Yearly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
+						{ name: 'Daily listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
+						{ name: 'Weekly listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
+						{ name: 'Monthly listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
+						{ name: 'Yearly listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
 						{ name: 'sep' },
 						{ name: 'Not instrumental', query: globQuery.noInstrumental },
 						{ name: 'Not live (none)', query: globQuery.noLiveNone },

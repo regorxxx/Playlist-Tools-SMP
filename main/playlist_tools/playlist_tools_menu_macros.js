@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/25
+//02/07/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
 
@@ -37,7 +37,7 @@
 					'Special Playlists\\Influences from any date',
 					'Duplicates and tag filtering\\Remove duplicates by title, %album artist%, year',
 					'Duplicates and tag filtering\\Remove duplicates by title, artist, year',
-					'Query filtering\\Filter playlist by Rating ≥3',
+					'Query filtering\\Filter playlist by Rated ≥3 tracks',
 					'Harmonic mix\\Harmonic mix from playlist',
 					'Select (# tracks)\\Select All',
 					'Advanced sort\\Incremental genre/styles (DynGenre)',
@@ -49,7 +49,7 @@
 					'Select (# tracks)\\Select random track',
 					'Next\\By Date',
 					'Move selection to\\To the middle',
-					'Select by query\\Select by Rating ≥3',
+					'Select by query\\Select by Rated ≥3 tracks',
 					'Select (# tracks)\\Select random track',
 					'Expand\\By Artist',
 					'Select (# tracks)\\Select random track',

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/06/25
+//02/07/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -89,18 +89,18 @@
 										{ name: 'Female vocals', query: globQuery.female },
 										{ name: 'Instrumentals', query: globQuery.instrumental },
 										{ name: 'Acoustic tracks', query: globQuery.acoustic },
-										{ name: 'Rating ≥3', query: globQuery.ratingGr2 },
-										{ name: 'Rating ≥4', query: globQuery.ratingGr3 },
+										{ name: 'Rated ≥3 tracks', query: globQuery.ratingGr2 },
+										{ name: 'Rated ≥4 tracks', query: globQuery.ratingGr3 },
 										{ name: 'Fav tracks', query: globQuery.fav },
 										{ name: 'Loved tracks', query: globQuery.loved },
 										{ name: 'Length < 6 min', query: globQuery.shortLength },
 										{ name: 'Only Stereo', query: globQuery.stereo },
 										{ name: 'sep' },
 										{ name: 'Not recently listened', query: 'NOT ' + globQuery.recent },
-										{ name: 'Daily listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
-										{ name: 'Weekly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
-										{ name: 'Monthly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
-										{ name: 'Yearly listen rate >1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
+										{ name: 'Daily listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalDay) + ' LESS 1' },
+										{ name: 'Weekly listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalWeek) + ' LESS 1' },
+										{ name: 'Monthly listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalMonth) + ' LESS 1' },
+										{ name: 'Yearly listen rate ≥1', query: 'NOT ' + _qCond(globTags.playCountRateGlobalYear) + ' LESS 1' },
 										{ name: 'sep' },
 										{ name: 'No Female vocals', query: globQuery.noFemale },
 										{ name: 'No Instrumentals', query: globQuery.noInstrumental },
