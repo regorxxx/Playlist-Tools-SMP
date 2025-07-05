@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/25
+//05/07/25
 
 /*
 	Automatic tagging...
@@ -22,6 +22,8 @@ include('..\\helpers\\helpers_xxx_prototypes.js');
 /* global isBoolean:readable, isJSON:readable, isString:readable,  */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
+include('..\\helpers\\helpers_xxx_input.js');
+/* global Input:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\main\\tags\\tagger.js');
@@ -36,13 +38,18 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	toolsByKey: ['Tools enabled', JSON.stringify(new Tagger({ bOutputDefTools: true }))],
-	quietByKey: ['Quiet mode', JSON.stringify({ audioMd5: false, rgScan: false, tpScan: false, bpmAnaly: false })],
+	quietByKey: ['Quiet mode', JSON.stringify({ })],
+	menuByKey: ['Tools tagging menu entries', JSON.stringify({})],
+	menuRemoveByKey: ['Tools remove tags menu entries', JSON.stringify({})],
+	tagsByKey: ['Tags per tool', JSON.stringify({})],
 	bIconMode: ['Icon-only mode', false, { func: isBoolean }, false],
 	bWineBug: ['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup],
 	bFormatPopups: ['Show format warning popups', true, { func: isBoolean }, true],
 	bToolPopups: ['Show tool warning popups', true, { func: isBoolean }, true],
 };
 newButtonsProperties.toolsByKey.push({ func: isJSON }, newButtonsProperties.toolsByKey[1]);
+newButtonsProperties.quietByKey.push({ func: isJSON }, newButtonsProperties.quietByKey[1]);
+newButtonsProperties.menuByKey.push({ func: isJSON }, newButtonsProperties.menuByKey[1]);
 setProperties(newButtonsProperties, prefix, 0); //This sets all the panel properties at once
 newButtonsProperties = getPropertiesPairs(newButtonsProperties, prefix, 0);
 buttonsBar.list.push(newButtonsProperties);
@@ -136,17 +143,49 @@ buttonsBar.list.push(newButtonsProperties);
 						{
 							const subMenuTwo = menu.newMenu('Quiet mode', subMenu);
 							const quietByKey = JSON.parse(this.buttonsProperties.quietByKey[1]);
-							['audioMd5', 'rgScan', 'tpScan', 'bpmAnaly'].forEach((key) => {
+							Object.keys(this.tAut.quietByKey).forEach((key) => {
 								menu.newEntry({
 									menuName: subMenuTwo, entryText: this.tAut.titlesByKey[key], func: () => {
-										this.tAut.quietByKey[key] = quietByKey[key] = !quietByKey[key];
+										this.tAut.quietByKey[key] = quietByKey[key] = !this.tAut.quietByKey[key];
 										this.buttonsProperties.quietByKey[1] = JSON.stringify(quietByKey);
 										overwriteProperties(this.buttonsProperties);
-									}
+									}, flags: ['biometric', 'massTag'].includes(key) || !this.tAut.availableByKey[key] ? MF_GRAYED : MF_STRING
 								});
 								menu.newCheckMenuLast(() => this.tAut.quietByKey[key]);
 							});
 						}
+						[
+							{ menu: 'Tagging menu entries', key: 'menuByKey' },
+							{ menu: 'Remove tags menu entries', key: 'menuRemoveByKey' },
+							{ menu: 'Tags per tool', key: 'tagsByKey' },
+
+						].forEach((opt) => {
+							const subMenuTwo = menu.newMenu(opt.menu, subMenu);
+							for (const key in this.tAut[opt.key]) {
+								if (this.tAut[opt.key][key]) {
+									menu.newEntry({
+										menuName: subMenuTwo, entryText: this.tAut.titlesByKey[key] + '...', func: () => {
+											const input = Input.json(
+												'array strings', this.tAut[opt.key][key],
+												key === 'tagsByKey'
+													? 'Enter associated tag(s):\n(JSON array of strings)\n\nThe script will check if these tags are sucessfully removed/added.'
+													: 'Enter menu entry(s):\n(JSON array of strings)\n\nThe script will try to run all until any of them is sucessful.',
+												this.tAut.titlesByKey[key],
+												key === 'tagsByKey'
+													? '["REPLAYGAIN_ALBUM_GAIN", "REPLAYGAIN_ALBUM_PEAK", "REPLAYGAIN_TRACK_GAIN", "REPLAYGAIN_TRACK_PEAK"]'
+													: '["Utilities/Create Audio MD5 checksum"]',
+												void (0), true
+											);
+											if (input === null) { return; }
+											const prop = JSON.parse(this.buttonsProperties[opt.key][1]);
+											prop[key] = this.tAut[opt.key][key] = input;
+											this.buttonsProperties[opt.key][1] = JSON.stringify(prop);
+											overwriteProperties(this.buttonsProperties);
+										}
+									});
+								}
+							};
+						});
 						menu.newSeparator(subMenu);
 						menu.newEntry({
 							menuName: subMenu, entryText: 'Wine ffmpeg bug workaround', func: () => {
@@ -199,6 +238,9 @@ buttonsBar.list.push(newButtonsProperties);
 	newButton['Tagger'].tAut = new Tagger({
 		toolsByKey: JSON.parse(newButtonsProperties.toolsByKey[1]),
 		quietByKey: JSON.parse(newButtonsProperties.quietByKey[1]),
+		menuByKey: JSON.parse(newButtonsProperties.menuByKey[1]),
+		menuRemoveByKey: JSON.parse(newButtonsProperties.menuRemoveByKey[1]),
+		tagsByKey: JSON.parse(newButtonsProperties.tagsByKey[1]),
 		bWineBug: newButtonsProperties.bWineBug[1],
 		bFormatPopups: newButtonsProperties.bFormatPopups[1],
 		bToolPopups: newButtonsProperties.bToolPopups[1]

@@ -1,5 +1,5 @@
 'use strict';
-//24/12/23
+//05/07/25
 
 /* exported folksonomyUtils */
 
@@ -16,7 +16,8 @@ const folksonomyUtils = {
 		fromHandleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
 		tagName = globTags.folksonomy,
 		fromTags = [globTags.genre, globTags.style],
-		bProfile = false
+		bProfile = false,
+		bQuiet = false
 	}) {
 		// Safecheck
 		if (!fromHandleList || !fromHandleList.Count || !tagName.length) { return false; }
@@ -62,7 +63,7 @@ const folksonomyUtils = {
 			calcFOLKSONOMY(count);
 		}
 		const failedItemsLen = failedItems.length;
-		console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Folksonomy');
+		(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Folksonomy');
 		if (bProfile) { profile.Print('Save Folksonomy tags to files - completed in '); }
 		return bDone;
 	},

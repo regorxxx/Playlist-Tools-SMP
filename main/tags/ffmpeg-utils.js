@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/06/25
+//05/07/25
 
 /* exported ffprobeUtils */
 
@@ -19,7 +19,8 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 	bIncludeUnit = false,
 	bWineBug = !soFeat.x64 && !soFeat.popup,
 	bDebug = false,
-	bProfile = true
+	bProfile = true,
+	bQuiet = false
 }) {
 	// Safecheck
 	if (!fromHandleList || !fromHandleList.Count) { return false; }
@@ -79,7 +80,7 @@ ffmpeg.calculateLoudness = function calculateLoudness({
 		calcLRA(count);
 	}
 	const failedItemsLen = failedItems.length;
-	console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'EBUR 128 Scanner');
+	(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'EBUR 128 Scanner');
 	if (bProfile) { profile.Print('Save Loudness tags to files - completed in '); }
 	return bDone;
 };

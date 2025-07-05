@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/07/25
+//05/07/25
 
 /*
 	Automatic tagging...
@@ -26,6 +26,9 @@ include('..\\..\\helpers\\helpers_xxx_tags.js');
 function Tagger({
 	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: false, drMeter: true, LRA: true, KEY: true, bpmAnaly: false } */,
 	quietByKey = null /* {audioMd5: true, rgScan: true, tpScan: true, bpmAnaly: false } */,
+	menuByKey = null /* {biometric: ['Save fingerprint to file(s)'], ... } */,
+	menuRemoveByKey = null /* {rgScan: ['ReplayGain/Remove ReplayGain information from files'], ... } */,
+	tagsByKey = null /* {rgScan: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'], ... } */,
 	bOutputTools = false,
 	bOutputDefTools = false,
 	bWineBug = false,
@@ -57,61 +60,73 @@ function Tagger({
 	this.tools = [
 		{
 			key: 'biometric', tag: [globTags.fooidFP],
-			title: 'FooID Fingerprint', bAvailable: utils.CheckComponent('foo_biometric', true), bDefault: false
+			title: 'FooID Fingerprint', bAvailable: utils.CheckComponent('foo_biometric', true),
+			menu: ['Save fingerprint to file(s)'],
+			bDefault: false,
+			bQuiet: true
 		},
 		{
 			key: 'chromaPrint', tag: [globTags.acoustidFP],
 			title: 'ChromaPrint Fingerprint', bAvailable: _isFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && _isFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'),
 			bDefault: true,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'massTag', tag: ['AUDIOMD5'],
 			title: 'MD5 (masstag)', bAvailable: utils.CheckComponent('foo_masstag', true),
+			menu: ['Tagging/Scripts/MD5'],
 			bDefault: true,
 			bQuiet: true
 		},
 		{
 			key: 'audioMd5', tag: ['MD5'],
 			title: 'MD5 (foo_audiomd5)', bAvailable: utils.CheckComponent('foo_audiomd5', true),
+			menu: ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag'],
 			bDefault: false,
 			bQuiet: false
 		},
 		{
 			key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'],
 			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true),
+			menu: ['ReplayGain/Scan as albums (by tags)'],
+			menuRemove: ['ReplayGain/Remove ReplayGain information from files'],
 			bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'tpScan', tag: ['REPLAYGAIN_ALBUM_TRUE_PEAK', 'REPLAYGAIN_TRACK_TRUE_PEAK'],
 			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true),
+			menu: ['ReplayGain/Scan True Peaks and Positions (as albums)'],
+			menuRemove: ['ReplayGain/Remove True Peak information from files'],
 			bDefault: false,
 			bQuiet: false
 		},
 		{
 			key: 'bpmAnaly', tag: [globTags.bpm],
 			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true),
+			menu: ['Automatically analyse BPMs'],
 			bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
 			title: 'DR (foo_dynamic_range)', bAvailable: utils.CheckComponent('foo_dynamic_range', true),
+			menu: ['Dynamic Range Meter'],
 			bDefault: false,
 			bQuiet: true
 		},
 		{
 			key: 'drMeter', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
 			title: 'DR (foo_dr_meter)', bAvailable: utils.CheckComponent('foo_dr_meter', true),
+			menu: ['DR Meter/Measure Dynamic Range'],
 			bDefault: true,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'ffmpegLRA', tag: [globTags.lra],
 			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'),
 			bDefault: true,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'folksonomy', tag: [globTags.folksonomy],
@@ -121,34 +136,37 @@ function Tagger({
 		{
 			key: 'essentiaFastKey', tag: [globTags.key],
 			title: 'Key (essentia fast)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: true,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'essentiaKey', tag: [globTags.key],
 			title: 'Key (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'essentiaBPM', tag: [globTags.bpm],
 			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'essentiaDanceness', tag: [globTags.danceness],
 			title: 'Danceness (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
-			bQuiet: true
+			bQuiet: false
 		},
 		{
 			key: 'essentiaLRA', tag: [globTags.lra],
 			title: 'EBUR 128 Scanner (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'),
 			bDefault: false,
-			bQuiet: true
+			bQuiet: false
 		}
 	];
-	this.toolsByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.bAvailable && tool.bDefault]; }));
-	this.tagsByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.tag]; }));
-	this.titlesByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.title]; }));
-	this.quietByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.bQuiet]; }));
+	this.availableByKey = Object.fromEntries(this.tools.map((tool) => { return [tool.key, tool.bAvailable]; }));
+	this.toolsByKey = Object.fromEntries(this.tools.map((tool) => [tool.key, tool.bAvailable && tool.bDefault]));
+	this.tagsByKey = Object.fromEntries(this.tools.map((tool) => [tool.key, tool.tag]));
+	this.titlesByKey = Object.fromEntries(this.tools.map((tool) => [tool.key, tool.title]));
+	this.quietByKey = Object.fromEntries(this.tools.map((tool) => [tool.key, tool.bQuiet]));
+	this.menuByKey = Object.fromEntries(this.tools.map((tool) => [tool.key, tool.menu]));
+	this.menuRemoveByKey = Object.fromEntries(this.tools.map((tool) => [tool.key, tool.menuRemove]));
 	// Enabled tools?
 	if (toolsByKey) {
 		Object.keys(toolsByKey).forEach((key) => {
@@ -162,13 +180,17 @@ function Tagger({
 		this.incompatibleTools.uniValues().forEach((tool) => { this.toolsByKey[tool] = false; });
 		return this.toolsByKey;
 	}
-	// Quiet mode
-	if (quietByKey) {
-		Object.keys(quietByKey).forEach((key) => {
-			if (Object.hasOwn(this.quietByKey, key)) { this.quietByKey[key] = quietByKey[key]; }
-			else { console.log('TagAutomation: tool key not recognized ' + key); }
-		});
-	}
+	[{key: 'quietByKey', var: quietByKey}, {key: 'menuByKey', var: menuByKey}, {key: 'menuRemoveByKey', var: menuRemoveByKey}, {key: 'tagsByKey', var: tagsByKey}].forEach((entry) => {
+		if (entry.var) {
+			Object.keys(entry.var).forEach((key) => {
+				if (Object.hasOwn(this[entry.key], key)) { this[entry.key][key] = entry.var[key]; }
+				else { console.log('TagAutomation: tool key not recognized ' + key); }
+			});
+		}
+	});
+	// Force settings for specific tools
+	this.quietByKey.biometric = true;
+	this.quietByKey.massTag = true;
 
 	this.description = () => {
 		return this.tools.reduce((text, tool) => { return (this.toolsByKey[tool.key] ? (text.length ? text + ', ' + tool.title : tool.title) : text); }, ''); // Initial value is '';
@@ -412,161 +434,154 @@ function Tagger({
 		this.iStep++;
 		switch (i) {
 			case 0: // Less than 100 ms / track?
-				if (this.toolsByKey.rgScan) { // Replay gain info is not always removed
-					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove ReplayGain information from files', this.selItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.rgScan // Replay gain info is not always removed
+					? this.menuRemoveByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 1: // Less than 100 ms / track?
-				if (this.toolsByKey.tpScan) { // True Peak info may use custom tags this way...
-					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Remove True Peak information from files', this.selItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.tpScan  // True Peak info may use custom tags this way...
+					? this.menuRemoveByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 2:  // Takes 260 ms / track
-				if (this.toolsByKey.biometric) {
-					bSucess = fb.RunContextCommandWithMetadb('Save fingerprint to file(s)', this.selItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.biometric
+					? this.menuByKey.biometric.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 3: // Less than 170 ms / track?
 				if (this.toolsByKey.massTag) {
 					if (this.check.subSong || this.check.md5) {
 						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItemsByCheck.subSong.missing, 8);
+							bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.subSong.missing, 8));
 						}
 						if (this.check.md5 && this.selItemsByCheck.md5.missing.Count) {
-							bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItemsByCheck.md5.missing, 8);
+							bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.md5.missing, 8));
 						}
-					} else { bSucess = fb.RunContextCommandWithMetadb('Tagging/Scripts/MD5', this.selItems, 8); }
+					} else { bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8)); }
 				} else { bSucess = false; }
 				break;
 			case 4: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				if (this.toolsByKey.dynamicRange) {
-					bSucess = fb.RunContextCommandWithMetadb('Dynamic Range Meter', this.selItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.dynamicRange
+					? this.menuByKey.dynamicRange.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 5: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				if (this.toolsByKey.drMeter) {
-					bSucess = fb.RunContextCommandWithMetadb('DR Meter/Measure Dynamic Range', this.selItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.drMeter && this.quietByKey.drMeter
+					? this.menuByKey.drMeter.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 6:
 				if (this.toolsByKey.chromaPrint) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItemsByCheck.subSong.missing });
+							bSucess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.chromaPrint });
 						}
-					} else { bSucess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItems }); }
+					} else { bSucess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItems, bQuiet: this.quietByKey.chromaPrint }); }
 				} else { bSucess = false; }
 				break;
 			case 7:
 				if (this.toolsByKey.ffmpegLRA) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = ffmpeg.calculateLoudness({ fromHandleList: this.selItemsByCheck.subSong.missing, bWineBug: this.bWineBug });
+							bSucess = ffmpeg.calculateLoudness({ fromHandleList: this.selItemsByCheck.subSong.missing, bWineBug: this.bWineBug, bQuiet: this.quietByKey.ffmpegLRA });
 						}
-					} else { bSucess = ffmpeg.calculateLoudness({ fromHandleList: this.selItems, bWineBug: this.bWineBug }); }
+					} else { bSucess = ffmpeg.calculateLoudness({ fromHandleList: this.selItems, bWineBug: this.bWineBug, bQuiet: this.quietByKey.ffmpegLRA }); }
 				} else { bSucess = false; }
 				break;
 			case 8:
 				if (this.toolsByKey.folksonomy) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItemsByCheck.subSong.missing });
+							bSucess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.folksonomy });
 						}
-					} else { bSucess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItems }); }
+					} else { bSucess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItems, bQuiet: this.quietByKey.folksonomy }); }
 				} else { bSucess = false; }
 				break;
 			case 9:
 				if (this.toolsByKey.essentiaFastKey) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = essentia.calculateKey({ fromHandleList: this.selItemsByCheck.subSong.missing });
+							bSucess = essentia.calculateKey({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.essentiaFastKey });
 						}
-					} else { bSucess = essentia.calculateKey({ fromHandleList: this.selItems }); }
+					} else { bSucess = essentia.calculateKey({ fromHandleList: this.selItems, bQuiet: this.quietByKey.essentiaFastKey }); }
 				} else { bSucess = false; }
 				break;
 			case 10:
 				if (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA) {
 					const tagName = [{ name: 'KEY', tf: 'essentiaKey' }, { name: 'BPM', tf: 'essentiaBPM' }, { name: 'DANCENESS', tf: 'essentiaDanceness' }, { name: 'LRA', tf: 'essentiaLRA' }];
+					const bQuiet = ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA'].some((key) => this.quietByKey[key]);
 					tagName.forEach((tag) => tag.tf = this.toolsByKey[tag.tf] ? this.tagsByKey[tag.tf][0] : '');
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItemsByCheck.subSong.missing, tagName });
+							bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItemsByCheck.subSong.missing, tagName, bQuiet });
 						}
-					} else { bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName }); }
+					} else { bSucess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName, bQuiet }); }
 				} else { bSucess = false; }
 				break;
 			case 11:
 				if (this.toolsByKey.audioMd5 && this.quietByKey.audioMd5) {
-					console.log('audioMd5');
-					const cacheSelItems = this.selItems;
-					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
 					const bSubSong = this.check.subSong;
 					if (bSubSong) {
-						if (cacheSelItemsNoSubSong.Count) {
-							bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
-								.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
+						if (this.selItemsByCheck.subSong.missing.Count) {
+							bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.subSong.missing, 8));
 						}
 					} else {
-						bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
-							.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+						bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
 					}
 				} else { bSucess = false; }
 				break;
 			case 12:
-				if (this.toolsByKey.rgScan && this.quietByKey.rgScan) {
-					console.log('rgScan');
-					const cacheSelItems = this.selItems;
-					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSelItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.rgScan && this.quietByKey.rgScan
+					? this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 13:
-				if (this.toolsByKey.tpScan && this.quietByKey.tpScan) {
-					console.log('tpScan');
-					const cacheSelItems = this.selItems;
-					bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan True Peaks and Positions (as albums)', cacheSelItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.tpScan && this.quietByKey.tpScan
+					? this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 14:
-				if (this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly) {
-					const cacheSelItems = this.selItems;
-					bSucess = fb.RunContextCommandWithMetadb('Automatically analyse BPMs', cacheSelItems, 8);
-				} else { bSucess = false; }
+				bSucess = this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly
+					? this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
+					: false;
 				break;
 			case 15: // These require user input before saving, so they are read only operations and can be done at the same time
-				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5 || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
+				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5  || this.toolsByKey.drMeter && !this.quietByKey.drMeter || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
 					const bSubSong = this.check.subSong;
-					if (this.toolsByKey.audioMd5) {
+					if (this.toolsByKey.drMeter && !this.quietByKey.drMeter) {
+						bSucess = this.menuByKey.drMeter.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
+					}
+					if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5) {
 						setTimeout(function () {
 							if (bSubSong) {
 								if (cacheSelItemsNoSubSong.Count) {
-									bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
-										.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
+									bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
 								}
 							} else {
-								bSucess = ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag']
-									.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+								bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 							}
 						}, this.currentTime); // Takes 170 ms / track
 						this.currentTime += 200 * this.countItems; // But we give them some time to run before firing the next one
 					}
-					if (this.toolsByKey.rgScan) {
+					if (this.toolsByKey.rgScan && !this.quietByKey.rgScan) {
 						setTimeout(function () {
-							bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan as albums (by tags)', cacheSelItems, 8);
+							bSucess = this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
 					}
-					if (this.toolsByKey.tpScan) {
+					if (this.toolsByKey.tpScan && !this.quietByKey.tpScan) {
 						setTimeout(function () {
-							bSucess = fb.RunContextCommandWithMetadb('ReplayGain/Scan True Peaks and Positions (as albums)', cacheSelItems, 8);
+							bSucess = this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
 					}
-					if (this.toolsByKey.bpmAnaly) {
+					if (this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
 						setTimeout(function () {
-							bSucess = fb.RunContextCommandWithMetadb('Automatically analyse BPMs', cacheSelItems, 8);
+							bSucess = this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 15000 * this.countItems; // But we give them some time to run before firing the next one
 					}

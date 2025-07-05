@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/05/25
+//05/07/25
 
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, globTags:readable */
@@ -15,7 +15,8 @@ essentia.calculateKey = function calculateKey({
 	tagName = globTags.key,
 	essentiaPath = folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe',
 	bDebug = false,
-	bProfile = true
+	bProfile = true,
+	bQuiet = false
 }) {
 	// Safecheck
 	if (!fromHandleList || !fromHandleList.Count || !tagName.length) { return false; }
@@ -73,7 +74,7 @@ essentia.calculateKey = function calculateKey({
 		calcKEY(count);
 	}
 	const failedItemsLen = failedItems.length;
-	console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Key extractor');
+	(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Key extractor');
 	if (bProfile) { profile.Print('Save Key tags to files - completed in '); }
 	return bDone;
 };
@@ -83,7 +84,8 @@ essentia.calculateHighLevelTags = function calculateHighLevelTags({
 	tagName = [{ name: 'KEY', tf: globTags.key }, { name: 'BPM', tf: globTags.bpm }, { name: 'DANCENESS', tf: globTags.danceness }, { name: 'LRA', tf: globTags.lra, bIncludeUnit: false }],
 	essentiaPath = folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe',
 	bDebug = false,
-	bProfile = true
+	bProfile = true,
+	bQuiet = false
 }) {
 	// Safecheck
 	tagName = tagName.filter((tag) => Object.hasOwn(tag, 'tf') && tag.tf.length && Object.hasOwn(tag, 'name') && tag.name.length);
@@ -175,7 +177,7 @@ essentia.calculateHighLevelTags = function calculateHighLevelTags({
 		calcTag(count);
 	}
 	const failedItemsLen = failedItems.length;
-	console.popup(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Music extractor');
+	(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Music extractor');
 	if (bProfile) { profile.Print('Save high level tags to files - completed in '); }
 	return bDone;
 };

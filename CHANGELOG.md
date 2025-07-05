@@ -79,8 +79,10 @@
 - Dynamic queries: new presets based on listen rates. Restore defaults to load the new presets.
 - Dynamic queries: new presets based last played. Restore defaults to load the new presets. Different than using 'DURING LAST 1 DAYS'. See [here](https://hydrogenaudio.org/index.php/topic,128019.msg1064589/topicseen.html#info_1064589).
 - Standard queries: new presets based on playcount. Restore defaults to load the new presets.
-- Other tools\Check tags: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
-- Other tools\Check tags: added quiet mode settings for some tools. On quiet mode they can be automatically run without user input (usually on report windows). Note you also have to enable quiet mode on their own component settings (ask for support in their respective threads if you need help). Enabling quiet mode on the components without also enabling it on the script will probably produce errors while tagging files due to them being in use; you must use the same settings at both places.
+- Other tools\Tagger: added support for [foo_dr_meter](https://foobar.hyv.fi/?view=foo_dr_meter) replacement of all the DR meters out there, compatible with x64 and much faster. 100% clones the log and tags output.
+- Other tools\Tagger: added quiet mode settings. On quiet mode they can be automatically run without user input (usually on report windows). Note you also have to enable quiet mode on their own component settings (ask for support in their respective threads if you need help). Enabling quiet mode on the components without also enabling it on the script will probably produce errors while tagging files due to them being in use; you must use the same settings at both places.
+- Other tools\Tagger: added configurable tags for every tool. Note in some cases tags also have to be set on their own component settings (ask for support in their respective threads if you need help).
+- Other tools\Tagger: added configurable menu entries for every tool. These are related to the contextual menu called when running to add/remove tags.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
 - Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).
@@ -120,8 +122,8 @@
 - Quicksearch: evaluation on multiple tracks limited to max 1000 first tracks selected.
 - Other Tools\Check tags: input popups to set dictionary now display the current list of dictionaries found (more may be installed by the user).
 - Other tools\Write Tags: renamed to 'Tagger'.
-- Other tools\Write Tags: now uses the global tag remap set by user ('[foobar_profile]\foobar2000\js_data\presets\global\globTags.json') for danceness and LRA tags.
-- Other tools\Write Tags: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
+- Other tools\Tagger: now uses the global tag remap set by user ('[foobar_profile]\foobar2000\js_data\presets\global\globTags.json') for danceness and LRA tags.
+- Other tools\Tagger: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'utils_main_menu' button now displays the current state of main menu entries on tooltip (when button states are enabled).
