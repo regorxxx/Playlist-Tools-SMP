@@ -38,7 +38,7 @@ prefix = getUniquePrefix(prefix, ''); // Puts new ID before '_'
 
 var newButtonsProperties = { // NOSONAR[global]
 	toolsByKey: ['Tools enabled', JSON.stringify(new Tagger({ bOutputDefTools: true }))],
-	quietByKey: ['Quiet mode', JSON.stringify({ })],
+	quietByKey: ['Quiet mode', JSON.stringify({})],
 	menuByKey: ['Tools tagging menu entries', JSON.stringify({})],
 	menuRemoveByKey: ['Tools remove tags menu entries', JSON.stringify({})],
 	tagsByKey: ['Tags per tool', JSON.stringify({})],
@@ -142,10 +142,12 @@ buttonsBar.list.push(newButtonsProperties);
 						const subMenu = menu.newMenu('Settings', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
 						{
 							const subMenuTwo = menu.newMenu('Quiet mode', subMenu);
-							const quietByKey = JSON.parse(this.buttonsProperties.quietByKey[1]);
+							menu.newEntry({ menuName: subMenuTwo, entryText: 'Disable user input and reports:', flags: MF_GRAYED });
+							menu.newSeparator(subMenuTwo);
 							Object.keys(this.tAut.quietByKey).forEach((key) => {
 								menu.newEntry({
 									menuName: subMenuTwo, entryText: this.tAut.titlesByKey[key], func: () => {
+										const quietByKey = JSON.parse(this.buttonsProperties.quietByKey[1]);
 										this.tAut.quietByKey[key] = quietByKey[key] = !this.tAut.quietByKey[key];
 										this.buttonsProperties.quietByKey[1] = JSON.stringify(quietByKey);
 										overwriteProperties(this.buttonsProperties);
@@ -155,12 +157,14 @@ buttonsBar.list.push(newButtonsProperties);
 							});
 						}
 						[
-							{ menu: 'Tagging menu entries', key: 'menuByKey' },
-							{ menu: 'Remove tags menu entries', key: 'menuRemoveByKey' },
-							{ menu: 'Tags per tool', key: 'tagsByKey' },
+							{ menu: 'Tagging menu entries', key: 'menuByKey', tip: 'Contextual menu entries called:' },
+							{ menu: 'Remove tags menu entries', key: 'menuRemoveByKey', tip: 'Contextual menu entries called:' },
+							{ menu: 'Tags per tool', key: 'tagsByKey', tip: 'Associated tags:' },
 
 						].forEach((opt) => {
 							const subMenuTwo = menu.newMenu(opt.menu, subMenu);
+							menu.newEntry({ menuName: subMenuTwo, entryText: opt.tip, flags: MF_GRAYED });
+							menu.newSeparator(subMenuTwo);
 							for (const key in this.tAut[opt.key]) {
 								if (this.tAut[opt.key][key]) {
 									menu.newEntry({

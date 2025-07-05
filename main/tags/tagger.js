@@ -180,7 +180,7 @@ function Tagger({
 		this.incompatibleTools.uniValues().forEach((tool) => { this.toolsByKey[tool] = false; });
 		return this.toolsByKey;
 	}
-	[{key: 'quietByKey', var: quietByKey}, {key: 'menuByKey', var: menuByKey}, {key: 'menuRemoveByKey', var: menuRemoveByKey}, {key: 'tagsByKey', var: tagsByKey}].forEach((entry) => {
+	[{ key: 'quietByKey', var: quietByKey }, { key: 'menuByKey', var: menuByKey }, { key: 'menuRemoveByKey', var: menuRemoveByKey }, { key: 'tagsByKey', var: tagsByKey }].forEach((entry) => {
 		if (entry.var) {
 			Object.keys(entry.var).forEach((key) => {
 				if (Object.hasOwn(this[entry.key], key)) { this[entry.key][key] = entry.var[key]; }
@@ -546,7 +546,7 @@ function Tagger({
 					: false;
 				break;
 			case 15: // These require user input before saving, so they are read only operations and can be done at the same time
-				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5  || this.toolsByKey.drMeter && !this.quietByKey.drMeter || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
+				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5 || this.toolsByKey.drMeter && !this.quietByKey.drMeter || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
 					this.currentTime = 0; // ms
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
