@@ -573,7 +573,7 @@ function Tagger({
 						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
 					}
 					if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5) {
-						setTimeout(function () {
+						setTimeout(() => {
 							if (bSubSong) {
 								if (cacheSelItemsNoSubSong.Count) {
 									bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
@@ -585,19 +585,19 @@ function Tagger({
 						this.currentTime += 200 * this.countItems; // But we give them some time to run before firing the next one
 					}
 					if (this.toolsByKey.rgScan && !this.quietByKey.rgScan) {
-						setTimeout(function () {
+						setTimeout(() => {
 							bSucess = this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
 					}
 					if (this.toolsByKey.tpScan && !this.quietByKey.tpScan) {
-						setTimeout(function () {
+						setTimeout(() => {
 							bSucess = this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
 					}
 					if (this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
-						setTimeout(function () {
+						setTimeout(() => {
 							bSucess = this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
 						}, this.currentTime); // Takes ~500 ms / track
 						this.currentTime += 15000 * this.countItems; // But we give them some time to run before firing the next one
