@@ -60,34 +60,39 @@ function Tagger({
 	this.tools = [
 		{
 			key: 'biometric', tag: [globTags.fooidFP],
-			title: 'FooID Fingerprint', bAvailable: utils.CheckComponent('foo_biometric', true),
+			title: 'FooID Fingerprint',
+			bAvailable: utils.CheckComponent('foo_biometric', true),
 			menu: ['Save fingerprint to file(s)'],
 			bDefault: false,
 			bQuiet: true
 		},
 		{
 			key: 'chromaPrint', tag: [globTags.acoustidFP],
-			title: 'ChromaPrint Fingerprint', bAvailable: _isFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && _isFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'),
+			title: 'ChromaPrint Fingerprint',
+			bAvailable: _isFile(folders.xxx + 'main\\fingerprint\\chromaprint-utils-js_fingerprint.js') && _isFile(folders.xxx + 'helpers-external\\fpcalc\\fpcalc' + (soFeat.x64 ? '' : '_32') + '.exe'),
 			bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'massTag', tag: ['AUDIOMD5'],
-			title: 'MD5 (masstag)', bAvailable: utils.CheckComponent('foo_masstag', true),
+			title: 'MD5 (masstag)',
+			bAvailable: utils.CheckComponent('foo_masstag', true),
 			menu: ['Tagging/Scripts/MD5'],
 			bDefault: true,
 			bQuiet: true
 		},
 		{
 			key: 'audioMd5', tag: ['MD5'],
-			title: 'MD5 (foo_audiomd5)', bAvailable: utils.CheckComponent('foo_audiomd5', true),
+			title: 'MD5 (foo_audiomd5)',
+			bAvailable: utils.CheckComponent('foo_audiomd5', true),
 			menu: ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag'],
 			bDefault: false,
 			bQuiet: false
 		},
 		{
 			key: 'rgScan', tag: ['REPLAYGAIN_ALBUM_GAIN', 'REPLAYGAIN_ALBUM_PEAK', 'REPLAYGAIN_TRACK_GAIN', 'REPLAYGAIN_TRACK_PEAK'],
-			title: 'ReplayGain', bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true),
+			title: 'ReplayGain',
+			bAvailable: isFoobarV2 || utils.CheckComponent('foo_rgscan', true),
 			menu: ['ReplayGain/Scan as albums (by tags)'],
 			menuRemove: ['ReplayGain/Remove ReplayGain information from files'],
 			bDefault: true,
@@ -95,7 +100,8 @@ function Tagger({
 		},
 		{
 			key: 'tpScan', tag: ['REPLAYGAIN_ALBUM_TRUE_PEAK', 'REPLAYGAIN_TRACK_TRUE_PEAK'],
-			title: 'True Peak Scanner', bAvailable: utils.CheckComponent('foo_truepeak', true),
+			title: 'True Peak Scanner',
+			bAvailable: utils.CheckComponent('foo_truepeak', true),
 			menu: ['ReplayGain/Scan True Peaks and Positions (as albums)'],
 			menuRemove: ['ReplayGain/Remove True Peak information from files'],
 			bDefault: false,
@@ -103,59 +109,70 @@ function Tagger({
 		},
 		{
 			key: 'bpmAnaly', tag: [globTags.bpm],
-			title: 'BPM (foo_bpm)', bAvailable: utils.CheckComponent('foo_bpm', true),
+			title: 'BPM (foo_bpm)',
+			bAvailable: utils.CheckComponent('foo_bpm', true),
 			menu: ['Automatically analyse BPMs'],
 			bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'dynamicRange', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
-			title: 'DR (foo_dynamic_range)', bAvailable: utils.CheckComponent('foo_dynamic_range', true),
+			title: 'DR (foo_dynamic_range)',
+			bAvailable: utils.CheckComponent('foo_dynamic_range', true),
 			menu: ['Dynamic Range Meter'],
 			bDefault: false,
 			bQuiet: true
 		},
 		{
 			key: 'drMeter', tag: ['ALBUM DYNAMIC RANGE', 'DYNAMIC RANGE'],
-			title: 'DR (foo_dr_meter)', bAvailable: utils.CheckComponent('foo_dr_meter', true),
+			title: 'DR (foo_dr_meter)',
+			bAvailable: utils.CheckComponent('foo_dr_meter', true),
 			menu: ['DR Meter/Measure Dynamic Range'],
 			bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'ffmpegLRA', tag: [globTags.lra],
-			title: 'EBUR 128 Scanner (ffmpeg)', bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'),
+			title: 'EBUR 128 Scanner (ffmpeg)',
+			bAvailable: _isFile(folders.xxx + 'helpers-external\\ffmpeg\\ffmpeg' + (soFeat.x64 ? '' : '_32') + '.exe'),
 			bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'folksonomy', tag: [globTags.folksonomy],
-			title: 'Folksonomy', bAvailable: false,
-			bDefault: false
+			title: 'Folksonomy',
+			bAvailable: false,
+			bDefault: false,
+			bQuiet: false
 		},
 		{
 			key: 'essentiaFastKey', tag: [globTags.key],
-			title: 'Key (essentia fast)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: true,
+			title: 'Key (essentia fast)',
+			bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\essentia_streaming_key.exe'), bDefault: true,
 			bQuiet: false
 		},
 		{
 			key: 'essentiaKey', tag: [globTags.key],
-			title: 'Key (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
+			title: 'Key (essentia)',
+			bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
 			bQuiet: false
 		},
 		{
 			key: 'essentiaBPM', tag: [globTags.bpm],
-			title: 'BPM (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
+			title: 'BPM (essentia)',
+			bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
 			bQuiet: false
 		},
 		{
 			key: 'essentiaDanceness', tag: [globTags.danceness],
-			title: 'Danceness (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
+			title: 'Danceness (essentia)',
+			bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'), bDefault: false,
 			bQuiet: false
 		},
 		{
 			key: 'essentiaLRA', tag: [globTags.lra],
-			title: 'EBUR 128 Scanner (essentia)', bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'),
+			title: 'EBUR 128 Scanner (essentia)',
+			bAvailable: _isFile(folders.xxx + 'helpers-external\\essentia\\streaming_extractor_music.exe'),
 			bDefault: false,
 			bQuiet: false
 		}
