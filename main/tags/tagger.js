@@ -568,40 +568,31 @@ function Tagger({
 					const cacheSelItems = this.selItems;
 					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
 					const bSubSong = this.check.subSong;
-					if (this.toolsByKey.drMeter && !this.quietByKey.drMeter) {
-						bSucess = this.menuByKey.drMeter.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
-					}
-					if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5) {
-						setTimeout(() => {
-							if (bSubSong) {
-								if (cacheSelItemsNoSubSong.Count) {
-									bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
-								}
-							} else {
-								bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+					const runMenu = (key, bSubSong) => {
+						if (bSubSong) {
+							if (cacheSelItemsNoSubSong.Count) {
+								bSucess = this.menuByKey[key].some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
 							}
-						}, this.currentTime); // Takes 170 ms / track
-						this.currentTime += 200 * this.countItems; // But we give them some time to run before firing the next one
-					}
-					if (this.toolsByKey.rgScan && !this.quietByKey.rgScan) {
-						setTimeout(() => {
-							bSucess = this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
-						}, this.currentTime); // Takes ~500 ms / track
-						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
-					}
-					if (this.toolsByKey.tpScan && !this.quietByKey.tpScan) {
-						setTimeout(() => {
-							bSucess = this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
-						}, this.currentTime); // Takes ~500 ms / track
-						this.currentTime += 550 * this.countItems; // But we give them some time to run before firing the next one
-					}
-					if (this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
-						setTimeout(() => {
-							bSucess = this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
-						}, this.currentTime); // Takes ~500 ms / track
-						this.currentTime += 15000 * this.countItems; // But we give them some time to run before firing the next one
-					}
+						} else {
+							bSucess = this.menuByKey[key].some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+						}
+						if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey[key].join('\n  - ')); }
+						return bSucess;
+					};
+					[
+						{key: 'drMeter', coeff: 550, bSubSong: false},
+						{key: 'audioMd5', coeff: 200, bSubSong},
+						{key: 'rgScan', coeff: 550, bSubSong: false},
+						{key: 'tpScan', coeff: 550, bSubSong: false},
+						{key: 'bpmAnaly', coeff: 15000, bSubSong: false}
+					].forEach((opt, i) => {
+						if (this.toolsByKey[opt.key] && !this.quietByKey[opt.key]) {
+							bSucess = i === 0
+								? runMenu(opt.key, opt.bSubSong)
+								: setTimeout(runMenu, this.currentTime, opt.key, opt.bSubSong);
+							this.currentTime += opt.coeff * this.countItems; // Give some time to run before firing the next one
+						}
+					});
 				} else { bSucess = false; }
 				break;
 			default:
