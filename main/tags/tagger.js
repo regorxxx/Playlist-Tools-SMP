@@ -451,41 +451,61 @@ function Tagger({
 		this.iStep++;
 		switch (i) {
 			case 0: // Less than 100 ms / track?
-				bSucess = this.toolsByKey.rgScan // Replay gain info is not always removed
-					? this.menuRemoveByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.rgScan) {
+					bSucess = this.menuRemoveByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuRemoveByKey.rgScan.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 1: // Less than 100 ms / track?
-				bSucess = this.toolsByKey.tpScan  // True Peak info may use custom tags this way...
-					? this.menuRemoveByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.tpScan) { // True Peak info may use custom tags this way...
+					bSucess = this.menuRemoveByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuRemoveByKey.tpScan.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 2:  // Takes 260 ms / track
-				bSucess = this.toolsByKey.biometric
-					? this.menuByKey.biometric.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.biometric) {
+					bSucess = this.menuByKey.biometric.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.biometric.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 3: // Less than 170 ms / track?
 				if (this.toolsByKey.massTag) {
 					if (this.check.subSong || this.check.md5) {
 						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) {
 							bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.subSong.missing, 8));
+							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.massTag.join('\n  - ')); }
 						}
 						if (this.check.md5 && this.selItemsByCheck.md5.missing.Count) {
 							bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.md5.missing, 8));
+							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.massTag.join('\n  - ')); }
 						}
-					} else { bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8)); }
+					} else {
+						bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+						if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.massTag.join('\n  - ')); }
+					}
 				} else { bSucess = false; }
 				break;
 			case 4: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				bSucess = this.toolsByKey.dynamicRange
-					? this.menuByKey.dynamicRange.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.dynamicRange) {
+					bSucess = this.menuByKey.dynamicRange.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.dynamicRange.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 5: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				bSucess = this.toolsByKey.drMeter && this.quietByKey.drMeter
-					? this.menuByKey.drMeter.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.drMeter && this.quietByKey.drMeter) {
+					bSucess = this.menuByKey.drMeter.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.drMeter.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 6:
 				if (this.toolsByKey.chromaPrint) {
@@ -541,26 +561,37 @@ function Tagger({
 					if (bSubSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
 							bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.subSong.missing, 8));
+							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.audioMd5.join('\n  - ')); }
 						}
 					} else {
 						bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+						if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.audioMd5.join('\n  - ')); }
 					}
 				} else { bSucess = false; }
 				break;
 			case 12:
-				bSucess = this.toolsByKey.rgScan && this.quietByKey.rgScan
-					? this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.rgScan && this.quietByKey.rgScan) {
+					bSucess = this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.drMeter.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 13:
-				bSucess = this.toolsByKey.tpScan && this.quietByKey.tpScan
-					? this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.tpScan && this.quietByKey.tpScan) {
+					bSucess = this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.drMeter.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 14:
-				bSucess = this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly
-					? this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8))
-					: false;
+				if (this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly) {
+					bSucess = this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
+					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.bpmAnaly.join('\n  - ')); }
+				} else {
+					bSucess = false;
+				}
 				break;
 			case 15: // These require user input before saving, so they are read only operations and can be done at the same time
 				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5 || this.toolsByKey.drMeter && !this.quietByKey.drMeter || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
@@ -572,19 +603,20 @@ function Tagger({
 						if (bSubSong) {
 							if (cacheSelItemsNoSubSong.Count) {
 								bSucess = this.menuByKey[key].some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
+								if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey[key].join('\n  - ')); }
 							}
 						} else {
 							bSucess = this.menuByKey[key].some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
+							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey[key].join('\n  - ')); }
 						}
-						if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey[key].join('\n  - ')); }
 						return bSucess;
 					};
 					[
-						{key: 'drMeter', coeff: 550, bSubSong: false},
-						{key: 'audioMd5', coeff: 200, bSubSong},
-						{key: 'rgScan', coeff: 550, bSubSong: false},
-						{key: 'tpScan', coeff: 550, bSubSong: false},
-						{key: 'bpmAnaly', coeff: 15000, bSubSong: false}
+						{ key: 'drMeter', coeff: 550, bSubSong: false },
+						{ key: 'audioMd5', coeff: 200, bSubSong },
+						{ key: 'rgScan', coeff: 550, bSubSong: false },
+						{ key: 'tpScan', coeff: 550, bSubSong: false },
+						{ key: 'bpmAnaly', coeff: 15000, bSubSong: false }
 					].forEach((opt, i) => {
 						if (this.toolsByKey[opt.key] && !this.quietByKey[opt.key]) {
 							bSucess = i === 0
