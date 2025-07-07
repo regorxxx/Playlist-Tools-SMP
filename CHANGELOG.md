@@ -83,6 +83,7 @@
 - Other tools\Tagger: added quiet mode settings. On quiet mode they can be automatically run without user input (usually on report windows). Note you also have to enable quiet mode on their own component settings (ask for support in their respective threads if you need help). Enabling quiet mode on the components without also enabling it on the script will probably produce errors while tagging files due to them being in use; you must use the same settings at both places.
 - Other tools\Tagger: added configurable tags for every tool. Note in some cases tags also have to be set on their own component settings (ask for support in their respective threads if you need help).
 - Other tools\Tagger: added configurable menu entries for every tool. These are related to the contextual menu called when running to add/remove tags.
+- Other tools\Tagger: added setting to suppress warning popup when running.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
 - Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).
@@ -107,6 +108,7 @@
 - Installation: new panel menu, accessed through 'Ctrl + Win + R. Click' (which works globally on any script and panel, at any position), used to export/import panel settings and any other associated data. These entries may be used to fully backup the panel data, help when moving between different JS components (JSplitter <-> SMP) or even foobar2000 installations,, without needing to manually backup the panel properties or other external files (like .json, etc.).
 - UI: new menu entry to share current UI settings across all available Playlist Manager panels within foobar2000. It can be found at the settings menu 'Panel UI' submenu. Every other panel will be highlighted and show a popup asking to import the new settings or ignore them.
 - Configuration: external files like world map database references are now exposed as a panel property.
+- Configuration: added MD5 and AUDIOMD5 to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 - Configuration: added DANCENESS to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 - Configuration: added REPLAYGAIN_TRACK_RANGE (i.e. LRA) to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 ### Changed

@@ -34,6 +34,7 @@ function Tagger({
 	bWineBug = false,
 	bFormatPopups = true,
 	bToolPopups = true,
+	bRunPopup = true
 } = {}) {
 	this.selItems = null;
 	this.selItemsByCheck = {
@@ -55,6 +56,7 @@ function Tagger({
 	this.bWineBug = bWineBug;
 	this.bFormatPopups = bFormatPopups;
 	this.bToolPopups = bToolPopups;
+	this.bRunPopup = bRunPopup;
 	this.notAllowedTools = new Set();
 	this.incompatibleTools = new BiMap({ ffmpegLRA: 'essentiaLRA', essentiaKey: 'essentiaFastKey', drMeter: 'dynamicRange', bpmAnaly: 'essentiaBPM' });
 	this.tools = [
@@ -74,18 +76,18 @@ function Tagger({
 			bQuiet: false
 		},
 		{
-			key: 'massTag', tag: ['AUDIOMD5'],
+			key: 'massTag', tag: [globTags.md5Decoded],
 			title: 'MD5 (masstag)',
 			bAvailable: utils.CheckComponent('foo_masstag', true),
-			menu: ['Tagging/Scripts/MD5'],
+			menu: ['Tagging/Scripts/MD5','Tagging/Scripts/AUDIOMD5'],
 			bDefault: true,
 			bQuiet: true
 		},
 		{
-			key: 'audioMd5', tag: ['MD5'],
+			key: 'audioMd5', tag: [globTags.md5],
 			title: 'MD5 (foo_audiomd5)',
 			bAvailable: utils.CheckComponent('foo_audiomd5', true),
-			menu: ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag'],
+			menu: ['Utilities/Create Audio MD5 checksum', 'Utilities/Create Audio MD5 tag', 'Utilities/Create Audio MD5 tag (rescan)'],
 			bDefault: false,
 			bQuiet: false
 		},
@@ -111,7 +113,7 @@ function Tagger({
 			key: 'bpmAnaly', tag: [globTags.bpm],
 			title: 'BPM (foo_bpm)',
 			bAvailable: utils.CheckComponent('foo_bpm', true),
-			menu: ['Automatically analyse BPMs'],
+			menu: ['BPM Analyser/Automatically analyse BPMs'],
 			bDefault: true,
 			bQuiet: false
 		},
@@ -263,7 +265,9 @@ function Tagger({
 			}
 		} else { return; }
 		// Safety check for accidental button pressing
-		let answer = WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + this.description(), 0, window.Name, popup.question + popup.yes_no);
+		const answer = this.bRunPopup
+			? WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + this.description(), 0, window.Name, popup.question + popup.yes_no)
+			: popup.yes;
 		if (answer === popup.no) {
 			this.iStep = null;
 			this.selItems = null;
@@ -447,65 +451,47 @@ function Tagger({
 	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'massTag', 'dynamicRange', 'drMeter', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 	if (orderKeys.flat(Infinity).some((k) => !Object.hasOwn(this.toolsByKey, k))) { throw new Error('Key not associated to any tool'); }
 	this.stepTag = (i) => {
+		const runMenu = (menuArr, handleList, title) => {
+			bSucess = menuArr.some((name) => fb.RunContextCommandWithMetadb(name, handleList, 8));
+			if (!bSucess) { fb.ShowPopupMessage('Contextual menu entries not found:\n\n  - ' + menuArr.join('\n  - ') + '\n\nCheck they match the contextual menus associated to the component and don\'t have any typo. Otherwise report to the component\'s dev.', title); }
+			return bSucess;
+		};
 		let bSucess = false;
 		this.iStep++;
 		switch (i) {
 			case 0: // Less than 100 ms / track?
-				if (this.toolsByKey.rgScan) {
-					bSucess = this.menuRemoveByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuRemoveByKey.rgScan.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.rgScan
+					? runMenu(this.menuRemoveByKey.rgScan, this.selItems, this.titlesByKey.rgScan)
+					: false;
 				break;
 			case 1: // Less than 100 ms / track?
-				if (this.toolsByKey.tpScan) { // True Peak info may use custom tags this way...
-					bSucess = this.menuRemoveByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuRemoveByKey.tpScan.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				// True Peak info may use custom tags this way...
+				bSucess = this.toolsByKey.tpScan
+					? runMenu(this.menuRemoveByKey.tpScan, this.selItems, this.titlesByKey.tpScan)
+					: false;
 				break;
 			case 2:  // Takes 260 ms / track
-				if (this.toolsByKey.biometric) {
-					bSucess = this.menuByKey.biometric.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.biometric.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.biometric && this.quietByKey.biometric
+					? runMenu(this.menuByKey.biometric, this.selItems, this.titlesByKey.biometric)
+					: false;
 				break;
 			case 3: // Less than 170 ms / track?
 				if (this.toolsByKey.massTag) {
 					if (this.check.subSong || this.check.md5) {
-						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.subSong.missing, 8));
-							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.massTag.join('\n  - ')); }
-						}
-						if (this.check.md5 && this.selItemsByCheck.md5.missing.Count) {
-							bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.md5.missing, 8));
-							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.massTag.join('\n  - ')); }
-						}
-					} else {
-						bSucess = this.menuByKey.massTag.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-						if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.massTag.join('\n  - ')); }
-					}
+						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) { bSucess = runMenu(this.menuByKey.massTag, this.selItemsByCheck.subSong.missing, this.titlesByKey.massTag); }
+						if (this.check.md5 && this.selItemsByCheck.md5.missing.Count) { bSucess = runMenu(this.menuByKey.massTag, this.selItemsByCheck.md5.missing, this.titlesByKey.massTag); }
+					} else { bSucess = runMenu(this.menuByKey.massTag, this.selItems, this.titlesByKey.massTag); }
 				} else { bSucess = false; }
 				break;
 			case 4: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				if (this.toolsByKey.dynamicRange) {
-					bSucess = this.menuByKey.dynamicRange.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.dynamicRange.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.dynamicRange && this.quietByKey.dynamicRange
+					? runMenu(this.menuByKey.dynamicRange, this.selItems, this.titlesByKey.dynamicRange)
+					: false;
 				break;
 			case 5: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
-				if (this.toolsByKey.drMeter && this.quietByKey.drMeter) {
-					bSucess = this.menuByKey.drMeter.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.drMeter.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.drMeter && this.quietByKey.drMeter
+					? runMenu(this.menuByKey.drMeter, this.selItems, this.titlesByKey.drMeter)
+					: false;
 				break;
 			case 6:
 				if (this.toolsByKey.chromaPrint) {
@@ -558,70 +544,43 @@ function Tagger({
 			case 11:
 				if (this.toolsByKey.audioMd5 && this.quietByKey.audioMd5) {
 					const bSubSong = this.check.subSong;
-					if (bSubSong) {
-						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, this.selItemsByCheck.subSong.missing, 8));
-							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.audioMd5.join('\n  - ')); }
-						}
-					} else {
-						bSucess = this.menuByKey.audioMd5.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-						if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.audioMd5.join('\n  - ')); }
-					}
+					bSucess = bSubSong
+						? this.selItemsByCheck.subSong.missing.Count
+							? runMenu(this.menuByKey.audioMd5, this.selItemsByCheck.subSong.missing, this.titlesByKey.audioMd5)
+							: false
+						: runMenu(this.menuByKey.audioMd5, this.selItems, this.titlesByKey.audioMd5);
 				} else { bSucess = false; }
 				break;
 			case 12:
-				if (this.toolsByKey.rgScan && this.quietByKey.rgScan) {
-					bSucess = this.menuByKey.rgScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.drMeter.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.rgScan && this.quietByKey.rgScan
+					? runMenu(this.menuByKey.rgScan, this.selItems, this.titlesByKey.rgScan)
+					: false;
 				break;
 			case 13:
-				if (this.toolsByKey.tpScan && this.quietByKey.tpScan) {
-					bSucess = this.menuByKey.tpScan.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.drMeter.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.tpScan && this.quietByKey.tpScan
+					? runMenu(this.menuByKey.tpScan, this.selItems, this.titlesByKey.tpScan)
+					: false;
 				break;
 			case 14:
-				if (this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly) {
-					bSucess = this.menuByKey.bpmAnaly.some((name) => fb.RunContextCommandWithMetadb(name, this.selItems, 8));
-					if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey.bpmAnaly.join('\n  - ')); }
-				} else {
-					bSucess = false;
-				}
+				bSucess = this.toolsByKey.bpmAnaly && this.quietByKey.bpmAnaly
+					? runMenu(this.menuByKey.bpmAnaly, this.selItems, this.titlesByKey.bpmAnaly)
+					: false;
 				break;
 			case 15: // These require user input before saving, so they are read only operations and can be done at the same time
 				if (this.toolsByKey.audioMd5 && !this.quietByKey.audioMd5 || this.toolsByKey.drMeter && !this.quietByKey.drMeter || this.toolsByKey.rgScan && !this.quietByKey.rgScan || this.toolsByKey.tpScan && !this.quietByKey.tpScan || this.toolsByKey.bpmAnaly && !this.quietByKey.bpmAnaly) {
 					this.currentTime = 0; // ms
-					const cacheSelItems = this.selItems;
-					const cacheSelItemsNoSubSong = this.selItemsByCheck.subSong.missing;
-					const bSubSong = this.check.subSong;
-					const runMenu = (key, bSubSong) => {
-						if (bSubSong) {
-							if (cacheSelItemsNoSubSong.Count) {
-								bSucess = this.menuByKey[key].some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItemsNoSubSong, 8));
-								if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey[key].join('\n  - ')); }
-							}
-						} else {
-							bSucess = this.menuByKey[key].some((name) => fb.RunContextCommandWithMetadb(name, cacheSelItems, 8));
-							if (!bSucess) { fb.ShowPopupMessage('Menu entries not found:\n\n  - ' + this.menuByKey[key].join('\n  - ')); }
-						}
-						return bSucess;
-					};
 					[
 						{ key: 'drMeter', coeff: 550, bSubSong: false },
-						{ key: 'audioMd5', coeff: 200, bSubSong },
+						{ key: 'audioMd5', coeff: 200, bSubSong: this.check.subSong },
 						{ key: 'rgScan', coeff: 550, bSubSong: false },
 						{ key: 'tpScan', coeff: 550, bSubSong: false },
 						{ key: 'bpmAnaly', coeff: 15000, bSubSong: false }
 					].forEach((opt, i) => {
 						if (this.toolsByKey[opt.key] && !this.quietByKey[opt.key]) {
+							const handleList = opt.bSubSong ? this.selItemsByCheck.subSong.missing : this.selItems;
 							bSucess = i === 0
-								? runMenu(opt.key, opt.bSubSong)
-								: setTimeout(runMenu, this.currentTime, opt.key, opt.bSubSong);
+								? runMenu(this.menuByKey[opt.key], handleList, this.titlesByKey[opt.key])
+								: setTimeout(runMenu, this.currentTime, this.menuByKey[opt.key], handleList, this.titlesByKey[opt.key]);
 							this.currentTime += opt.coeff * this.countItems; // Give some time to run before firing the next one
 						}
 					});

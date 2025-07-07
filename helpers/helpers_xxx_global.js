@@ -222,6 +222,8 @@ const globTags = {
 	rating: '%RATING%',
 	acoustidFP: 'ACOUSTID_FINGERPRINT_RAW',
 	fooidFP: 'FINGERPRINT_FOOID',
+	md5: 'AUDIOMD5',
+	md5Decoded: 'MD5',
 	playCount: '$max(%PLAY_COUNT%,%LASTFM_PLAY_COUNT%,%2003_PLAYCOUNT%,0)',
 	skipCount: '$max(%SKIP_COUNT%,%SKIP_TRACK_SKIP_COUNT%,0)',
 	folksonomy: 'FOLKSONOMY',

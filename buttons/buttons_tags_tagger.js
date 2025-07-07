@@ -1,5 +1,5 @@
 ﻿'use strict';
-//05/07/25
+//07/07/25
 
 /*
 	Automatic tagging...
@@ -46,6 +46,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	bWineBug: ['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup],
 	bFormatPopups: ['Show format warning popups', true, { func: isBoolean }, true],
 	bToolPopups: ['Show tool warning popups', true, { func: isBoolean }, true],
+	bRunPopup: ['Ask confirmation before running', true, { func: isBoolean }, true]
 };
 newButtonsProperties.toolsByKey.push({ func: isJSON }, newButtonsProperties.toolsByKey[1]);
 newButtonsProperties.quietByKey.push({ func: isJSON }, newButtonsProperties.quietByKey[1]);
@@ -155,6 +156,20 @@ buttonsBar.list.push(newButtonsProperties);
 								});
 								menu.newCheckMenuLast(() => this.tAut.quietByKey[key]);
 							});
+							menu.newSeparator(subMenuTwo);
+							menu.newEntry({
+								menuName: subMenuTwo, entryText: 'Switch all', func: () => {
+									const quietByKey = JSON.parse(this.buttonsProperties.quietByKey[1]);
+									const keys = Object.keys(this.tAut.quietByKey);
+									const current = keys.every((key) => this.tAut.quietByKey[key] || !this.tAut.availableByKey[key]);
+									keys.forEach((key) => {
+										if (['biometric', 'massTag'].includes(key) || !this.tAut.availableByKey[key]) { return; }
+										this.tAut.quietByKey[key] = quietByKey[key] = !current;
+									});
+									this.buttonsProperties.quietByKey[1] = JSON.stringify(quietByKey);
+									overwriteProperties(this.buttonsProperties);
+								}, flags: MF_STRING
+							});
 						}
 						[
 							{ menu: 'Tagging menu entries', key: 'menuByKey', tip: 'Contextual menu entries called:' },
@@ -172,8 +187,8 @@ buttonsBar.list.push(newButtonsProperties);
 											const input = Input.json(
 												'array strings', this.tAut[opt.key][key],
 												key === 'tagsByKey'
-													? 'Enter associated tag(s):\n(JSON array of strings)\n\nThe script will check if these tags are sucessfully removed/added.'
-													: 'Enter menu entry(s):\n(JSON array of strings)\n\nThe script will try to run all until any of them is sucessful.',
+													? 'Enter associated tag(s):\n(JSON array of strings)\n\nThe script will check if these tags are successfully removed/added.'
+													: 'Enter menu entry(s):\n(JSON array of strings)\n\nThe script will try to run all until any of them is successful.',
 												this.tAut.titlesByKey[key],
 												key === 'tagsByKey'
 													? '["REPLAYGAIN_ALBUM_GAIN", "REPLAYGAIN_ALBUM_PEAK", "REPLAYGAIN_TRACK_GAIN", "REPLAYGAIN_TRACK_PEAK"]'
@@ -200,21 +215,29 @@ buttonsBar.list.push(newButtonsProperties);
 						});
 						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () => { return this.buttonsProperties.bWineBug[1]; });
 						menu.newEntry({
-							menuName: subMenu, entryText: 'Show format warnings popups', func: () => {
+							menuName: subMenu, entryText: 'Show format warning popups', func: () => {
 								this.buttonsProperties.bFormatPopups[1] = !this.buttonsProperties.bFormatPopups[1];
 								this.tAut.bFormatPopups = this.buttonsProperties.bFormatPopups[1];
-								overwriteProperties(this.buttonsProperties); // Force overwriting
+								overwriteProperties(this.buttonsProperties);
 							}
 						});
-						menu.newCheckMenu(subMenu, 'Show format warnings popups', void (0), () => { return this.buttonsProperties.bFormatPopups[1]; });
+						menu.newCheckMenu(subMenu, 'Show format warning popups', void (0), () => this.buttonsProperties.bFormatPopups[1]);
 						menu.newEntry({
-							menuName: subMenu, entryText: 'Show tool tips popups', func: () => {
+							menuName: subMenu, entryText: 'Show tool info popups', func: () => {
 								this.buttonsProperties.bToolPopups[1] = !this.buttonsProperties.bToolPopups[1];
 								this.tAut.bToolPopups = this.buttonsProperties.bToolPopups[1];
-								overwriteProperties(this.buttonsProperties); // Force overwriting
+								overwriteProperties(this.buttonsProperties);
 							}
 						});
-						menu.newCheckMenu(subMenu, 'Show tool tips popups', void (0), () => { return this.buttonsProperties.bToolPopups[1]; });
+						menu.newCheckMenu(subMenu, 'Show tool info popups', void (0), () => this.buttonsProperties.bToolPopups[1]);
+						menu.newEntry({
+							menuName: subMenu, entryText: 'Ask confirmation before running', func: () => {
+								this.buttonsProperties.bRunPopup[1] = !this.buttonsProperties.bRunPopup[1];
+								this.tAut.bRunPopup = this.buttonsProperties.bRunPopup[1];
+								overwriteProperties(this.buttonsProperties);
+							}
+						});
+						menu.newCheckMenu(subMenu, 'Ask confirmation before running', void (0), () => this.buttonsProperties.bRunPopup[1]);
 					}
 					menu.btn_up(this.currX, this.currY + this.currH);
 				}
@@ -247,7 +270,8 @@ buttonsBar.list.push(newButtonsProperties);
 		tagsByKey: JSON.parse(newButtonsProperties.tagsByKey[1]),
 		bWineBug: newButtonsProperties.bWineBug[1],
 		bFormatPopups: newButtonsProperties.bFormatPopups[1],
-		bToolPopups: newButtonsProperties.bToolPopups[1]
+		bToolPopups: newButtonsProperties.bToolPopups[1],
+		bRunPopup: newButtonsProperties.bRunPopup[1]
 	});
 	addButton(newButton);
 }
