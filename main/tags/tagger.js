@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/07/25
+//28/07/25
 
 /*
 	Automatic tagging...
@@ -24,7 +24,7 @@ include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable, isSubsong:readable */
 
 function Tagger({
-	toolsByKey = null /* {biometric: true, chromaPrint: true, massTag: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: false, drMeter: true, LRA: true, KEY: true, bpmAnaly: false } */,
+	toolsByKey = null /* {biometric: true, chromaPrint: true, masstagger: true, audioMd5: true, rgScan: true, tpScan: false, dynamicRange: false, drMeter: true, LRA: true, KEY: true, bpmAnaly: false } */,
 	quietByKey = null /* {audioMd5: true, rgScan: true, tpScan: true, bpmAnaly: false } */,
 	menuByKey = null /* {biometric: ['Save fingerprint to file(s)'], ... } */,
 	menuRemoveByKey = null /* {rgScan: ['ReplayGain/Remove ReplayGain information from files'], ... } */,
@@ -76,10 +76,10 @@ function Tagger({
 			bQuiet: false
 		},
 		{
-			key: 'massTag', tag: [globTags.md5Decoded],
-			title: 'MD5 (masstag)',
+			key: 'masstagger', tag: [globTags.md5Decoded],
+			title: 'MD5 (Masstagger)',
 			bAvailable: utils.CheckComponent('foo_masstag', true),
-			menu: ['Tagging/Scripts/MD5','Tagging/Scripts/AUDIOMD5'],
+			menu: ['Tagging/Scripts/MD5', 'Tagging/Scripts/AUDIOMD5'],
 			bDefault: true,
 			bQuiet: true
 		},
@@ -209,7 +209,7 @@ function Tagger({
 	});
 	// Force settings for specific tools
 	this.quietByKey.biometric = true;
-	this.quietByKey.massTag = true;
+	this.quietByKey.masstagger = true;
 
 	this.description = () => {
 		return this.tools.reduce((text, tool) => { return (this.toolsByKey[tool.key] ? (text.length ? text + ', ' + tool.title : tool.title) : text); }, ''); // Initial value is '';
@@ -218,10 +218,10 @@ function Tagger({
 	this.setNotAllowedTools = (type) => {
 		switch (type) {
 			case 'subSong':
-				this.notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'ffmpegLRA', 'massTag', 'essentiaFastKey', 'essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']);
+				this.notAllowedTools = new Set(['audioMd5', 'chromaPrint', 'ffmpegLRA', 'masstagger', 'essentiaFastKey', 'essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']);
 				break;
 			case 'md5':
-				this.notAllowedTools = new Set(['massTag']);
+				this.notAllowedTools = new Set(['masstagger']);
 				break;
 			case 'dsf':
 				this.notAllowedTools = new Set(['essentiaFastKey', 'essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']);
@@ -230,6 +230,21 @@ function Tagger({
 				this.notAllowedTools = new Set();
 				break;
 		}
+	};
+
+	this.checkIncompatibleTools = (bForce) => {
+		let bPass = true;
+		if (this.toolsByKey.masstagger && this.toolsByKey.audioMd5) {
+			const tag = new Set(this.tagsByKey.audioMd5).intersection(this.tagsByKey.masstagger);
+			if (tag.size > 0) {
+				this.toolsByKey.masstagger = false;
+				if (this.bToolPopups || bForce) {
+					console.popup('Masstagger is being used along foo_audiomd5 with the same tag assigned to both tools (' + [...tag] + ').\n\nThis setting is not allowed and masstagger has been disabled.', 'Tags Automation');
+				}
+				bPass = false;
+			}
+		}
+		return bPass;
 	};
 
 	this.run = () => {
@@ -248,6 +263,7 @@ function Tagger({
 		if (this.bToolPopups && this.toolsByKey.rgScan && this.toolsByKey.tpScan) {
 			console.popup('True Peak Scanner is being used along ReplayGain. Note some custom settings may duplicate file scanning or tagging unnecessarily, so it may be desirable to only use one of them. Check their original documentation for more usage info.', 'Tags Automation');
 		}
+		this.checkIncompatibleTools();
 		this.countItems = 0;
 		this.currentTime = 0;
 		this.selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
@@ -448,7 +464,7 @@ function Tagger({
 		this.debouncedStep(this.iStep);
 	};
 
-	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'massTag', 'dynamicRange', 'drMeter', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
+	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'masstagger', 'dynamicRange', 'drMeter', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 	if (orderKeys.flat(Infinity).some((k) => !Object.hasOwn(this.toolsByKey, k))) { throw new Error('Key not associated to any tool'); }
 	this.stepTag = (i) => {
 		const runMenu = (menuArr, handleList, title) => {
@@ -476,11 +492,11 @@ function Tagger({
 					: false;
 				break;
 			case 3: // Less than 170 ms / track?
-				if (this.toolsByKey.massTag) {
+				if (this.toolsByKey.masstagger) {
 					if (this.check.subSong || this.check.md5) {
-						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) { bSucess = runMenu(this.menuByKey.massTag, this.selItemsByCheck.subSong.missing, this.titlesByKey.massTag); }
-						if (this.check.md5 && this.selItemsByCheck.md5.missing.Count) { bSucess = runMenu(this.menuByKey.massTag, this.selItemsByCheck.md5.missing, this.titlesByKey.massTag); }
-					} else { bSucess = runMenu(this.menuByKey.massTag, this.selItems, this.titlesByKey.massTag); }
+						if (this.check.subSong && this.selItemsByCheck.subSong.missing.Count) { bSucess = runMenu(this.menuByKey.masstagger, this.selItemsByCheck.subSong.missing, this.titlesByKey.masstagger); }
+						if (this.check.md5 && this.selItemsByCheck.md5.missing.Count) { bSucess = runMenu(this.menuByKey.masstagger, this.selItemsByCheck.md5.missing, this.titlesByKey.masstagger); }
+					} else { bSucess = runMenu(this.menuByKey.masstagger, this.selItems, this.titlesByKey.masstagger); }
 				} else { bSucess = false; }
 				break;
 			case 4: // Warning: This step updates tags for entire albums while processing the list... so times changes according to album length
@@ -654,6 +670,7 @@ function Tagger({
 
 	this.init = () => {
 		this.loadDependencies();
+		this.checkIncompatibleTools(true);
 	};
 
 	this.init();

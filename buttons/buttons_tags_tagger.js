@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/07/25
+//28/07/25
 
 /*
 	Automatic tagging...
@@ -107,6 +107,7 @@ buttonsBar.list.push(newButtonsProperties);
 											}
 										}
 									}
+									this.tAut.checkIncompatibleTools(true);
 									// Save
 									this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 									overwriteProperties(this.buttonsProperties); // Force overwriting
@@ -121,6 +122,7 @@ buttonsBar.list.push(newButtonsProperties);
 								menuName: subMenu, entryText, func: () => {
 									this.tAut.tools.forEach((tool) => { this.tAut.toolsByKey[tool.key] = i ? false : tool.bAvailable && tool.bDefault; });
 									this.tAut.incompatibleTools.uniValues().forEach((tool) => { this.tAut.toolsByKey[tool] = false; });
+									this.tAut.checkIncompatibleTools(true);
 									this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 									overwriteProperties(this.buttonsProperties); // Force overwriting
 									this.tAut.loadDependencies();
@@ -132,6 +134,7 @@ buttonsBar.list.push(newButtonsProperties);
 							menuName: subMenu, entryText: 'Invert selected tools', func: () => {
 								this.tAut.tools.forEach((tool) => { this.tAut.toolsByKey[tool.key] = tool.bAvailable ? !this.tAut.toolsByKey[tool.key] : false; });
 								this.tAut.incompatibleTools.uniValues().forEach((tool) => { this.tAut.toolsByKey[tool] = false; });
+								this.tAut.checkIncompatibleTools(true);
 								this.buttonsProperties.toolsByKey[1] = JSON.stringify(this.tAut.toolsByKey);
 								overwriteProperties(this.buttonsProperties); // Force overwriting
 								this.tAut.loadDependencies();
@@ -152,7 +155,7 @@ buttonsBar.list.push(newButtonsProperties);
 										this.tAut.quietByKey[key] = quietByKey[key] = !this.tAut.quietByKey[key];
 										this.buttonsProperties.quietByKey[1] = JSON.stringify(quietByKey);
 										overwriteProperties(this.buttonsProperties);
-									}, flags: ['biometric', 'massTag'].includes(key) || !this.tAut.availableByKey[key] ? MF_GRAYED : MF_STRING
+									}, flags: ['biometric', 'masstagger'].includes(key) || !this.tAut.availableByKey[key] ? MF_GRAYED : MF_STRING
 								});
 								menu.newCheckMenuLast(() => this.tAut.quietByKey[key]);
 							});
@@ -163,7 +166,7 @@ buttonsBar.list.push(newButtonsProperties);
 									const keys = Object.keys(this.tAut.quietByKey);
 									const current = keys.every((key) => this.tAut.quietByKey[key] || !this.tAut.availableByKey[key]);
 									keys.forEach((key) => {
-										if (['biometric', 'massTag'].includes(key) || !this.tAut.availableByKey[key]) { return; }
+										if (['biometric', 'masstagger'].includes(key) || !this.tAut.availableByKey[key]) { return; }
 										this.tAut.quietByKey[key] = quietByKey[key] = !current;
 									});
 									this.buttonsProperties.quietByKey[1] = JSON.stringify(quietByKey);
