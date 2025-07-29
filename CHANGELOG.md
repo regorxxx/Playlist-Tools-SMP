@@ -152,6 +152,8 @@
 ### Removed
 - Quicksearch: removed entries with multi-value tags on queries on 'Partial match' submenu; they were never supported.
 ### Fixed
+- Quicksearch: switch active playlist on AutoPlaylist creation.
+- Quickmatch: switch active playlist on AutoPlaylist creation.
 - Most played tracks at: fix for 'last day' and 'last week'.
 - Script Integration\SMP Dynamic menu: fixed double '&' shown in some entries.
 - Script Integration\SMP Dynamic menu: fixed multiple errors on dynamic menus (un)registering.

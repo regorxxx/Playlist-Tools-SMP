@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/06/25
+//29/07/25
 
 /*
 	Quickmatch same....
@@ -301,7 +301,7 @@ function quickmatchMenu() {
 	const bOmitSortPls = this.buttonsProperties.bOmitSortPls[1];
 	// Menu
 	const menu = new _menu();
-	menu.newEntry({ entryText: 'Shift to search / Ctrl for AutoPlaylist:', flags: MF_GRAYED });
+	menu.newEntry({ entryText: 'Search (Shift) / AutoPlaylist (Ctrl):', flags: MF_GRAYED });
 	menu.newSeparator();
 	{	// Same...
 		entries.forEach((queryObj) => {
@@ -348,7 +348,7 @@ function quickmatchMenu() {
 								query = dynamicQueryProcess({ query });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: plman.GetPlaylistItems(plman.ActivePlaylist) }); }
 								}
 							} else {

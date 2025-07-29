@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/04/25
+//29/07/25
 
 /*
 	Quicksearch for same....
@@ -237,7 +237,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 	const bOmitSortPls = this.buttonsProperties.bOmitSortPls[1];
 	// Menu
 	const menu = new _menu({ onBtnUp: () => this.selItems = null });
-	menu.newEntry({ entryText: 'Shift to search / Ctrl for AutoPlaylist:', flags: MF_GRAYED });
+	menu.newEntry({ entryText: 'Search (Shift) / AutoPlaylist (Ctrl):', flags: MF_GRAYED });
 	menu.newSeparator();
 	{	// Same...
 		queryFilter.forEach((queryObj) => {
@@ -259,7 +259,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								query = dynamicQueryProcess({ query, handleList: this.selItems });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 								}
 							} else {
@@ -270,7 +270,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								query = dynamicQueryProcess({ query });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 								}
 							} else {
@@ -303,7 +303,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 					}
 					if (query) {
 						if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-						else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+						else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 						else { dynamicQuery({ query, sort: (bOmitSortPls ? null : { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 					}
 				} else {
@@ -348,7 +348,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 									query = dynamicQueryProcess({ query, handleList: this.selItems, bToLowerCase: true });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+										else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null, bToLowerCase: true }); }
 									}
 								} else {
@@ -359,7 +359,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 									query = dynamicQueryProcess({ query, bToLowerCase: true });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+										else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null, bToLowerCase: true }); }
 									}
 								} else {
@@ -402,7 +402,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 									query = dynamicQueryProcess({ query, handleList: this.selItems, bToLowerCase: true });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+										else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null, bToLowerCase: true }); }
 									}
 								} else {
@@ -413,7 +413,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 									query = dynamicQueryProcess({ query, bToLowerCase: true });
 									if (query) {
 										if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-										else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+										else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 										else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null, bToLowerCase: true }); }
 									}
 								} else {
@@ -478,7 +478,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								query = dynamicQueryProcess({ query, handleList: this.selItems });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 								}
 							} else {
@@ -489,7 +489,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								query = dynamicQueryProcess({ query });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 								}
 							} else {
@@ -567,7 +567,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								query = dynamicQueryProcess({ query, handleList: this.selItems });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 								}
 							} else {
@@ -578,7 +578,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 								query = dynamicQueryProcess({ query });
 								if (query) {
 									if (bShift && !bCtrl) { fb.ShowLibrarySearchUI(query); }
-									else if (!bShift && bCtrl) { plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
+									else if (!bShift && bCtrl) { plman.ActivePlaylist = plman.CreateAutoPlaylist(plman.PlaylistCount, playlistName, query); }
 									else { dynamicQuery({ query, sort: (bOmitSortPls ? null : queryObj.sort || { tfo: sortTF }), handleList: this.selItems, playlistName, source: bPlsSel ? plman.GetPlaylistItems(plman.ActivePlaylist) : null }); }
 								}
 							} else {
