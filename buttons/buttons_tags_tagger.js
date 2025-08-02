@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/07/25
+//01/08/25
 
 /*
 	Automatic tagging...
@@ -17,7 +17,7 @@ include('..\\helpers\\menu_xxx.js');
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, soFeat:readable, MK_CONTROL:readable, MF_STRING:readable, MF_GRAYED:readable, VK_SHIFT:readable, VK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
-/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable,  */
+/* global getButtonVersion:readable, getUniquePrefix:readable, buttonsBar:readable, addButton:readable, ThemedButton:readable, showButtonReadme:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
 /* global isBoolean:readable, isJSON:readable, isString:readable,  */
 include('..\\helpers\\helpers_xxx_UI.js');
@@ -242,6 +242,8 @@ buttonsBar.list.push(newButtonsProperties);
 						});
 						menu.newCheckMenu(subMenu, 'Ask confirmation before running', void (0), () => this.buttonsProperties.bRunPopup[1]);
 					}
+					menu.newSeparator();
+					menu.newEntry({ entryText: 'Readme...', func: () => showButtonReadme('buttons_tags_tagger.js') });
 					menu.btn_up(this.currX, this.currY + this.currH);
 				}
 			},
