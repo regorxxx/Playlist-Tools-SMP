@@ -1,10 +1,10 @@
 'use strict';
-//19/06/25
+//01/08/25
 
 /* exported _lastListMenu */
 
 include('..\\..\\helpers\\helpers_xxx.js');
-/* global MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable, VK_SHIFT:readable, globTags:readable */
+/* global MF_STRING:readable, MF_GRAYED:readable, MF_MENUBREAK:readable, VK_SHIFT:readable, globTags:readable, MK_SHIFT:readable */
 include('..\\..\\helpers\\menu_xxx.js');
 /* global _menu:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
@@ -393,6 +393,8 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 				}, data: { bDynamicMenu: true }
 			});
 		});
+		menu.newSeparator();
+		menu.newEntry({ entryText: 'Settings...', func: () => this.onClick(MK_SHIFT) });
 	}
 
 	return menu;

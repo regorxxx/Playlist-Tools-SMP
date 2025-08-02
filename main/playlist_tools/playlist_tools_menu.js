@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//01/08/25
 
 /*
 	Playlist Tools Menu
@@ -141,7 +141,7 @@ var readmes = { // NOSONAR [global]
 loadProperties();
 // Menu
 const specialMenu = 'Special Playlists';
-const configMenu = 'Configuration';
+const configMenu = 'Settings';
 const scriptName = 'Playlist Tools Menu';
 const menu = new _menu({
 	onBtnUp: () => {
@@ -523,7 +523,7 @@ function createMainMenuDynamic() {
 					dynamicMenuList.push({ ...entry, onMainMenuEntries: true });
 					if (Object.hasOwn(entry, 'path') && entry.path.length) {
 						try { include(entry.path.replace('.\\', folders.xxx)); entry.path = ''; }
-						catch (e) { console.popup(e.message.split(/\r\n|\n\r|\n|\r/).join('\n\t'), scriptName + ': SMP Dynamic menu'); }
+						catch (e) { console.popup(e.message.split(/\r\n|\n\r|\n|\r/).join('\n\t '), scriptName + ': SMP Dynamic menu'); }
 					}
 				}
 			});
