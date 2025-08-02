@@ -1,29 +1,64 @@
 ﻿Automatic tagging for selected tracks using multiple plugins:
-- foo_biometric (FooID Fingerprinting).
-- Chromaprint (ChromaPrint Fingerprinting).
-- foo_masstag (copy native MD5 to tag).
-- foo_audiomd5 (calculate audio MD5 from file).
-- foo_rgscan (Replay Gain).
-- foo_dynamic_range (DR).
-- ffmpeg (EBUR 128 Scanner for LRA tag).
-- Essentia (EBUR 128 Scanner for LRA tag, Key, BPM & Danceness tags).
+	- foo_biometric (FooID Fingerprinting).
+	- Chromaprint (ChromaPrint Fingerprinting).
+	- foo_masstag (copy native MD5 to tag).
+	- foo_audiomd5 (calculate audio MD5 from file).
+	- foo_bpm (BPM).
+	- foo_truepeak (Replay Gain, EBUR 128, DR, etc.).
+	- foo_rgscan (Replay Gain).
+	- foo_dynamic_range (DR).
+	- foo_dr_meter (DR).
+	- ffmpeg (EBUR 128).
+	- Essentia (EBUR 128, Key, BPM & Danceness tags).
 
 Dependencies:
-Fooid plugin and binary file can be found at  '.\_resources' folder.
-Chromaprint dependencies should be already included within this download.
-ffmpeg feature requires to download 'ffmpeg.exe' from the web
-and and place it into '.\helpers-external\ffmpeg\ffmpeg.exe'.
-Essentia feature requires to download 'streaming_extractor_music.exe'
-and 'essentia_streaming_key.exe' from the web and and place them into 
-'.\helpers-external\essentia\...'.
-For any other component related feature (foo_***), the plugin needs
-to be installed first by the user. Some may be available by default.
+	- Fooid plugin and binary file can be found at  '.\_resources'
+	folder.
 
-After (un)installing a dependency, a panel reload will be required.
+	- Chromaprint dependencies should be already included within
+	this download.
 
-This was meant as a private tool, no further support provided.
+	- ffmpeg requires to download 'ffmpeg.exe' from the web and
+	place it into '.\helpers-external\ffmpeg\ffmpeg.exe'.
+
+	- Essentia requires to download 'streaming_extractor_music.exe'
+	and 'essentia_streaming_key.exe' from the web and
+	place them into '.\helpers-external\essentia\...'.
+
+	- For any other component related feature (foo_***), the plugin
+	needs to be installed first by the user. Some may be available
+	by default.
+
+	- After (un)installing a dependency, a panel reload will be
+	required.
+
+Setting notes:
+	- The settings submenu includes several settings which are
+	guaranteed to work with all tools by default. If you changed
+	anything at other component settings, you must ensure those
+	changes	are reflected here too (tags, menu names or quiet mode).
+
+	- Changing a setting at the menu only notifies the script about
+	the setting but WILL NOT apply such setting to the external
+	component. It must be changed at both places. i.e. setting a tool
+	in quiet mode only ensures it will work within the script, but will
+	not change the quiet mode setting at the components preferences
+	window. You must do it by yourself.
+
+	- The tags must be properly set at settings to ensure they are
+	checked for deletion and verified after writing them. Not properly
+	setting them will make the script to fail.
+
+	- Every tool used must write different tags. This is somewhat
+	ensured by the script when trying to enable multiple tools which
+	write the same tag (for ex. DR meters), but it's the user
+	responsibility to ensure it doesn't happen on purpose by changing
+	the tools' tag settings.
 
 Processing order:
-Remove ReplayGain -> FooId -> Masstager MD5 -> DR -> ChromaPrint 
--> ffmpeg LRA -> Folksonomy -> Essentia (fast) -> Essentia (rest)
--> AudioMD5 -> ReplayGain
+	Remove ReplayGain -> FooId -> Masstager MD5 -> DR -> ChromaPrint
+	-> ffmpeg LRA -> Folksonomy -> Essentia (fast) -> Essentia (rest)
+	-> AudioMD5 -> ReplayGain - True Peak Scanner -> BPM
+
+Warning:
+	This was meant as a private tool, no further support provided.
