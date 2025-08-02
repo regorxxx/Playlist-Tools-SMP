@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/06/25
+//31/07/25
 
 /*
 	Check Library Tags
@@ -619,7 +619,7 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 	}
 	if (bFromFile && bSave) {
 		_save(path, JSON.stringify(obj, null, '\t').replace(/\n/g, '\r\n'));
-		console.log('loadTagsExcluded: overwrote file after fixing keys.\n\t' + path);
+		console.log('loadTagsExcluded: overwrote file after fixing keys.\n\t ' + path);
 	}
 	for (const key in obj) { obj[key] = new Set(obj[key].filter(Boolean)); }
 	return obj;
