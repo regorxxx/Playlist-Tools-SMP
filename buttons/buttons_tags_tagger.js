@@ -1,5 +1,5 @@
 ﻿'use strict';
-//01/08/25
+//03/08/25
 
 /*
 	Automatic tagging...
@@ -249,7 +249,7 @@ buttonsBar.list.push(newButtonsProperties);
 			},
 			description: function () {
 				// Retrieve list of tools and wrap lines with smaller width
-				let info = 'Automatic tags on selected tracks:';
+				let info = 'Tag selected tracks:';
 				info += '\n' + this.tAut.description();
 				const font = buttonsBar.tooltipButton.font;
 				info = _gr.EstimateLineWrap(info, _gdiFont(font.name, font.size), 400).filter(isString).join('\n');

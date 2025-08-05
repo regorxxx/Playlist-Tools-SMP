@@ -12,11 +12,11 @@
 	- Essentia (EBUR 128, Key, BPM & Danceness tags).
 
 Dependencies:
-	- Fooid plugin and binary file can be found at  '.\_resources'
-	folder.
+	- Fooid plugin (foo_biometric)and binary file can be found at
+	 '.\_resources'	folder.
 
 	- Chromaprint dependencies should be already included within
-	this download.
+	this download and pre-installed.
 
 	- ffmpeg requires to download 'ffmpeg.exe' from the web and
 	place it into '.\helpers-external\ffmpeg\ffmpeg.exe'.
@@ -59,6 +59,39 @@ Processing order:
 	Remove ReplayGain -> FooId -> Masstager MD5 -> DR -> ChromaPrint
 	-> ffmpeg LRA -> Folksonomy -> Essentia (fast) -> Essentia (rest)
 	-> AudioMD5 -> ReplayGain - True Peak Scanner -> BPM
+
+Component Sources:
+	- foo_biometric: bundled with scripts ('.\_resources' folder).
+	https://github.com/regorxxx/foobar2000-assets/tree/main/FooID
+
+	- Chromaprint: bundled with scripts (pre-installed).
+	https://acoustid.org/chromaprint
+
+	- foo_masstag:
+	https://www.foobar2000.org/components/view/foo_masstag
+
+	- foo_audiomd5:
+	https://foobar.hyv.fi/?view=foo_audiomd5
+
+	- foo_bpm:
+	https://foobar.hyv.fi/?view=foo_bpm
+
+	- foo_truepeak:
+	https://foobar.hyv.fi/?view=foo_truepeak
+
+	- foo_rgscan: bundled with foobar2000 (pre-installed).
+
+	- foo_dynamic_range:
+	https://dr.loudness-war.info/downloads/foo_dynamic_range_1.1.1.zip
+
+	- foo_dr_meter.
+	https://foobar.hyv.fi/?view=foo_dr_meter
+
+	- ffmpeg.
+	https://ffmpeg.org/download.html
+
+	- Essentia:
+	https://github.com/regorxxx/foobar2000-assets/tree/main/essentia-2.1b6
 
 Warning:
 	This was meant as a private tool, no further support provided.
