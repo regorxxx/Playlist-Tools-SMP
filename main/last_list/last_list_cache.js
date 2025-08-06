@@ -18,7 +18,7 @@ class LastListCache {
 		let artistCounts = {};
 		let coverArtCounts = {};
 
-		// make cacheObject an array withouth the keys
+		// make cacheObject an array without the keys
 		let trackItems = cacheObject.trackItems.map((track) => {
 			// process coverArt
 			if (track.coverArt) {

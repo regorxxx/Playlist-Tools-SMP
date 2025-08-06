@@ -169,6 +169,7 @@
 - Presets: minor error on queries using decades.
 - Other Tools\Check tags: fixed corrupted JSON output for EBUR 128 scanner (ffmpeg) with newest versions of ffmpeg (>5.0).
 - Fixed some inconsistencies with  [foo_playcount_2003](https://marc2k3.github.io/component/playcount-2003/) support.
+- Fixed some misspelled terms on UI and variables (which also lead to some minor bugs).
 
 ## [4.6.0] - 2024-10-09
 ### Added

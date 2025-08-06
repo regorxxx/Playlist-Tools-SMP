@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/09/24
+//06/08/25
 
 /* exported createPoolMusicGraphPresets */
 
@@ -19,7 +19,7 @@ function createPoolMusicGraphPresets({size = 50} = {}) {
 				queryCombinations(genres.map((s) => s.toLowerCase()), [globTags.genre, globTags.style], 'OR')
 				, 'OR'
 			);
-			// Some groups require further splitting or finetuning
+			// Some groups require further splitting or fine-tuning
 			const versions = (() => {
 				const name = cluster[0].replace('_supergenre', ' Supergenre');
 				if (cluster[0] === 'Downtempo_supergenre') {

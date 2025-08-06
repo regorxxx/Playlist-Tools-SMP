@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/07/25
+//06/08/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -199,7 +199,7 @@
 							'When this option is enabled, multi-value tags are parsed independently and a track may be considered a duplicate if at least one of those values match (instead of requiring all to match in the same order).\n\nSo for \'[ARTIST, DATE, TITLE]\' tags, these are duplicates with this option enabled:\n' +
 							'\nJimi Hendrix - 1969 - Blabla' +
 							'\nJimi Hendrix experience, Jimi Hendrix - 1969 - Blabla' +
-							'\nBand of Gypys, Jimi Hendrix - 1969 - Blabla' +
+							'\nBand of Gypsys, Jimi Hendrix - 1969 - Blabla' +
 							'\n\nWith multi-value parsing disabled, these are considered non-duplicated tracks since not all artists match.',
 							scriptName + ': ' + configMenu
 						);

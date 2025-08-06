@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/11/24
+//06/08/25
 
 /*
 	Save tags
@@ -125,5 +125,5 @@ function compareTags({
 			const handleList = new FbMetadbHandleList(toEditHandles);
 			handleList.UpdateFileInfoFromJSON(JSON.stringify(toEditTags));
 		}
-	} else { fb.ShowPopupMessage('All matched tracks\' tags are equal to the source tracks\' tags.\n(There may be files wihout match, look for other poppups)', 'Report'); }
+	} else { fb.ShowPopupMessage('All matched tracks\' tags are equal to the source tracks\' tags.\n(There may be files without match, look for other popups)', 'Report'); }
 }

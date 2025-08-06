@@ -1,5 +1,5 @@
 'use strict';
-//05/07/25
+//06/08/25
 
 /* exported folksonomyUtils */
 
@@ -72,7 +72,7 @@ const folksonomyUtils = {
 		if (tags && tags.length) {
 			tags = tags.map((t) => t.toLowerCase());
 			const rules = {
-				subsitutions: [
+				substitutions: [
 					// Rap
 					{ from: ['Rap', 'Hip Hop', 'Hip Hop Rap', 'Hip Hop/Rap', 'Hip-Hop/Rap', 'Rap/Hip-Hop'], to: ['Hip-Hop'] },
 					{ from: ['Jazz Hip-Hop', 'Jazz Hip Hop', 'Jazz Rap'], to: ['Jazz-Rap'] },
@@ -148,14 +148,14 @@ const folksonomyUtils = {
 				],
 			};
 			// Copy "good" values if already present
-			rules.subsitutions.forEach((rule) => { // Using the substitutions final values
+			rules.substitutions.forEach((rule) => { // Using the substitutions final values
 				if (rule.to.every((tag) => tags.includes(tag.toLowerCase()))) { folksonomy.add.apply(folksonomy, rule.to); }
 			});
 			rules.clone.forEach((rule) => { // Or the cloning rules
 				if (rule.from.every((tag) => tags.includes(tag.toLowerCase()))) { folksonomy.add.apply(folksonomy, rule.from); }
 			});
 			// Substitute all terms
-			rules.subsitutions.forEach((rule) => {
+			rules.substitutions.forEach((rule) => {
 				if (rule.from.some((tag) => tags.includes(tag.toLowerCase()))) { folksonomy.add.apply(folksonomy, rule.to); }
 			});
 		}

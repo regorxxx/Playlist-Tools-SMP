@@ -1,10 +1,10 @@
 ﻿'use strict';
-//31/07/25
+//06/08/25
 
 /*
 	Check Library Tags
 	Checks all tag values from selected tracks for spelling errors or misplacing values in wrong tags.
-	First checks all tags for easily recognizable errors (empty tags, blank spaces, multivalued tags not split).
+	First checks all tags for easily recognizable errors (empty tags, blank spaces, multi-valued tags not split).
 	Then selects tags with lower freq. of apparition ('freqThreshold') (*), and filters them to a max
 	of 30 values ('maxSizePerTag') per tag. Finally all these values are compared to the entire tag value list,
 	for any tag, and their similarity is computed. Anything being at least 85% ('stringSimilThreshold') similar
@@ -383,9 +383,9 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 	else if (tagValueA[0].trim().length !== tagValueA[0].length) { alternativesMap.set(tagKey, 'Tag has blank space(s) at the extremes'); }
 	else if (tagValueA[0] === '?') { alternativesMap.set(tagKey, 'Tag not set'); }
 	else if (tagA !== 'title' && tagValueA[0].includes('  ')) { alternativesMap.set(tagKey, 'Tag has consecutive blank spaces (instead of one)'); }
-	else if (tagA !== 'title' && tagValueA[0].includes(';')) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (tagA !== 'title' && tagValueA[0].includes(',')) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
-	else if (tagA !== 'title' && tagValueA[0].includes('/')) { alternativesMap.set(tagKey, 'Possible multivalue tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].includes(';')) { alternativesMap.set(tagKey, 'Possible multi-value tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].includes(',')) { alternativesMap.set(tagKey, 'Possible multi-value tag not split'); }
+	else if (tagA !== 'title' && tagValueA[0].includes('/')) { alternativesMap.set(tagKey, 'Possible multi-value tag not split'); }
 	else if (nodeList !== null && !nodeList.has(_asciify(tagValueA[0]))) { alternativesMap.set(tagKey, 'Missing tag on Music Graph descriptors'); }
 	else if (bCompare) { // Compare all values to find misplaced (other tag) and misspelled values (same/other tag)
 		let similValues = [];

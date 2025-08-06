@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/04/25
+//06/08/25
 
 /*
 	Search same by
@@ -138,7 +138,7 @@ function searchSameByCombs({
 		}
 	}
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return null; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return null; } // eslint-disable-line no-unused-vars
 	logic = (logic || '').toUpperCase();
 	if (!logicDic.includes(logic)) {
 		console.log('searchSameByCombs(): logic (' + logic + ') is wrong');
@@ -257,7 +257,7 @@ function searchSameByCombs({
 	console.log('Playlist created: ' + query[ql]);
 	let outputHandleList;
 	try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query[ql]); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query[ql]); return null; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query[ql]); return null; } // eslint-disable-line no-unused-vars
 
 	// Find and remove duplicates
 	if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
@@ -291,7 +291,7 @@ function searchSameByQueries({
 } = {}) {
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('searchSameByQueries: playlistLength (' + playlistLength + ') must be greater than zero'); return; }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return; } // eslint-disable-line no-unused-vars
 	const test = bProfile ? new FbProfiler('searchSameByQueries') : null;
 	if (!sel) {
 		console.log('searchSameByQueries: No track selected for mix.');
@@ -335,7 +335,7 @@ function searchSameByQueries({
 		//Load query
 		console.log('Playlist created: ' + query);
 		try { outputHandleList = fb.GetQueryItems(fb.GetLibraryItems(), query); } // Sanity check
-		catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return null; }
+		catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return null; } // eslint-disable-line no-unused-vars
 
 		//Find and remove duplicates. Sort Random
 		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {

@@ -1,5 +1,5 @@
 'use strict';
-//03/06/25
+//06/08/25
 
 /*
 	Slightly modified version of https://github.com/L3v3L/foo-last-list-smp
@@ -210,7 +210,7 @@ class LastList {
 									return;
 								}
 								json.playlist.forEach((track) => {
-									// check everthing needed is present
+									// check everything needed is present
 									if (!track.name || !track.artists || !track.artists.length || !track.playlinks || !track.playlinks.length) { return; }
 									trackItems.push({
 										youTube: track.playlinks[0].id,

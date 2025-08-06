@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/01/24
+//06/08/25
 
 /* exported groupByTags */
 
@@ -63,7 +63,7 @@ function groupByTags({
 				plsItemsBelow.MakeIntersection(clone);
 				if (plsItemsBelow.Count === totalTracks) { idx = range(end, focusIdx, 1); }
 			}
-			if (end < 0 || !idx.lenth) {
+			if (end < 0 || !idx.length) {
 				const plsItemsOver = new FbMetadbHandleList(plsItems.slice(focusIdx, focusIdx + totalTracks));
 				plsItemsOver.Sort();
 				plsItemsOver.MakeIntersection(clone);

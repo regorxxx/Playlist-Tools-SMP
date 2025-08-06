@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/04/25
+//06/08/25
 
 /*
 	Top Rated Tracks
@@ -35,7 +35,7 @@ function topRatedTracks({
 } = {}) {
 	if (!Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('topRatedTracks: playlistLength (' + playlistLength + ') must be greater than zero'); return; }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); } // Sanity check
-	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return; }
+	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery); return; } // eslint-disable-line no-unused-vars
 	const test = bProfile ? new FbProfiler('topRatedTracks') : null;
 	// Check rating tag
 	let bFunc = false;
@@ -52,7 +52,7 @@ function topRatedTracks({
 		let handleList_i;
 		query = forcedQuery.length ? '(' + query + ') AND (' + forcedQuery + ')' : query;
 		try { handleList_i = fb.GetQueryItems(fb.GetLibraryItems(), query); } // Sanity check
-		catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return; }
+		catch (e) { fb.ShowPopupMessage('Query not valid. Check query:\n' + query); return; } // eslint-disable-line no-unused-vars
 		//Find and remove duplicates
 		if (checkDuplicatesBy !== null && checkDuplicatesBy.length) {
 			handleList_i = removeDuplicates({ handleList: handleList_i, sortOutput: globTags.sortPlayCount, checkKeys: checkDuplicatesBy, sortBias: checkDuplicatesBias, bAdvTitle, bMultiple });
