@@ -1,6 +1,6 @@
-﻿Keyboard Shortcuts is an UI-only feature bypassing SMP limits 
+﻿Keyboard Shortcuts is an UI-only feature bypassing SMP limits
 which makes use of SMP dynamic menus and a json helper file
-to display the keys associated to entries. 
+to display the keys associated to entries.
 
 First enable dynamic menus at Playlist Tools:
 'Script integration\SMP Dynamic menu\Create SMP dynamic menus'.
@@ -12,9 +12,9 @@ File\Preferences\Keyboard shortcuts
 You may check the shortcut is show tabbed at the right at the main menu:
 'File\Spider Monkey Panel\Script Commands\[Panel Name]\...'
 
-Once the keyboard shortcut is set and working, edit the shortcuts file 
-to reflect the keys associated to the menu entry. Once an entry 
+Once the keyboard shortcut is set and working, edit the shortcuts file
+to reflect the keys associated to the menu entry. Once an entry
 is properly set, the shortcut will also be shown at the button's menu,
 similar to the Foobar main menu above.
 
-AFTER EDITING SHORCUTS FILE, CHANGES WILL BE REFLECTED ON PANEL RELOAD.
+AFTER EDITING SHORtCUTS FILE, CHANGES WILL BE REFLECTED ON PANEL RELOAD.

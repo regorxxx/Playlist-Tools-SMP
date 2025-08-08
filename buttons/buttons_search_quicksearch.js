@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/25
+//07/08/25
 
 /*
 	Quicksearch for same....
@@ -446,11 +446,13 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 					return {
 						name: queryObj.name.replace('Same', 'By'),
 						// Reduce length in 1 for dates, so it matches the same decade!
+						/* cspell:disable */
 						query: (
 							/DATE/i.test(queryObj.query)
 								? '"$puts(val,' + dynTF + ')$puts(vallen,$len($get(val)))$puts(min,$sub($min($get(vallen),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
 								: '"$puts(val,' + dynTF + ')$puts(vallen,$len($get(val)))$puts(min,$min($get(vallen),$if2($strchr($get(val),\'(\'),$get(vallen)),$if2($strchr($get(val),\'[\'),$get(vallen)),$len(' + statTF + ')))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
 						) + (queryObj.queryPost || '')
+						/* cspell:enable */
 					};
 				}
 			}
@@ -525,11 +527,11 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 							...(notMultTags(queryObj)
 								? [
 									'(',
-									(
+									( /* cspell:disable */
 										/DATE/i.test(queryObj.query)
 											? '"$puts(val,' + dynTF + ')$puts(vallen,$len($get(val)))$puts(min,$sub($min($get(vallen),$len(' + statTF + ')),1))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
 											: '"$puts(val,' + dynTF + ')$puts(vallen,$len($get(val)))$puts(min,$min($get(vallen),$if2($strchr($get(val),\'(\'),$get(vallen)),$if2($strchr($get(val),\'[\'),$get(vallen)),$len(' + statTF + ')))$stricmp($left($get(val),$get(min)),$left(' + statTF + ',$get(min)))" IS 1'
-									) + (queryObj.queryPost || ''),
+									) + (queryObj.queryPost || ''), /* cspell:enable */
 									') OR ',
 								]
 								: []

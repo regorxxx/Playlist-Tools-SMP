@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/25
+//07/08/25
 
 /*
 	Volume controls and display
@@ -325,8 +325,8 @@ addButton({
 					}
 				}
 			},
-			on_key_up: function (parent, vkey) {
-				if (this.isInput && vkey === VK_RETURN) { this.applyInput(); this.throttleRefresh(); }
+			on_key_up: function (parent, vKey) {
+				if (this.isInput && vKey === VK_RETURN) { this.applyInput(); this.throttleRefresh(); }
 			},
 			on_char: function (parent, code) {
 				if (this.isInput) {

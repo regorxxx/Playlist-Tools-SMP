@@ -1,6 +1,6 @@
 ﻿Sorts tracks by key using Camelot Wheel notation, translating first keys
-to it (A#m -> 3A). Note there is no way to sort tracks by Key using 
-standard title formating since keys don't follow an ordered set with 
+to it (A#m -> 3A). Note there is no way to sort tracks by Key using
+standard title formatting since keys don't follow an ordered set with
 numbers and letters which may be naturally sorted.
 
 Uses notation described at 'camelotWheel' on camelot_wheel_xxx.js to sort

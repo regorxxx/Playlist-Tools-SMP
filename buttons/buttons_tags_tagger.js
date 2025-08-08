@@ -1,5 +1,5 @@
 ﻿'use strict';
-//03/08/25
+//07/08/25
 
 /*
 	Automatic tagging...
@@ -83,7 +83,7 @@ buttonsBar.list.push(newButtonsProperties);
 					menu.newSeparator();
 					{
 						const subMenu = menu.newMenu('Available tools', void (0), !this.tAut.isRunning() ? MF_STRING : MF_GRAYED);
-						menu.newEntry({ menuName: subMenu, entryText: 'Toogle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED });
+						menu.newEntry({ menuName: subMenu, entryText: 'Toggle (click) / Single (Shift + click):', func: null, flags: MF_GRAYED });
 						menu.newSeparator(subMenu);
 						this.tAut.tools.forEach((tool) => {
 							const key = tool.key;

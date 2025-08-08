@@ -9,16 +9,16 @@ Usage:
 	- Use any menu entry as desired.
 	- ...
 	- Stop recording and save.
-	
+
 Limitations:
 	- Saves clicked entries by name. i.e. They must be unique.
 	- Entries which use invisible IDs to not duplicate submenus can not
 	be used. Currently:
 		- Selection \ Find now playing track in... (only when
-		sublists are created)
-		- Selection \ Find track(s) in... (only when sublists
+		sub-lists are created)
+		- Selection \ Find track(s) in... (only when sub-lists
 		are created)
-		- Selection \ Remove track(s) from... (only when sublists
+		- Selection \ Remove track(s) from... (only when sub-lists
 		are	created)
 		- (ALL) \ Remove entry from list... (no need to delete menu
 		entries with macros anyway!)

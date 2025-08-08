@@ -1,9 +1,9 @@
 ﻿'use strict';
-//17/03/25
+//07/08/25
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
-	You can configure the number of tracks at properties panel. Also forced query to prefilter tracks.
+	You can configure the number of tracks at properties panel. Also forced query to pre-filter tracks.
  */
 
 /* global menu_panelProperties:readable */
@@ -26,7 +26,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\main\\search\\search_same_by.js');
 /* global searchSameByQueries:readable */
 
-var prefix = 'ssbytq'; // NOSONAR[global]
+var prefix = 'ssbytq'; // NOSONAR[global] /* cspell:disable-line */
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
 try { window.DefineScript('Search Same By Tags (Queries) Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars

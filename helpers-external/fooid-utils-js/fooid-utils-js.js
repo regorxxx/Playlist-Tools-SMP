@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/01/24
+//07/08/25
 
 /* exported fooidUtils */
 
@@ -68,7 +68,7 @@ const fooidUtils = {
 		}
 		return corrXY;
 	},
-	// Return cross correlation, with b offset from listx
+	// Return cross correlation, with b offset from list
 	crossCorrelation: function crossCorrelation(a, b, offset) {
 		if (offset > 0) {
 			a = a.slice(offset);
@@ -120,11 +120,11 @@ const fooidUtils = {
 	unpackFits: function unpackFits(buffer) {
 		let i = 0;
 		const fits = [];
-		for (let bytebuff of buffer) {
-			fits[i] = ((bytebuff >> 6) & 0x3);
-			fits[i+1] = ((bytebuff >> 4) & 0x3);
-			fits[i+2] = ((bytebuff >> 2) & 0x3);
-			fits[i+3] = ((bytebuff >> 0) & 0x3);
+		for (let byteBuff of buffer) {
+			fits[i] = ((byteBuff >> 6) & 0x3);
+			fits[i+1] = ((byteBuff >> 4) & 0x3);
+			fits[i+2] = ((byteBuff >> 2) & 0x3);
+			fits[i+3] = ((byteBuff >> 0) & 0x3);
 			i += 4;
 		}
 		return fits;
@@ -187,12 +187,12 @@ const fooidUtils = {
 
 // Helpers
 if (typeof round === 'undefined') {
-	var round = function round(floatnum, decimals){ // NOSONAR [global]
+	var round = function round(floatNum, decimals){ // NOSONAR [global]
 		let result;
 		if (decimals > 0) {
-			if (decimals === 15) {result = floatnum;}
-			else {result = Math.round(floatnum * Math.pow(10, decimals)) / Math.pow(10, decimals);}
-		} else {result =  Math.round(floatnum);}
+			if (decimals === 15) {result = floatNum;}
+			else {result = Math.round(floatNum * Math.pow(10, decimals)) / Math.pow(10, decimals);}
+		} else {result =  Math.round(floatNum);}
 		return result;
 	};
 }

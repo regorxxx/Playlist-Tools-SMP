@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/12/23
+//07/08/25
 
 /* exported _Macros */
 
@@ -34,7 +34,7 @@ function _Macros(
 		let bAsync = false;
 		while (!name || stack.findIndex((macro) => { return macro.name === name; }) !== -1) {
 			try { name = utils.InputBox(window.ID, 'Enter name', window.Name + ': Macros', 'My macro', true); }
-			catch (e) { return; }
+			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!name.length) { return; }
 			if (stack.findIndex((macro) => { return macro.name === name; }) !== -1) { fb.ShowPopupMessage('Already exists a macro with same name', window.Name + ': Macros'); }
 		}

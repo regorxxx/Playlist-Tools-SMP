@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//07/08/25
 
 /*
 	Search same by v 1.0 24/08/22
@@ -82,7 +82,7 @@ include('..\\helpers\\helpers_xxx_tags.js');
 include('..\\main\\search\\search_same_by.js');
 /* global searchSameByCombs:readable */
 
-var prefix = 'ssbytc'; // NOSONAR[global]
+var prefix = 'ssbytc'; // NOSONAR[global] /* cspell:disable-line */
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
 
 try { window.DefineScript('Search Same By Tags (Combinations) Button', { author: 'regorxxx', version, features: { drag_n_drop: false } }); } catch (e) { /* May be loaded along other buttons */ } // eslint-disable-line no-unused-vars

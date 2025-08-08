@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//07/08/25
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -85,7 +85,7 @@ addButton({
 							popup: 'When this option is enabled, multi-value tags are parsed independently and a track may be considered a duplicate if at least one of those values match (instead of requiring all to match in the same order).\n\nSo for \'[ARTIST, DATE, TITLE]\' tags, these are duplicates with this option enabled:\n' +
 								'\nJimi Hendrix - 1969 - Blabla' +
 								'\nJimi Hendrix experience, Jimi Hendrix - 1969 - Blabla' +
-								'\nBand of Gypys, Jimi Hendrix - 1969 - Blabla' +
+								'\nBand of Gypsys, Jimi Hendrix - 1969 - Blabla' +
 								'\n\nWith multi-value parsing disabled, these are considered non-duplicated tracks since not all artists match.'
 						},
 						presets: { bHide: true }

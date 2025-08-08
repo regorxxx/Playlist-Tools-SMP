@@ -1,9 +1,9 @@
 ﻿Checks all tag values from selected tracks for spelling errors or
 misplacing values in wrong tags. Checks configured tags for easily
-recognizable errors (empty tags, blank spaces, multivalued tags not
+recognizable errors (empty tags, blank spaces, multi-valued tags not
 split), spelling, etc.
 
-By analyzig tags with lower freq. of apparition (*) and comparing them
+By analyzing tags with lower freq. of apparition (*) and comparing them
 to the entire tag value list by their similarity (Levenshtein distance),
 the script checks for both spelling and misplacing errors. Anything similar
 is considered an alternative value. i.e. it checks that tagA's value (rock)
@@ -31,16 +31,16 @@ Dictionaries
 	https://github.com/wooorm/dictionaries
 
 	Only *.aff and *.dic files are needed.They must be named the
-	same than the parent folder, which must be added to: 
+	same than the parent folder, which must be added to:
 	'.\helpers-external\typo\dictionaries\'
 
-	For ex: 
+	For ex:
 	[dictionaries]
 	   |
 	   [en_US]
 	      |- en_US.aff
 	      |- en_US.dic
-  
+
 Notes
 -----
 	- False positives are expected. I.e. a rare tag only present on a

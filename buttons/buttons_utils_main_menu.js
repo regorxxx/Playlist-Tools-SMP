@@ -1,5 +1,5 @@
 ﻿'use strict';
-//19/05/25
+//07/08/25
 
 /*
 	Main Menu shortcut
@@ -19,7 +19,7 @@ include('..\\helpers\\menu_xxx.js');
 include('..\\helpers\\menu_xxx_extras.js');
 /* global _createSubMenuEditEntries:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isJSON:readable, isString:readable, _p:readable, isStringWeak:readable */
+/* global isBoolean:readable, isJSON:readable, isString:readable, _p:readable, isStringWeak:readable, _b:readable, doOnce:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
@@ -188,7 +188,7 @@ buttonsBar.list.push(newButtonsProperties);
 								this.buttonsProperties.indicator[1] = JSON.stringify(indicator);
 								overwriteProperties(this.buttonsProperties); // Force overwriting
 								if (indicator.enabled) {
-									fb.ShowPopupMessage('Button\'s icon will be highlighted according to tracked state. States can be saved between sessions using the apropiate config.\n\nNote button states should be enabled after syncing with the desired configuration/action to track.\n\ni.e. The default action for the button switches different playback statistics settings. In order to track such settings, enable button states while they are disabled (the button is set to disabled by default at init). Then click on the button to enable them back (while state is set to enabled at the same time). As result, both the button and the desired settings to track will be in sync.', 'Main Menu Shortcut');
+									fb.ShowPopupMessage('Button\'s icon will be highlighted according to tracked state. States can be saved between sessions using the appropriate config.\n\nNote button states should be enabled after syncing with the desired configuration/action to track.\n\ni.e. The default action for the button switches different playback statistics settings. In order to track such settings, enable button states while they are disabled (the button is set to disabled by default at init). Then click on the button to enable them back (while state is set to enabled at the same time). As result, both the button and the desired settings to track will be in sync.', 'Main Menu Shortcut');
 								} else {
 									this.switchActive(false);
 									this.buttonsProperties.state[1] = this.active;
@@ -303,7 +303,7 @@ buttonsBar.list.push(newButtonsProperties);
 						if (!bValidState) {
 							const menuState = tryMethod('IsMainMenuCommandChecked', fb, null)(entry.command);
 							if (menuState !== null && menuState !== this.active) {
-								console.log('Main Menu button: fixing entry state missmatch...');
+								console.log('Main Menu button: fixing entry state mismatch...');
 								return;
 							}
 						}
@@ -360,7 +360,7 @@ buttonsBar.list.push(newButtonsProperties);
 					}).filter((e) => e.check !== null);
 					const bValid = new Set(results.map((e) => e.check)).size === 1;
 					if (!bValid && bPopup) {
-						doOnce('Menu check missmatch', () => fb.ShowPopupMessage(
+						doOnce('Menu check mismatch', () => fb.ShowPopupMessage(
 							'Main menu button: ' + this.buttonsProperties.customName[1] +
 							'\nEntries:' +
 							'\n\t' + results.map((e) => e.command + ' -> ' + e.check).join('\n\t') +
