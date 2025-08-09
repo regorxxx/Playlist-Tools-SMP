@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/25
+//09/08/25
 
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, globTags:readable */
@@ -74,7 +74,9 @@ essentia.calculateKey = function calculateKey({
 		calcKEY(count);
 	}
 	const failedItemsLen = failedItems.length;
-	(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Key extractor');
+	const report = totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : '');
+	if (bQuiet) { console.log('Essentia Key extractor:\n\t' + report.replace(/\n/g, '\n\t')); }
+	else { console.popup(report, 'Essentia Key extractor'); }
 	if (bProfile) { profile.Print('Save Key tags to files - completed in '); }
 	return bDone;
 };
@@ -177,7 +179,9 @@ essentia.calculateHighLevelTags = function calculateHighLevelTags({
 		calcTag(count);
 	}
 	const failedItemsLen = failedItems.length;
-	(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Essentia Music extractor');
+	const report = totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : '');
+	if (bQuiet) { console.log('Essentia Music extractor:\n\t' + report.replace(/\n/g, '\n\t')); }
+	else { console.popup(report, 'Essentia Music extractor'); }
 	if (bProfile) { profile.Print('Save high level tags to files - completed in '); }
 	return bDone;
 };

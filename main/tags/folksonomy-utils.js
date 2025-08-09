@@ -1,5 +1,5 @@
 'use strict';
-//06/08/25
+//09/08/25
 
 /* exported folksonomyUtils */
 
@@ -63,7 +63,9 @@ const folksonomyUtils = {
 			calcFOLKSONOMY(count);
 		}
 		const failedItemsLen = failedItems.length;
-		(bQuiet ? console.log : console.popup)(totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : ''), 'Folksonomy');
+		const report = totalTracks + ' items processed.\n' + totalItems + ' items tagged.\n' + failedItemsLen + ' items failed.' + (failedItemsLen ? '\n\nList of failed items:\n' + failedItems.join('\n') : '');
+		if (bQuiet) { console.log('Folksonomy:\n\t' + report.replace(/\n/g, '\n\t')); }
+		else { console.popup(report, 'Folksonomy'); }
 		if (bProfile) { profile.Print('Save Folksonomy tags to files - completed in '); }
 		return bDone;
 	},
