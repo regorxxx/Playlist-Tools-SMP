@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/07/25
+//11/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -704,7 +704,7 @@
 									menu.newSeparator(subMenuNameSecond);
 									menu.newEntry({
 										menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
-											const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
+											const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', scriptName + ': ' + name, menu_properties.smartShuffleSortBias[3]);
 											if (input === null) { return; }
 											menu_properties.smartShuffleSortBias[1] = input;
 											overwriteMenuProperties(); // Updates panel

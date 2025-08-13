@@ -1,25 +1,19 @@
 ﻿'use strict';
-//25/11/24
+//13/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable,  isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, doOnce:readable, debounce:readable, globQuery:readable, globQuery:readable, _deleteFile:readable, capitalize:readable, capitalizeAll:readable, focusFlags:readable, popup:readable, WshShell:readable, isFoobarV2:readable, isArrayEqual:readable, _explorer:readable, _run:readable, _copyFile:readable, _open:readable, utf8:readable, _p:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable,  isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, doOnce:readable, debounce:readable, globQuery:readable, globQuery:readable, _deleteFile:readable, capitalize:readable, capitalizeAll:readable, focusFlags:readable, popup:readable, WshShell:readable, isFoobarV2:readable, isArrayEqual:readable, _explorer:readable, _run:readable, _copyFile:readable, _open:readable, utf8:readable */
 
 // Similar by...Graph\Dyngenre\Weight
 {
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
-	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
+	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
 		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
-			readmes['Search similar by... (main)'] = folders.xxx + 'helpers\\readme\\search_by_distance.txt';
-			readmes['Search similar by... (recipes\\themes)'] = folders.xxx + 'helpers\\readme\\search_by_distance_recipes_themes.txt';
-			readmes['Search similar by... (similar artists)'] = folders.xxx + 'helpers\\readme\\search_by_distance_similar_artists.txt';
-			readmes['Search similar by... (user descriptors)'] = folders.xxx + 'helpers\\readme\\search_by_distance_user_descriptors.txt';
-			readmes['Search similar by Graph'] = folders.xxx + 'helpers\\readme\\search_by_distance_graph.txt';
-			readmes['Search similar by Dyngenre'] = folders.xxx + 'helpers\\readme\\search_by_distance_dyngenre.txt';
-			readmes['Search similar by Weight'] = folders.xxx + 'helpers\\readme\\search_by_distance_weight.txt';
+			readmes[sbd.name] = sbd.readmes.main;
 			// Delete unused properties
 			const toDelete = ['forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'graphDistance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'bInversePick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInverseListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesByTag', 'bSmartShuffle', 'bSmartShuffleAdvc', 'smartShuffleSortBias', 'artistRegionFilter', 'genreStyleRegionFilter'];
 			let toMerge = {}; // Deep copy
@@ -31,7 +25,7 @@
 			});
 			// Run once at startup
 			deferFunc.push({
-				name: 'Search by Distance initialization', func: () => {
+				name: sbd.name + ' initialization', func: () => {
 					// Update cache with user set tags and genre/style check
 					doOnce('Update SBD cache', debounce(updateCache, 3000))({ properties: menu_properties });
 					if (!sbd.panelProperties.firstPopup[1]) {
@@ -78,7 +72,7 @@
 				});
 			};
 			{	// -> Special playlists
-				menu.newEntry({ menuName: specialMenu, entryText: 'Based on Search by Distance:', func: null, flags: MF_GRAYED });
+				menu.newEntry({ menuName: specialMenu, entryText: 'Based on ' + sbd.name + ':', func: null, flags: MF_GRAYED });
 				const selArgs = [
 					{ name: 'sep' },
 					{
@@ -139,7 +133,7 @@
 			{	// -> Config menu
 				if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 					{
-						const subMenu = menu.newMenu('Search by Distance', configMenu);
+						const subMenu = menu.newMenu(sbd.name, configMenu);
 						{ 	// Find genre/styles not on graph
 							menu.newEntry({
 								menuName: subMenu, entryText: 'Find genres/styles not on Graph', func: () => {
@@ -156,8 +150,9 @@
 							menu.newEntry({
 								menuName: subMenu, entryText: 'Debug Graph (check console)', func: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('graphDebug') : null;
-									graphDebug(sbd.allMusicGraph, true); // Show popup on pass
-									music_graph_descriptors_culture.debug(sbd.allMusicGraph);
+									// Show popup on pass
+									graphDebug(sbd.allMusicGraph, true);
+									music_graph_descriptors_culture.debug(true);
 									if (defaultArgs.bProfile) { profiler.Print(); }
 								}
 							});
@@ -165,10 +160,8 @@
 							menu.newEntry({
 								menuName: subMenu, entryText: 'Run distance tests (check console)', func: () => {
 									const profiler = defaultArgs.bProfile ? new FbProfiler('testGraph') : null;
-									[testGraphNodes, testGraphNodeSets, music_graph_descriptors_culture.distanceDebug].forEach((f, i) => {
-										console.log('-'.repeat(60) + '-> Test ' + _p(i + 1));
-										f(sbd.allMusicGraph);
-									});
+									[testGraphNodes, testGraphNodeSets, testGraphNodeSetsWithPath].forEach((f) => f(sbd.allMusicGraph, sbd.influenceMethod));
+									[testGraphCulture].forEach((f) => f(music_graph_descriptors_culture));
 									if (defaultArgs.bProfile) { profiler.Print(); }
 								}
 							});
@@ -218,7 +211,7 @@
 													menu.newEntry({
 														menuName: sm, entryText, func: () => {
 															const example = '["GENRE","LASTFM_GENRE","GENRE2"]';
-															const input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s): (JSON)\n\nFor example:\n' + example, 'Search by distance', example, void (0), true);
+															const input = Input.json('array strings', tag.tf, 'Enter tag(s) or TF expression(s): (JSON)\n\nFor example:\n' + example, sbd.name, example, void (0), true);
 															if (input === null) { return; }
 															if (Object.hasOwn(defaultArgs, key)) { defaultArgs[key] = input; }
 															tag.tf = input;
@@ -227,7 +220,7 @@
 															if (tag.type.includes('graph')) {
 																const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 																if (answer === popup.yes) {
-																	menu.btn_up(void (0), void (0), void (0), 'Search by Distance\\Reset link cache');
+																	menu.btn_up(void (0), void (0), void (0), sbd.name + '\\Reset link cache');
 																}
 															}
 														}
@@ -252,7 +245,7 @@
 															if (key === 'bAscii') {
 																const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 																if (answer === popup.yes) {
-																	menu.btn_up(void (0), void (0), void (0), 'Search by Distance\\Reset link cache');
+																	menu.btn_up(void (0), void (0), void (0), sbd.name + '\\Reset link cache');
 																}
 															} else if (key === 'bTagsCache') {
 																if (propObj.bTagsCache[1]) {
@@ -265,7 +258,7 @@
 																	tagsCache.load();
 																	const answer = WshShell.Popup('Reset tags cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 																	if (answer === popup.yes) {
-																		menu.btn_up(void (0), void (0), void (0), 'Search by Distance\\Reset tags cache');
+																		menu.btn_up(void (0), void (0), void (0), sbd.name + '\\Reset tags cache');
 																	}
 																} else {
 																	tagsCache.unload();
@@ -290,7 +283,7 @@
 													if (!isArrayEqual(newGraphTags, oldGraphTags)) {
 														const answer = WshShell.Popup('Reset link cache now?\nOtherwise do it manually after all tag changes.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 														if (answer === popup.yes) {
-															menu.btn_up(void (0), void (0), void (0), 'Search by Distance\\Reset link cache');
+															menu.btn_up(void (0), void (0), void (0), sbd.name + '\\Reset link cache');
 														}
 													}
 												}
@@ -313,7 +306,7 @@
 									const file = folders.userHelpers + 'music_graph_descriptors_xxx_user.js';
 									if (!_isFile(file)) {
 										_copyFile(folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx_user.js', file);
-										const readme = _open(folders.xxx + 'helpers\\readme\\search_by_distance_user_descriptors.txt', utf8);
+										const readme = _open(sbd.readmes.descriptors, utf8);
 										if (readme.length) { fb.ShowPopupMessage(readme, 'User descriptors'); }
 									}
 									if (_isFile(file)) { _explorer(file); _run('notepad.exe', file); }
@@ -398,7 +391,7 @@
 									menu.newSeparator(subMenuNameSecond);
 									menu.newEntry({
 										menuName: subMenuNameSecond, entryText: 'Custom TF...', func: () => {
-											const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', 'Search by distance', menu_properties.smartShuffleSortBias[3]);
+											const input = Input.string('string', menu_properties.smartShuffleSortBias[1], 'Enter TF expression:', sbd.name, menu_properties.smartShuffleSortBias[3]);
 											if (input === null) { return; }
 											menu_properties.smartShuffleSortBias[1] = input;
 											overwriteMenuProperties(); // Updates panel
@@ -417,7 +410,7 @@
 			}
 		}
 	} else {
-		menu.newEntry({ menuName: specialMenu, entryText: 'Based on Search by Distance:', func: null, flags: MF_GRAYED });
+		menu.newEntry({ menuName: specialMenu, entryText: 'Based on Music Map:', func: null, flags: MF_GRAYED });
 		menu.newSeparator(specialMenu);
 		menu.newEntry({ menuName: specialMenu, entryText: '-Not installed-', func: null, flags: MF_GRAYED });
 	}

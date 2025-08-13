@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/25
+//11/08/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -66,7 +66,7 @@
 									const input = utils.InputBox(window.ID, 'Enter global query added at playlist creation.\n', scriptName + ': ' + configMenu, menu_properties['forcedQuery'][1]);
 									if (menu_properties['forcedQuery'][1] === input) { return; }
 									try { fb.GetQueryItems(new FbMetadbHandleList(), input); } // Sanity check
-									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName); return; } // eslint-disable-line no-unused-vars
+									catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName + ': ' + configMenu); return; } // eslint-disable-line no-unused-vars
 									defaultArgs.forcedQuery = input;
 									menu_properties['forcedQuery'][1] = input;
 									overwriteMenuProperties(); // Updates panel
@@ -124,7 +124,7 @@
 												input = menu_properties['forcedQuery'][1].length ? _p(menu_properties['forcedQuery'][1]) + input : input;
 											}
 											try { fb.GetQueryItems(new FbMetadbHandleList(), input); } // Sanity check
-											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, 'Search by distance'); return; } // eslint-disable-line no-unused-vars
+											catch (e) { fb.ShowPopupMessage('Query not valid. Check it and add it again:\n' + input, scriptName + ': ' + configMenu); return; } // eslint-disable-line no-unused-vars
 											menu_properties['forcedQuery'][1] = input;
 											overwriteMenuProperties(); // Updates panel
 										}
@@ -176,7 +176,7 @@
 				});
 				menu.newEntry({
 					menuName: subMenuName, entryText: 'Track selection bias...', func: () => {
-						const input = Input.string('string', menu_properties.sortBias[1], 'Enter TF expression for track selection when finding duplicates:\n\nHigher valued tracks will be preferred.', 'Search by distance', globQuery.remDuplBias, void (0), false);
+						const input = Input.string('string', menu_properties.sortBias[1], 'Enter TF expression for track selection when finding duplicates:\n\nHigher valued tracks will be preferred.', scriptName + ': ' + configMenu, globQuery.remDuplBias, void (0), false);
 						if (input === null) { return; }
 						menu_properties.sortBias[1] = input;
 						overwriteMenuProperties(); // Updates panel
@@ -263,7 +263,7 @@
 					entryText: 'async', condFunc: () => {
 						const async = JSON.parse(menu_properties.async[1]);
 						const options = Object.keys(async);
-						const notAvailable = ['Tagger', 'Pools', 'Search by distance', 'Remove duplicates', 'Import track list'];
+						const notAvailable = ['Tagger', 'Pools', 'Music Map', 'Remove duplicates', 'Import track list'];
 						options.forEach((key) => {
 							const bNotAvailable = notAvailable.includes(key);
 							menu.newEntry({
@@ -328,7 +328,7 @@
 					menuName: subMenuName, entryText: 'Show keyboard shortcuts on entries', func: () => {
 						if (!menu_properties.bShortcuts[1]) {
 							const popupText = _open(readmes[configMenu + '\\Keyboard Shortcuts']);
-							popupText && fb.ShowPopupMessage(popupText, scriptName);
+							popupText && fb.ShowPopupMessage(popupText, scriptName + ': ' + configMenu);
 						}
 						menu_properties.bShortcuts[1] = !menu_properties.bShortcuts[1];
 						overwriteMenuProperties(); // Updates panel
