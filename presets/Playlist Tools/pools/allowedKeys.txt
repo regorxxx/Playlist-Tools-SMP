@@ -96,13 +96,13 @@
 |                     |           | UI-only playlists and playlist    |
 | Playlist names      | String    | files may be used                 |
 +---------------------+-----------+-----------------------------------+
-|                     | _KEY_NUM  | Search by distance behavior       |
+|                     | _KEY_NUM  | Music Map behavior                |
 | _SEARCHBYGRAPH_#    |           | Recipe + Theme                    |
 +---------------------+-----------+-----------------------------------+
-|                     | _KEY_NUM  | Search by distance behavior       |
+|                     | _KEY_NUM  | Music Map behavior                |
 | _SEARCHBYWEIGHT_#   |           | Recipe + Theme                    |
 +---------------------+-----------+-----------------------------------+
-|                     | _KEY_NUM  | Search by distance behavior       |
+|                     | _KEY_NUM  | Music Map behavior                |
 | _SEARCHBYDYNGENRE_# |           | Recipe + Theme                    |
 +---------------------+-----------+-----------------------------------+
 
