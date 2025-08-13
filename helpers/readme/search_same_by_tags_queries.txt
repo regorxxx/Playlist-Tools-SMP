@@ -4,17 +4,17 @@ of Search Same by Tags Combinations, where all tag values must be
 matched for every tag given using queries.
 
 Playlist Tools Usage:
-	- The number of output tracks may be set at global config. 
+	- The number of output tracks may be set at global config.
 	- Forced query to pre-filter tracks may be set at global config.
 	- Tags may be set at the appropriate submenu.
 	- Duplicates are filtered by title, artist & date.
 
 Buttons usage:
-	- The number of output tracks may be set at properties panel. 
+	- The number of output tracks may be set at properties panel.
 	- Forced query to pre-filter tracks may be set at properties panel.
 	- Tags may be set at properties panel.
 	- Duplicates may also be filtered using the appropriate setting at
 	properties panel.
 
-Note this ONLY USES already existing tags and queries, it will not 
-calculate similarity or anything else (like Search by Distance).
+Note this ONLY USES already existing tags and queries, it will not
+calculate similarity or anything else (like Music Map).
