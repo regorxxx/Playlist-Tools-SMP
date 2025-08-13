@@ -1,0 +1,278 @@
+{
+	"readme": "Test for Music Map integration. Uses inline recipes and themes. Uses entire library as sources, without global forced query.",
+	"pools": [
+		{
+			"name": "sep"
+		},
+		{
+			"name": "Music Map test",
+			"pool": {
+				"fromPls": {
+					"_SEARCHBYGRAPH_0": 50,
+					"_SEARCHBYWEIGHT_0": 50,
+					"_SEARCHBYDYNGENRE_0": 50
+				},
+				"recipe": {
+					"_SEARCHBYGRAPH_0": {
+						"tags": {
+							"genre": {
+								"weight": 15
+							},
+							"style": {
+								"weight": 10
+							},
+							"dynGenre": {
+								"weight": 0
+							},
+							"mood": {
+								"weight": 5
+							},
+							"key": {
+								"weight": 10,
+								"range": 1
+							},
+							"bpm": {
+								"weight": 5,
+								"range": 25
+							},
+							"date": {
+								"weight": 25,
+								"range": 15
+							},
+							"composer": {
+								"weight": 0
+							},
+							"artistRegion": {
+								"weight": 0,
+								"baseScore": 0
+							},
+							"genreStyleRegion": {
+								"weight": 0
+							}
+						},
+						"scoreFilter": 70,
+						"graphDistance": 100,
+						"bProfile": false,
+						"bBasicLogging": false
+					},
+					"_SEARCHBYWEIGHT_0": {
+						"tags": {
+							"genre": {
+								"weight": 15
+							},
+							"style": {
+								"weight": 10
+							},
+							"dynGenre": {
+								"weight": 0
+							},
+							"mood": {
+								"weight": 5
+							},
+							"key": {
+								"weight": 10,
+								"range": 1
+							},
+							"bpm": {
+								"weight": 5,
+								"range": 25
+							},
+							"date": {
+								"weight": 25,
+								"range": 15
+							},
+							"composer": {
+								"weight": 0
+							},
+							"artistRegion": {
+								"weight": 0,
+								"baseScore": 0
+							},
+							"genreStyleRegion": {
+								"weight": 0
+							}
+						},
+						"scoreFilter": 70,
+						"bProfile": false,
+						"bBasicLogging": false
+					},
+					"_SEARCHBYDYNGENRE_0": {
+						"tags": {
+							"genre": {
+								"weight": 15
+							},
+							"style": {
+								"weight": 10
+							},
+							"dynGenre": {
+								"weight": 15,
+								"range": 1
+							},
+							"mood": {
+								"weight": 5
+							},
+							"key": {
+								"weight": 10,
+								"range": 1
+							},
+							"bpm": {
+								"weight": 5,
+								"range": 25,
+								"scoringDistribution": "NORMAL"
+							},
+							"date": {
+								"weight": 25,
+								"range": 15,
+								"scoringDistribution": "NORMAL"
+							},
+							"composer": {
+								"weight": 0
+							},
+							"artistRegion": {
+								"weight": 0,
+								"baseScore": 0
+							},
+							"genreStyleRegion": {
+								"weight": 0
+							}
+						},
+						"scoreFilter": 70,
+						"bProfile": false,
+						"bBasicLogging": false
+					}
+				},
+				"theme": {
+					"_SEARCHBYGRAPH_0": {
+						"name": "Test",
+						"tags": [
+							{
+								"genre": [
+									"Rock"
+								],
+								"style": [
+									"Southern Rock"
+								],
+								"mood": [
+									"Not acoustic",
+									"Not aggressive",
+									"Electronic",
+									"Not happy",
+									"Not party",
+									"Relaxed",
+									"Sad",
+									"Mellow"
+								],
+								"key": [
+									"Am"
+								],
+								"date": [
+									1975
+								],
+								"bpm": [
+									100
+								],
+								"composer": [
+									"J.J. Cale"
+								],
+								"artistRegion": [],
+								"related": [],
+								"unrelated": [],
+								"folksonomy": []
+							}
+						]
+					},
+					"_SEARCHBYWEIGHT_0": {
+						"name": "Test",
+						"tags": [
+							{
+								"genre": [
+									"Rock"
+								],
+								"style": [
+									"Southern Rock"
+								],
+								"mood": [
+									"Not acoustic",
+									"Not aggressive",
+									"Electronic",
+									"Not happy",
+									"Not party",
+									"Relaxed",
+									"Sad",
+									"Mellow"
+								],
+								"key": [
+									"Am"
+								],
+								"date": [
+									1975
+								],
+								"bpm": [
+									100
+								],
+								"composer": [
+									"J.J. Cale"
+								],
+								"artistRegion": [],
+								"related": [],
+								"unrelated": [],
+								"folksonomy": []
+							}
+						]
+					},
+					"_SEARCHBYDYNGENRE_0": {
+						"name": "Test",
+						"tags": [
+							{
+								"genre": [
+									"Rock"
+								],
+								"style": [
+									"Southern Rock"
+								],
+								"mood": [
+									"Not acoustic",
+									"Not aggressive",
+									"Electronic",
+									"Not happy",
+									"Not party",
+									"Relaxed",
+									"Sad",
+									"Mellow"
+								],
+								"key": [
+									"Am"
+								],
+								"date": [
+									1975
+								],
+								"bpm": [
+									100
+								],
+								"composer": [
+									"J.J. Cale"
+								],
+								"artistRegion": [],
+								"related": [],
+								"unrelated": [],
+								"folksonomy": []
+							}
+						]
+					}
+				},
+				"query": {
+					"_SEARCHBYGRAPH_0": "ALL",
+					"_SEARCHBYWEIGHT_0": "ALL",
+					"_SEARCHBYDYNGENRE_0": "ALL"
+				},
+				"toPls": "Music Map test",
+				"sort": "%playlist_index%",
+				"pickMethod": {
+					"_SEARCHBYGRAPH_0": "random",
+					"_SEARCHBYWEIGHT_0": "random",
+					"_SEARCHBYDYNGENRE_0": "random"
+				}
+			}
+		}
+	]
+}
