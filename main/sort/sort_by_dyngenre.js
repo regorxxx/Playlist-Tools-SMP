@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/05/24
+//11/08/25
 
 /* exported sortByDyngenre */
 /* global globTags:readable */
@@ -11,13 +11,13 @@
 */
 
 include('..\\..\\helpers\\dyngenre_map_xxx.js');
-/* global dyngenreMap:readable */
+/* global dynGenreMap:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global _asciify:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable, sanitizeTagTfo:readable */
 
-const [, , genreStyleMap] = dyngenreMap();
+const [, , genreStyleMap] = dynGenreMap();
 
 
 function sortByDyngenre({
@@ -40,29 +40,29 @@ function sortByDyngenre({
 	const idTfo = '[%PATH%]-[%SUBSONG%]';
 	const ids = fb.TitleFormat(idTfo).EvalWithMetadbs(handleList);
 	const styleGenre = getHandleListTags(handleList, styleGenreTag, { bMerged: true });
-	let dyngenre = [[]];
+	let dynGenre = [[]];
 	for (let i = 0; i < count; i++) {
 		const styleGenre_i = [...(new Set((styleGenre[i] ? styleGenre[i].filter(Boolean) : [])))];
 		const styleGenreLength = styleGenre_i.length;
-		let dyngenreNum = 0;
+		let dynGenreNum = 0;
 		if (styleGenreLength) {
 			for (let j = 0; j < styleGenreLength; j++) {
-				let dyngenre_j = genreStyleMap.get(bAscii ? _asciify(styleGenre_i[j]) : styleGenre_i[j]);
-				if (dyngenre_j) {
+				let dynGenre_j = genreStyleMap.get(bAscii ? _asciify(styleGenre_i[j]) : styleGenre_i[j]);
+				if (dynGenre_j) {
 					let k;
-					let dyngenre_j_length = dyngenre_j.length;
+					let dyngenre_j_length = dynGenre_j.length;
 					for (k = 0; k < dyngenre_j_length; k++) {
-						if (!dyngenre[i]) { dyngenre[i] = []; }
-						dyngenre[i].push(dyngenre_j[k]);
+						if (!dynGenre[i]) { dynGenre[i] = []; }
+						dynGenre[i].push(dynGenre_j[k]);
 					}
 				}
 			}
-			dyngenreNum = dyngenre[i] ? dyngenre[i].length : 0;
+			dynGenreNum = dynGenre[i] ? dynGenre[i].length : 0;
 		}
-		if (dyngenreNum) {
-			dyngenre[i] = dyngenre[i].reduce((prev, next) => { return prev + next; }, 0) / dyngenreNum;
+		if (dynGenreNum) {
+			dynGenre[i] = dynGenre[i].reduce((prev, next) => { return prev + next; }, 0) / dynGenreNum;
 		} else {
-			dyngenre[i] = Infinity; // Not matched tracks are put at the end
+			dynGenre[i] = Infinity; // Not matched tracks are put at the end
 		}
 	}
 	let tfo = '';
@@ -71,11 +71,11 @@ function sortByDyngenre({
 	// Therefore it would require a giant tfo comparing each value and then dividing by total number...
 	// Better to identify each track and assign a value to it.
 	// Also, instead of adding multiple individual if statements, better to nest them (so only those required are evaluated)
-	dyngenre.forEach((val, index) => {
-		const sortVal = -(sortOrder === -1 ? 999999999 - dyngenre[index] : dyngenre[index]);
+	dynGenre.forEach((val, index) => {
+		const sortVal = -(sortOrder === -1 ? 999999999 - dynGenre[index] : dynGenre[index]);
 		tfo += '$if($stricmp(' + idTfo + ',' + sanitizeTagTfo(ids[index]).replace(/,/g, '\',\'') + '),' + sortVal + ',';
 	});
-	dyngenre.forEach(() => { tfo += ')'; }); // Add closures!
+	dynGenre.forEach(() => { tfo += ')'; }); // Add closures!
 	if (bDebug) { console.log(tfo); }
 	plman.UndoBackup(plman.ActivePlaylist);
 	return plman.SortByFormat(playlistIdx, tfo, bSelection);

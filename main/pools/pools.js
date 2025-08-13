@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/06/25
+//11/08/25
 
 /* exported _pools */
 
@@ -8,7 +8,7 @@ include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_file.js');
 /* global _jsonParseFileCheck:readable, utf8:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global _p:readable, _q:readable, range:readable, isString:readable, isArrayEqual:readable */
+/* global _p:readable, _q:readable, range:readable, isString:readable, isArrayEqual:readable, forEachNested:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global addLock:readable, removeLock:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists_files.js');
@@ -242,7 +242,7 @@ function _pools({
 	 * @kind method
 	 * @memberof _pools
 	 * @param {object} pool - JSON parsed pool preset.
-	 * @param {object} properties - Properties object-like for Search By Distance processing. Can be skipped otherwise.
+	 * @param {object} properties - Properties object-like for Music Map processing. Can be skipped otherwise.
 	 * @param {{toPls: boolean}} options - Settings.
 	 * @returns {FbMetadbHandleList}
 	*/
@@ -364,14 +364,11 @@ function _pools({
 						if (!recipe) { return; }
 						// Get reference (instead of selection)
 						const theme = Object.hasOwn(recipe, 'theme') ? '' : pool.theme[plsName];
-						const checks = ['graphDistance'];
 						let bDone = true;
-						checks.forEach((key) => {
-							if (!Object.hasOwn(recipe, key)) {
-								console.log(scriptName + ': source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
-								bDone = false;
-							}
-						});
+						if (!Object.hasOwn(recipe, 'graphDistance')) {
+							console.log(scriptName + ': source recipe is missing \'graphDistance\' (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
+							bDone = false;
+						}
 						if (!bDone) { return; }
 						// Force arguments
 						recipe.bCreatePlaylist = false;
@@ -379,6 +376,9 @@ function _pools({
 						recipe.method = 'GRAPH';
 						recipe.bShowFinalSelection = false;
 						recipe.bBasicLogging = false;
+						forEachNested(recipe, (value, key, obj) => {
+							if (value === null) { obj[key] = Infinity; }
+						});
 						// Apply
 						const [selectedHandlesArray] = await searchByDistance({ properties, theme, recipe });
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
@@ -407,6 +407,9 @@ function _pools({
 						recipe.method = 'WEIGHT';
 						recipe.bShowFinalSelection = false;
 						recipe.bBasicLogging = false;
+						forEachNested(recipe, (value, key, obj) => {
+							if (value === null) { obj[key] = Infinity; }
+						});
 						// Apply
 						const [selectedHandlesArray] = await searchByDistance({ properties, theme, recipe });
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
@@ -427,14 +430,11 @@ function _pools({
 						if (!recipe) { return; }
 						// Get reference (instead of selection)
 						const theme = Object.hasOwn(recipe, 'theme') ? '' : pool.theme[plsName];
-						const checks = ['dyngenreWeight'];
 						let bDone = true;
-						checks.forEach((key) => {
-							if (!Object.hasOwn(recipe, key)) {
-								console.log(scriptName + ': source recipe is missing ' + key + ' (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
-								bDone = false;
-							}
-						});
+						if (!Object.hasOwn(recipe, 'tags') || !Object.hasOwn(recipe.tags, 'dynGenre') || !Object.hasOwn(recipe.tags.dynGenre, 'weight') || recipe.tags.weight === 0) {
+							console.log(scriptName + ': source recipe is missing dynGenre tag weight (' + folders.xxx + 'main\\search_by_distance.js' + ')'); // DEBUG
+							bDone = false;
+						}
 						if (!bDone) { return; }
 						// Force arguments
 						recipe.bCreatePlaylist = false;
@@ -442,6 +442,12 @@ function _pools({
 						recipe.method = 'DYNGENRE';
 						recipe.bShowFinalSelection = false;
 						recipe.bBasicLogging = false;
+						forEachNested(recipe, (value, key, obj) => {
+							if (value === null) { obj[key] = Infinity; }
+						});
+						Object.keys(recipe).forEach((key) => {
+							if (recipe[key] === null) { recipe[key] = Infinity; }
+						});
 						// Apply
 						const [selectedHandlesArray] = await searchByDistance({ properties, theme, recipe });
 						handleListFrom = new FbMetadbHandleList(selectedHandlesArray);
@@ -459,7 +465,7 @@ function _pools({
 						let bDone = false;
 						let plsMatch = {};
 						if (this.bEnablePlsMan && typeof loadPlaylistsFromFolder !== 'undefined') {
-							const libItemsFallback = libItems ||fb.GetLibraryItems();
+							const libItemsFallback = libItems || fb.GetLibraryItems();
 							playlistPath.forEach((path) => { // Find first exact match
 								if (bDone) { return; }
 								const plsArr = loadPlaylistsFromFolder(path);
@@ -513,7 +519,7 @@ function _pools({
 				}
 				sourceCount = handleListFrom.Count;
 				// Remove duplicates
-				// Search by distance output should be already de-duplicated
+				// Music Map output should be already de-duplicated
 				if (this.checkDuplicatesBy.length && !plsName.startsWith('_SEARCHBY')) {
 					handleListFrom = removeDuplicates({ handleList: handleListFrom, checkKeys: this.checkDuplicatesBy, sortBias: this.sortBias, bPreserveSort: true, bAdvTitle: this.bAdvTitle, bMultiple: this.bMultiple });
 				}

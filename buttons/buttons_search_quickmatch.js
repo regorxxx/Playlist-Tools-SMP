@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/07/25
+//11/08/25
 
 /*
 	Quickmatch same....
@@ -319,7 +319,7 @@ function quickmatchMenu() {
 					menu.newEntry({
 						menuName, entryText: bSingle ? queryObj.name + '\t[' + (tagVal.cut(25) || (sel ? 'no tag' : 'no sel')) + ']' : tagVal.cut(25), func: () => {
 							let query = queryJoin(queryObj.tf.map((key) => key + ' IS ' + tagVal), 'OR');
-							// Search by Distance tags
+							// Music Map tags
 							if (queryObj.tf.some((tag) => tag.toUpperCase().includes('LOCALE'))) {
 								// World map tags
 								if (_isFile(filePaths.worldMapArtists)) {
