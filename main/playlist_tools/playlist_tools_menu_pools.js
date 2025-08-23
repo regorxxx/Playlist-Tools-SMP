@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/08/25
+//22/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -189,7 +189,7 @@
 				});
 			}
 			if (bEnableSearchDistance) {	// SBD Pools
-				const menuName = menu.newMenu(name + ' (Music Graph)');
+				const menuName = menu.newMenu(name + ' (Music Map)');
 				const musicGraphPools = [];
 				const scriptPathGraph = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
 				if (_isFile(scriptPathGraph)) {
@@ -202,7 +202,7 @@
 						});
 				}
 				// Menus
-				menu.newEntry({ menuName, entryText: 'Use Music Graph mixes as pools:', func: null, flags: MF_GRAYED });
+				menu.newEntry({ menuName, entryText: 'Use Music Map mixes as pools:', func: null, flags: MF_GRAYED });
 				menu.newSeparator(menuName);
 				menu.newCondEntry({
 					entryText: 'Pools (cond)', condFunc: () => {

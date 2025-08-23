@@ -151,6 +151,7 @@
 - Helpers: general code cleanup on menus internal code. Please report any bug on extra separators or menu entries not working as expected.
 ### Removed
 - Quicksearch: removed entries with multi-value tags on queries on 'Partial match' submenu; they were never supported.
+- Script Integration\SMP Dynamic menu: removed all pools entries at dynamic menus generation.
 ### Fixed
 - Quicksearch: switch active playlist on AutoPlaylist creation.
 - Quickmatch: switch active playlist on AutoPlaylist creation.
