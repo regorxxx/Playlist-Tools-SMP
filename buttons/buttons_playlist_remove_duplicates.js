@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/08/25
+//25/08/25
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -28,7 +28,7 @@ include('..\\helpers\\helpers_xxx_UI.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\main\\filter_and_query\\remove_duplicates.js');
-/* global showDuplicates:readable, removeDuplicates:readable */
+/* global showDuplicates:readable, removeDuplicates:readable, removeDuplicatesAsync:readable */
 
 var prefix = 'rd'; // NOSONAR[global]
 var version = getButtonVersion('Playlist-Tools-SMP'); // NOSONAR[global]
@@ -43,6 +43,7 @@ var newButtonsProperties = { // NOSONAR[global]
 	sortBias: ['Track selection bias', globQuery.remDuplBias, { func: isStringWeak }, globQuery.remDuplBias],
 	bAdvTitle: ['Advanced RegExp title matching', true, { func: isBoolean }, true],
 	bMultiple: ['Partial multi-value tag matching', true, { func: isBoolean }, true],
+	bAsync: ['Asynchronous processing', true, { func: isBoolean }, true],
 	presets: ['Presets', JSON.stringify([
 		{ name: 'By Artist', settings: { checkInputA: '', checkInputB: globTags.artist, checkInputC: '', bAdvTitle: true, bMultiple: true } },
 		{ name: 'By Title', settings: { checkInputA: globTags.title, checkInputB: '', checkInputC: '', bAdvTitle: true, bMultiple: true } },
@@ -167,14 +168,22 @@ addButton({
 											delete preset[k];
 										}
 									});
-									removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false, ...preset });
+									if (this.buttonsProperties.bAsync[1]) {
+										removeDuplicatesAsync({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false, ...preset });
+									} else {
+										removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false, ...preset });
+									}
 								}
 							});
 						}
 					});
 					menu.btn_up(this.currX, this.currY + this.currH);
 				} else {
-					removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+					if (this.buttonsProperties.bAsync[1]) {
+						removeDuplicatesAsync({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+					} else {
+						removeDuplicates({ checkKeys, sortBias, bAdvTitle, bMultiple, bProfile: typeof menu_panelProperties !== 'undefined' ? menu_panelProperties.bProfile[1] : false });
+					}
 				}
 			}
 		}, description: function () {
