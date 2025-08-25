@@ -1,0 +1,6 @@
+Provides Dynamic Range values (DUI).
+DR is associated to %DYNAMIC RANGE% tag; adjust as needed if using other tags.
+
+---------------------- At Playlist View\Custom Columns (DUI) ----------------------
+
+%DYNAMIC RANGE%

@@ -1,4 +1,5 @@
 Provides Dynamic Range in Loudness Units from tags (DUI). Values may be calculated with MusicBee's plugin mb_loudness_analyzer.
+LRA is associated to %REPLAYGAIN_TRACK_RANGE% tag; adjust as needed if using other tag.
 
 ---------------------- At Playlist View\Custom Columns (DUI) ----------------------
 

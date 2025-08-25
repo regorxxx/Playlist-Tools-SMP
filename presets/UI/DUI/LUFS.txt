@@ -1,4 +1,5 @@
 Provides Loudness Units Full Scale from replay gain values (DUI).
+LUFS is associated to %REPLAYGAIN_TRACK_PEAK_DB% and %REPLAYGAIN_TRACK_GAIN% tags; adjust as needed if using other tags.
 
 ---------------------- At Playlist View\Custom Columns (DUI) ----------------------
 
