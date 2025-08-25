@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/25
+//25/08/25
 
 /*
 	Automatic tagging...
@@ -101,11 +101,11 @@ function Tagger({
 			bQuiet: false
 		},
 		{
-			key: 'tpScan', tag: ['REPLAYGAIN_ALBUM_TRUE_PEAK', 'REPLAYGAIN_TRACK_TRUE_PEAK'],
+			key: 'tpScan', tag: ['REPLAYGAIN_ALBUM_TRUE_PEAK', 'REPLAYGAIN_TRACK_TRUE_PEAK', 'TRUEPEAK_SCANNER_TRACK_GAIN', 'TRUEPEAK_SCANNER_ALBUM_GAIN', 'TRUEPEAK_SCANNER_PEAK_POSITION', 'TRUEPEAK_SCANNER_CLIPPED_SAMPLES', 'TRUEPEAK_SCANNER_CLIPPED_SAMPLES_ALBUM', 'REPLAYGAIN_TRACK_RANGE', 'REPLAYGAIN_ALBUM_RANGE', 'TRUEPEAK_SCANNER_TRACK_MAX_LUFS_M', 'TRUEPEAK_SCANNER_ALBUM_MAX_LUFS_M', 'TRUEPEAK_SCANNER_TRACK_MAX_LUFS_S', 'TRUEPEAK_SCANNER_ALBUM_MAX_LUFS_S', 'TRUEPEAK_SCANNER_TRACK_LUFS_I', 'TRUEPEAK_SCANNER_ALBUM_LUFS_I', 'TRUEPEAK_SCANNER_TRACK_PLR', 'TRUEPEAK_SCANNER_ALBUM_PLR', 'TRUEPEAK_SCANNER_TRACK_RMS', 'TRUEPEAK_SCANNER_TRACK_BPS', 'TRUEPEAK_SCANNER_ALBUM_BPS', 'TRUEPEAK_SCANNER_ALBUM_HDCD'],
 			title: 'True Peak Scanner',
 			bAvailable: utils.CheckComponent('foo_truepeak', true),
-			menu: ['ReplayGain/Scan True Peaks and Positions (as albums)'],
-			menuRemove: ['ReplayGain/Remove True Peak information from files'],
+			menu: ['True Peak Scanner/Run TPS as albums'],
+			menuRemove: ['True Peak Scanner/Remove TPS information from tracks'],
 			bDefault: false,
 			bQuiet: false
 		},

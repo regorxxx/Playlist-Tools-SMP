@@ -127,6 +127,7 @@
 - Other tools\Tagger: now uses the global tag remap set by user ('[foobar_profile]\foobar2000\js_data\presets\global\globTags.json') for danceness and LRA tags.
 - Other tools\Tagger: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
 - Other tools\Tagger: added more checks for incompatible tools or settings.
+- Other tools\Tagger: updated for compatibility with latest True Peak Scanner updates.
 - Buttons: 'buttons_tags_automation.js' renamed to 'buttons_tags_tagger.js'. And button name from 'Auto. Tags' to 'Tagger', which is shorter and more clear. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'buttons_device_selector.js' renamed to 'buttons_device_switcher.js'. Path handling is automatically remapped by the script (since the button file now has a different file name).
 - Buttons: 'utils_main_menu' button now displays the current state of main menu entries on tooltip (when button states are enabled).
