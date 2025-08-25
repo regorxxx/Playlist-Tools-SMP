@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/07/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable */
 
@@ -11,7 +11,7 @@
 	/* global dynamicQuery:readable */
 	if (_isFile(scriptPath)) {
 		const name = 'Dynamic Queries';
-		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\dynamic_query.txt';
 			forcedQueryMenusEnabled[name] = false;

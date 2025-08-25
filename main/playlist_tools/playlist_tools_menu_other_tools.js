@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/06/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -8,7 +8,7 @@
 // Other tools
 {
 	const name = 'Other tools';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Check tags
@@ -16,7 +16,7 @@
 			/* global checkTags_properties:readable, checkTags:readable, addTagsToExclusion:readable, dictSettings:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Check tags';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\check_library_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
@@ -184,7 +184,7 @@
 			/* global Tagger:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Tagger';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tagger.txt';
 					const tAut = new Tagger();
@@ -273,7 +273,7 @@
 			/* global findDeadItems:readable, playlistReviveAll:readable, playlistRevive:readable, selectDeadItems:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Playlist Revive';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\playlist_revive.txt';
 					{	// Submenu
@@ -330,7 +330,7 @@
 			/* global ImportTextPlaylist:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Import track list';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\import_text_playlist.txt';
 					{	// Submenu
@@ -451,7 +451,7 @@
 			/* global PlsHistory:readable, getPlaylistIndexArray:readable,  */
 			if (_isFile(scriptPath)) {
 				const name = 'Playlist History';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					const plsHistory = new PlsHistory();
 					const subMenuName = menu.newMenu(name, menuName);

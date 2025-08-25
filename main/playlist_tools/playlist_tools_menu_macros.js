@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/08/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
 
@@ -8,7 +8,7 @@
 // Macros
 {
 	const name = 'Macros';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		const scriptPath = folders.xxx + 'helpers\\menu_xxx_macros.js';
 		/* global _Macros:readable */
 		if (_isFile(scriptPath)) {

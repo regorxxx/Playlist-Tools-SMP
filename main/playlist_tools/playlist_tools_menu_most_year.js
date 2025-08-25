@@ -1,5 +1,5 @@
 ﻿'use strict';
-//16/06/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, forcedQueryMenusEnabled:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
 
@@ -13,7 +13,7 @@
 	/* global topTracks:readable, topRatedTracks:readable,  */
 	if (isEnhPlayCount && _isFile(scriptPath)) {
 		const name = 'Most played Tracks at';
-		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks_from_date.txt';
 			forcedQueryMenusEnabled[name] = true;
@@ -121,7 +121,7 @@
 		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 	} else if (isPlayCount && _isFile(scriptPathElse)) {
 		const name = 'Most played Tracks';
-		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 			readmes[name] = folders.xxx + 'helpers\\readme\\top_tracks.txt';
 			// All years
 			include(scriptPathElse);
@@ -147,7 +147,7 @@
 				const scriptPath = folders.xxx + 'main\\search\\top_tracks.js';
 				if (_isFile(scriptPath)) {
 					const name = namePlay;
-					if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+					if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 						include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 						readmes[name] = folders.xxx + 'helpers\\readme\\top_rated_tracks.txt';
 						forcedQueryMenusEnabled[name] = true;
@@ -216,7 +216,7 @@
 				const scriptPath = folders.xxx + 'main\\search\\top_rated_tracks.js';
 				if (_isFile(scriptPath)) {
 					const name = nameRate;
-					if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+					if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 						include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 						readmes[name] = folders.xxx + 'helpers\\readme\\top_rated_tracks.txt';
 						forcedQueryMenusEnabled[name] = true;

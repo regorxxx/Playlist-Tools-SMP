@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/11/24
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, lastActionEntry:readable , newReadmeSep:readable */
 
@@ -8,7 +8,7 @@
 // Last action
 {
 	const name = 'Last action';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		readmes[newReadmeSep()] = 'sep';
 		readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_last_action.txt';
 		menu.newSeparator();
