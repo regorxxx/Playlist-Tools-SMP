@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/08/25
+//25/08/25
 
 /* exported mainMenuSMP, executeByName */
 
@@ -10,7 +10,7 @@
 // Script integration
 {
 	const name = 'Script integration';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Dynamic menus
@@ -18,7 +18,7 @@
 			/* global onMainMenuEntries:readable, onMainMenuDynamicEntries:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'SMP Dynamic menu';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					include(folders.xxx + 'helpers\\helpers_xxx_controller.js');
 					/* global exportComponents:readable, exportDSP:readable, exportDSP:readable, exportDevices:readable,  */
@@ -318,7 +318,7 @@
 		}
 		{	// Playlist Names Commands
 			const name = 'Playlist Names Commands';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\playlist_names_commands.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				//  Menus
@@ -341,7 +341,7 @@
 		menu.newSeparator(menuName);
 		{	// Include scripts
 			const name = 'Include scripts';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\include_scripts.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				let scriptIncluded = [];

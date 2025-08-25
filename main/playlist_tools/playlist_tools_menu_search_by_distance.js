@@ -1,5 +1,5 @@
 ﻿'use strict';
-//13/08/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -10,7 +10,7 @@
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
 	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
-		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
+		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[sbd.name] = sbd.readmes.main;

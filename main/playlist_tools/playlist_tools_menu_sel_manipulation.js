@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/08/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -8,12 +8,12 @@
 // Selection manipulation
 {
 	const name = 'Selection manipulation';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Legacy Sort
 			const name = 'Sort';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				const subMenuName = menu.newMenu(name, menuName);
 				{	// Legacy Sort (for use with macros!!)
 					const selArgs = [
@@ -149,7 +149,7 @@
 		}
 		{	// Advanced Sort
 			const name = 'Advanced sort';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				// Menus
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Sort selection (algorithm):', func: null, flags: MF_GRAYED });
@@ -313,7 +313,7 @@
 			/* global scatterByTags:readable, intercalateByTags:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Scatter by tags';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
@@ -433,7 +433,7 @@
 			const scriptPath = folders.xxx + 'main\\sort\\scatter_by_tags.js';
 			if (_isFile(scriptPath)) {
 				const name = 'Intercalate by tags';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\scatter_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
@@ -544,7 +544,7 @@
 			/* global shuffleByTags:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Shuffle by tags';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\shuffle_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
@@ -727,7 +727,7 @@
 			/* global groupByTags:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Group by tags';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\group_by_tags.txt';
 					const subMenuName = menu.newMenu(name, menuName);
@@ -1173,7 +1173,7 @@
 		}
 		{	// Send Selection to Playlist
 			const name = 'Send selection to';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global playlistCountLocked:readable */
 				// Add properties
@@ -1261,7 +1261,7 @@
 		}
 		{	// Move
 			const name = 'Move selection to';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global getPlaylistSelectedIndexFirst:readable, getPlaylistSelectedIndexLast:readable */
 				readmes[menuName + '\\' + 'Move, expand & jump'] = folders.xxx + 'helpers\\readme\\selection_expand_jump.txt';
@@ -1360,7 +1360,7 @@
 			/* global queryReplaceWithCurrent:readable, globQuery:readable, checkQuery:readable, queryJoin:readable, selectByQuery:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Select by query';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					const subMenuName = menu.newMenu(name, menuName);
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\filter_by_query.txt';
@@ -1524,7 +1524,7 @@
 		}
 		{	// Select (for use with macros!!)
 			const name = 'Select (# tracks)';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED });
 				menu.newSeparator(subMenuName);
@@ -1670,7 +1670,7 @@
 		}
 		{	// Select (for use with macros!!)
 			const name = 'Select (by time)';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\selection_time.txt';
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Sets selection on current playlist:', func: null, flags: MF_GRAYED });
@@ -1837,7 +1837,7 @@
 		}
 		{	// Expand
 			const name = 'Expand';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				const subMenuName = menu.newMenu(name, menuName);
 				menu.newEntry({ menuName: subMenuName, entryText: 'Expand selection by:', func: null, flags: MF_GRAYED });
 				menu.newSeparator(subMenuName);
@@ -1894,7 +1894,7 @@
 		}
 		{	// Jump
 			const name = 'Jump';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				const subMenuName = menu.newMenu(name, menuName);
 				const subMenus = [
 					menu.newMenu('Next', subMenuName),

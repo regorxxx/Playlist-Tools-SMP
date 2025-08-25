@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, focusFlags:readable */
 
@@ -11,7 +11,7 @@
 	/* global searchSameByCombs:readable */
 	if (_isFile(scriptPath)) {
 		const name = 'Search same by tags';
-		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\search_same_by_tags_combinations.txt';
@@ -148,7 +148,7 @@
 				});
 			}
 			{	// Static menus: Special playlist (at other menu)
-				if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
+				if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) {
 					menu.newEntry({ menuName: specialMenu, entryText: 'Based on Queries:', func: null, flags: MF_GRAYED }); // Jumps just before special playlists
 					const artist = globTags.artistRaw.toUpperCase();
 					const composer = globTags.composer.toUpperCase();

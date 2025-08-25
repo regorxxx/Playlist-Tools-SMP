@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/08/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -11,7 +11,7 @@
 	/* global _pools:readable */
 	if (_isFile(scriptPath)) {
 		const name = 'Pools';
-		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+		if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\').replace('pools.js', 'pools_presets.js'));
 			/* global createPoolPresets:readable */
@@ -19,10 +19,7 @@
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_pools.txt';
 			readmes[name + ' (allowed keys)'] = folders.xxx + '\\presets\\Playlist Tools\\pools\\allowedKeys.txt';
 			forcedQueryMenusEnabled[name] = true;
-			const nameGraph = 'Search similar by Graph';
-			const nameDynGenre = 'Search similar by DynGenre';
-			const nameWeight = 'Search similar by Weight';
-			const bEnableSearchDistance = !Object.hasOwn(menusEnabled, nameGraph) || !Object.hasOwn(menusEnabled, nameDynGenre) || !Object.hasOwn(menusEnabled, nameWeight) || !Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[nameGraph] === true || menusEnabled[nameDynGenre] === true || menusEnabled[nameWeight] === true || menusEnabled[specialMenu] === true;
+			const bEnableSearchDistance = (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) && typeof sbd !== 'undefined';
 			const plsManHelper = folders.xxx + 'main\\playlist_manager\\playlist_manager_helpers.js';
 			if (_isFile(plsManHelper)) { include(plsManHelper.replace(folders.xxx + 'main\\', '..\\')); }
 			const bEnablePlsMan = typeof loadPlaylistsFromFolder !== 'undefined';
