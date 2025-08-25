@@ -1,5 +1,5 @@
 ﻿'use strict';
-//02/07/25
+//25/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable */
 
@@ -8,15 +8,15 @@
 // Playlist manipulation...
 {
 	const name = 'Playlist manipulation';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		readmes[newReadmeSep()] = 'sep';
 		let menuName = menu.newMenu(name);
 		{	// Remove Duplicates / Show Duplicates
 			const scriptPath = folders.xxx + 'main\\filter_and_query\\remove_duplicates.js';
-			/* global filterDuplicates:readable, removeDuplicates:readable, showDuplicates:readable */
+			/* global filterDuplicates:readable, removeDuplicates:readable, showDuplicates:readable, removeDuplicatesAsync:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Duplicates and tag filtering';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\remove_duplicates.txt';
 					let subMenuName = menu.newMenu(name, menuName);
@@ -45,15 +45,29 @@
 							const bMultiple = defaultArgs.bMultiple;
 							// Menus
 							const entryKeysD = sortInputDuplic.join(', ')
-								.replace(globTags.title, 'Title').replace(globTags.date, 'Year')
+								.replace(globTags.title, 'Title').replace(globTags.date, 'Year').replace(globTags.artist, 'Artist')
 								.toLowerCase();
 							const entryKeysF = sortInputFilter.join(', ')
-								.replace(globTags.title, 'Title').replace(globTags.date, 'Year')
+								.replace(globTags.title, 'Title').replace(globTags.date, 'Year').replace(globTags.artist, 'Artist')
 								.toLowerCase();
-							menu.newEntry({ menuName: subMenuName, entryText: 'Remove duplicates by ' + entryKeysD, func: () => { removeDuplicates({ checkKeys: sortInputDuplic, sortBias, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
-							menu.newEntry({ menuName: subMenuName, entryText: 'Show duplicates by ' + entryKeysD, func: () => { showDuplicates({ checkKeys: sortInputDuplic, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
+							menu.newEntry({
+								menuName: subMenuName, entryText: 'Remove duplicates by ' + entryKeysD, func: (_, bAsync) => {
+									if (typeof bAsync === 'undefined') { bAsync = JSON.parse(menu_properties.async[1])['Remove duplicates']; }
+									const endPromise = (bAsync ? removeDuplicatesAsync : removeDuplicates)({ checkKeys: sortInputDuplic, sortBias, bAdvTitle, bMultiple });
+									if (defaultArgs.parent && bAsync) { defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, endPromise); } // Apply animation on registered parent button...
+								}, flags: playlistCountFlagsAddRem
+							});
+							menu.newEntry({
+								menuName: subMenuName, entryText: 'Show duplicates by ' + entryKeysD, func: () => {
+									showDuplicates({ checkKeys: sortInputDuplic, bAdvTitle, bMultiple });
+								}, flags: playlistCountFlagsAddRem
+							});
 							menu.newSeparator(subMenuName);
-							menu.newEntry({ menuName: subMenuName, entryText: 'Filter playlist by ' + entryKeysF + ' (n = ' + nAllowed + ')', func: () => { filterDuplicates({ checkKeys: sortInputFilter, sortBias, nAllowed, bAdvTitle, bMultiple }); }, flags: playlistCountFlagsAddRem });
+							menu.newEntry({
+								menuName: subMenuName, entryText: 'Filter playlist by ' + entryKeysF + ' (n = ' + nAllowed + ')', func: () => {
+									filterDuplicates({ checkKeys: sortInputFilter, sortBias, nAllowed, bAdvTitle, bMultiple });
+								}, flags: playlistCountFlagsAddRem
+							});
 							menu.newSeparator(subMenuName);
 							menu.newEntry({
 								menuName: subMenuName, entryText: 'Filter playlist by... (tags)', func: () => {
@@ -113,7 +127,7 @@
 			/* global queryReplaceWithCurrent:readable, queryJoin:readable, filterByQuery:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Query filtering';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\filter_by_query.txt';
 					forcedQueryMenusEnabled[name] = false;
@@ -280,7 +294,7 @@
 			/* global harmonicMixing:readable, harmonicMixingCycle:readable */
 			if (_isFile(scriptPath)) {
 				const name = 'Harmonic mix';
-				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\harmonic_mixing.txt';
 					const subMenuName = menu.newMenu(name, menuName);
@@ -428,7 +442,7 @@
 		}
 		{	// Find / New Playlist
 			const name = 'Find or create playlist...';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				menu.newEntry({
 					menuName, entryText: name, func: () => {
 						let input;
@@ -442,7 +456,7 @@
 		}
 		{	// Crop playlist length (for use with macros!!)
 			const name = 'Cut playlist length to';
-			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name] === true) {
+			if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 				include(folders.xxx + 'helpers\\helpers_xxx_playlists.js');
 				/* global removeNotSelectedTracks:readable */
 				const subMenuName = menu.newMenu(name, menuName);

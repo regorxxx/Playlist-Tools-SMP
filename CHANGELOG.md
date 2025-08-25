@@ -111,6 +111,7 @@
 - Configuration: added MD5 and AUDIOMD5 to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 - Configuration: added DANCENESS to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
 - Configuration: added REPLAYGAIN_TRACK_RANGE (i.e. LRA) to the list of global tags, found at '[foobar_profile]\foobar2000\js_data\presets\global\globTags.json'.
+- Remove duplicates: added asynchronous processing settings for remove duplicates tool.
 ### Changed
 - Installation: added support for foobar v2.25+ file-relative protocols.
 - Installation: added popup warnings when scripts are installed outside foobar2000 profile folder. These checks can be tweaked at globSettings.json.

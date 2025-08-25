@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/08/25
+//25/08/25
 
 /*
 	Playlist Tools Menu
@@ -70,7 +70,7 @@ var menu_properties = { // NOSONAR [global]
 	bPlaylistNameCommands: ['Enable playlist name commands', false],
 	keyTag: ['Key tag remap', JSON.stringify([globTags.key]), { func: isJSON }, JSON.stringify([globTags.key])],
 	styleGenreTag: ['Style/Genre tags for Dyngenre translation', JSON.stringify(['$ascii(%' + globTags.genre + '%)', '$ascii(%' + globTags.style + '%)'])],
-	async: ['Async processing', JSON.stringify({ 'Check tags': true, 'Tagger': true, 'Pools': false, 'Music Map': true, 'Remove duplicates': false, 'Import track list': false })],
+	async: ['Async processing', JSON.stringify({ 'Check tags': true, 'Tagger': true, 'Music Map': true, 'Remove duplicates': false })],
 	dynQueryEvalSel: ['Dynamic Queries evaluated on entire selection', JSON.stringify({ 'Dynamic queries': true, 'Playlist manipulation': true })],
 	checkDuplicatesBy: ['Remove duplicates by', JSON.stringify(globTags.remDupl), { func: isJSON }, JSON.stringify(globTags.remDupl)],
 	bAdvTitle: ['Duplicates RegExp title matching', true, { func: isBoolean }, true],
@@ -139,6 +139,7 @@ var readmes = { // NOSONAR [global]
 	...newReadmeSep(true),
 };
 loadProperties();
+
 // Menu
 const specialMenu = 'Special Playlists';
 const configMenu = 'Settings';
@@ -317,12 +318,12 @@ include('playlist_tools_menu_search_by_distance.js');
 
 // Special Playlists...
 {	// Create it if it was not already created. Contains entries from multiple scripts
-	if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] === true) {
+	if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) {
 		if (!menu.hasMenu(specialMenu)) {
 			menu.newMenu(specialMenu);
 		}
 		menu.newSeparator();
-	} else if (menuDisabled.findIndex((menu) => { return menu.menuName === specialMenu; }) === -1) { menuDisabled.push({ menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
+	} else if (menuDisabled.findIndex((menu) => menu.menuName === specialMenu) === -1) { menuDisabled.push({ menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 }
 
 // Playlist manipulation...
@@ -538,7 +539,7 @@ function createMainMenuDynamic() {
 			const toRegEx = [/(Switch lock playlist\\)(?!Active playlist$)/, /(Lock playlist( \(by SMP\):)?\\)(?!Active playlist$)/, /(Unlock playlist\\)(?!Active playlist$)/];
 			const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...', 'By... (tags)', 'By... (expression)', 'Find or create playlist...', 'To specified position', 'Select next # tracks...', 'At year...', 'Since last...', 'Custom TF...', 'By... (tag-value)', 'By... (tag)', 'Select by... (query)', 'Import from file \\ url...', 'Set custom path...']);
 			const toSkipDynamic = new Set([]);
-			const toSkipParentDynamic  = ['Pools', 'Pools (Music Map)'];
+			const toSkipParentDynamic = ['Pools', 'Pools (Music Map)'];
 			const invRe = menu.getHiddenCharsRegEx();
 			const parentMenus = allEntries.filter((entry) => entry.bIsMenu);
 			// console.log(menuList);

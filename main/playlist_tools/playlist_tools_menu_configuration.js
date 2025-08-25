@@ -1,13 +1,13 @@
 ﻿'use strict';
-//11/08/25
+//25/08/25
 
-/* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable */
+/* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, specialMenu:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, utf8:readable, globQuery:readable, _p:readable, _save:readable, _explorer:readable, isArrayEqual:readable, _jsonParseFileCheck:readable, Input:readable, globRegExp:readable, capitalize:readable, WshShell:readable, popup:readable, MF_STRING:readable, _recycleFile:readable, _open:readable, MF_MENUBREAK:readable, _qCond:readable, globTags:readable */
 
 // Configuration
 {
-	if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
+	if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu]) {
 		readmes[newReadmeSep()] = 'sep';
 		readmes[configMenu + '\\Presets'] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_presets.txt';
 		// Create it if it was not already created. Contains entries from multiple scripts
@@ -263,11 +263,12 @@
 					entryText: 'async', condFunc: () => {
 						const async = JSON.parse(menu_properties.async[1]);
 						const options = Object.keys(async);
-						const notAvailable = ['Tagger', 'Pools', 'Music Map', 'Remove duplicates', 'Import track list'];
+						const notAvailable = ['Tagger', 'Music Map'];
 						options.forEach((key) => {
+							if (key === 'Music Map' && (Object.hasOwn(menusEnabled, specialMenu) && !menusEnabled[specialMenu] || typeof sbd === 'undefined')) { return; }
 							const bNotAvailable = notAvailable.includes(key);
 							menu.newEntry({
-								menuName: subMenuName, entryText: key + (bNotAvailable ? '\t not available' : ''), func: () => {
+								menuName: subMenuName, entryText: key + (bNotAvailable ? '\t forced' : ''), func: () => {
 									if (!async[key]) {
 										const answer = WshShell.Popup('Enables asynchronous processing for the selected tool:\nUI will not be blocked while executing it, allowing to continue using Foobar2000 without interruptions, but as a side-effect it will also take more time to finish.\n\nFeature is only noticeable when processing a high number of tracks or computationally heavy tasks.', 0, scriptName + ': ' + configMenu, popup.question + popup.yes_no);
 										if (answer !== popup.yes) { return; }

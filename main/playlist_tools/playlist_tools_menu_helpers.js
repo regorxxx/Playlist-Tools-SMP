@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/03/25
+//25/08/25
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -57,6 +57,22 @@ function updateMenuProperties(propObject, menuFunc = deferFunc) {
 			if (readme.length) { fb.ShowPopupMessage(readme, key); }
 		});
 	}
+	// Default values
+	['async', 'dynQueryEvalSel'].forEach((prop) => {
+		const curr = JSON.parse(propObject[prop][1]);
+		const def = JSON.parse(propObject[prop][3]);
+		const currKeys = new Set(Object.keys(curr));
+		const defKeys = new Set(Object.keys(def));
+		if (!currKeys.isEqual(defKeys)) {
+			defKeys.forEach((key) => {
+				if (!Object.hasOwn(curr, key)) { curr[key] = def[key]; }
+				else { currKeys.delete(key); }
+			});
+			currKeys.forEach((key) => delete curr[key]);
+			propObject[prop][1] = JSON.stringify(curr);
+			overwriteProperties(propObject);
+		}
+	});
 	// And update
 	Object.entries(panelPropObject).forEach(([key, value]) => {
 		if (Object.hasOwn(defaultArgs, key)) { defaultArgs[key] = value[1]; }
