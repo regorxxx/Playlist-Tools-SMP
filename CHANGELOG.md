@@ -165,6 +165,7 @@
 - UI: removed extra menu bar break on pools submenus.
 - UI: fixed icons alignment in different layouts and orientations.
 - UI: multiple workarounds for rounded rectangles not being painted properly or producing crashes (SMP limitation).
+- UI: workaround for DPI checking under multiple OSes, specially for Wine (Unix).
 - Playlist Manager Integration: fixed playlist revive tool being overridden by 'Playlist saving\Skip overwriting Playlists on file loading' setting.
 - Dynamic Queries: improved support for tags with '#' values (for ex. KEY tags).
 - Presets: minor error on queries using decades.
