@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/25
+//27/08/25
 
 /*
 	Check Library Tags
@@ -68,7 +68,7 @@ include('..\\..\\helpers-external\\typo\\typo.js'); // Dictionary helper: https:
 /* global music_graph_descriptors:readable */
 
 const checkTags_properties = {
-	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE', 'ALBUM'].join(',')],
+	tagNamesToCheck: ['Tags to be checked (\'tag name,...\')', [globTags.genre, globTags.style, globTags.mood, globTags.composer, globTags.titleRaw, 'INVOLVEDPEOPLE', 'ALBUM', 'FRONT'].join(',')],
 	tagsToCompare: ['Tags to compare against (\'tag name,...\')', [[globTags.genre, globTags.style].join(','), [...new Set([globTags.composer, globTags.artistRaw, 'ARTIST', 'INVOLVEDPEOPLE'])]].join(';')],
 	tagValuesExcludedPath: ['File listing tag values to be excluded', '.\\profile\\' + folders.dataName + 'check_library_tags_exclusion.json'],
 	tagNamesExcludedDic: ['Tags to be excluded at dictionary checking (\'tag name,...\')', [...new Set([globTags.composer, globTags.titleRaw, globTags.artistRaw, 'INVOLVEDPEOPLE', 'ARTIST', 'ALBUM'])].join(',')],
@@ -161,12 +161,21 @@ function checkTags({
 
 	const tagsToCheck = Array.from(new Set(properties['tagNamesToCheck'][1].split(',').filter(Boolean)), (s) => s.toLowerCase()); // i, filter holes and remove duplicates
 	if (!tagsToCheck.length) {
-		fb.ShowPopupMessage('There are no tags to check set at properties panel', popupTitle);
+		fb.ShowPopupMessage('There are no tags to check set.', popupTitle);
 		return (bAsync ? Promise.resolve(false) : false);
+	}
+	const tagsArtIds = ['front', 'back', 'disc', 'icon', 'artist'];
+	const tagsArt = new Set(tagsArtIds).intersection(new Set(tagsToCheck));
+	if (tagsArt.size) {
+		tagsArt.forEach((key) => tagsToCheck.splice(tagsToCheck.indexOf(key)));
+		tagsArtIds.forEach((key, id) => {
+			if (tagsArt.has(key)) { tagsArt.delete(key); tagsArt.add(id); }
+		});
 	}
 	const tagsToCompare = properties['tagsToCompare'][1].split(';').filter(Boolean).map((tag) => { return [...new Set(tag.toLowerCase().split(',').filter(Boolean))]; }); // filter holes and remove duplicates
 	const tagsToCompareMap = new Map();
 	if (tagsToCompare.length) {
+		console.log('Retrieving tags.');
 		tagsToCompare.forEach((arr) => {
 			arr.forEach((tag, _, thisArr) => {
 				if (!tagsToCompareMap.has(tag)) { tagsToCompareMap.set(tag, new Set(thisArr)); }
@@ -178,9 +187,12 @@ function checkTags({
 		// Get all tags and their frequency
 		const tags = checkTagsRetrieve(selItems, tagsToCheck, Array.from({ length: tagsToCheck.length }, () => []));
 		const count = Array.from({ length: tags.length }, () => new Map()); // i x j x k
-		tags.forEach((tagArray, i) => { // i
-			checkTagsCount(tagArray, count, i);
-		});
+		if (tagsToCheck.length) {
+			console.log('Checking tags.');
+			tags.forEach((tagArray, i) => { // i
+				checkTagsCount(tagArray, count, i);
+			});
+		}
 		const [countArray, countArrayFiltered] = checkTagsFilter(tagsToCheck, count, freqThreshold, tagValuesExcluded, maxSizePerTag);
 		// Find possible alternatives (misplacing and misspelling) or other errors to report
 		let alternativesMap = new Map();
@@ -194,8 +206,21 @@ function checkTags({
 				});
 			});
 		}
+		let missingArt = new Map();
+		if (tagsArt.size) {
+			console.log('Checking artwork.');
+			const tagsArtArr = [...tagsArt];
+			selItems.Convert().map((handle) => {
+				const hasArtIds = tagsArtArr.map((id) => {
+					return !!utils.GetAlbumArtV2(handle, id, true);
+				});
+				if (!hasArtIds.every(Boolean)) {
+					missingArt.set(handle.RawPath, hasArtIds.map((bFound, i) => bFound ? -1 : tagsArtArr[i]).filter((id) => id !== -1));
+				}
+			});
+		}
 		setTimeout(() => {
-			checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
+			checkTagsReport(tagsToCheck, tagsArt, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded, missingArt);
 			if (bProfile) { profiler.Print(); }
 		}, 500);
 		return true;
@@ -203,22 +228,24 @@ function checkTags({
 		// Get all tags and their frequency
 		return new Promise(resolve => {
 			const promises = [];
-			const items = selItems.Convert();
-			const count = items.length;
-			const range = Math.round(count / iSteps);
-			const delay = iDelay / 4;
 			let tags = Array.from({ length: tagsToCheck.length }, () => []);
-			let prevProgress = -1;
-			for (let i = 1; i <= iSteps; i++) {
-				promises.push(new Promise(resolve => {
-					setTimeout(() => {
-						const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
-						tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
-						const progress = Math.round(i / iSteps * 10) * 10;
-						if (progress > prevProgress) { prevProgress = progress; console.log('Retrieving tags ' + progress + '%.'); }
-						resolve();
-					}, delay * i);
-				}));
+			if (tagsToCheck.length) {
+				const items = selItems.Convert();
+				const count = items.length;
+				const range = Math.round(count / iSteps);
+				const delay = iDelay / 4;
+				let prevProgress = -1;
+				for (let i = 1; i <= iSteps; i++) {
+					promises.push(new Promise(resolve => {
+						setTimeout(() => {
+							const items_i = new FbMetadbHandleList(items.slice((i - 1) * range, i === iSteps ? count : i * range));
+							tags = checkTagsRetrieve(items_i, tagsToCheck, tags);
+							const progress = Math.round(i / iSteps * 10) * 10;
+							if (progress > prevProgress) { prevProgress = progress; console.log('Retrieving tags ' + progress + '%.'); }
+							resolve();
+						}, delay * i);
+					}));
+				}
 			}
 			Promise.all(promises).then(() => {
 				resolve(tags);
@@ -276,14 +303,36 @@ function checkTags({
 								}));
 							});
 						});
-					} else { promises.push(new Promise.resolve('empty')); }
+					} else { promises.push(Promise.resolve('empty')); }
 					Promise.all(promises).then(() => {
 						resolve({ countArrayFiltered, alternativesMap });
 					});
 				});
 			}).then(({ countArrayFiltered, alternativesMap }) => {
+				let missingArt = new Map();
+				if (tagsArt.size) {
+					console.log('Checking artwork.');
+					const tagsArtArr = [...tagsArt];
+					return Promise.parallel(selItems.Convert(), (handle) => {
+						return Promise.all(tagsArtArr.map((id) => {
+							return utils.GetAlbumArtAsyncV2(window.ID, handle, id, true, false, true).then((artPromise) => artPromise.path);
+						}));
+					}, 0).then((results) => {
+						results.forEach((result, i) => {
+							if (!result.value.every(Boolean)) {
+								missingArt.set(selItems[i].RawPath, result.value.map((bFound, i) => bFound ? -1 : tagsArtArr[i]).filter((id) => id !== -1));
+							}
+						});
+					}).then(() => {
+						return { countArrayFiltered, alternativesMap, missingArt };
+					});
+				} else {
+					return { countArrayFiltered, alternativesMap, missingArt };
+				}
+			})
+			.then(({ countArrayFiltered, alternativesMap, missingArt }) => {
 				setTimeout(() => {
-					checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded);
+					checkTagsReport(tagsToCheck, tagsArt, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded, missingArt);
 					if (bProfile) { profiler.Print(); }
 				}, 500);
 				return true;
@@ -438,7 +487,7 @@ function checkTagsCompare(tagA, keySplit, tagValueA, alternativesMap, bCompare, 
 	}
 }
 
-function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded) {
+function checkTagsReport(tagsToCheck, tagsArt, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded, missingArt) {
 	// Report popups
 	// First part - Tags errors
 	let textA = 'List of values with lowest frequency of apparition.\n' +
@@ -529,11 +578,23 @@ function checkTagsReport(tagsToCheck, countArrayFiltered, keySplit, alternatives
 	textC += '------------------------------------------------------\n';
 	textC += tipsText;
 	textA += tipsText;
+	// Foruth part - Missing art
+	let textD;
+	if (tagsArt.size) {
+		textD = 'List of files with missing art (either embebbed, along files or stub).\n\n';
+		const tagsArtIds = ['front', 'back', 'disc', 'icon', 'artist'];
+		missingArt.forEach((value, key) => {
+			textD += '\n' + key.replace('file://', '').replace('file-relative://', '') + ' -> ' + value.map((id) => tagsArtIds[id]).join(', ');
+		});
+	}
 	// Popups with all texts
-	if (queryText.length) { fb.ShowLibrarySearchUI(''); }
-	fb.ShowPopupMessage(textC, popupTitle + ': queries');
-	fb.ShowPopupMessage(textB, popupTitle + ': tag pairs and exclusions');
-	fb.ShowPopupMessage(textA, popupTitle + ': possible errors');
+	if (tagsToCheck.length) {
+		if (queryText.length) { fb.ShowLibrarySearchUI(''); }
+		fb.ShowPopupMessage(textC, popupTitle + ': queries');
+		fb.ShowPopupMessage(textB, popupTitle + ': tag pairs and exclusions');
+		fb.ShowPopupMessage(textA, popupTitle + ': possible errors');
+	}
+	if (tagsArt.size) { fb.ShowPopupMessage(textD, popupTitle + ': missing art'); }
 	// Set verified tags known to be right Popup
 	if (properties['bAskForConfigTags'][1]) {
 		let currentTags = objectToPairs(tagValuesExcluded);
@@ -579,7 +640,7 @@ function objectToPairs(inputObj) { // {A:[x,y],B:[z], ...} -> A,x;A,y;B,z;...
 		const arr = (Array.isArray(inputObj[key])
 			? inputObj[key]
 			: [...inputObj[key]]
-		).sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true }));
+		).sort((a, b) => a.localeCompare(b, void (0), { sensitivity: 'base', numeric: true }));
 		for (let value of arr) {
 			if (value) { outputSet.add(key.toLowerCase() + ',' + value); }
 		}
@@ -598,7 +659,7 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 		if (!bSet) { outputObj[key].push(value); }
 		else { outputObj[key].add(value); }
 	});
-	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true })); } }
+	if (!bSet) { for (const key in outputObj) { outputObj[key].sort((a, b) => a.localeCompare(b, void (0), { sensitivity: 'base', numeric: true })); } }
 	return outputObj;
 }
 
@@ -612,7 +673,7 @@ function loadTagsExcluded(path) { // filter holes and remove duplicates
 	for (const key in obj) {
 		if (key !== key.toLowerCase()) {
 			obj[key.toLowerCase()] = [...new Set([...obj[key], ...(obj[key.toLowerCase()] || [])])]
-				.sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true }));
+				.sort((a, b) => a.localeCompare(b, void (0), { sensitivity: 'base', numeric: true }));
 			delete obj[key];
 			bSave = true;
 		}

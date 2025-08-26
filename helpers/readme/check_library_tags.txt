@@ -1,7 +1,7 @@
 ﻿Checks all tag values from selected tracks for spelling errors or
 misplacing values in wrong tags. Checks configured tags for easily
 recognizable errors (empty tags, blank spaces, multi-valued tags not
-split), spelling, etc.
+split), spelling, etc. and also for missing artwork (any type).
 
 By analyzing tags with lower freq. of apparition (*) and comparing them
 to the entire tag value list by their similarity (Levenshtein distance),
@@ -40,6 +40,16 @@ Dictionaries
 	   [en_US]
 	      |- en_US.aff
 	      |- en_US.dic
+
+Artwork
+-------
+	Artwork is checked by adding any of this keywords to the list of
+	tags to check, depending on the type desired:
+		- FRONT
+		- BACK
+		- DISC
+		- ICON
+		- ARTIST
 
 Notes
 -----

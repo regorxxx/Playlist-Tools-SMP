@@ -85,6 +85,7 @@
 - Other tools\Tagger: added configurable menu entries for every tool. These are related to the contextual menu called when running to add/remove tags.
 - Other tools\Tagger: added setting to suppress warning popup when running.
 - Other Tools\Check tags: added af_ZA, de_DE, es_ES, fr_FR, pt_PT and ru_RU dictionaries.
+- Other Tools\Check tags: added missing artwork checks for front, back, disc, icon and artist types. These art types must be added to the list of tags to be checked, check the documentation.
 - Dynamic queries: support for '#NOW#' (or #TODAY#) variable, which resolves to current date (2025-3-8).
 - Dynamic queries: support for '#YESTERDAY#' variable, which resolves to yesterday date (2025-3-8).
 - Dynamic queries: support for '#WEEK#' variable, which resolves to first day of current week (8).

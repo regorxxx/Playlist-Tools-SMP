@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//27/08/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
@@ -41,6 +41,10 @@
 						'sep',
 						{ tag: [globTags.genre, globTags.style].join(','), name: 'Genre + Style (+ dictionary)', bUseDic: true },
 						{ tag: [...new Set([globTags.composer, globTags.artistRaw, 'ARTIST', 'ALBUM ARTIST'])].join(','), name: 'Composer + Artist', bUseDic: false },
+						'sep',
+						{ tag: ['FRONT'].join(','), name: 'Front artwork', bUseDic: false },
+						{ tag: ['BACK'].join(','), name: 'Back artwork', bUseDic: false },
+						{ tag: ['ARTIST'].join(','), name: 'Artist artwork', bUseDic: false },
 					];
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED });
