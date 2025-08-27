@@ -59,6 +59,8 @@ include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global isString:readable, isStringWeak:readable, isBoolean:readable, _asciify:readable */
+include('..\\..\\helpers\\helpers_xxx_playlists.js');
+/* global sendToPlaylist:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTagsV2:readable */
 include('..\\..\\helpers\\helpers_xxx_levenshtein.js');
@@ -154,7 +156,8 @@ function checkTags({
 	}
 	// Constants
 	const popupTitle = 'Tags Report'; // Window title for the popups
-	const keySplit = '***'; // For the map
+	const keySplit = '|‎|'; // For the map
+	const handleLists = { art: {} };
 
 	// Skipped values at pre-filter
 	const tagValuesExcluded = loadTagsExcluded(properties['tagValuesExcludedPath'][1]); // i x k sets
@@ -167,7 +170,10 @@ function checkTags({
 	const tagsArtIds = ['front', 'back', 'disc', 'icon', 'artist'];
 	const tagsArt = new Set(tagsArtIds).intersection(new Set(tagsToCheck));
 	if (tagsArt.size) {
-		tagsArt.forEach((key) => tagsToCheck.splice(tagsToCheck.indexOf(key)));
+		tagsArt.forEach((key) => {
+			tagsToCheck.splice(tagsToCheck.indexOf(key));
+			handleLists.art[key] = new FbMetadbHandleList();
+		});
 		tagsArtIds.forEach((key, id) => {
 			if (tagsArt.has(key)) { tagsArt.delete(key); tagsArt.add(id); }
 		});
@@ -215,12 +221,17 @@ function checkTags({
 					return !!utils.GetAlbumArtV2(handle, id, true);
 				});
 				if (!hasArtIds.every(Boolean)) {
-					missingArt.set(handle.RawPath, hasArtIds.map((bFound, i) => bFound ? -1 : tagsArtArr[i]).filter((id) => id !== -1));
+					const artKeys = hasArtIds.map((bFound, i) => bFound ? -1 : tagsArtArr[i]).filter((id) => id !== -1);
+					missingArt.set(handle.RawPath, artKeys);
+					artKeys.forEach((id) => handleLists.art[tagsArtIds[id]].Add(handle));
 				}
 			});
 		}
 		setTimeout(() => {
 			checkTagsReport(tagsToCheck, tagsArt, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded, missingArt);
+			for (let key of handleLists.art) {
+				if (handleLists.art[key].Count) { sendToPlaylist(handleLists.art[key], 'Missing ' + key); }
+			}
 			if (bProfile) { profiler.Print(); }
 		}, 500);
 		return true;
@@ -320,7 +331,9 @@ function checkTags({
 					}, 0).then((results) => {
 						results.forEach((result, i) => {
 							if (!result.value.every(Boolean)) {
-								missingArt.set(selItems[i].RawPath, result.value.map((bFound, i) => bFound ? -1 : tagsArtArr[i]).filter((id) => id !== -1));
+								const artKeys = result.value.map((bFound, i) => bFound ? -1 : tagsArtArr[i]).filter((id) => id !== -1);
+								missingArt.set(selItems[i].RawPath, artKeys);
+								artKeys.forEach((id) => handleLists.art[tagsArtIds[id]].Add(selItems[i]));
 							}
 						});
 					}).then(() => {
@@ -333,6 +346,9 @@ function checkTags({
 			.then(({ countArrayFiltered, alternativesMap, missingArt }) => {
 				setTimeout(() => {
 					checkTagsReport(tagsToCheck, tagsArt, countArrayFiltered, keySplit, alternativesMap, popupTitle, properties, tagValuesExcluded, missingArt);
+					for (let key in handleLists.art) {
+						if (handleLists.art[key].Count) { sendToPlaylist(handleLists.art[key], 'Missing ' + key + ' artwork'); }
+					}
 					if (bProfile) { profiler.Print(); }
 				}, 500);
 				return true;

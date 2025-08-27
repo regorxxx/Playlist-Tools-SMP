@@ -44,7 +44,11 @@
 						'sep',
 						{ tag: ['FRONT'].join(','), name: 'Front artwork', bUseDic: false },
 						{ tag: ['BACK'].join(','), name: 'Back artwork', bUseDic: false },
+						{ tag: ['DISC'].join(','), name: 'Disc artwork', bUseDic: false },
+						{ tag: ['ICON'].join(','), name: 'Icon artwork', bUseDic: false },
 						{ tag: ['ARTIST'].join(','), name: 'Artist artwork', bUseDic: false },
+						'sep',
+						{ tag: ['FRONT', 'BACK', 'DISC', 'ICON', 'ARTIST'].join(','), name: 'All artwork', bUseDic: false },
 					];
 					// Menus
 					menu.newEntry({ menuName: subMenuName, entryText: 'Reports tagging errors (on selection):', func: null, flags: MF_GRAYED });
