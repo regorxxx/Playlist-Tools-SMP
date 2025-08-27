@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/08/25
+//27/08/25
 
 /* exported savePlaylist, addHandleToPlaylist, precacheLibraryRelPaths, precacheLibraryPathsAsync, loadTracksFromPlaylist, arePathsInMediaLibrary, loadPlaylists, getFileMetaFromPlaylist, loadXspPlaylist, getHandlesFromPlaylistV2 */
 
@@ -278,7 +278,7 @@ function savePlaylist({ playlistIndex, handleList, playlistPath, ext = '.m3u8', 
 }
 
 /**
- * Adds a handle list to a playlist file
+ * Adds a handle list to a playlist file. Limited fpl support only for tracked items on library.
  *
  * @function
  * @name addHandleToPlaylist
@@ -480,7 +480,7 @@ function addHandleToPlaylist(handleList, playlistPath, relPath = '', bBOM = fals
 }
 
 /**
- * Adds a handle list to a playlist file
+ * Adds a handle list to a playlist file. Supports fpl playlists for non tracked items on library.
  *
  * @function
  * @name addHandleToPlaylistV2
