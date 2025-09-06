@@ -10,7 +10,7 @@ Source tag:
 The tag used for calculation, usually a single tag but a TF expression
 may also be used. In any case it must output a number (or empty):
 	- Rating: %RATING%
-	- Rating by duration: $if(%RATING%,$mul(%LENGTH_SECONDS%, %RATING%),)
+	- Rating/duration: $if(%RATING%,$mul(%LENGTH_SECONDS%, %RATING%),)
 	- Number of artists: $meta_num(ARTIST)
 
 Destination tag:
