@@ -283,7 +283,7 @@
 				const name = 'Group Tagger';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
-					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tagger.txt';
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\group_tagger.txt';
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({ menuName: subMenuName, entryText: 'Group tagging:', func: null, flags: MF_GRAYED });
 					menu.newSeparator(subMenuName);

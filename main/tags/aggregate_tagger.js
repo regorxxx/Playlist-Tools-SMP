@@ -74,7 +74,7 @@ function aggregateTagger(handleList, source = '[%RATING%]', destination = 'ALBUM
 	});
 	const title = 'Aggregate tagging ' + _p(options.mode.toLowerCase()) + ': ' + source + ' -> ' + destination;
 	fb.ShowPopupMessage(results.map((result) => result.group + ' ' + _p(result.count) + ' -> ' + result.val).join('\n'), title);
-	const answer = options.bAsk
+	const answer = options.bAsk && destination && destination.length
 		? WshShell.Popup('Check report. Save tag to files?', 0, title, popup.question + popup.yes_no)
 		: popup.yes;
 	if (answer === popup.yes) { clone.UpdateFileInfoFromJSON(JSON.stringify(destinationArr)); }
