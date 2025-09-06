@@ -287,12 +287,13 @@
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({ menuName: subMenuName, entryText: 'Group tagging:', func: null, flags: MF_GRAYED });
 					menu.newSeparator(subMenuName);
-					['average', 'sum', 'count'].forEach((mode) => {
+					['average', 'sum', 'count', 'mode'].forEach((mode) => {
 						const subMenuNameTwo = menu.newMenu(capitalize(mode), subMenuName);
 						[
-							{ entryText: 'By Album', group: '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%' },
-							{ entryText: 'By Artist', group: '%ARTIST%' },
-							{ entryText: 'By Album Artist', group: '%ALBUM ARTIST%' },
+							{ entryText: 'By Album', group: '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%', destEx: 'ALBUMRATING', destModeEx: 'ALBUMGENRE' },
+							{ entryText: 'By Artist', group: '%ARTIST%', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
+							{ entryText: 'By Album Artist', group: '%ALBUM ARTIST%', destEx: 'ALBUMARTISTRATING', destModeEx: 'ALBUMARTISTGENRE' },
+							{ entryText: 'By 1st Artist', group: '$if2($meta(ARTIST,0),$meta(ALBUM ARTIST,0))', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
 							{ entryText: 'sep' },
 							{ entryText: 'Custom group...' },
 						].forEach((entry) => {
@@ -302,9 +303,13 @@
 									menuName: subMenuNameTwo, entryText: entry.entryText, func: () => {
 										const handleList = fb.GetSelections(1);
 										if (handleList && handleList.Count) {
-											const source = Input.string('string', '[%RATING%]', 'Tag to aggregate:\n\nTF expressions are also allowed as long as the output is a single number. Beware of missing tags not enclosed on \'[]\' since they will output \'?\' instead of nothing.', 'Group tagging: source', '[%RATING%]') || (Input.isLastEqual ? Input.lastInput : null);
+											const source = mode === 'mode'
+												? Input.string('string', 'GENRE|STYLE', 'Tag(s) to check:\n\nMultiple tags are allowed, separated by \'|\'.\nDon\'t enclose them with \'%\', i.e. TAG not %TAG%.', 'Group tagging: source', 'GENRE|STYLE') || (Input.isLastEqual ? Input.lastInput : null)
+												: Input.string('string', '[%RATING%]', 'Tag to aggregate:\n\nTF expressions are also allowed as long as the output is a single number. Beware of missing tags not enclosed on \'[]\' since they will output \'?\' instead of nothing.', 'Group tagging: source', '[%RATING%]') || (Input.isLastEqual ? Input.lastInput : null);
 											if (source === null) { return null; }
-											const destination = Input.string('string', 'ALBUMRATING', 'Destination tag:\n\nDon\'t enclose it with \'%\', i.e. TAG not %TAG%.', 'Group tagging: destination', 'ALBUMRATING') || (Input.isLastEqual ? Input.lastInput : null);
+											const destination = mode === 'mode'
+												? Input.string('string', entry.destModeEx || 'ALBUMGENRE', 'Destination tag:\n\nDon\'t enclose it with \'%\', i.e. TAG not %TAG%.', 'Group tagging: destination', entry.destModeEx || 'ALBUMGENRE') || (Input.isLastEqual ? Input.lastInput : null)
+												: Input.string('string', entry.destEx || 'ALBUMRATING', 'Destination tag:\n\nDon\'t enclose it with \'%\', i.e. TAG not %TAG%.', 'Group tagging: destination', entry.destEx || 'ALBUMRATING') || (Input.isLastEqual ? Input.lastInput : null);
 											if (destination === null) { return null; }
 											const group = entry.group || Input.string('string', '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%', 'TF expression for track groups:', 'Group tagging: group TF', '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%') || (Input.isLastEqual ? Input.lastInput : null);
 											if (group === null) { return null; }
@@ -312,8 +317,13 @@
 												? entry.count || Input.string('string', '1', 'TF expression for track count:\n\nNote in most cases it should be 1, unless you want to weight averages by duration, etc.', 'Group tagging: count TF', '1') || (Input.isLastEqual ? Input.lastInput : null)
 												: 1;
 											if (count === null) { return null; }
-											const defaultVal = Input.number('real', 0, 'Default value for missing tags:\n\nClicking on cancel will skip any track without source tag.', 'Group tagging: default value', 0) || (Input.isLastEqual ? Input.lastInput : null);
-											aggregateTagger(handleList, source, destination, group, count, { round: 2, bAsk: true, mode, defaultVal });
+											const defaultVal = mode === 'mode'
+												? null
+												: Input.number('real', 0, 'Default value for missing tags:\n\nClicking on cancel will skip any track without source tag.', 'Group tagging: default value', 0) || (Input.isLastEqual ? Input.lastInput : null);
+											const modeVal = mode === 'mode'
+												? Input.number('real', 1, 'How many values do you want to retrieve by frequency?\n\nBy default it outputs only the most frequent value.', 'Group tagging: mode values', 1) || (Input.isLastEqual ? Input.lastInput : null)
+												: 1;
+											aggregateTagger(handleList, source, destination, group, count, { round: 2, bAsk: true, mode, defaultVal, modeVal });
 										}
 									}
 								});

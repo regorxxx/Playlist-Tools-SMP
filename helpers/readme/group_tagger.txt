@@ -5,6 +5,15 @@ the results in any case.
 It may be used to calculate album ratings, weights by duration, etc.
 See here: https://hydrogenaudio.org/index.php/topic,128376.new.html
 
+Modes:
+------
+There are multiple modes to aggregate tag values, with only one of them
+also working with strings (like genres):
+	- Average: average value per tag and TF expression (number).
+	- Count: count every tag per TF expression (number).
+	- Sum: total per tag and TF expression (number).
+	- Mode: most frequent tag value (not limited to numbers).
+
 Source tag:
 -----------
 The tag used for calculation, usually a single tag but a TF expression
@@ -12,6 +21,7 @@ may also be used. In any case it must output a number (or empty):
 	- Rating: %RATING%
 	- Rating/duration: $if(%RATING%,$mul(%LENGTH_SECONDS%, %RATING%),)
 	- Number of artists: $meta_num(ARTIST)
+	- Genres ('mode' only): GENRE|STYLE
 
 Destination tag:
 ----------------
@@ -20,6 +30,7 @@ which asks for tagging will simply show the report without touching your
 files. For ex:
 	- Album Rating: %ALBUMRATING%
 	- Number of artists: %ARTISTCOUNT%
+	- Artist genre ('mode' only): %ARTISTGENRE%
 
 Groups:
 -------
@@ -28,6 +39,7 @@ Some common TF expressions you may want to use:
 	- By album: %ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%
 	- By artist: %ARTIST%
 	- By album artist: %ALBUM ARTIST%
+	- By 1st artist: $if2($meta(ARTIST,0),$meta(ALBUM ARTIST,0))
 
 Count:
 ------
