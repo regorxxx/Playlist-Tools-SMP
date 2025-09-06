@@ -1,0 +1,47 @@
+﻿Tool to calculate averages, sum or counts of tag values for tracks and
+-optionally- save the result to another tag. A report is displayed showing
+the results in any case.
+
+It may be used to calculate album ratings, weights by duration, etc.
+See here: https://hydrogenaudio.org/index.php/topic,128376.new.html
+
+Source tag:
+-----------
+The tag used for calculation, usually a single tag but a TF expression
+may also be used. In any case it must output a number (or empty):
+	- Rating: %RATING%
+	- Rating by duration: $if(%RATING%,$mul(%LENGTH_SECONDS%, %RATING%),)
+	- Number of artists: $meta_num(ARTIST)
+
+Destination tag:
+----------------
+The tag used to write the output. Not providing one or canceling the popup
+which asks for tagging will simply show the report without touching your
+files. For ex:
+	- Album Rating: %ALBUMRATING%
+	- Number of artists: %ARTISTCOUNT%
+
+Groups:
+-------
+Controls how tracks are considered part of the same set, like albums, etc.
+Some common TF expressions you may want to use:
+	- By album: %ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%
+	- By artist: %ARTIST%
+	- By album artist: %ALBUM ARTIST%
+
+Count:
+------
+TF expression for track count. This value is then used when calculating
+averages to divide the sum of all values (from source tag) by the sum of
+all count values. In most cases it should be 1 (i.e. every track counts a
+s one), unless you want to weight averages by duration, etc. For ex:
+	- By track: 1
+	- By duration: %LENGTH_SECONDS%
+
+Default value:
+--------------
+In cases where source tag TF expression or tag outputs no value, this
+default value is used instead. You can set it to a number or cancel it
+to skip counting tracks with missing values. For ex:
+	- Add zero to count non-rated tracks as zero rating.
+	- Cancel to ommit non-rated tracks on album rating calculation.
