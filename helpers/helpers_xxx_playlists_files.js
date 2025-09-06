@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/08/25
+//29/08/25
 
 /* exported savePlaylist, addHandleToPlaylist, precacheLibraryRelPaths, precacheLibraryPathsAsync, loadTracksFromPlaylist, arePathsInMediaLibrary, loadPlaylists, getFileMetaFromPlaylist, loadXspPlaylist, getHandlesFromPlaylistV2 */
 
@@ -863,7 +863,7 @@ function getHandlesFromPlaylist({ playlistPath, relPath = '', bOmitNotFound = fa
 			const sort = XSP.getSort(jsp);
 			const bHasQueryPls = XSP.hasQueryPlaylists(jsp);
 			if (bHasQueryPls) { // Uses playlists as sources
-				const queryPlaylists = XSP.getQueryPlaylists(jsp);
+				const queryPlaylists = XSP.getQueryPlaylists(jsp, bLog);
 				// From playlist manager or loaded playlists
 				const toIncludeHandle = typeof list !== 'undefined'
 					? list.getHandleFromPlaylists(queryPlaylists.is, void (0), bLog) // eslint-disable-line no-undef
