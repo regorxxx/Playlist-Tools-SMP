@@ -1,9 +1,9 @@
 ﻿'use strict';
-//27/08/25
+//06/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable, _resolvePath:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable, _resolvePath:readable, capitalize:readable */
 
 // Other tools
 {
@@ -146,7 +146,7 @@
 						});
 						menu.newEntry({
 							menuName: subMenuSecondName, entryText: 'Set dictionary...', func: () => {
-								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.dictPath).sort((a, b) => a.localeCompare(b, void(0), { sensitivity: 'base', numeric: true })).join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
+								let input = utils.InputBox(window.ID, 'Set dictionary name:\n' + (findRecursiveDirs(dictSettings.dictPath).sort((a, b) => a.localeCompare(b, void (0), { sensitivity: 'base', numeric: true })).join(', ') || 'None found.') + '\n', scriptName + ': ' + name, menu_properties.dictName[1]);
 								if (menu_properties.dictName[1] === input) { return; }
 								if (!input.length) { input = menu_properties.dictName[3]; }
 								dictSettings.dictName = input;
@@ -184,6 +184,7 @@
 						, flags: typeof music_graph_descriptors === 'undefined' ? MF_GRAYED : MF_STRING
 					});
 					menu.newCheckMenuLast(() => menu_properties['bUseGraphGenres'][1]);
+					menu.newSeparator(menuName);
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 			}
 		}
@@ -271,6 +272,53 @@
 						entryText: 'Tagger (cond)', condFunc: (bInit = true) => {
 							if (bInit) { tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1])); }
 						}
+					});
+				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
+			}
+		}
+		{	// Average tags
+			const scriptPath = folders.xxx + 'main\\tags\\aggregate_tagger.js';
+			/* global aggregateTagger:readable */
+			if (_isFile(scriptPath)) {
+				const name = 'Group Tagger';
+				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
+					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
+					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tagger.txt';
+					const subMenuName = menu.newMenu(name, menuName);
+					menu.newEntry({ menuName: subMenuName, entryText: 'Group tagging:', func: null, flags: MF_GRAYED });
+					menu.newSeparator(subMenuName);
+					['average', 'sum', 'count'].forEach((mode) => {
+						const subMenuNameTwo = menu.newMenu(capitalize(mode), subMenuName);
+						[
+							{ entryText: 'By Album', group: '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%' },
+							{ entryText: 'By Artist', group: '%ARTIST%' },
+							{ entryText: 'By Album Artist', group: '%ALBUM ARTIST%' },
+							{ entryText: 'sep' },
+							{ entryText: 'Custom group...' },
+						].forEach((entry) => {
+							if (menu.isSeparator(entry)) { menu.newSeparator(subMenuNameTwo); }
+							else {
+								menu.newEntry({
+									menuName: subMenuNameTwo, entryText: entry.entryText, func: () => {
+										const handleList = fb.GetSelections(1);
+										if (handleList && handleList.Count) {
+											const source = Input.string('string', '[%RATING%]', 'Tag to aggregate:\n\nTF expressions are also allowed as long as the output is a single number. Beware of missing tags not enclosed on \'[]\' since they will output \'?\' instead of nothing.', 'Group tagging: source', '[%RATING%]') || (Input.isLastEqual ? Input.lastInput : null);
+											if (source === null) { return null; }
+											const destination = Input.string('string', 'ALBUMRATING', 'Destination tag:\n\nDon\'t enclose it with \'%\', i.e. TAG not %TAG%.', 'Group tagging: destination', 'ALBUMRATING') || (Input.isLastEqual ? Input.lastInput : null);
+											if (destination === null) { return null; }
+											const group = entry.group || Input.string('string', '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%', 'TF expression for track groups:', 'Group tagging: group TF', '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%') || (Input.isLastEqual ? Input.lastInput : null);
+											if (group === null) { return null; }
+											const count = mode === 'average' || mode === 'count'
+												? entry.count || Input.string('string', '1', 'TF expression for track count:\n\nNote in most cases it should be 1, unless you want to weight averages by duration, etc.', 'Group tagging: count TF', '1') || (Input.isLastEqual ? Input.lastInput : null)
+												: 1;
+											if (count === null) { return null; }
+											const defaultVal = Input.number('real', 0, 'Default value for missing tags:\n\nClicking on cancel will skip any track without source tag.', 'Group tagging: default value', 0) || (Input.isLastEqual ? Input.lastInput : null);
+											aggregateTagger(handleList, source, destination, group, count, { round: 2, bAsk: true, mode, defaultVal });
+										}
+									}
+								});
+							}
+						});
 					});
 					menu.newSeparator(menuName);
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
