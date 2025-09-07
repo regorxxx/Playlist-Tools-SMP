@@ -136,11 +136,11 @@ The menus are highly customizable. They are created on demand according to the s
 
 ## Requirements
  1. [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel): JavaScript host component required to install this. Only x32. **(only one host component required)**
- 2. [JSplitter](https://foobar2000.ru/forum/viewtopic.php?t=6378):JavaScript host component required to install this. Both x32 and x64. **(only one host component required)**
+ 2. [JSplitter](https://foobar2000.ru/forum/viewtopic.php?t=6378): JavaScript host component required to install this. Both x32 and x64. **(only one host component required)**
  3. FontAwesome: found at ’.\ resources\fontawesome-webfont.ttf’. See installation notes.
 
 ## Installation
-See [_INSTALLATION (txt)](https://github.com/regorxxx/Playlist-Tools-SMP/blob/main/_INSTALLATION.txt) and the [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Installation).
+See [Wiki](https://github.com/regorxxx/Playlist-Tools-SMP/wiki/Installation) or the [_INSTALLATION (txt)](https://github.com/regorxxx/Playlist-Tools-SMP/blob/main/_INSTALLATION.txt).
 Not properly following the installation instructions will result in scripts not working as intended. Please don't report errors before checking this.
 
 ## Support
