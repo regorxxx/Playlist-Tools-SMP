@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//07/09/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, specialMenu:readable */
 
@@ -312,16 +312,6 @@
 		{	// UI
 			const subMenuName = menu.newMenu('UI', configMenu);
 			menu.newEntry({ menuName: subMenuName, entryText: 'Switch UI functionality:', func: null, flags: MF_GRAYED });
-			menu.newSeparator(subMenuName);
-			{	// bTooltipInfo
-				menu.newEntry({
-					menuName: subMenuName, entryText: 'Show mouse shortcuts on tooltip', func: () => {
-						menu_panelProperties.bTooltipInfo[1] = !menu_panelProperties.bTooltipInfo[1];
-						overwritePanelProperties(); // Updates panel
-					}
-				});
-				menu.newCheckMenuLast(() => menu_panelProperties.bTooltipInfo[1]);
-			}
 			menu.newSeparator(subMenuName);
 			{	// Shortcuts
 				readmes[configMenu + '\\Keyboard Shortcuts'] = folders.xxx + 'helpers\\readme\\keyboard_shortcuts.txt';

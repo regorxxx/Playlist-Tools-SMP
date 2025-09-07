@@ -1,11 +1,11 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Volume controls and display
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable, MK_SHIFT:readable, VK_SHIFT:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -54,7 +54,7 @@ addButton({
 			fb.VolumeDown();
 		},
 		description: function () {
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			let info = 'Volume down';
 			if (bInfo) {
 				info += '\n-----------------------------------------------------';
@@ -86,7 +86,7 @@ addButton({
 			fb.VolumeUp();
 		},
 		description: function () {
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			let info = 'Volume up';
 			if (bInfo) {
 				info += '\n-----------------------------------------------------';
@@ -132,7 +132,7 @@ addButton({
 		gFont: _gdiFont(globFonts.button.name, globFonts.button.size * 1.2 * buttonsBar.config.textScale, FontStyle.Bold),
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			let info = 'Current volume: ' + fb.Volume.toFixed(2) + ' dB';
 			if (bShift || bInfo) {
 				info += '\n-----------------------------------------------------';

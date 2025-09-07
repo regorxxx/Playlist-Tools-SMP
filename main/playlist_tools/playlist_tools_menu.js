@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//07/09/25
 
 /*
 	Playlist Tools Menu
@@ -46,7 +46,7 @@ include('..\\..\\helpers\\helpers_xxx_input.js');
 include('playlist_tools_menu_helpers.js');
 /* global loadProperties:readable, overwritePanelProperties:readable, flagsCache:readable */
 
-/* global exportDevices:readable, exportDSP:readable, deleteMainMenuDynamic:readable, onMainMenuDynamicEntries:readable, mainMenuSMP:readable , lastActionEntry:readable */
+/* global exportDevices:readable, exportDSP:readable, deleteMainMenuDynamic:readable, onMainMenuDynamicEntries:readable, mainMenuSMP:readable , lastActionEntry:readable, barProperties:readable */
 
 checkCompatible('1.6.1', 'smp');
 
@@ -81,11 +81,10 @@ var menu_properties = { // NOSONAR [global]
 const menu_panelProperties = {
 	firstPopup: ['Playlist Tools: Fired once', false],
 	menusEnabled: ['List of menus enabled', '{}'],
-	bTooltipInfo: ['Show shortcuts on tooltip', true],
 	bProfile: ['Profiler logging', false],
 	playlistPath: ['Playlist manager tracked folders', '[]'],
 	bDebug: ['Enable global debug to console', false],
-	bDynamicMenus: ['Show dynamic menus?', true]
+	bDynamicMenus: ['Show dynamic menus', true]
 };
 let menu_propertiesBack = JSON.parse(JSON.stringify(menu_properties));
 let menu_panelPropertiesBack = JSON.parse(JSON.stringify(menu_panelProperties));
@@ -456,7 +455,7 @@ function menuTooltip() {
 	const bControl = utils.IsKeyPressed(VK_CONTROL);
 	const bShiftNoControl = bShift && !bControl;
 	const bNoShiftControl = !bShift && bControl;
-	const bInfo = menu_panelProperties.bTooltipInfo[1];
+	const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 	if (bShiftNoControl || bNoShiftControl || bInfo) { info += '\n-----------------------------------------------------'; }
 	if (bInfo) { info += '\n(L. Click for tools menu)'; }
 	if (bNoShiftControl || bInfo) { info += '\n(Ctrl + L. Click to copy menu names to clipboard)'; }

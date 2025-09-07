@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Search same by v 1.0 24/08/22
@@ -62,7 +62,7 @@
 	1 values && sameBy = {genre: 0, style: 2, date: 10} -> must match 1 style.
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable, menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, MK_CONTROL:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, globRegExp:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -303,7 +303,7 @@ addButton({
 		},
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			const preset = JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
 				.find((entry) =>
 					Object.keys(entry.settings).every(

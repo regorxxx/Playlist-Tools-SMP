@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/03/25
+//07/09/25
 
 /*
 	Top Tracks
@@ -7,7 +7,7 @@
 	Button name and tooltip text is changed according to that value!
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable, menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globQuery:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -53,7 +53,7 @@ addButton({
 		},
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			let info = 'Playlist with Tracks most played (without duplicates).';
 			info += '\nTracks:\t' + this.buttonsProperties.playlistLength[1];
 			info += '\nFilter:\t' + this.buttonsProperties.forcedQuery[1];

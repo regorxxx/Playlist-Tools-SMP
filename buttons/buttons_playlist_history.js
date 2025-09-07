@@ -1,5 +1,5 @@
 ﻿'use strict';
-//12/03/25
+//07/09/25
 
 /*
 	Playlist History
@@ -7,7 +7,7 @@
 	Switch to previous playlists.
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -50,7 +50,7 @@ addButton({
 		description: function () {
 			return 'Switch to previous playlist:' +
 				'\nPlaylist:\t' + this.plsHistory.getPrevPlsName() +
-				(typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1]
+				(typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1]
 					? '\n-----------------------------------------------------\n(Shift + L. Click to see entire history)'
 					: '');
 		},

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Main Menu shortcut
@@ -9,7 +9,7 @@
 	Button state may be saved between sessions and will change when clicking on the button.
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, MF_GRAYED:readable, clone:readable, MF_STRING:readable, tryMethod:readable, compareObjects:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -330,7 +330,7 @@ buttonsBar.list.push(newButtonsProperties);
 			},
 			description: function () {
 				const bShift = utils.IsKeyPressed(VK_SHIFT);
-				const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+				const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 				let info = 'Executes Main menu assigned entries:';
 				// Entries
 				const entries = JSON.parse(this.buttonsProperties.entries[1]);

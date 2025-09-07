@@ -1,11 +1,11 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Volume controls and display
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, checkCompatible:readable, VK_RETURN:readable, FontStyle:readable, MK_SHIFT:readable, VK_SHIFT:readable, VK_BACK:readable, DT_LEFT:readable, DT_CENTER:readable, DT_RIGHT:readable, DT_VCENTER:readable, DT_CALCRECT:readable, DT_NOPREFIX:readable, DT_END_ELLIPSIS:readable, DT_PATH_ELLIPSIS:readable, DT_WORD_ELLIPSIS:readable, DT_NOCLIP:readable, globTags:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -176,7 +176,7 @@ addButton({
 		gFont: _gdiFont(globFonts.button.name, globFonts.button.size * newButtonsProperties.fontSize[1] * buttonsBar.config.textScale, FontStyle[newButtonsProperties.fontStyle[1]]),
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			let info = this.buttonsProperties.bPlaying[1] && fb.IsPlaying
 				? 'Playing item:'
 				: 'Focused item:';

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/08/25
+//07/09/25
 
 /*
 	Quickmatch same....
@@ -7,7 +7,7 @@
 	Expands [foo_quicksearch](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components/Quicksearch_UI_Element_%28foo_quicksearch%29#Context_menu) contextual menus functionality, and works with multiple selection
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, MF_STRING:readable, MF_GRAYED:readable, VK_CONTROL:readable, folders:readable, MF_MENUBREAK:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -129,7 +129,7 @@ addButton({
 		},
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			let sel = fb.GetSelectionType() > 1
 				? fb.GetSelections(1)
 				: plman.ActivePlaylist !== -1 ? fb.GetFocusItem(true) : null;

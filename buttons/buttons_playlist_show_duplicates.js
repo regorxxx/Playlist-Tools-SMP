@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -12,7 +12,7 @@
 	Tooltip texts are changed according to the variables set!
 */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable, menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, VK_CONTROL:readable, MK_CONTROL:readable, globRegExp:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -181,7 +181,7 @@ addButton({
 				.map((key) => { return this.buttonsProperties[key][1]; }).filter((n) => n); //Filter the holes, since they can appear at any place!
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
 			const bCtrl = utils.IsKeyPressed(VK_CONTROL);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			const preset = JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
 				.find((entry) =>
 					Object.keys(entry.settings).every(

@@ -1,12 +1,12 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Search n tracks (randomly) on library with the same tag(s) than the current selected track.
 	You can configure the number of tracks at properties panel. Also forced query to pre-filter tracks.
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable, menu_panelProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, MK_CONTROL:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, globRegExp:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -200,7 +200,7 @@ addButton({
 		},
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			const preset = JSON.parse(this.buttonsProperties.presets[1]).filter((entry) => Object.hasOwn(entry, 'settings'))
 				.find((entry) =>
 					Object.keys(entry.settings).every(

@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/08/25
+//07/09/25
 
 /*
 	Automatic tagging...
@@ -11,7 +11,7 @@
 	next step until the user press OK on those popups...and then the files would be blocked being tagged! = Error on next step.
  */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\menu_xxx.js');
 /* global _menu:readable  */
 include('..\\helpers\\helpers_xxx.js');
@@ -255,7 +255,7 @@ buttonsBar.list.push(newButtonsProperties);
 				info = _gr.EstimateLineWrap(info, _gdiFont(font.name, font.size), 400).filter(isString).join('\n');
 				// Modifiers
 				const bCtrl = utils.IsKeyPressed(VK_CONTROL);
-				const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+				const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 				if (bCtrl || bInfo) {
 					info += '\n-----------------------------------------------------';
 					info += this.tAut.isRunning() ? '\n(Ctrl + L. Click to force next step)' : '\n(Ctrl + L. Click to directly run on selection)';

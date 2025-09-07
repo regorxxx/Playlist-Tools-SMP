@@ -1,11 +1,11 @@
 'use strict';
-//19/06/25
+//07/09/25
 
 /*
 	Integrates Last.fm recommendations statistics within foobar2000 library.
 */
 
-/* global menu_panelProperties:readable */
+/* global barProperties:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, VK_SHIFT:readable, globTags:readable, globQuery:readable, doOnce:readable, MF_GRAYED:readable, VK_CONTROL:readable, folders:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -191,7 +191,7 @@ addButton({
 		},
 		description: function () {
 			const bShift = utils.IsKeyPressed(VK_SHIFT);
-			const bInfo = typeof menu_panelProperties === 'undefined' || menu_panelProperties.bTooltipInfo[1];
+			const bInfo = typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1];
 			const sel = fb.GetFocusItem();
 			let info = '';
 			if (sel) {
