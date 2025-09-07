@@ -134,9 +134,9 @@ The menus are highly customizable. They are created on demand according to the s
  
 ![pt_Toprated](https://user-images.githubusercontent.com/83307074/176501329-aa16d757-9b91-4e92-a4ff-23334589185e.gif)
 
-## Requirements
- 1. [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel): JavaScript host component required to install this. Only x32. **(only one host component required)**
- 2. [JSplitter](https://foobar2000.ru/forum/viewtopic.php?t=6378): JavaScript host component required to install this. Both x32 and x64. **(only one host component required)**
+## Requirements (only one host component required)
+ 1. [Spider Monkey Panel](https://theqwertiest.github.io/foo_spider_monkey_panel): JavaScript host component required to install this. Only x32. **(host component)**
+ 2. [JSplitter](https://foobar2000.ru/forum/viewtopic.php?t=6378): JavaScript host component required to install this. Both x32 and x64. **(host component)**
  3. FontAwesome: found at ’.\ resources\fontawesome-webfont.ttf’. See installation notes.
 
 ## Installation
