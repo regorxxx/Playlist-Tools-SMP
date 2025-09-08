@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/06/25
+//08/09/25
 
 /*
 	Playlist Tools Pools
@@ -7,7 +7,7 @@
 	Pools submenu from Playlist Tools
  */
 
-/* global menu:readable, menu_panelProperties:readable, menu_prefix_panel:readable, menu_properties:readable, defaultArgs:readable, menu_prefix:readable */
+/* global menu:readable, barProperties:readable, menu_properties:readable, defaultArgs:readable, menu_prefix:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MF_GRAYED:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -67,7 +67,7 @@ addButton({
 			return (isPlaylistToolsLoaded()
 				? 'Executes Playlist Tools Menu pool' +
 				(
-					getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
+					typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1]
 						? '\n-----------------------------------------------------\n(L. Click to show list)'
 						: ''
 				)

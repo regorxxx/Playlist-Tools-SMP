@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/06/25
+//08/09/25
 
 /*
 	Playlist Tools Submenu Custom
@@ -7,7 +7,7 @@
 	Calls a configurable submenu from Playlist Tools
  */
 
-/* global menu:readable, menu_panelProperties:readable, menu_prefix_panel:readable, menuTooltip:readable, _setClipboardData:readable */
+/* global menu:readable, barProperties:readable, menuTooltip:readable, _setClipboardData:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, MK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -117,7 +117,7 @@ addButton({
 				? (this.buttonsProperties.menu[1].length
 					? menuTooltip()
 					: 'Executes Playlist Tools assigned sub-menu' + (
-						getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
+						typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1]
 							? '\n-----------------------------------------------------\n(L. Click to configure sub-menu)'
 							: ''
 					)

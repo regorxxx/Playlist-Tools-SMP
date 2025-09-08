@@ -1,5 +1,5 @@
 ﻿'use strict';
-//24/06/25
+//06/08/25
 
 /*
 	Playlist Tools Macro custom
@@ -7,7 +7,7 @@
 	Shortcut to configurable macro from Playlist Tools
  */
 
-/* global menu:readable, menu_panelProperties:readable, menu_prefix:readable, menu_prefix_panel:readable, menu_properties:readable, MF_GRAYED:readable, defaultArgs:readable, MK_SHIFT:readable */
+/* global menu:readable, barProperties:readable, menu_prefix:readable, menu_properties:readable, MF_GRAYED:readable, defaultArgs:readable, MK_SHIFT:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -111,7 +111,7 @@ addButton({
 			return (isPlaylistToolsLoaded()
 				? 'Execute Playlist Tools Menu assigned macros:\nEntry:\t' + (this.buttonsProperties.macro[1] || '-None-') +
 				(
-					getPropertiesPairs(menu_panelProperties, menu_prefix_panel, 0).bTooltipInfo[1]
+					typeof barProperties === 'undefined' || barProperties.bTooltipInfo[1]
 						? '\n-----------------------------------------------------\n(L. Click to execute macro)\n(Shift + L. Click to configure macro)'
 						: ''
 				)
