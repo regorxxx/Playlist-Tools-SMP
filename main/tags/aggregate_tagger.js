@@ -25,10 +25,10 @@ include('..\\..\\helpers\\helpers_xxx_prototypes.js');
  * @param {object} options - Aggregation settings.
  * @param {number} options.round - [=2] Round destination tag value to n digits.
  * @param {boolean} options.bAsk - [=true] Ask before tagging files. Can be used to just display the report.
- * @param {'average|sum|count|mode'} options.mode - [='average'] Aggregation mode for destination tag.
+ * @param {'average|sum|count|mode|median'} options.mode - [='average'] Aggregation mode for destination tag.
  * @param {number|null} options.defaultVal - [=0] Value used when source tag is missing. Setting it to null will just skip counting that value for all purposes.
  * @param {number|null} options.modeVal - [=1] Number of values retrieved for 'mode' setting . By default it outputs the most frequent value only.
- * @returns {{results: {group: string, avg: Number, sum: Number, count: Number}[], handleList: FbMetadbHandleList, tags: {[destination]: Number}[]}}
+ * @returns {{results: {group: string, avg: number|null, sum: number|null, count: number, mode: [string, number][], median: number|null, val: number|[string,number]}[], handleList: FbMetadbHandleList, tags: {[destination]: Number}[]}}
  */
 function aggregateTagger(handleList, source = '[%RATING%]', destination = 'ALBUMRATING', group = '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%', count = 1, options = { round: 2, bAsk: true, mode: 'average', defaultVal: 0, modeVal: 1 }) {
 	options = { round: 2, bAsk: true, mode: 'average', defaultVal: 0, modeVal: 1, ...(options || {}) };
@@ -47,60 +47,72 @@ function aggregateTagger(handleList, source = '[%RATING%]', destination = 'ALBUM
 	const clone = handleList.Clone();
 	clone.OrderByFormat(groupTF, 0);
 	const total = clone.Count - 1;
-	let currGroup, prevGroup, sum = 0, countTotal = 0, avg, mode, val;
+	let currGroup, prevGroup, sum = 0, countTotal = 0, groupCount, avg, mode, median, val;
 	const dic = new Map();
+	const calculateStats = () => {
+		avg = sum / (countTotal || 1);
+		const dicEntries = [...dic.entries()].sort((a, b) => a[0].localeCompare(b[0], void(0), {numeric: true}));
+		median = void(0);
+		const half = Math.floor(countTotal / 2) + 1;
+		let acc = 0;
+		for (let [key, value] of dicEntries) {
+			acc += value;
+			if (acc <= half) {
+				median = Number(key);
+				if (acc === half) { break; }
+			} else if (acc > half) {
+				if (typeof median === 'undefined') { median =  Number(key); }
+				else { median = (median +  Number(key)) / 2; }
+				break;
+			}
+		};
+		mode = dicEntries.sort((a, b) => b[1] - a[1]).slice(0, options.modeVal);
+		switch (options.mode) {
+			case 'average': val = round(avg, options.round).toFixed(options.round); break;
+			case 'sum': val = round(sum, options.round).toFixed(options.round); break;
+			case 'count': val = countTotal; break;
+			case 'median': val = median; break;
+			case 'mode': val = mode.map((tag) => tag[0]); break;
+		}
+		if (isNaN(median) && avg === 0 && sum === 0) {
+			median = avg = sum = null;
+		}
+	};
+	const calculateGroup = (handle) => {
+		val = sourceTF.EvalWithMetadb(handle) || options.defaultVal;
+		if (val !== null) {
+			groupCount = bCountNumber ? count : (Number(countTF.EvalWithMetadb(handle)) || 0);
+			val.split(sep).forEach((subVal) => {
+				dic.set(subVal, (dic.get(subVal) || 0) + groupCount);
+			});
+			sum += Number(val) || 0;
+			countTotal += groupCount;
+		}
+	};
+	const addResults = (i) => {
+		let j = destinationArr.length;
+		while (j < i || j === total) {
+			destinationArr.push({ [destination]: val });
+			j++;
+		}
+		dic.clear();
+		results.push({ group: prevGroup, avg, sum, count: countTotal, mode, median, val });
+	};
 	clone.Convert().forEach((handle, i) => {
 		currGroup = groupTF.EvalWithMetadb(handle);
 		if (i === 0) { prevGroup = currGroup; }
 		if (currGroup === prevGroup) {
-			val = sourceTF.EvalWithMetadb(handle) || options.defaultVal;
-			if (val !== null) {
-				if (options.mode === 'mode') {
-					val.split(sep).forEach((subVal) => {
-						dic.set(subVal, (dic.get(subVal) || 0) + (bCountNumber ? count : (Number(countTF.EvalWithMetadb(handle)) || 0)));
-					});
-				} else {
-					sum += Number(val) || 0;
-				}
-				countTotal += (bCountNumber ? count : (Number(countTF.EvalWithMetadb(handle)) || 0));
-			}
+			calculateGroup(handle);
 		}
 		if (currGroup !== prevGroup || i === total) {
-			avg = sum / (countTotal || 1);
-			switch (options.mode) {
-				case 'average': val = round(avg, options.round).toFixed(options.round); break;
-				case 'sum': val = round(sum, options.round).toFixed(options.round); break;
-				case 'count': val = countTotal; break;
-				case 'mode': {
-					mode = [...dic.entries()].sort((a, b) => b[1] - a[1]).slice(0, options.modeVal);
-					val = mode.map((tag) => tag[0]);
-					break;
-				}
-			}
-			let j = destinationArr.length;
-			while (j < i || j === total) {
-				destinationArr.push({ [destination]: val });
-				j++;
-			}
-			if (options.mode === 'mode') {
-				dic.clear();
-				results.push({ group: prevGroup, avg: void (0), sum: void (0), count: countTotal, mode, val });
-			} else {
-				results.push({ group: prevGroup, avg, sum, count: countTotal, mode: void (0), val });
-			}
-			if (i !== total) {
+			calculateStats();
+			addResults(i);
+			if (currGroup !== prevGroup) {
 				prevGroup = currGroup;
+				sum = countTotal = 0;
 				val = sourceTF.EvalWithMetadb(handle) || options.defaultVal;
-				if (val !== null) {
-					if (options.mode === 'mode') {
-						val.split(sep).forEach((subVal) => {
-							dic.set(subVal, (dic.get(subVal) || 0) + (bCountNumber ? count : (Number(countTF.EvalWithMetadb(handle)) || 0)));
-						});
-					} else {
-						sum = Number(val) || 0;
-					}
-					countTotal = bCountNumber ? count : (Number(countTF.EvalWithMetadb(handle)) || 0);
-				}
+				calculateGroup(handle);
+				if (i === total) { calculateStats(); addResults(i); }
 			}
 		}
 	});

@@ -287,13 +287,13 @@
 					const subMenuName = menu.newMenu(name, menuName);
 					menu.newEntry({ menuName: subMenuName, entryText: 'Group tagging:', func: null, flags: MF_GRAYED });
 					menu.newSeparator(subMenuName);
-					['average', 'sum', 'count', 'mode'].forEach((mode) => {
+					['average', 'sum', 'count', 'median', 'mode'].forEach((mode) => {
 						const subMenuNameTwo = menu.newMenu(capitalize(mode), subMenuName);
 						[
-							{ entryText: 'By Album', group: '%ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%', destEx: 'ALBUMRATING', destModeEx: 'ALBUMGENRE' },
+							{ entryText: 'By Album', group: '%ALBUM%|%DATE%|%COMMENT%', destEx: 'ALBUMRATING', destModeEx: 'ALBUMGENRE' },
 							{ entryText: 'By Artist', group: '%ARTIST%', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
 							{ entryText: 'By Album Artist', group: '%ALBUM ARTIST%', destEx: 'ALBUMARTISTRATING', destModeEx: 'ALBUMARTISTGENRE' },
-							{ entryText: 'By 1st Artist', group: '$if2($meta(ARTIST,0),$meta(ALBUM ARTIST,0))', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
+							{ entryText: 'By 1st Artist', group: '$if2($meta(ALBUM ARTIST,0),$meta(ARTIST,0))', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
 							{ entryText: 'sep' },
 							{ entryText: 'Custom group...' },
 						].forEach((entry) => {

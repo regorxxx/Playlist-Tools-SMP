@@ -36,10 +36,10 @@ Groups:
 -------
 Controls how tracks are considered part of the same set, like albums, etc.
 Some common TF expressions you may want to use:
-	- By album: %ALBUM ARTIST%|%ALBUM%|%DATE%|%COMMENT%
+	- By album: %ALBUM%|%DATE%|%COMMENT%
 	- By artist: %ARTIST%
 	- By album artist: %ALBUM ARTIST%
-	- By 1st artist: $if2($meta(ARTIST,0),$meta(ALBUM ARTIST,0))
+	- By 1st artist: $if2($meta(ALBUM ARTIST,0),$meta(ARTIST,0))
 
 Count:
 ------
