@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/25
+//10/09/25
 
 /*
 	Quicksearch for same....
@@ -246,7 +246,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				menu.newSeparator();
 			} else {
 				// Create names for all entries
-				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
+				queryObj.name = queryObj.name.cut(30);
 				// Entries
 				menu.newEntry({
 					entryText: queryObj.name, func: () => {
@@ -333,7 +333,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				}
 			} else {
 				// Create names for all entries
-				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
+				queryObj.name = queryObj.name.cut(30);
 				// Entries
 				if (Array.isArray(queryObj.query)) { return; }
 				if (queryObj.query.count('#') === 2 && !queryObj.query.includes('$')) {
@@ -387,7 +387,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				}
 			} else {
 				// Create names for all entries
-				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
+				queryObj.name = queryObj.name.cut(30);
 				// Entries
 				if (Array.isArray(queryObj.query)) { return; }
 				if (queryObj.query.count('#') === 2 && !queryObj.query.includes('$')) {
@@ -467,7 +467,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				}
 			} else {
 				// Create names for all entries
-				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
+				queryObj.name = queryObj.name.cut(30);
 				// Entries
 				menu.newEntry({
 					menuName: partialMenu, entryText: queryObj.name, func: () => {
@@ -556,7 +556,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 				}
 			} else {
 				// Create names for all entries
-				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
+				queryObj.name = queryObj.name.cut(30);
 				// Entries
 				menu.newEntry({
 					menuName: partialMenu, entryText: queryObj.name, func: () => {

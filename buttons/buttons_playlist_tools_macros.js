@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/09/25
+//10/09/25
 
 /*
 	Playlist Tools Macros
@@ -53,10 +53,7 @@ addButton({
 							if (menu.isSeparator(macro)) { // Create separators
 								configMenu.newSeparator();
 							} else {
-								let macroName = macro.name || '';
-								macroName = macroName.length > 40
-									? macroName.substring(0, 40) + ' ...'
-									: macroName;
+								const macroName = (macro.name || '').cut(30);
 								if (entryNames.has(macroName)) {
 									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + macroName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(macro, null, '\t'), 'Playlist Tools: Macros');
 									return;

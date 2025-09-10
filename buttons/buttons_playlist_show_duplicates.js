@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/25
+//10/09/25
 
 /*
 	Removes duplicates on active playlist without changing order. It's currently set to title-artist-date,
@@ -191,7 +191,7 @@ addButton({
 			let info = 'Show duplicates according to equal:';
 			info += preset ? '\nName:\t' + preset.name : '';
 			info += '\nTF:\t' + checkKeys.join('|').cut(50);
-			info += '\nBias:\t' + this.buttonsProperties.sortBias[1].cut(50);
+			if (bCtrl) { info += '\nBias:\t' + this.buttonsProperties.sortBias[1].cut(50); }
 			info += '\nRegExp:\t' + this.buttonsProperties.bAdvTitle[1];
 			if (bShift || bCtrl || bInfo) {
 				info += '\n-----------------------------------------------------';

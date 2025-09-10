@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/25
+//10/09/25
 
 /*
 	Quickmatch same....
@@ -310,7 +310,7 @@ function quickmatchMenu() {
 				menu.newSeparator();
 			} else {
 				// Create names for all entries
-				queryObj.name = queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ...' : queryObj.name;
+				queryObj.name = queryObj.name.cut(30);
 				// Entries
 				const bSingle = queryObj.valSet.size <= 1;
 				const menuName = bSingle ? menu.getMainMenuName() : menu.newMenu(queryObj.name);
