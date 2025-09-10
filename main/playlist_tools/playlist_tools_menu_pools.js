@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//10/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -75,8 +75,7 @@
 								menu.newSeparator(subMenu);
 							} else {
 								// Create names for all entries
-								let poolName = poolObj.name || '';
-								poolName = poolName.length > 40 ? poolName.substring(0, 40) + ' ...' : poolName;
+								const poolName = (poolObj.name || '').cut(30);
 								if (entryNames.has(poolName)) {
 									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + poolName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(poolObj, null, '\t'), scriptName + ': ' + name);
 									return;
@@ -225,8 +224,7 @@
 								menu.newSeparator(subMenu);
 							} else {
 								// Create names for all entries
-								let poolName = poolObj.name || '';
-								poolName = poolName.length > 40 ? poolName.substring(0, 40) + ' ...' : poolName;
+								const poolName = (poolObj.name || '').cut(30);
 								if (entryNames.has(poolName)) {
 									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + poolName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(poolObj, null, '\t'), scriptName + ': ' + name);
 									return;

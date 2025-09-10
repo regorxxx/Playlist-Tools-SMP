@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//10/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, globQuery:readable */
 
@@ -84,8 +84,7 @@
 								menu.newSeparator(entryMenuName);
 							} else {
 								// Create names for all entries
-								let queryName = queryObj.name || '';
-								queryName = queryName.length > 40 ? queryName.substring(0, 40) + ' ...' : queryName;
+								const queryName = (queryObj.name || '').cut(30);
 								if (entryNames.has(queryName)) {
 									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + queryName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
 									return;

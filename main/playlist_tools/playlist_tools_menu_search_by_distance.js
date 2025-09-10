@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//10/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -202,8 +202,8 @@
 												? capitalize(key)
 												: capitalizeAll(key.replace(/(Genre|Style)/g, '/$1').replace(/(Region)/g, ' $1'), [' ', '/', '\\']);
 											const entryText = keyFormat + '\t[' + (
-												typeof value === 'string' && value.length > 10
-													? value.slice(0, 10) + '...'
+												typeof value === 'string'
+													? value.cut(10)
 													: value
 											) + ']';
 											[configSubmenu, submenuTwo].forEach((sm) => {

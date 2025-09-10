@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//10/09/25
 
 /* exported mainMenuSMP, executeByName */
 
@@ -110,7 +110,7 @@
 						}
 					});
 					//  Menus
-					const flags = isCompatible('1.6.1', 'smp') ? MF_STRING : MF_GRAYED;
+					const flags = isCompatible('1.6.1', 'smp') || isCompatible('3.6.1', 'jsplitter') ? MF_STRING : MF_GRAYED;
 					menu.newEntry({ menuName: subMenuName, entryText: 'File\\Spider Monkey Panel\\Script commands:', flags: MF_GRAYED });
 					menu.newSeparator(subMenuName);
 					menu.newCondEntry({
@@ -125,8 +125,7 @@
 									menu.newSeparator(subMenuName);
 								} else {
 									// Create names for all entries
-									let scriptName = entry.name;
-									scriptName = scriptName.length > 40 ? scriptName.substring(0, 40) + ' ...' : scriptName;
+									let scriptName = entry.name.cut(30);
 									if (entryNames.has(scriptName)) {
 										fb.ShowPopupMessage('There is an entry with duplicated name:\t' + scriptName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(entry, null, '\t'), scriptName + ': ' + name);
 										return;
@@ -215,8 +214,7 @@
 										menu.newSeparator(subMenuNameTwo);
 									} else {
 										// Create names for all entries
-										let scriptName = entry.name;
-										scriptName = scriptName.length > 40 ? scriptName.substring(0, 40) + ' ...' : scriptName;
+										const scriptName = entry.name.cut(30);
 										// Entries
 										menu.newEntry({
 											menuName: subMenuNameTwo, entryText: scriptName, func: () => {
@@ -245,7 +243,7 @@
 								const subMenuSecondName = menu.newMenu('Remove entry from list', subMenuName);
 								mainMenuSMP.forEach((entry, index) => {
 									if (!entry) { return; }
-									const entryText = (menu.isSeparator(entry) ? '------(separator)------' : (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name));
+									const entryText = (menu.isSeparator(entry) ? '------(separator)------' : entry.name.cut(30));
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText: entryText + '\t (' + (index + 1) + ')', func: () => {
 											mainMenuSMP.splice(index, 1);
@@ -370,8 +368,7 @@
 								menu.newSeparator(subMenuName);
 							} else {
 								// Create names for all entries
-								let scriptName = scrObj.name;
-								scriptName = scriptName.length > 40 ? scriptName.substring(0, 40) + ' ...' : scriptName;
+								const scriptName = scrObj.name.cut(30);
 								// Entries
 								menu.newEntry({ menuName: subMenuName, entryText: scriptName, func: null, flags: MF_GRAYED });
 							}
@@ -410,7 +407,7 @@
 							{
 								const subMenuSecondName = menu.newMenu('Remove entry from list', subMenuName);
 								scriptIncluded.forEach((queryObj, index) => {
-									const entryText = (menu.isSeparator(queryObj) ? '------(separator)------' : (queryObj.name.length > 40 ? queryObj.name.substring(0, 40) + ' ' : queryObj.name));
+									const entryText = (menu.isSeparator(queryObj) ? '------(separator)------' : queryObj.name.cut(30));
 									menu.newEntry({
 										menuName: subMenuSecondName, entryText, func: () => {
 											scriptIncluded.splice(index, 1);

@@ -153,8 +153,7 @@
 								menu.newSeparator(entryMenuName);
 							} else {
 								// Create names for all entries
-								let queryName = queryObj.name || '';
-								queryName = queryName.length > 40 ? queryName.substring(0, 40) + ' ...' : queryName;
+								const queryName = (queryObj.name || '').cut(30);
 								if (entryNames.has(queryName)) {
 									fb.ShowPopupMessage('There is an entry with duplicated name:\t' + queryName + '\nEdit the custom entries and either remove or rename it.\n\nEntry:\n' + JSON.stringify(queryObj, null, '\t'), scriptName + ': ' + name);
 									return;

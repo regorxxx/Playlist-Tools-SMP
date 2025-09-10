@@ -1,5 +1,5 @@
 ﻿'use strict';
-//25/08/25
+//10/09/25
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -171,7 +171,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 			: optionsNames.add(entry.name) && ''; // Allow duplicates and mark them
 		const entryName = (menu.isSeparator(entry)
 			? '------(separator)------'
-			: (entry.name.length > 40 ? entry.name.substring(0, 40) + ' ...' : entry.name)) + id;
+			: entry.name.cut(30)) + id;
 		const subMenuThirdName = menu.newMenu(entryName, parentMenu);
 		menu.newEntry({
 			menuName: subMenuThirdName, entryText: 'Edit entry...', func: () => {
