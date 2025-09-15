@@ -126,7 +126,7 @@
 - Quicksearch: now properly handles selection from other sources different to active playlist.
 - Quicksearch: evaluation on multiple tracks limited to max 1000 first tracks selected.
 - Other Tools\Check tags: input popups to set dictionary now display the current list of dictionaries found (more may be installed by the user).
-- Other tools\Write Tags: renamed to 'Tagger'.
+- Other tools\Write Tags: renamed to 'Batch Tagger'.
 - Other tools\Tagger: now uses the global tag remap set by user ('[foobar_profile]\foobar2000\js_data\presets\global\globTags.json') for danceness and LRA tags.
 - Other tools\Tagger: Shift + L. Click action on button has been moved to Ctrl. + L. Click; for consistency with the other buttons which have shift actions associated to settings menus (not available on this one).
 - Other tools\Tagger: added more checks for incompatible tools or settings.

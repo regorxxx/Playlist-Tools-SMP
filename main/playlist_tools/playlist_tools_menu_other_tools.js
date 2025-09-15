@@ -1,9 +1,9 @@
 ﻿'use strict';
-//06/09/25
+//15/09/25
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable */
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, playlistCountFlagsAddRem:readable, focusFlags:readable, selectedFlags:readable, selectedFlags:readable, configMenu:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable, _resolvePath:readable, capitalize:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, _b:readable, globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, findRecursiveDirs:readable, _resolvePath:readable, capitalize:readable,_t:readable, isBoolean:readable, soFeat:readable */
 
 // Other tools
 {
@@ -192,12 +192,20 @@
 			const scriptPath = folders.xxx + 'main\\tags\\tagger.js';
 			/* global Tagger:readable */
 			if (_isFile(scriptPath)) {
-				const name = 'Tagger';
+				const name = 'Batch Tagger';
 				if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 					include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 					readmes[menuName + '\\' + name] = folders.xxx + 'helpers\\readme\\tagger.txt';
 					const tAut = new Tagger();
-					menu_properties['toolsByKey'] = ['\'Other tools\\Tagger\' tools enabled', JSON.stringify(tAut.toolsByKey)];
+					menu_properties.toolsByKey = ['\'Other tools\\Tagger\' Tools enabled', JSON.stringify(new Tagger({ bOutputDefTools: true }))];
+					menu_properties.quietByKey = ['\'Other tools\\Tagger\' Quiet mode', JSON.stringify({})];
+					menu_properties.menuByKey = ['\'Other tools\\Tagger\' Tools tagging menu entries', JSON.stringify({})];
+					menu_properties.menuRemoveByKey = ['\'Other tools\\Tagger\' Tools remove tags menu entries', JSON.stringify({})];
+					menu_properties.tagsByKey = ['\'Other tools\\Tagger\' Tags per tool', JSON.stringify({})];
+					menu_properties.bWineBug = ['\'Other tools\\Tagger\' Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup];
+					menu_properties.bFormatPopups = ['\'Other tools\\Tagger\' Show format warning popups', true, { func: isBoolean }, true];
+					menu_properties.bToolPopups = ['\'Other tools\\Tagger\' Show tool warning popups', true, { func: isBoolean }, true];
+					menu_properties.bRunPopup = ['\'Other tools\\Tagger\' Ask confirmation before running', true, { func: isBoolean }, true];
 					const subMenuName = menu.newMenu(name, menuName);
 					const firedFlags = () => { return tAut.isRunning() ? MF_STRING : MF_GRAYED; };
 					const allFlags = () => { return (!tAut.isRunning() ? selectedFlags() : MF_GRAYED); };
@@ -273,6 +281,107 @@
 							if (bInit) { tAut.changeTools(JSON.parse(menu_properties['toolsByKey'][1])); }
 						}
 					});
+					// -> Config menu
+					if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
+						const subMenu = menu.newMenu('Batch tagger', configMenu, !tAut.isRunning() ? MF_STRING : MF_GRAYED);
+						{
+							const subMenuTwo = menu.newMenu('Quiet mode', subMenu);
+							menu.newEntry({ menuName: subMenuTwo, entryText: 'Disable user input and reports:', flags: MF_GRAYED });
+							menu.newSeparator(subMenuTwo);
+							Object.keys(tAut.quietByKey).forEach((key) => {
+								menu.newEntry({
+									menuName: subMenuTwo, entryText: tAut.titlesByKey[key], func: () => {
+										const quietByKey = JSON.parse(menu_properties.quietByKey[1]);
+										tAut.quietByKey[key] = quietByKey[key] = !tAut.quietByKey[key];
+										menu_properties.quietByKey[1] = JSON.stringify(quietByKey);
+										overwriteMenuProperties();
+									}, flags: ['biometric', 'masstagger'].includes(key) || !tAut.availableByKey[key] ? MF_GRAYED : MF_STRING
+								});
+								menu.newCheckMenuLast(() => tAut.quietByKey[key]);
+							});
+							menu.newSeparator(subMenuTwo);
+							menu.newEntry({
+								menuName: subMenuTwo, entryText: 'Switch all', func: () => {
+									const quietByKey = JSON.parse(menu_properties.quietByKey[1]);
+									const keys = Object.keys(tAut.quietByKey);
+									const current = keys.every((key) => tAut.quietByKey[key] || !tAut.availableByKey[key]);
+									keys.forEach((key) => {
+										if (['biometric', 'masstagger'].includes(key) || !tAut.availableByKey[key]) { return; }
+										tAut.quietByKey[key] = quietByKey[key] = !current;
+									});
+									menu_properties.quietByKey[1] = JSON.stringify(quietByKey);
+									overwriteMenuProperties();
+								}, flags: MF_STRING
+							});
+						}
+						[
+							{ menu: 'Tagging menu entries', key: 'menuByKey', tip: 'Contextual menu entries called:' },
+							{ menu: 'Remove tags menu entries', key: 'menuRemoveByKey', tip: 'Contextual menu entries called:' },
+							{ menu: 'Tags per tool', key: 'tagsByKey', tip: 'Associated tags:' },
+
+						].forEach((opt) => {
+							const subMenuTwo = menu.newMenu(opt.menu, subMenu);
+							menu.newEntry({ menuName: subMenuTwo, entryText: opt.tip, flags: MF_GRAYED });
+							menu.newSeparator(subMenuTwo);
+							for (const key in tAut[opt.key]) {
+								if (tAut[opt.key][key]) {
+									menu.newEntry({
+										menuName: subMenuTwo, entryText: tAut.titlesByKey[key] + '...', func: () => {
+											const input = Input.json(
+												'array strings', tAut[opt.key][key],
+												key === 'tagsByKey'
+													? 'Enter associated tag(s):\n(JSON array of strings)\n\nThe script will check if these tags are successfully removed/added.'
+													: 'Enter menu entry(s):\n(JSON array of strings)\n\nThe script will try to run all until any of them is successful.',
+												tAut.titlesByKey[key],
+												key === 'tagsByKey'
+													? '["REPLAYGAIN_ALBUM_GAIN", "REPLAYGAIN_ALBUM_PEAK", "REPLAYGAIN_TRACK_GAIN", "REPLAYGAIN_TRACK_PEAK"]'
+													: '["Utilities/Create Audio MD5 checksum"]',
+												void (0), true
+											);
+											if (input === null) { return; }
+											const prop = JSON.parse(menu_properties[opt.key][1]);
+											prop[key] = tAut[opt.key][key] = input;
+											menu_properties[opt.key][1] = JSON.stringify(prop);
+											overwriteMenuProperties();
+										}
+									});
+								}
+							};
+						});
+						menu.newSeparator(subMenu);
+						menu.newEntry({
+							menuName: subMenu, entryText: 'Wine ffmpeg bug workaround', func: () => {
+								menu_properties.bWineBug[1] = !menu_properties.bWineBug[1];
+								tAut.bWineBug = menu_properties.bWineBug[1];
+								overwriteMenuProperties();
+							}
+						});
+						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () => { return menu_properties.bWineBug[1]; });
+						menu.newEntry({
+							menuName: subMenu, entryText: 'Show format warning popups', func: () => {
+								menu_properties.bFormatPopups[1] = !menu_properties.bFormatPopups[1];
+								tAut.bFormatPopups = menu_properties.bFormatPopups[1];
+								overwriteMenuProperties();
+							}
+						});
+						menu.newCheckMenu(subMenu, 'Show format warning popups', void (0), () => menu_properties.bFormatPopups[1]);
+						menu.newEntry({
+							menuName: subMenu, entryText: 'Show tool info popups', func: () => {
+								menu_properties.bToolPopups[1] = !menu_properties.bToolPopups[1];
+								tAut.bToolPopups = menu_properties.bToolPopups[1];
+								overwriteMenuProperties();
+							}
+						});
+						menu.newCheckMenu(subMenu, 'Show tool info popups', void (0), () => menu_properties.bToolPopups[1]);
+						menu.newEntry({
+							menuName: subMenu, entryText: 'Ask confirmation before running', func: () => {
+								menu_properties.bRunPopup[1] = !menu_properties.bRunPopup[1];
+								tAut.bRunPopup = menu_properties.bRunPopup[1];
+								overwriteMenuProperties();
+							}
+						});
+						menu.newCheckMenu(subMenu, 'Ask confirmation before running', void (0), () => menu_properties.bRunPopup[1]);
+					}
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
@@ -291,9 +400,13 @@
 						const subMenuNameTwo = menu.newMenu(capitalize(mode), subMenuName);
 						[
 							{ entryText: 'By Album', group: '%ALBUM%|%DATE%|%COMMENT%', destEx: 'ALBUMRATING', destModeEx: 'ALBUMGENRE' },
+							{ entryText: 'sep' },
 							{ entryText: 'By Artist', group: '%ARTIST%', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
 							{ entryText: 'By Album Artist', group: '%ALBUM ARTIST%', destEx: 'ALBUMARTISTRATING', destModeEx: 'ALBUMARTISTGENRE' },
 							{ entryText: 'By 1st Artist', group: '$if2($meta(ALBUM ARTIST,0),$meta(ARTIST,0))', destEx: 'ARTISTRATING', destModeEx: 'ARTISTGENRE' },
+							{ entryText: 'sep' },
+							{ entryText: 'By Date', group: globTags.date, destEx: 'DATERATING', destModeEx: 'DATEGENRE' },
+							{ entryText: 'By Decade', group: '$div(' + _t(globTags.date) + ',10)0s', destEx: 'DECADERATING', destModeEx: 'DECADEGENRE' },
 							{ entryText: 'sep' },
 							{ entryText: 'Custom group...' },
 						].forEach((entry) => {
