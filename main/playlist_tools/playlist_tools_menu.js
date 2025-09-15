@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/25
+//15/09/25
 
 /*
 	Playlist Tools Menu
@@ -313,7 +313,7 @@ include('playlist_tools_menu_std_queries.js');
 include('playlist_tools_menu_dyn_queries.js');
 
 // Music Map special playlists...
-include('playlist_tools_menu_search_by_distance.js');
+include('playlist_tools_menu_music_map.js');
 
 // Special Playlists...
 {	// Create it if it was not already created. Contains entries from multiple scripts

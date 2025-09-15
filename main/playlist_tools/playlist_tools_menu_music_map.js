@@ -1,11 +1,11 @@
 ﻿'use strict';
-//10/09/25
+//15/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable,  isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, doOnce:readable, debounce:readable, globQuery:readable, globQuery:readable, _deleteFile:readable, capitalize:readable, capitalizeAll:readable, focusFlags:readable, popup:readable, WshShell:readable, isFoobarV2:readable, isArrayEqual:readable, _explorer:readable, _run:readable, _copyFile:readable, _open:readable, utf8:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable,  isStringWeak:readable, isBoolean:readable, MF_STRING:readable, isPlayCount:readable, Input:readable, doOnce:readable, debounce:readable, globQuery:readable, globQuery:readable, capitalize:readable, capitalizeAll:readable, focusFlags:readable, popup:readable, WshShell:readable, isFoobarV2:readable, isArrayEqual:readable */
 
-// Similar by...Graph\Dyngenre\Weight
+// Music Map
 {
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
 	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
@@ -15,12 +15,12 @@
 			readmes[newReadmeSep()] = 'sep';
 			readmes[sbd.name] = sbd.readmes.main;
 			// Delete unused properties
-			const toDelete = ['forcedQuery', 'bUseAntiInfluencesFilter', 'bUseInfluencesFilter', 'scoreFilter', 'graphDistance', 'method', 'bNegativeWeighting', 'poolFilteringTag', 'poolFilteringN', 'bRandomPick', 'bInversePick', 'probPick', 'playlistLength', 'bSortRandom', 'bScatterInstrumentals', 'bProgressiveListOrder', 'bInverseListOrder', 'bInKeyMixingPlaylist', 'bProgressiveListCreation', 'ProgressiveListCreationN', 'bAdvTitle', 'checkDuplicatesByTag', 'bSmartShuffle', 'bSmartShuffleAdvc', 'smartShuffleSortBias', 'artistRegionFilter', 'genreStyleRegionFilter'];
+			const toAdd = ['bAscii', 'bTagsCache', 'tags', 'genreStyleFilterTag', 'folksonomyWhitelistTag', 'folksonomyBlacklistTag', 'filePaths'];
 			let toMerge = {}; // Deep copy
 			Object.keys(SearchByDistance_properties).forEach((key) => {
-				if (!toDelete.includes(key)) {
+				if (toAdd.includes(key)) {
 					toMerge[key] = [...SearchByDistance_properties[key]];
-					toMerge[key][0] = '\'Search similar\' ' + toMerge[key][0];
+					toMerge[key][0] = '\'Music Map\' ' + toMerge[key][0];
 				}
 			});
 			// Run once at startup
@@ -134,54 +134,6 @@
 				if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 					{
 						const subMenu = menu.newMenu(sbd.name, configMenu);
-						{ 	// Find genre/styles not on graph
-							menu.newEntry({
-								menuName: subMenu, entryText: 'Find genres/styles not on Graph', func: () => {
-									const tags = JSON.parse(menu_properties.tags[1]);
-									findStyleGenresMissingGraph({
-										genreStyleFilter: JSON.parse(menu_properties.genreStyleFilterTag[1]).filter(Boolean),
-										genreStyleTag: Object.values(tags).filter((t) => t.type.includes('graph') && !t.type.includes('virtual')).map((t) => t.tf).flat(Infinity),
-										bAscii: menu_properties.bAscii[1],
-										bPopup: true
-									});
-								}
-							});
-							// Graph debug
-							menu.newEntry({
-								menuName: subMenu, entryText: 'Debug Graph (check console)', func: () => {
-									const profiler = defaultArgs.bProfile ? new FbProfiler('graphDebug') : null;
-									// Show popup on pass
-									graphDebug(sbd.allMusicGraph, true);
-									music_graph_descriptors_culture.debug(true);
-									if (defaultArgs.bProfile) { profiler.Print(); }
-								}
-							});
-							// Graph test
-							menu.newEntry({
-								menuName: subMenu, entryText: 'Run distance tests (check console)', func: () => {
-									const profiler = defaultArgs.bProfile ? new FbProfiler('testGraph') : null;
-									[testGraphNodes, testGraphNodeSets, testGraphNodeSetsWithPath].forEach((f) => f(sbd.allMusicGraph, sbd.influenceMethod));
-									[testGraphCulture].forEach((f) => f(music_graph_descriptors_culture));
-									if (defaultArgs.bProfile) { profiler.Print(); }
-								}
-							});
-							menu.newSeparator(subMenu);
-							// Graph cache reset Async
-							menu.newEntry({
-								menuName: subMenu, entryText: () => 'Reset link cache' + (sbd.isCalculatingCache ? '\t -processing-' : ''), func: () => {
-									if (sbd.isCalculatingCache) {
-										fb.ShowPopupMessage('There is a calculation currently on process.\nTry again after it finishes. Check console (or animation).', 'Graph cache');
-										return;
-									}
-									_deleteFile(folders.data + 'searchByDistance_cacheLink.json');
-									_deleteFile(folders.data + 'searchByDistance_cacheLinkSet.json');
-									cacheLink = void (0); // NOSONAR [global]
-									cacheLinkSet = void (0); // NOSONAR [global]
-									updateCache({ bForce: true, properties: menu_properties }); // Creates new one and also notifies other panels to discard their cache
-								}, flags: () => !sbd.isCalculatingCache ? MF_STRING : MF_GRAYED
-							});
-						}
-						menu.newSeparator(subMenu);
 						{
 							const submenuTwo = menu.newMenu('Tag remapping', subMenu);
 							{	// Menu to configure tags
@@ -294,34 +246,18 @@
 							}
 						}
 						menu.newSeparator(subMenu);
-						{ // Open descriptors
-							menu.newEntry({
-								menuName: subMenu, entryText: 'Open main descriptor', func: () => {
-									const file = folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx.js';
-									if (_isFile(file)) { _explorer(file); _run('notepad.exe', file); }
-								}
-							});
-							menu.newEntry({
-								menuName: subMenu, entryText: 'Open user descriptor', func: () => {
-									const file = folders.userHelpers + 'music_graph_descriptors_xxx_user.js';
-									if (!_isFile(file)) {
-										_copyFile(folders.xxx + 'main\\music_graph\\music_graph_descriptors_xxx_user.js', file);
-										const readme = _open(sbd.readmes.descriptors, utf8);
-										if (readme.length) { fb.ShowPopupMessage(readme, 'User descriptors'); }
-									}
-									if (_isFile(file)) { _explorer(file); _run('notepad.exe', file); }
-								}
-							});
-						}
-						menu.newSeparator(subMenu);
-						{ // Open graph html file
-							menu.newEntry({
-								menuName: subMenu, entryText: 'Show Music Graph on Browser', func: () => {
-									const file = folders.xxx + 'Draw Graph.html';
-									if (_isFile(file)) { _run(file); }
-								}
-							});
-						}
+						// Find genre/styles not on graph
+						menu.newEntry({
+							menuName: subMenu, entryText: 'Find genres/styles not on Graph', func: () => {
+								const tags = JSON.parse(menu_properties.tags[1]);
+								findStyleGenresMissingGraph({
+									genreStyleFilter: JSON.parse(menu_properties.genreStyleFilterTag[1]).filter(Boolean),
+									genreStyleTag: Object.values(tags).filter((t) => t.type.includes('graph') && !t.type.includes('virtual')).map((t) => t.tf).flat(Infinity),
+									bAscii: menu_properties.bAscii[1],
+									bPopup: true
+								});
+							}
+						});
 					}
 					menu.newSeparator(configMenu);
 					{
