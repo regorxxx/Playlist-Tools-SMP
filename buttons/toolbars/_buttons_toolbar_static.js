@@ -1,5 +1,5 @@
 ﻿'use strict';
-//11/08/25
+//15/09/25
 
 /*
 	This is an example of how merging buttons works. Just include them...
@@ -48,7 +48,7 @@ buttonsBar.config.toolbarColor = RGB(211,218,237);
 		folders.xxx + 'buttons\\buttons_search_top_tracks.js',
 		folders.xxx + 'buttons\\buttons_playlist_remove_duplicates.js',
 		folders.xxx + 'buttons\\buttons_music_map_basic.js',
-		folders.xxx + 'buttons\\buttons_tags_tagger.js',
+		folders.xxx + 'buttons\\buttons_tags_batch_tagger.js',
 		folders.xxx + 'buttons\\buttons_playlist_tools.js',
 	];
 
