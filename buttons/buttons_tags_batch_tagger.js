@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/25
+//15/09/25
 
 /*
 	Automatic tagging...
@@ -70,15 +70,15 @@ buttonsBar.list.push(newButtonsProperties);
 					const selFlags = handleList.Count ? MF_STRING : MF_GRAYED;
 					const allFlags = () => !this.tAut.isRunning() ? selFlags : MF_GRAYED;
 					menu.newEntry({
-						entryText: () => { return 'Tag selected tracks' + (this.tAut.isRunning() ? ' (running)' : ''); }, func: () => {
+						entryText: () => 'Tag selected tracks:' + (this.tAut.isRunning() ? ' (running)' : ''), func: () => {
 							this.tAut.run();
-							this.switchAnimation('Automate Tags', true, () => { return !this.tAut.isRunning(); });
+							this.switchAnimation('Automate Tags', true, () => !this.tAut.isRunning());
 						}, flags: allFlags
 					});
 					if (this.tAut.isRunning()) {
 						menu.newSeparator();
-						menu.newEntry({ entryText: () => { return 'Force next step'; }, func: this.tAut.nextStepTag });
-						menu.newEntry({ entryText: () => { return 'Stop execution'; }, func: this.tAut.stopStepTag });
+						menu.newEntry({ entryText: 'Force next step', func: this.tAut.nextStepTag });
+						menu.newEntry({ entryText: 'Stop execution', func: this.tAut.stopStepTag });
 					}
 					menu.newSeparator();
 					{
@@ -92,7 +92,7 @@ buttonsBar.list.push(newButtonsProperties);
 								menuName: subMenu, entryText: tool.title, func: () => {
 									// Disable all other tools when pressing shift
 									if (utils.IsKeyPressed(VK_SHIFT)) {
-										this.tAut.tools.filter((_) => { return _.key !== key; }).forEach((_) => { this.tAut.toolsByKey[_.key] = false; });
+										this.tAut.tools.filter((_) => _.key !== key).forEach((_) => { this.tAut.toolsByKey[_.key] = false; });
 										this.tAut.toolsByKey[key] = true;
 									} else {
 										this.tAut.toolsByKey[key] = !this.tAut.toolsByKey[key];
@@ -216,7 +216,7 @@ buttonsBar.list.push(newButtonsProperties);
 								overwriteProperties(this.buttonsProperties);
 							}
 						});
-						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () => { return this.buttonsProperties.bWineBug[1]; });
+						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () =>this.buttonsProperties.bWineBug[1]);
 						menu.newEntry({
 							menuName: subMenu, entryText: 'Show format warning popups', func: () => {
 								this.buttonsProperties.bFormatPopups[1] = !this.buttonsProperties.bFormatPopups[1];
@@ -243,7 +243,7 @@ buttonsBar.list.push(newButtonsProperties);
 						menu.newCheckMenu(subMenu, 'Ask confirmation before running', void (0), () => this.buttonsProperties.bRunPopup[1]);
 					}
 					menu.newSeparator();
-					menu.newEntry({ entryText: 'Readme...', func: () => showButtonReadme('buttons_tags_tagger.js') });
+					menu.newEntry({ entryText: 'Readme...', func: () => showButtonReadme('buttons_tags_batch_tagger.js') });
 					menu.btn_up(this.currX, this.currY + this.currH);
 				}
 			},
