@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/09/25
+//17/09/25
 
 /*
 	Playlist Tools Menu
@@ -154,7 +154,7 @@ const menu = new _menu({
 
 // Enable/disable menu
 const menuAlt = new _menu();
-const menuAltAllowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Other tools', 'Pools', 'Script integration', 'Last action']);
+const menuAltAllowed = new Set([menu.getMainMenuName(), 'Playlist manipulation', 'Selection manipulation', 'Tagging', 'Other tools', 'Pools', 'Script integration', 'Last action']);
 
 // For enable/disable menus
 const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
@@ -303,19 +303,19 @@ addEventListener('on_dsp_preset_changed', () => {
 // Top rated Tracks from year
 include('playlist_tools_menu_most_year.js');
 
-// Same by...
+// Same by
 include('playlist_tools_menu_same_by.js');
 
-// Standard Queries...
+// Standard Queries
 include('playlist_tools_menu_std_queries.js');
 
-// Dynamic queries...
+// Dynamic queries
 include('playlist_tools_menu_dyn_queries.js');
 
-// Music Map special playlists...
+// Music Map special playlists
 include('playlist_tools_menu_music_map.js');
 
-// Special Playlists...
+// Special Playlists
 {	// Create it if it was not already created. Contains entries from multiple scripts
 	if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) {
 		if (!menu.hasMenu(specialMenu)) {
@@ -325,11 +325,14 @@ include('playlist_tools_menu_music_map.js');
 	} else if (menuDisabled.findIndex((menu) => menu.menuName === specialMenu) === -1) { menuDisabled.push({ menuName: specialMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 }
 
-// Playlist manipulation...
+// Playlist manipulation
 include('playlist_tools_menu_pls_manipulation.js');
 
-// Selection manipulation...
+// Selection manipulation
 include('playlist_tools_menu_sel_manipulation.js');
+
+// Tagging
+include('playlist_tools_menu_tagging.js');
 
 // Other tools
 include('playlist_tools_menu_other_tools.js');
@@ -533,7 +536,7 @@ function createMainMenuDynamic() {
 			const mainMenu = menu.getMainMenuName();
 			const tree = {};
 			const dynamicTree = {};
-			const toSkip = new Set(['Add new entry to list...', 'Remove entry from list', 'Configuration', 'Find track(s) in', 'Check tags', 'Tagger', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Music Map', 'Set Global Forced Query...', 'Readmes', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist', 'Go to playlist', 'Send playlist\'s tracks to', 'Remove track(s) from', 'Find now playing track in', 'Other tools', 'Configure dictionary', 'By halves', 'By quarters', 'By thirds', 'Send selection to', 'Don\'t try to find tracks if selecting more than', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing', 'SMP Dynamic menu', 'Report all from', 'Check only', 'Difference with playlist', 'Intersect with playlist', 'Merge with playlist', 'Tags...', 'Available tools', 'Enable double pass to match more tracks', 'Available tools', 'Harmonic mixing', 'Dynamic queries evaluation', 'Global Forced Query', 'Configure filters...', 'Additional pre-defined filters', 'Set menus', 'Move entry...', 'Remove entry', 'Edit entry...', 'Clone entry...', 'Update with current settings', 'Duplicates handling']);
+			const toSkip = new Set(['Add new entry to list...', 'Remove entry from list', 'Configuration', 'Find track(s) in', 'Check tags', 'Tagger', 'Playlist History', 'Custom pool...', 'Start recording a macro', 'Stop recording and Save macro', 'Playlist Names Commands', 'Include scripts', 'Music Map', 'Set Global Forced Query...', 'Readmes', 'SMP Main menu', 'Script integration', 'Split playlist list submenus at', 'Show locked playlist (autoplaylists, etc.)?', 'Show current playlist?', 'Selection manipulation', 'Close playlist', 'Go to playlist', 'Send playlist\'s tracks to', 'Remove track(s) from', 'Find now playing track in', 'Other tools', 'Tagging', 'Configure dictionary', 'By halves', 'By quarters', 'By thirds', 'Send selection to', 'Don\'t try to find tracks if selecting more than', 'Set tags (for duplicates)...', 'Set tags (for filtering)...', 'Set number allowed (for filtering)...', 'Sets similarity threshold...', 'UI', 'Logging', 'Asynchronous processing', 'SMP Dynamic menu', 'Report all from', 'Check only', 'Difference with playlist', 'Intersect with playlist', 'Merge with playlist', 'Tags...', 'Available tools', 'Enable double pass to match more tracks', 'Available tools', 'Harmonic mixing', 'Dynamic queries evaluation', 'Global Forced Query', 'Configure filters...', 'Additional pre-defined filters', 'Set menus', 'Move entry...', 'Remove entry', 'Edit entry...', 'Clone entry...', 'Update with current settings', 'Duplicates handling']);
 			const toSkipStarts = ['(Send sel. to)', 'Remove entry from list', '(Close) Playlists', '(Go to) Playlists', '(Send all to) Playlists', 'Global pls. length', 'Tag remapping', 'Music Map', '(Merge with)', '(Difference with)', '(Intersect with)', 'Edit entries from list', '------(separator)------'];
 			const toRegEx = [/(Switch lock playlist\\)(?!Active playlist$)/, /(Lock playlist( \(by SMP\):)?\\)(?!Active playlist$)/, /(Unlock playlist\\)(?!Active playlist$)/];
 			const toSkipExport = new Set(['By... (pairs of tags)', 'By... (query)', 'Filter playlist by... (query)', 'Filter playlist by... (tags)', 'From year...', 'From last...', 'By... (tags)', 'By... (expression)', 'Find or create playlist...', 'To specified position', 'Select next # tracks...', 'At year...', 'Since last...', 'Custom TF...', 'By... (tag-value)', 'By... (tag)', 'Select by... (query)', 'Import from file \\ url...', 'Set custom path...']);

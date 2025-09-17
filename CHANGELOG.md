@@ -150,7 +150,8 @@
 - Dynamic queries: support for 'ALBUM ARTIST' fallback expansion for multi-value tags. Note in foobar2000 '%ALBUM ARTIST%' works as a virtual tag pointing to ALBUM ARTIST|ARTIST|COMPOSER (but values are joined with commads) and 'ALBUM ARTIST' points to a file tag, thus never working with multiple values as intended. i.e. 'ALBUM ARTIST IS ACDC' only works if the track has a real tag with such value, but '%ALBUM ARTIST% IS ACDC' would not work properly with a track with 2 artists. Dynamic queries will automatically replace queries like 'ALBUM ARTIST IS #ALBUM ARTIST#' -> '(ALBUM ARTIST PRESENT AND ALBUM ARTIST IS #ALBUM ARTIST#) OR (ALBUM ARTIST MISSING AND ARTIST IS #ARTIST#)', thus working as intended in most cases.
 - Buttons: track selection bias setting is now also saved on presets for remove/show duplicates and filter playlist buttons.
 - Presets: unified presets along different query filtering tools.
-- Presets: changed all references to rating >x to ≥X+1. i.e. 'Rating ≥3' instead of 'Rating >2'
+- Presets: changed all references to rating >x to ≥X+1. i.e. 'Rating ≥3' instead of 'Rating >2'.
+- UI: submenu 'Tagging' contains now Batch tagger, Group tagger and Check tags tools (from 'Other tools').
 - UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - UI: show shortcuts on tooltip setting moved to global setting for the toolbar.
 - Helpers: updated helpers.
