@@ -1,9 +1,9 @@
 ﻿'use strict';
-//10/09/25
+//17/09/25
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, specialMenu:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
-/* global MF_GRAYED:readable, MF_MENUBARBREAK:readable, folders:readable, _isFile:readable, clone:readable, MF_STRING:readable, isJSON:readable, Input:readable */
+/* global MF_GRAYED:readable, MF_MENUBARBREAK:readable, folders:readable, _isFile:readable, clone:readable, MF_STRING:readable, isJSON:readable, Input:readable,isBoolean:readable, isStringWeak:readable */
 
 // Pools
 {
@@ -18,8 +18,15 @@
 			readmes[newReadmeSep()] = 'sep';
 			readmes[name] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_pools.txt';
 			readmes[name + ' (allowed keys)'] = folders.xxx + '\\presets\\Playlist Tools\\pools\\allowedKeys.txt';
+			// Other properties
+			if (!Object.hasOwn(menu_properties, 'bSmartShuffleAdvc')) {
+				menu_properties['bSmartShuffleAdvc'] = ['Smart shuffle extra conditions', true, { func: isBoolean }, true];
+			}
+			if (!Object.hasOwn(menu_properties, 'smartShuffleSortBias')) {
+				menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', { func: isStringWeak }, 'random'];
+			}
 			forcedQueryMenusEnabled[name] = true;
-			const bEnableSearchDistance = (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) && typeof sbd !== 'undefined';
+			const bEnableSearchDistance = (!Object.hasOwn(menusEnabled, name + ' (Music Map)') || menusEnabled[name + ' (Music Map)']) && typeof sbd !== 'undefined';
 			const plsManHelper = folders.xxx + 'main\\playlist_manager\\playlist_manager_helpers.js';
 			if (_isFile(plsManHelper)) { include(plsManHelper.replace(folders.xxx + 'main\\', '..\\')); }
 			const bEnablePlsMan = typeof loadPlaylistsFromFolder !== 'undefined';
@@ -270,6 +277,8 @@
 						});
 					}
 				});
+			} else {
+				menuDisabled.push({ menuName: name + ' (Music Map)', subMenuFrom: name, index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true });
 			}
 			if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
 				const subMenuName = 'Smart shuffle';
@@ -336,7 +345,7 @@
 					menu.newSeparator(configMenu);
 				}
 				menu.newSeparator();
-			} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
-		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
+			} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); } // NOSONAR
+		} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 	}
 }

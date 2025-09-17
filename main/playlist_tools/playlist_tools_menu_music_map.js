@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/09/25
+//17/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -10,7 +10,7 @@
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
 	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
-		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) {
+		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] || !Object.hasOwn(menusEnabled, 'Pools (Music Map)') || menusEnabled['Pools (Music Map)']) {
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[sbd.name] = sbd.readmes.main;
@@ -45,90 +45,92 @@
 			// Set default args
 			const scriptDefaultArgs = { properties: menu_properties, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, graphDistance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, bInversePick: false, probPick: 100, bSortRandom: false, bProgressiveListOrder: false, bInverseListOrder: false, bScatterInstrumentals: false, bSmartShuffle: true, bSmartShuffleAdvc: menu_properties.bSmartShuffleAdvc[1], smartShuffleSortBias: menu_properties.smartShuffleSortBias[1], artistRegionFilter: -1, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN: 1, bCreatePlaylist: true };
 			// Menus
-			const loadMenus = (menuName, selArgs, entryArgs = []) => {
-				selArgs.forEach((selArg) => {
-					if (menu.isSeparator(selArg)) {
-						let entryMenuName = Object.hasOwn(selArg, 'menu') ? selArg.menu : menuName;
-						menu.newSeparator(entryMenuName);
-					} else {
-						const entryArg = entryArgs.find((item) => { return item.name === selArg.name; }) || {};
-						let entryText = selArg.name;
-						menu.newEntry({
-							menuName, entryText, func: (args = { ...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args }) => {
-								const globQuery = args.properties['forcedQuery'][1];
-								if (Object.hasOwn(args, 'forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
-									args['forcedQuery'] = globQuery + ' AND ' + args['forcedQuery'];
-								}
-								// Set default values for tags
-								const tags = JSON.parse(menu_properties.tags[1]);
-								for (let key in tags) { tags[key].weight = 0; }
-								for (let key in tags) {
-									args.tags[key] = { ...tags[key], ...args.tags[key] };
-								}
-								searchByDistance(args);
-							}, flags: focusFlags
-						});
-					}
-				});
-			};
-			{	// -> Special playlists
-				menu.newEntry({ menuName: specialMenu, entryText: 'Based on ' + sbd.name + ':', func: null, flags: MF_GRAYED });
-				const selArgs = [
-					{ name: 'sep' },
-					{
-						name: 'Influences from any date',
-						args: {
-							tags: { genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 15 }, key: { weight: 10 }, date: { weight: 0 }, bpm: { weight: 10 } },
-							bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, graphDistance: 500, method: 'GRAPH'
+			if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu]) {
+				const loadMenus = (menuName, selArgs, entryArgs = []) => {
+					selArgs.forEach((selArg) => {
+						if (menu.isSeparator(selArg)) {
+							let entryMenuName = Object.hasOwn(selArg, 'menu') ? selArg.menu : menuName;
+							menu.newSeparator(entryMenuName);
+						} else {
+							const entryArg = entryArgs.find((item) => { return item.name === selArg.name; }) || {};
+							let entryText = selArg.name;
+							menu.newEntry({
+								menuName, entryText, func: (args = { ...scriptDefaultArgs, ...defaultArgs, ...selArg.args, ...entryArg.args }) => {
+									const globQuery = args.properties['forcedQuery'][1];
+									if (Object.hasOwn(args, 'forcedQuery') && globQuery.length && args['forcedQuery'] !== globQuery) { // Join queries if needed
+										args['forcedQuery'] = globQuery + ' AND ' + args['forcedQuery'];
+									}
+									// Set default values for tags
+									const tags = JSON.parse(menu_properties.tags[1]);
+									for (let key in tags) { tags[key].weight = 0; }
+									for (let key in tags) {
+										args.tags[key] = { ...tags[key], ...args.tags[key] };
+									}
+									searchByDistance(args);
+								}, flags: focusFlags
+							});
 						}
-					},
-					{
-						name: 'Influences within 20 years',
-						args: {
-							tags: { genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 15 }, key: { weight: 10 }, date: { weight: 10, range: 20 }, bpm: { weight: 10 } },
-							bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, graphDistance: 500, method: 'GRAPH'
+					});
+				};
+				{	// -> Special playlists
+					menu.newEntry({ menuName: specialMenu, entryText: 'Based on ' + sbd.name + ':', func: null, flags: MF_GRAYED });
+					const selArgs = [
+						{ name: 'sep' },
+						{
+							name: 'Influences from any date',
+							args: {
+								tags: { genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 15 }, key: { weight: 10 }, date: { weight: 0 }, bpm: { weight: 10 } },
+								bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, graphDistance: 500, method: 'GRAPH'
+							}
+						},
+						{
+							name: 'Influences within 20 years',
+							args: {
+								tags: { genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 15 }, key: { weight: 10 }, date: { weight: 10, range: 20 }, bpm: { weight: 10 } },
+								bUseInfluencesFilter: true, probPick: 100, scoreFilter: 40, graphDistance: 500, method: 'GRAPH'
+							}
+						},
+						{ name: 'sep' },
+						{
+							name: 'Progressive playlist by genre/styles',
+							args: {
+								tags: { genre: { weight: 15 }, style: { weight: 5 }, mood: { weight: 30 }, key: { weight: 10 }, date: { weight: 5, range: 35 }, bpm: { weight: 10 } },
+								probPick: 100, scoreFilter: 70, graphDistance: 200, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3
+							}
+						},
+						{
+							name: 'Progressive playlist by mood',
+							args: {
+								tags: { genre: { weight: 20 }, style: { weight: 20 }, mood: { weight: 5 }, key: { weight: 20 }, date: { weight: 0 }, bpm: { weight: 0 } },
+								probPick: 100, scoreFilter: 60, graphDistance: 300, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3
+							}
+						},
+						{ name: 'sep' },
+						{
+							name: 'Harmonic mix with similar genre/styles',
+							args: {
+								tags: { dynGenre: { weight: 20, range: 2 }, genre: { weight: 15 }, style: { weight: 15 }, mood: { weight: 0 }, key: { weight: 0 }, date: { weight: 5, range: 25 }, bpm: { weight: 0 } },
+								probPick: 100, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true
+							}
+						},
+						{
+							name: 'Harmonic mix with similar moods',
+							args: {
+								tags: { dynGenre: { weight: 10, range: 3 }, genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 35 }, key: { weight: 0 }, date: { weight: 5, range: 35 }, bpm: { weight: 0 } },
+								probPick: 100, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true
+							}
+						},
+						{
+							name: 'Harmonic mix with similar instrumental tracks',
+							args: {
+								tags: { dynGenre: { weight: 10, range: 3 }, genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 15 }, key: { weight: 0 }, date: { weight: 5, range: 35 }, bpm: { weight: 0 } },
+								probPick: 100, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: globQuery.instrumental
+							}
 						}
-					},
-					{ name: 'sep' },
-					{
-						name: 'Progressive playlist by genre/styles',
-						args: {
-							tags: { genre: { weight: 15 }, style: { weight: 5 }, mood: { weight: 30 }, key: { weight: 10 }, date: { weight: 5, range: 35 }, bpm: { weight: 10 } },
-							probPick: 100, scoreFilter: 70, graphDistance: 200, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3
-						}
-					},
-					{
-						name: 'Progressive playlist by mood',
-						args: {
-							tags: { genre: { weight: 20 }, style: { weight: 20 }, mood: { weight: 5 }, key: { weight: 20 }, date: { weight: 0 }, bpm: { weight: 0 } },
-							probPick: 100, scoreFilter: 60, graphDistance: 300, method: 'GRAPH', bProgressiveListCreation: true, progressiveListCreationN: 3
-						}
-					},
-					{ name: 'sep' },
-					{
-						name: 'Harmonic mix with similar genre/styles',
-						args: {
-							tags: { dynGenre: { weight: 20, range: 2 }, genre: { weight: 15 }, style: { weight: 15 }, mood: { weight: 0 }, key: { weight: 0 }, date: { weight: 5, range: 25 }, bpm: { weight: 0 } },
-							probPick: 100, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true
-						}
-					},
-					{
-						name: 'Harmonic mix with similar moods',
-						args: {
-							tags: { dynGenre: { weight: 10, range: 3 }, genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 35 }, key: { weight: 0 }, date: { weight: 5, range: 35 }, bpm: { weight: 0 } },
-							probPick: 100, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true
-						}
-					},
-					{
-						name: 'Harmonic mix with similar instrumental tracks',
-						args: {
-							tags: { dynGenre: { weight: 10, range: 3 }, genre: { weight: 5 }, style: { weight: 5 }, mood: { weight: 15 }, key: { weight: 0 }, date: { weight: 5, range: 35 }, bpm: { weight: 0 } },
-							probPick: 100, scoreFilter: 70, method: 'DYNGENRE', bInKeyMixingPlaylist: true, forcedQuery: globQuery.instrumental
-						}
-					}
-				];
-				// Menus
-				loadMenus(specialMenu, selArgs);
+					];
+					// Menus
+					loadMenus(specialMenu, selArgs);
+				}
 			}
 			{	// -> Config menu
 				if (!Object.hasOwn(menusEnabled, configMenu) || menusEnabled[configMenu] === true) {
@@ -342,7 +344,7 @@
 							menu.newSeparator(configMenu);
 						}
 					}
-				} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR [global]
+				} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); } // NOSONAR [global]
 			}
 		}
 	} else {

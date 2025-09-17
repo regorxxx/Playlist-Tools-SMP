@@ -388,25 +388,28 @@ include('playlist_tools_menu_last_action.js');
 	let i = 0;
 	let bLastSep = false;
 	const mainMenuName = menu.getMainMenuName();
+	const notInMainMenu = (name, subMenu) => subMenu === mainMenuName && name !== 'Pools (Music Map)';
 	menuList.forEach((menuEntry, idx) => {
 		const menuName = menuEntry.bIsMenu ? menuEntry.menuName : menuEntry.entryText;
 		const entryName = menuEntry.bIsMenu
-			? menuEntry.subMenuFrom === mainMenuName ? menuName : '--- ' + menuName
+			? notInMainMenu(menuName, menuEntry.subMenuFrom) ? menuName : '--- ' + menuName
 			: Object.hasOwn(menuEntry, 'condFunc')
 				? menuName
 				: menuEntry.menuName === mainMenuName ? menuName : '--- ' + menuName;
 		let flags = MF_STRING;
 		let bSep = false;
+		const nextEntry = menuList[idx + 1] || null;
 		if (menuEntry.subMenuFrom === mainMenuName) {
 			if (idx && i >= 16) { i = 0; flags = MF_MENUBARBREAK; }
-			if (!bLastSep && i && menuList[idx + 1] && menuList[idx + 1].subMenuFrom !== mainMenuName) { bLastSep = true; menuAlt.newSeparator(); }
+			if (!bLastSep && i && nextEntry && nextEntry.subMenuFrom !== mainMenuName) { bLastSep = true; menuAlt.newSeparator(); }
 			else { bLastSep = false; }
 			i++;
 		} else {
 			i++;
-			if (!bLastSep && menuList[idx + 1] && menuList[idx + 1].subMenuFrom === mainMenuName && i < 16) { bLastSep = true; bSep = true; }
+			if (!bLastSep && nextEntry && nextEntry.subMenuFrom === mainMenuName && i < 16) { bLastSep = true; bSep = true; }
 			else { bLastSep = false; }
 		}
+		if (menuName === 'Pools (Music Map)') { bSep = true; }
 		if (!Object.hasOwn(menusEnabled, menuName)) { menusEnabled[menuName] = true; }
 		menuAlt.newEntry({
 			entryText: entryName, func: () => {
