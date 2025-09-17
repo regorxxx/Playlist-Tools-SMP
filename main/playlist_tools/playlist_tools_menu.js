@@ -159,7 +159,7 @@ const menuAltAllowed = new Set([menu.getMainMenuName(), 'Playlist manipulation',
 // For enable/disable menus
 const menusEnabled = JSON.parse(getPropertiesPairs(typeof buttonsBar === 'undefined' ? menu_properties : menu_panelProperties, menu_prefix, 0)['menusEnabled'][1]);
 const menuDisabled = [];
-var disabledCount = 0; // NOSONAR [global]
+var disabledCount = 1; // NOSONAR [global]
 
 // ForcedQuery menus
 var forcedQueryMenusEnabled = {}; // NOSONAR [global]
