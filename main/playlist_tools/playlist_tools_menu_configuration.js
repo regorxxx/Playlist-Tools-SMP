@@ -1,5 +1,5 @@
 ﻿'use strict';
-//07/09/25
+//17/09/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, specialMenu:readable */
 
@@ -453,5 +453,5 @@
 			}
 			if (!iCount) { menu.newEntry({ menuName: subMenuName, entryText: '- no files - ', func: null, flags: MF_GRAYED }); }
 		}
-	} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
+	} else { menuDisabled.push({ menuName: configMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 }
