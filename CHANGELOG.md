@@ -152,6 +152,7 @@
 - Presets: unified presets along different query filtering tools.
 - Presets: changed all references to rating >x to ≥X+1. i.e. 'Rating ≥3' instead of 'Rating >2'.
 - UI: submenu 'Tagging' contains now Batch tagger, Group tagger and Check tags tools (from 'Other tools').
+- UI: submenu 'Playlist manipulation' contains now Playlist revive and Playlist history tools (from 'Other tools').
 - UI: unified script updates settings across all my scripts, look for 'Updates' submenu.
 - UI: show shortcuts on tooltip setting moved to global setting for the toolbar.
 - Helpers: updated helpers.
