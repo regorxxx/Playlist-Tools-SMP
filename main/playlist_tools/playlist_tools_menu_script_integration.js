@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/09/25
+//17/09/25
 
 /* exported mainMenuSMP, executeByName */
 
@@ -12,7 +12,7 @@
 	const name = 'Script integration';
 	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
 		readmes[newReadmeSep()] = 'sep';
-		let menuName = menu.newMenu(name);
+		const menuName = menu.newMenu(name);
 		{	// Dynamic menus
 			const scriptPath = folders.xxx + 'main\\main_menu\\main_menu_custom.js';
 			/* global onMainMenuEntries:readable, onMainMenuDynamicEntries:readable */
@@ -334,7 +334,7 @@
 					}
 				});
 				menu.newCheckMenuLast(() => menu_properties.bPlaylistNameCommands[1]);
-			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
+			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 		}
 		menu.newSeparator(menuName);
 		{	// Include scripts
@@ -440,7 +440,7 @@
 						}
 					}
 				});
-			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
+			} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 		}
-	} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); }
+	} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 }

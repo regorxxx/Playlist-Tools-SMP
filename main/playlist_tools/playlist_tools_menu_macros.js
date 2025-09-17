@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/09/25
+//17/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, createSubMenuEditEntries:readable, newReadmeSep:readable , presets:readable */
 
@@ -12,7 +12,7 @@
 		const scriptPath = folders.xxx + 'helpers\\menu_xxx_macros.js';
 		/* global _Macros:readable */
 		if (_isFile(scriptPath)) {
-			let menuName = menu.newMenu(name);
+			const menuName = menu.newMenu(name);
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			const Macros = menu.Macros = new _Macros(menu, { prefixMenu: name });
 			readmes[newReadmeSep()] = 'sep';
@@ -191,5 +191,5 @@
 			});
 			menu.newSeparator();
 		}
-	} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => { return menuAltAllowed.has(entry.subMenuFrom); }).length + disabledCount++, bIsMenu: true }); } // NOSONAR
+	} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); } // NOSONAR
 }
