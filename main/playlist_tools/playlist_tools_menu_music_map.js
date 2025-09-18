@@ -11,6 +11,7 @@
 	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
 		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] || !Object.hasOwn(menusEnabled, 'Pools (Music Map)') || menusEnabled['Pools (Music Map)']) {
+			if (!Object.hasOwn(menu_properties, 'bHarmonicMixDoublePass')) { menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true]; }
 			include(scriptPath.replace(folders.xxx + 'main\\', '..\\'));
 			readmes[newReadmeSep()] = 'sep';
 			readmes[sbd.name] = sbd.readmes.main;

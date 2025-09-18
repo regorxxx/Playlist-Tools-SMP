@@ -1,16 +1,15 @@
 ﻿'use strict';
 //17/09/25
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable */
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, libSearchMenu:readable */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable */
 
 // Other tools
 {
-	const name = 'Other tools';
-	if (!Object.hasOwn(menusEnabled, name) || menusEnabled[name]) {
+	if (!Object.hasOwn(menusEnabled, libSearchMenu) || menusEnabled[libSearchMenu]) {
+		const menuName = menu.findOrNewMenu(libSearchMenu);
 		readmes[newReadmeSep()] = 'sep';
-		const menuName = menu.newMenu(name);
 		{	// Import track list
 			const scriptPath = folders.xxx + 'main\\playlists\\import_text_playlist.js';
 			/* global ImportTextPlaylist:readable */
@@ -131,6 +130,5 @@
 				} else { menuDisabled.push({ menuName: name, subMenuFrom: menuName, index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 			}
 		}
-		menu.newSeparator();
-	} else { menuDisabled.push({ menuName: name, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
+	} else { menuDisabled.push({ menuName: libSearchMenu, subMenuFrom: menu.getMainMenuName(), index: menu.getMenus().filter((entry) => menuAltAllowed.has(entry.subMenuFrom)).length + disabledCount++, bIsMenu: true }); }
 }

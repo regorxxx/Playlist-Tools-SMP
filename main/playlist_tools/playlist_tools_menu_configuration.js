@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/09/25
+//18/09/25
 
 /* global menusEnabled:readable, configMenu:readable, readmes:readable, menu:readable, newReadmeSep:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, menu_propertiesBack:readable, menu_panelProperties:readable, overwritePanelProperties:readable, shortcutsPath:readable, importPreset:readable, presets:writable, menu_panelPropertiesBack:readable, loadProperties:readable, overwriteDefaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, specialMenu:readable */
 
@@ -12,6 +12,7 @@
 		readmes[configMenu + '\\Presets'] = folders.xxx + 'helpers\\readme\\playlist_tools_menu_presets.txt';
 		// Create it if it was not already created. Contains entries from multiple scripts
 		if (!menu.hasMenu(configMenu)) {
+			if (!menu.isLastEntrySepFrom(menu.getMainMenuName())) { menu.newSeparator(); }
 			menu.newMenu(configMenu);
 		}
 		{	// Menu to configure queries behavior
