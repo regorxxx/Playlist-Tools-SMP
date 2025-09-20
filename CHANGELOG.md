@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [5.0.0](#500---2025-09-20)
 - [4.6.0](#460---2024-10-09)
 - [4.5.0](#450---2024-08-13)
 - [4.4.0](#440---2024-07-30)
@@ -64,6 +65,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [5.0.0] - 2025-09-20
 ### Added
 - Toolbar: new preset 'Statust bar' available for empty toolbars. This preset creates a statust bar similar to the one found at DUI/CUI at bottom, but it may be tweaked with any TF (even for the volume or selection size fields), like the 'display_tf' button (see below).
 - Toolbar: new entry on toolbar menu to share current UI settings across all toolbar panels on foobar2000. See [here](https://hydrogenaud.io/index.php/topic,120978.msg1061005.html#msg1061005).
@@ -1440,7 +1447,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.6.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.6.0...v5.0.0
 [4.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.5.0...v4.6.0
 [4.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.4.0...v4.5.0
 [4.4.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.3.0...v4.4.0
