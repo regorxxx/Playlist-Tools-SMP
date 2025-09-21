@@ -39,5 +39,4 @@ experience. If you want to set a number greater than the current
 configurable max limit, then edit it manually on the properties panel.
 Beware that putting crazy limits, like 10.000 tracks, would render the
 entire menu unusable on large selections (and its useless, since no one
-needs to find so many tracks -at the same time- on other playlists).',
-'Playlist tools menu
+needs to find so many tracks -at the same time- on other playlists).
