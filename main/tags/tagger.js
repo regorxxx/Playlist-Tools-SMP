@@ -247,7 +247,7 @@ function Tagger({
 		return bPass;
 	};
 
-	this.run = () => {
+	this.run = ({ bDebug, bProfile }) => {
 		// Usage tips
 		if (this.bToolPopups && (this.toolsByKey.essentiaKey || this.toolsByKey.essentiaBPM || this.toolsByKey.essentiaDanceness || this.toolsByKey.essentiaLRA)) {
 			if (this.toolsByKey.ffmpegLRA) {
