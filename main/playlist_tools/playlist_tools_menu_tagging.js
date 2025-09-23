@@ -1,7 +1,7 @@
 ﻿'use strict';
-//17/09/25
+//22/09/25
 
-/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, selectedFlags:readable, selectedFlags:readable, configMenu:readable */
+/* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, selectedFlags:readable, selectedFlags:readable, configMenu:readable, menu_panelProperties */
 
 /* global MF_GRAYED:readable, folders:readable, _isFile:readable, _isFolder:readable, globTags:readable, VK_SHIFT:readable, clone:readable, MF_STRING:readable, Input:readable, findRecursiveDirs:readable, _resolvePath:readable, capitalize:readable,_t:readable, isBoolean:readable, soFeat:readable */
 
@@ -213,7 +213,7 @@
 					menu.newSeparator(subMenuName);
 					menu.newEntry({
 						menuName: subMenuName, entryText: () => { return 'Add tags on batch to selected tracks' + (tAut.isRunning() ? ' (running)' : ''); }, func: () => {
-							tAut.run();
+							tAut.run({ bDebug: menu_panelProperties.bDebug[1], bProfile: menu_panelProperties.bProfile[1] });
 							// Apply animation on registered parent button...
 							if (defaultArgs.parent) { defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, () => { return !tAut.isRunning(); }); }
 						}, flags: allFlags

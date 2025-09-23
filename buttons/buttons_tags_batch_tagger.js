@@ -1,5 +1,5 @@
 ﻿'use strict';
-//15/09/25
+//23/09/25
 
 /*
 	Automatic tagging...
@@ -46,7 +46,9 @@ var newButtonsProperties = { // NOSONAR[global]
 	bWineBug: ['Wine ffmpeg bug workaround', !soFeat.x64 && !soFeat.popup, { func: isBoolean }, !soFeat.x64 && !soFeat.popup],
 	bFormatPopups: ['Show format warning popups', true, { func: isBoolean }, true],
 	bToolPopups: ['Show tool warning popups', true, { func: isBoolean }, true],
-	bRunPopup: ['Ask confirmation before running', true, { func: isBoolean }, true]
+	bRunPopup: ['Ask confirmation before running', true, { func: isBoolean }, true],
+	bDebug: ['Enable debugging console logs', false, { func: isBoolean }, false],
+	bProfile: ['Enable profiling console logs', false, { func: isBoolean }, false],
 };
 newButtonsProperties.toolsByKey.push({ func: isJSON }, newButtonsProperties.toolsByKey[1]);
 newButtonsProperties.quietByKey.push({ func: isJSON }, newButtonsProperties.quietByKey[1]);
@@ -63,7 +65,7 @@ buttonsBar.list.push(newButtonsProperties);
 			func: function (mask) {
 				const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 				if (mask === MK_CONTROL) {
-					if (!this.tAut.isRunning() && handleList.Count) { this.tAut.run(); }
+					if (!this.tAut.isRunning() && handleList.Count) { this.tAut.run({ bDebug: this.buttonsProperties.bDebug[1], bProfile: this.buttonsProperties.bProfile[1] }); }
 					else { this.tAut.nextStepTag(); }
 				} else {
 					const menu = new _menu({ iMaxEntryLen: 50 }); // To avoid collisions with other buttons and check menu
@@ -71,7 +73,7 @@ buttonsBar.list.push(newButtonsProperties);
 					const allFlags = () => !this.tAut.isRunning() ? selFlags : MF_GRAYED;
 					menu.newEntry({
 						entryText: () => 'Tag selected tracks:' + (this.tAut.isRunning() ? ' (running)' : ''), func: () => {
-							this.tAut.run();
+							this.tAut.run({ bDebug: this.buttonsProperties.bDebug[1], bProfile: this.buttonsProperties.bProfile[1] });
 							this.switchAnimation('Automate Tags', true, () => !this.tAut.isRunning());
 						}, flags: allFlags
 					});
@@ -216,7 +218,7 @@ buttonsBar.list.push(newButtonsProperties);
 								overwriteProperties(this.buttonsProperties);
 							}
 						});
-						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () =>this.buttonsProperties.bWineBug[1]);
+						menu.newCheckMenu(subMenu, 'Wine ffmpeg bug workaround', void (0), () => this.buttonsProperties.bWineBug[1]);
 						menu.newEntry({
 							menuName: subMenu, entryText: 'Show format warning popups', func: () => {
 								this.buttonsProperties.bFormatPopups[1] = !this.buttonsProperties.bFormatPopups[1];

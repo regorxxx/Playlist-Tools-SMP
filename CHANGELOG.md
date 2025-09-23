@@ -67,6 +67,7 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Console: Debug and profiling logging now works with batch tagger tool (playlist tools menu and button).
 ### Removed
 ### Fixed
 - Toolbar: fix missing preset names for Music Map scripts on new installs.

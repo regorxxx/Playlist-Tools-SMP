@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/09/25
+//22/09/25
 
 /*
 	Automatic tagging...
@@ -440,8 +440,8 @@ function Tagger({
 			}
 			// Process files on steps
 			this.iStep = 0;
-			this.nextStepTag();
-			this.createListener(); // Add a listener associated to the handle list instead of relying on callbacks which fail sometimes...
+			this.nextStepTag({ bDebug, bProfile });
+			this.createListener({ bDebug, bProfile }); // Add a listener associated to the handle list instead of relying on callbacks which fail sometimes...
 		}
 	};
 
@@ -460,13 +460,13 @@ function Tagger({
 		});
 	};
 
-	this.nextStepTag = () => {
-		this.debouncedStep(this.iStep);
+	this.nextStepTag = ({ bDebug, bProfile }) => {
+		this.debouncedStep({ step: this.iStep, bDebug, bProfile });
 	};
 
 	const orderKeys = ['rgScan', 'tpScan', 'biometric', 'masstagger', 'dynamicRange', 'drMeter', 'chromaPrint', 'ffmpegLRA', 'folksonomy', 'essentiaFastKey', ['essentiaKey', 'essentiaBPM', 'essentiaDanceness', 'essentiaLRA']]; // Must follow order at this.stepTag()
 	if (orderKeys.flat(Infinity).some((k) => !Object.hasOwn(this.toolsByKey, k))) { throw new Error('Key not associated to any tool'); }
-	this.stepTag = (i) => {
+	this.stepTag = ({ step, bDebug = false, bProfile = false }) => {
 		const runMenu = (menuArr, handleList, title) => {
 			bSuccess = menuArr.some((name) => fb.RunContextCommandWithMetadb(name, handleList, 8));
 			if (!bSuccess) { fb.ShowPopupMessage('Contextual menu entries not found:\n\n  - ' + menuArr.join('\n  - ') + '\n\nCheck they match the contextual menus associated to the component and don\'t have any typo. Otherwise report to the component\'s dev.', title); }
@@ -474,7 +474,7 @@ function Tagger({
 		};
 		let bSuccess = false;
 		this.iStep++;
-		switch (i) {
+		switch (step) {
 			case 0: // Less than 100 ms / track?
 				bSuccess = this.toolsByKey.rgScan
 					? runMenu(this.menuRemoveByKey.rgScan, this.selItems, this.titlesByKey.rgScan)
@@ -513,36 +513,36 @@ function Tagger({
 				if (this.toolsByKey.chromaPrint) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSuccess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.chromaPrint });
+							bSuccess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.chromaPrint, bDebug, bProfile });
 						}
-					} else { bSuccess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItems, bQuiet: this.quietByKey.chromaPrint }); }
+					} else { bSuccess = chromaPrintUtils.calculateFingerprints({ fromHandleList: this.selItems, bQuiet: this.quietByKey.chromaPrint, bDebug, bProfile }); }
 				} else { bSuccess = false; }
 				break;
 			case 7:
 				if (this.toolsByKey.ffmpegLRA) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSuccess = ffmpeg.calculateLoudness({ fromHandleList: this.selItemsByCheck.subSong.missing, bWineBug: this.bWineBug, bQuiet: this.quietByKey.ffmpegLRA });
+							bSuccess = ffmpeg.calculateLoudness({ fromHandleList: this.selItemsByCheck.subSong.missing, bWineBug: this.bWineBug, bQuiet: this.quietByKey.ffmpegLRA, bDebug, bProfile });
 						}
-					} else { bSuccess = ffmpeg.calculateLoudness({ fromHandleList: this.selItems, bWineBug: this.bWineBug, bQuiet: this.quietByKey.ffmpegLRA }); }
+					} else { bSuccess = ffmpeg.calculateLoudness({ fromHandleList: this.selItems, bWineBug: this.bWineBug, bQuiet: this.quietByKey.ffmpegLRA, bDebug, bProfile }); }
 				} else { bSuccess = false; }
 				break;
 			case 8:
 				if (this.toolsByKey.folksonomy) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSuccess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.folksonomy });
+							bSuccess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.folksonomy, bDebug, bProfile });
 						}
-					} else { bSuccess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItems, bQuiet: this.quietByKey.folksonomy }); }
+					} else { bSuccess = folksonomyUtils.calculateFolksonomy({ fromHandleList: this.selItems, bQuiet: this.quietByKey.folksonomy, bDebug, bProfile }); }
 				} else { bSuccess = false; }
 				break;
 			case 9:
 				if (this.toolsByKey.essentiaFastKey) {
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSuccess = essentia.calculateKey({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.essentiaFastKey });
+							bSuccess = essentia.calculateKey({ fromHandleList: this.selItemsByCheck.subSong.missing, bQuiet: this.quietByKey.essentiaFastKey, bDebug, bProfile });
 						}
-					} else { bSuccess = essentia.calculateKey({ fromHandleList: this.selItems, bQuiet: this.quietByKey.essentiaFastKey }); }
+					} else { bSuccess = essentia.calculateKey({ fromHandleList: this.selItems, bQuiet: this.quietByKey.essentiaFastKey, bDebug, bProfile }); }
 				} else { bSuccess = false; }
 				break;
 			case 10:
@@ -552,9 +552,9 @@ function Tagger({
 					tagName.forEach((tag) => tag.tf = this.toolsByKey[tag.tf] ? this.tagsByKey[tag.tf][0] : '');
 					if (this.check.subSong) {
 						if (this.selItemsByCheck.subSong.missing.Count) {
-							bSuccess = essentia.calculateHighLevelTags({ fromHandleList: this.selItemsByCheck.subSong.missing, tagName, bQuiet });
+							bSuccess = essentia.calculateHighLevelTags({ fromHandleList: this.selItemsByCheck.subSong.missing, tagName, bQuiet, bDebug, bProfile });
 						}
-					} else { bSuccess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName, bQuiet }); }
+					} else { bSuccess = essentia.calculateHighLevelTags({ fromHandleList: this.selItems, tagName, bQuiet, bDebug, bProfile }); }
 				} else { bSuccess = false; }
 				break;
 			case 11:
@@ -606,12 +606,12 @@ function Tagger({
 				this.stopStepTag();
 				return;
 		}
-		if (!bSuccess) { this.stepTag(this.iStep); } // If the step was omitted, then run next step
+		if (!bSuccess) { this.stepTag({ step: this.iStep, bDebug, bProfile }); } // If the step was omitted, then run next step
 	};
 
 	this.debouncedStep = debounce(this.stepTag, this.timers.debounce); // Only continues next step when last tag update was done > X ms ago
 
-	this.checkHandleList = () => {
+	this.checkHandleList = ({ bDebug, bProfile }) => {
 		if (!this.isRunning) { this.stopStepTag(); return; }
 		const i = this.iStep - 1;
 		if (i >= 0) {
@@ -639,15 +639,15 @@ function Tagger({
 				if (this.check[checkKey]) { this.setNotAllowedTools(checkKey); } else { this.setNotAllowedTools(); }
 				if (!check(checkKey, key, i)) { return; }
 			}
-			this.nextStepTag();
+			this.nextStepTag({ bDebug, bProfile });
 			return;
 		}
-		this.nextStepTag();
+		this.nextStepTag({ bDebug, bProfile });
 	};
 
-	this.createListener = () => {
+	this.createListener = ({ bDebug, bProfile }) => {
 		if (this.listener !== null) { clearInterval(this.listener); }
-		this.listener = repeatFn(this.checkHandleList, this.timers.listener)();
+		this.listener = repeatFn(this.checkHandleList, this.timers.listener)({ bDebug, bProfile });
 		return this.listener;
 	};
 
