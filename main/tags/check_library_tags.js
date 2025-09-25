@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/08/25
+//25/09/25
 
 /*
 	Check Library Tags
@@ -58,7 +58,7 @@ include('..\\..\\helpers\\helpers_xxx_file.js');
 include('..\\..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertyByKey:readable, getPropertiesPairs:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global isString:readable, isStringWeak:readable, isBoolean:readable, _asciify:readable */
+/* global isString:readable, isStringWeak:readable, isBoolean:readable, _asciify:readable, _ps:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -111,7 +111,7 @@ if (typeof buttonsBar === 'undefined' && typeof bNotProperties === 'undefined') 
 	if (getPropertyByKey(checkTags_properties, 'bUseDic', checkTags_prefix)) {
 		if (_isFile(dictSettings.getDicPath()) && _isFile(dictSettings.getAffPath())) {
 			dictionary = new Typo(dictSettings.dictName, _open(dictSettings.getAffPath()), _open(dictSettings.getDicPath()));
-		} else { fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name); }
+		} else { fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name + _ps(window.ScriptInfo.Name)); }
 	}
 } else {  // With buttons, set these properties only once per panel
 	dictionary = new Typo(); // Load dict later at first use
@@ -147,11 +147,11 @@ function checkTags({
 			if (_isFile(dictSettings.getDicPath()) && _isFile(dictSettings.getAffPath())) { // Warn if not found
 				dictionary = new Typo(dictSettings.dictName, _open(dictSettings.getAffPath()), _open(dictSettings.getDicPath()));
 			} else {
-				fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name);
+				fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name + _ps(window.ScriptInfo.Name));
 				return;
 			}
 		} else if (!_isFile(dictSettings.getDicPath()) || !_isFile(dictSettings.getAffPath())) {
-			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name); return;
+			fb.ShowPopupMessage('Dictionary path not found:\n' + dictSettings.getDicPath() + '\n' + dictSettings.getAffPath(), window.Name + _ps(window.ScriptInfo.Name)); return;
 		}
 	}
 	// Constants
@@ -614,9 +614,9 @@ function checkTagsReport(tagsToCheck, tagsArt, countArrayFiltered, keySplit, alt
 	// Set verified tags known to be right Popup
 	if (properties['bAskForConfigTags'][1]) {
 		let currentTags = objectToPairs(tagValuesExcluded);
-		let answer = WshShell.Popup('Do you want to add new tags for exclusion in future reports?', 0, window.Name, popup.question + popup.yes_no);
+		let answer = WshShell.Popup('Do you want to add new tags for exclusion in future reports?', 0, window.Name + _ps(window.ScriptInfo.Name), popup.question + popup.yes_no);
 		if (answer === popup.yes) {
-			let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name, currentTags);
+			let inputTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports\n(Values known to be right)\n Pairs \'tagName,value\' separated by \';\' :', window.Name + _ps(window.ScriptInfo.Name), currentTags);
 			if (currentTags !== inputTags) {
 				tagValuesExcluded = pairsToObj(inputTags);
 				_save(properties['tagValuesExcludedPath'][1], JSON.stringify(tagValuesExcluded, null, '\t').replace(/\n/g, '\r\n'));
@@ -637,7 +637,7 @@ function addTagsToExclusion({
 	// Skipped values at pre-filter
 	const oldTags = loadTagsExcluded(properties['tagValuesExcludedPath'][1]);
 	if (!newTags || !newTags.length) {
-		newTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports.\n Pairs \'tagName,value\' separated by \';\' :\n\nList can also be edited at:\n' + properties['tagValuesExcludedPath'][1], window.Name, objectToPairs(oldTags));
+		newTags = utils.InputBox(window.ID, 'Tag pair(s) to exclude from future reports.\n Pairs \'tagName,value\' separated by \';\' :\n\nList can also be edited at:\n' + properties['tagValuesExcludedPath'][1], window.Name + _ps(window.ScriptInfo.Name), objectToPairs(oldTags));
 	} else {
 		newTags = newTags + ';' + objectToPairs(oldTags);
 	}
@@ -682,7 +682,7 @@ function pairsToObj(inputStr, bSet = false) { // A,x;A,y;B,z;... -> {A:[x,y],B:[
 function loadTagsExcluded(path) { // filter holes and remove duplicates
 	const bFromFile = _isFile(path);
 	let obj = bFromFile
-		? _jsonParseFileCheck(path, 'Exclusion list json', window.Name, utf8) || {}
+		? _jsonParseFileCheck(path, 'Exclusion list json', window.Name + _ps(window.ScriptInfo.Name), utf8) || {}
 		: {};
 	// Ensure data consistency
 	let bSave = false;

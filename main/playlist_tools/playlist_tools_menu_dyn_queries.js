@@ -1,9 +1,9 @@
 ﻿'use strict';
-//18/09/25
+//25/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, menu_properties:readable, scriptName:readable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:writable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, selectedFlags:readable, createSubMenuEditEntries:readable, libSearchMenu:readable */
 
-/* global MF_GRAYED:readable, MF_STRING:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _qCond:readable, checkQuery:readable, isJSON:readable, WshShell:readable, popup:readable, queryJoin:readable */
+/* global MF_GRAYED:readable, MF_STRING:readable, folders:readable, _isFile:readable, globQuery:readable, globTags:readable, _qCond:readable, checkQuery:readable, isJSON:readable, WshShell:readable, popup:readable, queryJoin:readable, _ps:readable */
 
 // Dynamic queries
 {
@@ -133,7 +133,7 @@
 								catch (e) { return; } // eslint-disable-line no-unused-vars
 								if (isNaN(direction)) { return; }
 								direction = direction > 0 ? 1 : -1;
-								const bStatic = WshShell.Popup('Force evaluation even when no selection is available?', 0, window.Name, popup.question + popup.yes_no) === popup.yes;
+								const bStatic = WshShell.Popup('Force evaluation even when no selection is available?', 0, window.Name + _ps(window.ScriptInfo.Name), popup.question + popup.yes_no) === popup.yes;
 								// Final check
 								try { if (!dynamicQuery({ query, bSendToPls: false, bForceStatic: bStatic })) { throw new Error(); } }
 								catch (e) { fb.ShowPopupMessage('query not valid, check it and try again:\n' + query, scriptName); return; } // eslint-disable-line no-unused-vars

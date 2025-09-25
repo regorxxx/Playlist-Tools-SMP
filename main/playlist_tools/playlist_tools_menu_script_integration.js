@@ -1,11 +1,11 @@
 ﻿'use strict';
-//17/09/25
+//25/09/25
 
 /* exported mainMenuSMP, executeByName */
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, presets:readable, menu_panelProperties:readable, deferFunc:readable, isFunction:readable, overwritePanelProperties:readable, createMainMenuDynamic:readable, deleteMainMenuDynamic:readable, allEntries:readable, exportMainMenuDynamic:readable, configMenu:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, WshShell:readable, popup:readable, clone:readable, _save:readable, isCompatible:readable, MF_STRING:readable, callbacksListener:readable, callbacksListener:readable, _jsonParseFileCheck:readable, utf8:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, WshShell:readable, popup:readable, clone:readable, _save:readable, isCompatible:readable, MF_STRING:readable, callbacksListener:readable, callbacksListener:readable, _jsonParseFileCheck:readable, utf8:readable, _ps:readable */
 
 // Script integration
 {
@@ -292,13 +292,13 @@
 									}
 									// Disable UI shortcuts if they can not be used
 									if (!menu_panelProperties.bDynamicMenus[1] && menu_properties.bShortcuts[1]) {
-										fb.ShowPopupMessage('Keyboard shortcuts are now disabled and not shown on the menu entries.', window.Name);
+										fb.ShowPopupMessage('Keyboard shortcuts are now disabled and not shown on the menu entries.', window.Name + _ps(window.ScriptInfo.Name));
 										menu_properties.bShortcuts[1] = false;
 										overwriteMenuProperties(); // Updates panel
 									}
 									// And create / delete menus
 									if (menu_panelProperties.bDynamicMenus[1]) {
-										fb.ShowPopupMessage('Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)', window.Name);
+										fb.ShowPopupMessage('Remember to set different panel names to every buttons toolbar, otherwise menus will not be properly associated to a single panel.\n\nShift + Win + R. Click -> Configure panel... (\'edit\' at top)', window.Name + _ps(window.ScriptInfo.Name));
 										createMainMenuDynamic();
 										callbacksListener.checkPanelNames();
 									} else {

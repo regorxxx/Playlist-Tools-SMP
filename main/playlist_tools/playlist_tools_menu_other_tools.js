@@ -1,9 +1,9 @@
 ﻿'use strict';
-//17/09/25
+//25/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, libSearchMenu:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, globTags:readable globQuery:readable, isString:readable, isJSON:readable, Input:readable, sanitizePath:readable, checkQuery:readable, _ps:readable */
 
 // Other tools
 {
@@ -45,7 +45,7 @@
 								try { path = utils.InputBox(window.ID, 'Enter path to text file with list of tracks:', scriptName + ': ' + name, folders.xxx + 'examples\\track_list_to_import.txt', true); }
 								catch (e) { return; } // eslint-disable-line no-unused-vars
 								if (!_isFile(path) && !path.includes('http://') && !path.includes('https://')) {
-									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': ' + name);
+									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + _ps(window.ScriptInfo.Name) + ': ' + name);
 									return;
 								}
 								let formatMask = Input.string(
@@ -76,7 +76,7 @@
 										'string',
 										'',
 										'Any line starting with the following string will be skipped:\n(For ex. to skip lines starting with \'#BLABLABLA...\', write \'#\')',
-										window.Name
+										window.Name + _ps(window.ScriptInfo.Name)
 									) || Input.lastInput;
 									if (discardMask === null) { return; }
 								}
@@ -93,7 +93,7 @@
 							menuName: subMenuName, entryText: 'Import from custom path', func: () => {
 								const path = menu_properties.importPlaylistPath[1];
 								if (!_isFile(path) && !path.includes('http://') && !path.includes('https://')) {
-									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + ': ' + name);
+									fb.ShowPopupMessage('File not found:\n\n' + path, window.Name + _ps(window.ScriptInfo.Name) + ': ' + name);
 									return;
 								}
 								const formatMask = JSON.parse(menu_properties.importPlaylistMask[1]);
@@ -120,7 +120,7 @@
 						menu.newEntry({
 							menuName: subMenuName, entryText: 'Set custom path...', func: () => {
 								const path = menu_properties.importPlaylistPath[1];
-								const input = Input.string('string', menu_properties.importPlaylistPath[1], 'Enter file path:', window.Name + ': ' + name, menu_properties.importPlaylistPath[3], [(s) => path.includes('http://') || path.includes('https://') || sanitizePath(s) === s], true);
+								const input = Input.string('string', menu_properties.importPlaylistPath[1], 'Enter file path:', window.Name + _ps(window.ScriptInfo.Name) + ': ' + name, menu_properties.importPlaylistPath[3], [(s) => path.includes('http://') || path.includes('https://') || sanitizePath(s) === s], true);
 								if (input === null) { return; }
 								menu_properties.importPlaylistPath[1] = input;
 								overwriteMenuProperties(); // Updates panel

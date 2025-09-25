@@ -1,5 +1,5 @@
 'use strict';
-//01/08/25
+//25/09/25
 
 /* exported _lastListMenu */
 
@@ -12,7 +12,7 @@ include('..\\..\\helpers\\helpers_xxx_file.js');
 include('..\\..\\helpers\\helpers_xxx_input.js');
 /* global Input:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global isString:readable, isFunction:readable, */
+/* global isString:readable, isFunction:readable, _ps:readable */
 include('..\\..\\helpers\\helpers_xxx_tags_extra.js');
 /* global getSimilarDataFromFile:readable */
 
@@ -114,7 +114,7 @@ function _lastListMenu({ bSimulate = false, bDynamicMenu = false /* on SMP main 
 			const dataId = 'artist';
 			const selIds = [...(tags.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
-				const data = _jsonParseFileCheck(filePaths.worldMapArtists, 'Tags json', window.Name, utf8);
+				const data = _jsonParseFileCheck(filePaths.worldMapArtists, 'Tags json', window.Name + _ps(window.ScriptInfo.Name), utf8);
 				const worldMapData = new Set();
 				if (data) {
 					data.forEach((item) => {
