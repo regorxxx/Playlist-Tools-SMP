@@ -1,12 +1,12 @@
 ﻿'use strict';
-//07/08/25
+//25/09/25
 
 /* exported _Macros */
 
 include('helpers_xxx.js');
 /* global popup:readable, WshShell:readable */
 include('helpers_xxx_prototypes.js');
-/* global repeatFn:readable */
+/* global repeatFn:readable, _ps:readable */
 
 function _Macros(
 	menu, // Linked to some menu object by Menu-Framework-SMP
@@ -33,12 +33,12 @@ function _Macros(
 		let entry = [];
 		let bAsync = false;
 		while (!name || stack.findIndex((macro) => { return macro.name === name; }) !== -1) {
-			try { name = utils.InputBox(window.ID, 'Enter name', window.Name + ': Macros', 'My macro', true); }
+			try { name = utils.InputBox(window.ID, 'Enter name', window.Name + _ps(window.ScriptInfo.Name) + ': Macros', 'My macro', true); }
 			catch (e) { return; } // eslint-disable-line no-unused-vars
 			if (!name.length) { return; }
-			if (stack.findIndex((macro) => { return macro.name === name; }) !== -1) { fb.ShowPopupMessage('Already exists a macro with same name', window.Name + ': Macros'); }
+			if (stack.findIndex((macro) => { return macro.name === name; }) !== -1) { fb.ShowPopupMessage('Already exists a macro with same name', window.Name + _ps(window.ScriptInfo.Name) + ': Macros'); }
 		}
-		bAsync = WshShell.Popup('Execute entries asynchronously?\ni.e. Don\'t wait for entry\'s completion to call the next one.\nOnly for those entries that support it.\nCheck \'Configuration\\Asynchronous processing\' for more info.', 0, window.Name + ': Macros', popup.question + popup.yes_no) === popup.yes;
+		bAsync = WshShell.Popup('Execute entries asynchronously?\ni.e. Don\'t wait for entry\'s completion to call the next one.\nOnly for those entries that support it.\nCheck \'Configuration\\Asynchronous processing\' for more info.', 0, window.Name + _ps(window.ScriptInfo.Name) + ': Macros', popup.question + popup.yes_no) === popup.yes;
 		stack.push({ name, entry, bAsync });
 		menu.lastCall = '';
 		currListener = this.listener(name);
@@ -65,7 +65,7 @@ function _Macros(
 		if (queue.stackCalls >= this.options.maxRecursion) {
 			queue.stackCalls = 0;
 			queue.stack.length = 0;
-			fb.ShowPopupMessage('Too much recursion (max ' + this.options.maxRecursion + ' calls):\n\n' + queue.processed.map(m => m.name).join(' -> '), window.Name + ': Macros');
+			fb.ShowPopupMessage('Too much recursion (max ' + this.options.maxRecursion + ' calls):\n\n' + queue.processed.map(m => m.name).join(' -> '), window.Name + _ps(window.ScriptInfo.Name) + ': Macros');
 			queue.processed.length = 0;
 			return Promise.resolve(null);
 		}

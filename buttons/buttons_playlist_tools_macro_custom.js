@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/25
+//25/09/25
 
 /*
 	Playlist Tools Macro custom
@@ -15,7 +15,7 @@ include('..\\helpers\\buttons_xxx.js');
 include('..\\helpers\\helpers_xxx_properties.js');
 /* global setProperties:readable, getPropertiesPairs:readable, overwriteProperties:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isStringWeak:readable,  */
+/* global isBoolean:readable, isStringWeak:readable, _ps:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\menu_xxx.js');
@@ -78,7 +78,7 @@ addButton({
 							configMenu.newSeparator();
 							configMenu.newEntry({
 								entryText: 'Button name...', func: () => {
-									const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();
+									const newName = utils.InputBox(window.ID, 'Enter button name:', window.Name + + _ps(window.ScriptInfo.Name) + ': Customizable Playlist Tools Macro Button', this.buttonsProperties.customName[1]).toString();
 									if (!newName.length) {
 										return;
 									} else {
@@ -93,7 +93,7 @@ addButton({
 					configMenu.btn_up(this.currX, this.currY + this.currH);
 				} else {
 					if (this.buttonsProperties['customName'][1] === 'Customize!') { // NOSONAR
-						const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + ': Customizable Playlist Tools Macro Button').toString();
+						const newName = utils.InputBox(window.ID, 'Enter button name. Then configure macro associated to your liking.', window.Name + + _ps(window.ScriptInfo.Name) + ': Customizable Playlist Tools Macro Button').toString();
 						if (!newName.length) {
 							return;
 						} else {
