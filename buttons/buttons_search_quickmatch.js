@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/09/25
+//25/09/25
 
 /*
 	Quickmatch same....
@@ -19,7 +19,7 @@ include('..\\helpers\\buttons_xxx_menu.js');
 include('..\\helpers\\menu_xxx_extras.js');
 /* global _createSubMenuEditEntries:readable  */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isString:readable, isStringWeak:readable, isJSON:readable, _t:readable, _b:readable, _p:readable */
+/* global isBoolean:readable, isString:readable, isStringWeak:readable, isJSON:readable, _t:readable, _b:readable, _p:readable, _ps:readable */
 include('..\\helpers\\helpers_xxx_file.js');
 /* global _isFile:readable, utf8:readable, _jsonParseFileCheck:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
@@ -275,7 +275,7 @@ function quickmatchMenu() {
 			const dataId = 'artist';
 			const selIds = [...(entries.find((tag) => tag.tf.some((tf) => tf.toLowerCase() === dataId)) || { valSet: [] }).valSet];
 			if (selIds.length) {
-				const data = _jsonParseFileCheck(filePaths.worldMapArtists, 'Tags json', window.Name, utf8);
+				const data = _jsonParseFileCheck(filePaths.worldMapArtists, 'Tags json', window.Name + _ps(window.ScriptInfo.Name), utf8);
 				const worldMapData = new Set();
 				if (data) {
 					data.forEach((item) => {

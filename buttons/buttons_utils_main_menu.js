@@ -19,7 +19,7 @@ include('..\\helpers\\menu_xxx.js');
 include('..\\helpers\\menu_xxx_extras.js');
 /* global _createSubMenuEditEntries:readable */
 include('..\\helpers\\helpers_xxx_prototypes.js');
-/* global isBoolean:readable, isJSON:readable, isString:readable, _p:readable, isStringWeak:readable, _b:readable, doOnce:readable */
+/* global isBoolean:readable, isJSON:readable, isString:readable, _p:readable, isStringWeak:readable, _b:readable, doOnce:readable, _ps:readable */
 include('..\\helpers\\helpers_xxx_UI.js');
 /* global _gdiFont:readable, _gr:readable, _scale:readable, chars:readable */
 include('..\\helpers\\helpers_xxx_properties.js');
@@ -71,8 +71,8 @@ buttonsBar.list.push(newButtonsProperties);
 						defaults: JSON.parse(this.buttonsProperties.entries[3]),
 						input: () => {
 							const entry = {
-								command: Input.string('string', '', 'Enter complete menu name:\nEx: Library/Playback Statistics/Monitor playing tracks', window.Name + 'Main Menu Shortcut', 'Library/Playback Statistics/Monitor playing tracks', void (0), true),
-								timeOut: Input.number('int positive', 0, 'Time (ms) to wait before running command:', window.Name + 'Main Menu Shortcut', 10) || 0,
+								command: Input.string('string', '', 'Enter complete menu name:\nEx: Library/Playback Statistics/Monitor playing tracks', window.Name + _ps(window.ScriptInfo.Name) + ': Main Menu Shortcut', 'Library/Playback Statistics/Monitor playing tracks', void (0), true),
+								timeOut: Input.number('int positive', 0, 'Time (ms) to wait before running command:', window.Name + _ps(window.ScriptInfo.Name) + ': Main Menu Shortcut', 10) || 0,
 							};
 							if (!entry.command) { return; }
 							return entry;
@@ -258,7 +258,7 @@ buttonsBar.list.push(newButtonsProperties);
 					menu.newSeparator();
 					menu.newEntry({
 						entryText: 'Rename button...', func: () => {
-							const input = Input.string('string', this.buttonsProperties.customName[1], 'Enter button name:', window.Name + 'Main Menu Shortcut', this.buttonsProperties.customName[3], void (0), false);
+							const input = Input.string('string', this.buttonsProperties.customName[1], 'Enter button name:', window.Name + _ps(window.ScriptInfo.Name) + ': Main Menu Shortcut', this.buttonsProperties.customName[3], void (0), false);
 							if (input === null) { return; }
 							this.text = this.buttonsProperties.customName[1] = input;
 							overwriteProperties(this.buttonsProperties); // Force overwriting
@@ -270,7 +270,7 @@ buttonsBar.list.push(newButtonsProperties);
 					});
 					menu.newEntry({
 						entryText: 'Configure icon...', func: () => {
-							const input = Input.string('unicode', this.buttonsProperties.icon[1], 'Enter button\'s icon: (unicode)\n\nLook for values at:\nhttps://www.fontawesomecheatsheet.com', window.Name + 'Main Menu Shortcut', this.buttonsProperties.icon[3], void (0), false);
+							const input = Input.string('unicode', this.buttonsProperties.icon[1], 'Enter button\'s icon: (unicode)\n\nLook for values at:\nhttps://www.fontawesomecheatsheet.com', window.Name + _ps(window.ScriptInfo.Name) + ': Main Menu Shortcut', this.buttonsProperties.icon[3], void (0), false);
 							if (input === null) { return; }
 							this.icon = this.buttonsProperties.icon[1] = input;
 							overwriteProperties(this.buttonsProperties); // Force overwriting
