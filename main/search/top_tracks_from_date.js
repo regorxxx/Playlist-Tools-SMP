@@ -1,5 +1,5 @@
 ﻿'use strict';
-//29/06/25
+//25/09/25
 
 /*
 	Top X Tracks From Date
@@ -13,7 +13,7 @@
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global globTags:readable, globQuery:readable, isEnhPlayCount:readable, isPlayCount:readable, isSkipCount:readable, isPlayCount2003:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global _p:readable, _bt:readable, _b:readable */
+/* global _p:readable, _bt:readable, _b:readable, _ps:readable */
 include('..\\..\\helpers\\helpers_xxx_playlists.js');
 /* global sendToPlaylist:readable */
 include('..\\filter_and_query\\remove_duplicates.js');
@@ -57,8 +57,8 @@ function topTracksFromDate({
 	bProfile = false
 } = {}) {
 	// Sanity checks
-	if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.', window.Name); return; }
-	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name); return; }
+	if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.', window.Name + _ps(window.ScriptInfo.Name)); return; }
+	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name + _ps(window.ScriptInfo.Name)); return; }
 	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return; }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); }
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; } // eslint-disable-line no-unused-vars
@@ -147,8 +147,8 @@ async function topTracksFromDateV2({
 	listenBrainz = { token: '', bOffline: true }
 } = {}) {
 	// Sanity checks
-	if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.', window.Name); return; }
-	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name); return; }
+	if (!isPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_playcount component is not installed.', window.Name + _ps(window.ScriptInfo.Name)); return; }
+	if (!isEnhPlayCount) { fb.ShowPopupMessage('top_tracks_from_date: foo_enhanced_playcount is not installed.', window.Name + _ps(window.ScriptInfo.Name)); return; }
 	if (playlistLength !== Infinity && !Number.isSafeInteger(playlistLength) || playlistLength <= 0) { console.log('topTracksFromDate: playlistLength (' + playlistLength + ') must be an integer greater than zero'); return; }
 	try { fb.GetQueryItems(new FbMetadbHandleList(), forcedQuery); }
 	catch (e) { fb.ShowPopupMessage('Query not valid. Check forced query:\n' + forcedQuery, 'topTracksFromDate'); return; } // eslint-disable-line no-unused-vars
@@ -726,7 +726,7 @@ async function getPlayCountV2(handleList, timePeriod, timeKey = null, fromDate =
  * @returns {{ idx: number; skipCount: number; skips: Date[]; }[]}
  */
 function getSkipCount(handleList, timePeriod, timeKey = null, fromDate = new Date()) {
-	if (!isSkipCount) { fb.ShowPopupMessage('getSkipCount: foo_skipcount is not installed.', window.Name); return []; }
+	if (!isSkipCount) { fb.ShowPopupMessage('getSkipCount: foo_skipcount is not installed.', window.Name + _ps(window.ScriptInfo.Name)); return []; }
 	const datesArray = fb.TitleFormat(_bt('SKIP_TIMES_JS')).EvalWithMetadbs(handleList);
 	const datesArrayLength = datesArray.length;
 	let dataPool = [];
