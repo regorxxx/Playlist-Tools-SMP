@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/09/25
+//25/09/25
 
 /*
 	Automatic tagging...
@@ -19,7 +19,7 @@ include('..\\..\\helpers\\helpers_xxx.js');
 include('..\\..\\helpers\\helpers_xxx_file.js');
 /* global WshShell:readable, _isFile:readable, testPath:readable, _isLink:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
-/* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable, _t:readable */
+/* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable, _t:readable, _ps:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
 /* global getHandleListTags:readable, isSubsong:readable */
 
@@ -277,12 +277,12 @@ function Tagger({
 				console.log('No tracks selected (or all items were dead/links).');
 				return;
 			} else if (skippedCount !== 0) {
-				console.popup('Skipped ' + skippedCount + ' dead or link items.', window.Name);
+				console.popup('Skipped ' + skippedCount + ' dead or link items.', window.Name + _ps(window.ScriptInfo.Name));
 			}
 		} else { return; }
 		// Safety check for accidental button pressing
 		const answer = this.bRunPopup
-			? WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + this.description(), 0, window.Name, popup.question + popup.yes_no)
+			? WshShell.Popup('Do you want to continue? Some tags will be edited, can not be undone.\n\nTools:\n' + this.description(), 0, window.Name + _ps(window.ScriptInfo.Name), popup.question + popup.yes_no)
 			: popup.yes;
 		if (answer === popup.no) {
 			this.iStep = null;

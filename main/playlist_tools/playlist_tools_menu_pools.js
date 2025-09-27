@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/09/25
+//26/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -186,7 +186,7 @@
 				});
 				menu.newCondEntry({
 					entryText: 'Get playlist manager path (cond)', condFunc: () => {
-						window.NotifyOthers('Playlist manager: playlistPath', null); // Ask to share paths
+						window.NotifyOthers('Playlist-Manager-SMP: playlistPath', null); // Ask to share paths
 						poolsGen.changeConfig({ bEnablePlsMan: _isFile(plsManHelper) }); // Safety check
 					}
 				});

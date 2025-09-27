@@ -1,5 +1,5 @@
 ﻿'use strict';
-//18/09/25
+//26/09/25
 
 /*
 	Playlist Tools Menu
@@ -194,9 +194,9 @@ var shortcuts = { // NOSONAR [global]
 const plmPromises = []; // NOSONAR [global]
 addEventListener('on_notify_data', (name, info) => {
 	if (name === 'bio_imgChange' || name === 'biographyTags' || name === 'bio_chkTrackRev' || name === 'xxx-scripts: panel name reply') { return; }
-	if (!name.startsWith('Playlist manager') && !name.startsWith('Playlist Tools')) { return; }
+	if (!name.startsWith('Playlist-Manager-SMP') && !name.startsWith('Playlist Tools')) { return; }
 	switch (name) {
-		case 'Playlist manager: playlistPath': {
+		case 'Playlist-Manager-SMP: playlistPath': {
 			if (info && info.length) {
 				const playlistPath = JSON.parse(menu_panelProperties.playlistPath[1]);
 				let bDone = false;
@@ -218,7 +218,7 @@ addEventListener('on_notify_data', (name, info) => {
 			}
 			break;
 		}
-		case 'Playlist manager: handleList': {
+		case 'Playlist-Manager-SMP: handleList': {
 			if (info) {
 				plmPromises.push(Promise.resolve(info));
 			}
