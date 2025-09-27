@@ -1,9 +1,9 @@
 ﻿'use strict';
-//17/09/25
+//26/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable, updateShortcutsNames:readable, focusFlags:readable, selectedFlags:readable */
 
-/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, isInt:readable, addLock:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, playlistCountFlagsRem:readable, isString:readable, globQuery:readable, checkQuery:readable, _qCond:readable, _p:readable, playlistCountFlags:readable, multipleSelectedFlags:readable, MF_STRING:readable, MF_CHECKED:readable, _t:readable, _b:readable */
+/* global MF_GRAYED:readable, folders:readable, _isFile:readable, isJSON:readable, globTags:readable, isInt:readable, addLock:readable, playlistCountFlagsAddRem:readable, VK_CONTROL:readable, playlistCountFlagsRem:readable, isString:readable, globQuery:readable, checkQuery:readable, _qCond:readable, _p:readable, playlistCountFlags:readable, multipleSelectedFlags:readable, MF_STRING:readable, MF_CHECKED:readable, _t:readable, _b:readable, popup:readable, WshShell:readable */
 
 // Playlist manipulation...
 {
@@ -409,7 +409,12 @@
 							menuName: subMenuName, entryText: selArg.name, func: (args = { ...defaultArgs, ...selArg.args }) => {
 								args.selItems = args.selItems();
 								args.playlistLength = args.selItems.Count; // Max allowed
-								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1]; // Max allowed
+								args.bDoublePass = menu_properties.bHarmonicMixDoublePass[1];
+								if (args.playlistLength > 20000) {
+									const keyTime = args.playlistLength < 30000 ? 'seconds' : 'minutes';
+									const answer = WshShell.Popup('The selection contains ' + args.playlistLength + ' tracks. Processing may take some ' + keyTime + ' and UI will be completely blocked during the process.\n\nDo you want to continue?', 0, 'Harmonic mix', popup.question + popup.yes_no);
+									if (answer !== popup.yes) { return; }
+								}
 								const profiler = defaultArgs.bProfile ? new FbProfiler('harmonicMixing') : null;
 								if (args.isCycle) { harmonicMixingCycle(args); }
 								else { harmonicMixing(args); }

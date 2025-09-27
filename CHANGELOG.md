@@ -67,7 +67,8 @@
 ## [Unreleased][]
 ### Added
 ### Changed
-- Console: Debug and profiling logging now works with batch tagger tool (playlist tools menu and button).
+- Playlist manipulation\Harmonic mix: script now warns with a popup when trying to apply this tool on playlists with more than 20K tracks, explaining how much time it may take.
+- Console: debug and profiling logging now works with batch tagger tool (playlist tools menu and button).
 ### Removed
 - Installation: fonts are no longer bundled at '_resources' folder, but found at: https://github.com/regorxxx/foobar2000-assets/tree/main/Fonts
 ### Fixed
