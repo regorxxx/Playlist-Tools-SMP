@@ -1,5 +1,5 @@
 ﻿'use strict';
-//23/09/25
+//27/09/25
 
 /*
 	Automatic tagging...
@@ -66,7 +66,7 @@ buttonsBar.list.push(newButtonsProperties);
 				const handleList = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 				if (mask === MK_CONTROL) {
 					if (!this.tAut.isRunning() && handleList.Count) { this.tAut.run({ bDebug: this.buttonsProperties.bDebug[1], bProfile: this.buttonsProperties.bProfile[1] }); }
-					else { this.tAut.nextStepTag(); }
+					else { this.tAut.nextStepTag({ bDebug: this.buttonsProperties.bDebug[1], bProfile: this.buttonsProperties.bProfile[1] }); }
 				} else {
 					const menu = new _menu({ iMaxEntryLen: 50 }); // To avoid collisions with other buttons and check menu
 					const selFlags = handleList.Count ? MF_STRING : MF_GRAYED;
@@ -79,7 +79,7 @@ buttonsBar.list.push(newButtonsProperties);
 					});
 					if (this.tAut.isRunning()) {
 						menu.newSeparator();
-						menu.newEntry({ entryText: 'Force next step', func: this.tAut.nextStepTag });
+						menu.newEntry({ entryText: 'Force next step', func: () => this.tAut.nextStepTag({ bDebug: this.buttonsProperties.bDebug[1], bProfile: this.buttonsProperties.bProfile[1] }) });
 						menu.newEntry({ entryText: 'Stop execution', func: this.tAut.stopStepTag });
 					}
 					menu.newSeparator();

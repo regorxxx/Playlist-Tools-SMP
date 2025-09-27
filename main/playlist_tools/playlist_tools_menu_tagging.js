@@ -1,5 +1,5 @@
 ﻿'use strict';
-//22/09/25
+//27/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, selectedFlags:readable, selectedFlags:readable, configMenu:readable, menu_panelProperties */
 
@@ -219,7 +219,11 @@
 						}, flags: allFlags
 					});
 					menu.newSeparator(subMenuName);
-					menu.newEntry({ menuName: subMenuName, entryText: () => { return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)'); }, func: tAut.nextStepTag, flags: firedFlags });
+					menu.newEntry({
+						menuName: subMenuName, entryText: () => { return 'Manually force next step' + (tAut.isRunning() ? '' : ' (not running)'); }, func: () => {
+							tAut.nextStepTag({ bDebug: menu_panelProperties.bDebug[1], bProfile: menu_panelProperties.bProfile[1] });
+						}, flags: firedFlags
+					});
 					menu.newEntry({ menuName: subMenuName, entryText: () => { return 'Stop execution' + (tAut.isRunning() ? '' : ' (not running)'); }, func: tAut.stopStepTag, flags: firedFlags });
 					menu.newSeparator(subMenuName);
 					const subMenuTools = menu.newMenu('Available tools', subMenuName);

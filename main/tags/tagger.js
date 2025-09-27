@@ -17,7 +17,7 @@
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global globTags:readable, folders:readable, soFeat:readable, isFoobarV2:readable, popup:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
-/* global WshShell:readable, _isFile:readable, testPath:readable, _isLink:readable */
+/* global WshShell:readable, _isFile:readable, testPath:readable, _isLink:readable, _copyDependencies:readable */
 include('..\\..\\helpers\\helpers_xxx_prototypes.js');
 /* global BiMap:readable, debounce:readable, isArrayStrings:readable , repeatFn:readable, _t:readable, _ps:readable */
 include('..\\..\\helpers\\helpers_xxx_tags.js');
@@ -460,7 +460,7 @@ function Tagger({
 		});
 	};
 
-	this.nextStepTag = ({ bDebug, bProfile }) => {
+	this.nextStepTag = ({ bDebug = false, bProfile = false } = {}) => {
 		this.debouncedStep({ step: this.iStep, bDebug, bProfile });
 	};
 
