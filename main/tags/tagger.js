@@ -244,6 +244,10 @@ function Tagger({
 				bPass = false;
 			}
 		}
+		// Remove unavailable tools
+		this.tools.forEach((tool) => {
+			if (!tool.bAvailable && this.toolsByKey[tool.key]) { this.toolsByKey[tool.key] = false; }
+		});
 		return bPass;
 	};
 

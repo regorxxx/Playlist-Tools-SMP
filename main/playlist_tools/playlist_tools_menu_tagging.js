@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/09/25
+//29/09/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, multipleSelectedFlags:readable, selectedFlags:readable, selectedFlags:readable, configMenu:readable, menu_panelProperties */
 
@@ -212,7 +212,7 @@
 					menu.newEntry({ menuName: subMenuName, entryText: 'Automatize tagging:', func: null, flags: MF_GRAYED });
 					menu.newSeparator(subMenuName);
 					menu.newEntry({
-						menuName: subMenuName, entryText: () => { return 'Add tags on batch to selected tracks' + (tAut.isRunning() ? ' (running)' : ''); }, func: () => {
+						menuName: subMenuName, entryText: () => { return 'Tag selected tracks' + (tAut.isRunning() ? ' (running)' : ''); }, func: () => {
 							tAut.run({ bDebug: menu_panelProperties.bDebug[1], bProfile: menu_panelProperties.bProfile[1] });
 							// Apply animation on registered parent button...
 							if (defaultArgs.parent) { defaultArgs.parent.switchAnimation(menuName + '\\' + name, true, () => { return !tAut.isRunning(); }); }
@@ -256,7 +256,7 @@
 								tAut.loadDependencies();
 							}, flags
 						});
-						menu.newCheckMenu(subMenuTools, tool.title, void (0), () => !!tAut.toolsByKey[key]);
+						menu.newCheckMenu(subMenuTools, tool.title, void (0), () => !!tAut.toolsByKey[key] && tool.bAvailable);
 					});
 					menu.newSeparator(subMenuTools);
 					['Enable all', 'Disable all'].forEach((entryText, i) => {

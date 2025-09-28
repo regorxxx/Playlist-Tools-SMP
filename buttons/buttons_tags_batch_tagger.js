@@ -1,5 +1,5 @@
 ﻿'use strict';
-//27/09/25
+//28/09/25
 
 /*
 	Automatic tagging...
@@ -72,7 +72,7 @@ buttonsBar.list.push(newButtonsProperties);
 					const selFlags = handleList.Count ? MF_STRING : MF_GRAYED;
 					const allFlags = () => !this.tAut.isRunning() ? selFlags : MF_GRAYED;
 					menu.newEntry({
-						entryText: () => 'Tag selected tracks:' + (this.tAut.isRunning() ? ' (running)' : ''), func: () => {
+						entryText: () => 'Tag selected tracks' + (this.tAut.isRunning() ? ' (running)' : ''), func: () => {
 							this.tAut.run({ bDebug: this.buttonsProperties.bDebug[1], bProfile: this.buttonsProperties.bProfile[1] });
 							this.switchAnimation('Automate Tags', true, () => !this.tAut.isRunning());
 						}, flags: allFlags
@@ -116,7 +116,7 @@ buttonsBar.list.push(newButtonsProperties);
 									this.tAut.loadDependencies();
 								}, flags
 							});
-							menu.newCheckMenu(subMenu, tool.title, void (0), () => !!this.tAut.toolsByKey[key]);
+							menu.newCheckMenu(subMenu, tool.title, void (0), () => !!this.tAut.toolsByKey[key] && tool.bAvailable);
 						});
 						menu.newSeparator(subMenu);
 						['Enable all', 'Disable all'].forEach((entryText, i) => {

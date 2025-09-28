@@ -75,6 +75,8 @@
 - Toolbar: fix missing preset names for Music Map scripts on new installs.
 - Auto-update: fix error including a file when enabling auto-updates if it was previously disabled.
 - Tagging\Batch tagger: fix error related to set usage on JSplitter.
+- Tagging\Batch tagger: unavailable tools are no longer used when tagging, even if they were previously selected.
+- Tagging\Batch tagger: unavailable tools are no longer marked as checked on menu entries, even if they are enabled (since they are now ignored, see above).
 
 ## [5.0.0] - 2025-09-20
 ### Added
