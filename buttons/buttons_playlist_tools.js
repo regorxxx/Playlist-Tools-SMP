@@ -1,5 +1,5 @@
 ﻿'use strict';
-//20/09/25
+//29/09/25
 
 /*
 	Playlist Tools Menu
@@ -11,7 +11,7 @@
 	NOTE: 'on_mouse_lbtn_up(x, y)' is simply replaced with a button to call the menu.
  */
 
-var version = '5.0.0'; // NOSONAR [shared on files]
+var version = '5.1.0'; // NOSONAR [shared on files]
 
 /* global menu_panelProperties:readable */
 /* global globFonts:readable, MK_SHIFT:readable, doOnce:readable, debounce:readable, MK_CONTROL:readable */

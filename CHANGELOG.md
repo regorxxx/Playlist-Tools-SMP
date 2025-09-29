@@ -2,7 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
-- [5.0.1](#501---2025-09-29)
+- [5.1.0](#510---2025-09-29)
 - [5.0.0](#500---2025-09-20)
 - [4.6.0](#460---2024-10-09)
 - [4.5.0](#450---2024-08-13)
@@ -71,7 +71,7 @@
 ### Removed
 ### Fixed
 
-## [5.0.1] - 2025-09-29
+## [5.1.0] - 2025-09-29
 ### Added
 ### Changed
 - Playlist manipulation\Harmonic mix: script now warns with a popup when trying to apply this tool on playlists with more than 20K tracks, explaining how much time it may take.
@@ -1462,8 +1462,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.0.1...HEAD
-[5.0.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.0.0...v5.0.1
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.1.0...HEAD
+[5.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.6.0...v5.0.0
 [4.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.5.0...v4.6.0
 [4.5.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.4.0...v4.5.0
