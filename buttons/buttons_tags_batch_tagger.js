@@ -1,5 +1,5 @@
 ﻿'use strict';
-//28/09/25
+//29/09/25
 
 /*
 	Automatic tagging...
@@ -245,7 +245,7 @@ buttonsBar.list.push(newButtonsProperties);
 						menu.newCheckMenu(subMenu, 'Ask confirmation before running', void (0), () => this.buttonsProperties.bRunPopup[1]);
 					}
 					menu.newSeparator();
-					menu.newEntry({ entryText: 'Readme...', func: () => showButtonReadme('buttons_tags_batch_tagger.js') });
+					menu.newEntry({ entryText: 'Open readme...', func: () => showButtonReadme('buttons_tags_batch_tagger.js') });
 					menu.btn_up(this.currX, this.currY + this.currH);
 				}
 			},
