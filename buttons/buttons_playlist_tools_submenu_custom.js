@@ -1,5 +1,5 @@
 ﻿'use strict';
-//08/09/25
+//08/10/25
 
 /*
 	Playlist Tools Submenu Custom
@@ -7,7 +7,7 @@
 	Calls a configurable submenu from Playlist Tools
  */
 
-/* global menu:readable, barProperties:readable, menuTooltip:readable, _setClipboardData:readable */
+/* global menu:readable, barProperties:readable, menuTooltip:readable, _setClipboardData:readable, sbd:readable */
 include('..\\helpers\\helpers_xxx.js');
 /* global globFonts:readable, MK_SHIFT:readable, MK_CONTROL:readable */
 include('..\\helpers\\buttons_xxx.js');
@@ -129,17 +129,21 @@ addButton({
 			setIcon: function (parent, name) {
 				let icon;
 				switch (name.toLowerCase()) { // NOSONAR
+					case 'statistics search': icon = chars.chart; break;
 					case 'most played tracks at': icon = chars.calendar; break;
 					case 'top played tracks from': icon = chars.calendarPlus; break;
 					case 'top rated tracks from': icon = chars.heartOff; break;
+					case 'library search': icon = chars.tags; break;
 					case 'search same by tags': icon = chars.searchPlus; break;
 					case 'standard queries':
 					case 'dynamic queries': icon = chars.filter; break;
 					case 'special playlists': icon = chars.wand; break;
+					case 'import track list': icon = chars.fileSound; break;
 					case 'playlist manipulation': icon = chars.fileWhite; break;
 					case 'duplicates and tag filtering': icon = chars.duplicates; break;
 					case 'query filtering': icon = chars.filter; break;
 					case 'harmonic mix': icon = chars.sortBarsAsc; break;
+					case 'find or create playlist...': icon = chars.search; break;
 					case 'cut playlist length to': icon = chars.cut; break;
 					case 'merge with playlist':
 					case 'intersect with playlist':
@@ -150,6 +154,8 @@ addButton({
 					case 'lock playlist': icon = chars.lock; break;
 					case 'unlock playlist': icon = chars.unlock; break;
 					case 'switch lock playlist': icon = chars.unlockAlt; break;
+					case 'playlist revive': icon = chars.recycle; break;
+					case 'playlist history': icon = chars.history; break;
 					case 'selection manipulation': icon = chars.checkSquareAlt; break;
 					case 'sort':
 					case 'advanced sort': icon = chars.sortBarsAsc; break;
@@ -168,13 +174,12 @@ addButton({
 					case 'expand': icon = chars.expand; break;
 					case 'jump': icon = chars.nextCircle; break;
 					case 'other tools': icon = chars.wrench; break;
+					case 'tagging':
 					case 'check tags':
-					case 'tagger': icon = chars.tags; break;
-					case 'playlist revive': icon = chars.recycle; break;
-					case 'import track list': icon = chars.fileSound; break;
-					case 'playlist history': icon = chars.history; break;
+					case 'batch tagger':
+					case 'group tagger': icon = chars.tags; break;
 					case 'pools':
-					case 'pools (music graph)': icon = chars.music; break;
+					case 'pools (' + (typeof sbd !== 'undefined' ? sbd.name : 'Music Map') + ')': icon = chars.music; break;
 					case 'macros': icon = chars.hourglassHalf; break;
 					case 'script integration':
 					case 'configuration': icon = chars.cogs; break;

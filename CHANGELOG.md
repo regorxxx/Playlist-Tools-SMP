@@ -69,6 +69,7 @@
 ### Added
 ### Changed
 - Playlist Tools: added setting for Smart Shuffle tag.
+- UI: updated icons for Playlist Tools submenu custom button for all new and renamed menus.
 ### Removed
 ### Fixed
 - Playlist Tools: error exporting user presets for specific tools.
