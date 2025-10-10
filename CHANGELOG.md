@@ -71,7 +71,8 @@
 - Playlist Tools: added setting for Smart Shuffle tag.
 ### Removed
 ### Fixed
-- Playlist Tools\Pools: 'SORTED BY' expressions not working properly on 'Custom pool...' entry.
+- Playlist Tools: added missing settings from Music Map.
+- Pools: 'SORTED BY' expressions not working properly on 'Custom pool...' entry.
 - Export settings: added missing buttons file on zip.
 - Import settings: multiple fixes to extra data files importing.
 - Batch tagger: fix handling of custom tags for some tools.
