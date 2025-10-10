@@ -1,5 +1,5 @@
 ﻿'use strict';
-//26/09/25
+//08/10/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, menu_panelProperties:readable, configMenu:readable, isPlayCount:readable, createSubMenuEditEntries:readable, stripSort:readable */
 
@@ -24,6 +24,9 @@
 			}
 			if (!Object.hasOwn(menu_properties, 'smartShuffleSortBias')) {
 				menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', { func: isStringWeak }, 'random'];
+			}
+			if (!Object.hasOwn(menu_properties, 'smartShuffleTag')) {
+				menu_properties['smartShuffleTag'] = ['Smart shuffle tag', JSON.stringify([globTags.artist]), { func: isJSON }, JSON.stringify([globTags.artist])];
 			}
 			forcedQueryMenusEnabled[name] = true;
 			const bEnableSearchDistance = (!Object.hasOwn(menusEnabled, name + ' (Music Map)') || menusEnabled[name + ' (Music Map)']) && typeof sbd !== 'undefined';
@@ -137,7 +140,11 @@
 									if (forcedQueryMenusEnabled[name] && defaultArgs.forcedQuery.length) {
 										Object.keys(pool.query).forEach((key) => { // With forced query enabled
 											if (pool.query[key].length && pool.query[key].toUpperCase() !== 'ALL') { // ALL query never uses forced query!
-												pool.query[key] = '(' + pool.query[key] + ') AND (' + defaultArgs.forcedQuery + ')';
+												const queryNoSort = stripSort(pool.query[key]);
+												const sortedBy = pool.query[key] === queryNoSort
+													? ''
+													: pool.query[key].replace(queryNoSort, ''); // Includes space at left
+												pool.query[key] = '(' + queryNoSort + ') AND (' + defaultArgs.forcedQuery + ')' + sortedBy;
 											} else if (!pool.query[key].length) { // Empty uses forced query or ALL
 												pool.query[key] = defaultArgs.forcedQuery;
 											}

@@ -68,8 +68,10 @@
 ## [Unreleased][]
 ### Added
 ### Changed
+- Playlist Tools: added setting for Smart Shuffle tag.
 ### Removed
 ### Fixed
+- Playlist Tools\Pools: 'SORTED BY' expressions not working properly on 'Custom pool...' entry.
 
 ## [5.1.0] - 2025-09-29
 ### Added
