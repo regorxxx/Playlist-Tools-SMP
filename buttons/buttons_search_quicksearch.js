@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/09/25
+//10/10/25
 
 /*
 	Quicksearch for same....
@@ -218,7 +218,7 @@ function quickSearchMenu({ bSimulate = false } = {}) {
 		bPlsSel = fb.GetSelectionType() === 1;
 		if (!this.selItems || !this.selItems.Count) { this.selItems = null; console.log('Quicksearch: No selected items.'); }
 	}
-	if (this.selItems && this.selItems.Count && this.buttonsProperties.bEvalSel[1]) {
+	if (this.selItems && this.selItems instanceof FbMetadbHandleList && this.selItems.Count > 1000 && this.buttonsProperties.bEvalSel[1]) {
 		this.selItems.RemoveRange(1000, this.selItems.Count - 1);
 	}
 	const multiTags = ['artist', 'genre', 'style', globTags.artistRaw, globTags.genre, globTags.style]

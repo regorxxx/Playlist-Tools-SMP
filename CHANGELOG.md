@@ -72,6 +72,7 @@
 - UI: updated icons for Playlist Tools submenu custom button for all new and renamed menus.
 ### Removed
 ### Fixed
+- Quicksearch: crash creating SMP main menus on startup. See [here](https://hydrogenaudio.org/index.php/topic,120978.msg1070827.html#msg1070827).
 - Playlist Tools: error exporting user presets for specific tools.
 - Playlist Tools: added missing settings from Music Map.
 - Pools: 'SORTED BY' expressions not working properly on 'Custom pool...' entry.
