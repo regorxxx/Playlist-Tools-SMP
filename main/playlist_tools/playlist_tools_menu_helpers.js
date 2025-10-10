@@ -1,5 +1,5 @@
 ﻿'use strict';
-//10/09/25
+//08/10/25
 
 /* exported overwritePanelProperties, loadProperties, createSubMenuEditEntries, lastActionEntry, focusFlags, playlistCountFlags, playlistCountFlagsRem, playlistCountFlagsAddRem, multipleSelectedFlags, multipleSelectedFlagsReorder, selectedFlags, selectedFlagsReorder, selectedFlagsRem, selectedFlagsAddRem, closeLock */
 
@@ -156,15 +156,24 @@ function createDefaultPreset(options /* name, propName, defaultPreset, defaults*
 function createSubMenuEditEntries(menuName, options /*{name, list, propName, defaults, defaultPreset, input, bAdd, bClone, bCopyCurrent, bImport, bDefaultFile, bUseFolders }*/) { // NOSONAR
 	const subMenuSecondName = menu.newMenu('Edit entries from list', menuName);
 	const optionsNames = new Set();
-	const folders = {};
+	const entryFolders = {};
 	const bAdd = !Object.hasOwn(options, 'bAdd') || options.bAdd;
 	const bClone = bAdd && !Object.hasOwn(options, 'bClone') || options.bClone;
 	const bImport = !Object.hasOwn(options, 'bImport') || options.bImport;
+	const findPresetIdx = (preset, name = preset.name) => {
+		const presetIdxJSON = presets[options.propName].findIndex((obj) => JSON.stringify(obj) === preset);
+		const presetIdxName = presetIdxJSON === -1
+			? presets[options.propName].findIndex((obj) => obj.name === name)
+			: -1;
+		return presetIdxJSON !== -1 // Harden against manual changes since name is unique
+			? presetIdxJSON
+			: presetIdxName;
+	};
 	options.list.forEach((entry, index) => {
 		let parentMenu = subMenuSecondName;
 		if (options.bUseFolders && Object.hasOwn(entry, 'folder') && entry.folder.length) {
-			if (!Object.hasOwn(folders, entry.folder)) { folders[entry.folder] = menu.findOrNewMenu(entry.folder, parentMenu); }
-			parentMenu = folders[entry.folder];
+			if (!Object.hasOwn(entryFolders, entry.folder)) { entryFolders[entry.folder] = menu.findOrNewMenu(entry.folder, parentMenu); }
+			parentMenu = entryFolders[entry.folder];
 		}
 		const id = menu.isNotSeparator(entry) && optionsNames.has(entry.name)
 			? '\t' + _b('duplicated: ' + index)
@@ -191,13 +200,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				menu_properties[options.propName][1] = JSON.stringify(options.list);
 				// Presets
 				if (Object.hasOwn(presets, options.propName)) {
-					const presetIdxJSON = presets[options.propName].findIndex((obj) => JSON.stringify(obj) === oriEntry);
-					const presetIdxName = presetIdxJSON === -1
-						? presets[options.propName].findIndex((obj) => obj.name === entry.name)
-						: -1;
-					const presetIdx = presetIdxJSON !== -1 // Harden against manual changes since name is unique
-						? presetIdxJSON
-						: presetIdxName;
+					const presetIdx = findPresetIdx(oriEntry, entry.name);
 					if (presetIdx !== -1) {
 						presets[options.propName][presetIdx] = newEntry;
 						menu_properties.presets[1] = JSON.stringify(presets);
@@ -266,13 +269,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 					menu_properties[options.propName][1] = JSON.stringify(options.list);
 					// Presets
 					if (Object.hasOwn(presets, options.propName)) {
-						const presetIdxJSON = presets[options.propName].findIndex((obj) => JSON.stringify(obj) === oriEntry);
-						const presetIdxName = presetIdxJSON === -1
-							? presets[options.propName].findIndex((obj) => obj.name === entry.name)
-							: -1;
-						const presetIdx = presetIdxJSON !== -1 // Harden against manual changes since name is unique
-							? presetIdxJSON
-							: presetIdxName;
+						const presetIdx = findPresetIdx(oriEntry, entry.name);
 						if (presetIdx !== -1) {
 							presets[options.propName][presetIdx] = options.list[index];
 							menu_properties.presets[1] = JSON.stringify(presets);
@@ -290,7 +287,7 @@ function createSubMenuEditEntries(menuName, options /*{name, list, propName, def
 				menu_properties[options.propName][1] = JSON.stringify(options.list);
 				// Presets
 				if (Object.hasOwn(presets, options.propName)) {
-					const presetIdx = presets[options.propName].findIndex((obj) => { return JSON.stringify(obj) === JSON.stringify(entry); });
+					const presetIdx = findPresetIdx(entry);
 					if (presetIdx !== -1) {
 						presets[options.propName].splice(presetIdx, 1);
 						if (!presets[options.propName].length) { delete presets[options.propName]; }

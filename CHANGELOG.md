@@ -71,6 +71,7 @@
 - Playlist Tools: added setting for Smart Shuffle tag.
 ### Removed
 ### Fixed
+- Playlist Tools: error exporting user presets for specific tools.
 - Playlist Tools: added missing settings from Music Map.
 - Pools: 'SORTED BY' expressions not working properly on 'Custom pool...' entry.
 - Export settings: added missing buttons file on zip.
