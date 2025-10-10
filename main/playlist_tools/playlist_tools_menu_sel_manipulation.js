@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/09/25
+//07/10/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, defaultArgsClean:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, forcedQueryMenusEnabled:readable, createSubMenuEditEntries:readable, configMenu:readable */
 
@@ -564,6 +564,9 @@
 					}
 					if (!Object.hasOwn(menu_properties, 'smartShuffleSortBias')) {
 						menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', { func: isStringWeak }, 'random'];
+					}
+					if (!Object.hasOwn(menu_properties, 'smartShuffleTag')) {
+						menu_properties['smartShuffleTag'] = ['Smart shuffle tag', JSON.stringify([globTags.artist]), { func: isJSON }, JSON.stringify([globTags.artist])];
 					}
 					// Helpers
 					const inputShuffle = (bCopyCurrent = false) => {

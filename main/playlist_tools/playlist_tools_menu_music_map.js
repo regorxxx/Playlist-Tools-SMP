@@ -1,5 +1,5 @@
 ﻿'use strict';
-//17/09/25
+//08/10/25
 
 /* global menusEnabled:readable, readmes:readable, menu:readable, newReadmeSep:readable, scriptName:readable, defaultArgs:readable, disabledCount:writable, menuAltAllowed:readable, menuDisabled:readable, menu_properties:writable, overwriteMenuProperties:readable, configMenu:readable, specialMenu:readable, deferFunc:readable, menu_propertiesBack:readable */
 
@@ -8,7 +8,7 @@
 // Music Map
 {
 	const scriptPath = folders.xxx + 'main\\search_by_distance\\search_by_distance.js';
-	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable */ // eslint-disable-line no-unused-vars
+	/* global SearchByDistance_properties:readable, updateCache:readable, sbd:readable, findStyleGenresMissingGraphCheck:readable, searchByDistance:readable, findStyleGenresMissingGraph:readable, music_graph_descriptors_culture:readable, graphDebug:readable, testGraphNodes:readable, testGraphNodeSets:readable, testGraphNodeSetsWithPath:readable, testGraphCulture:readable, cacheLink:writable, cacheLinkSet:writable, tagsCache:readable, SearchByDistance_panelProperties:readable */ // eslint-disable-line no-unused-vars
 	if (_isFile(scriptPath)) {
 		if (!Object.hasOwn(menusEnabled, specialMenu) || menusEnabled[specialMenu] || !Object.hasOwn(menusEnabled, 'Pools (Music Map)') || menusEnabled['Pools (Music Map)']) {
 			if (!Object.hasOwn(menu_properties, 'bHarmonicMixDoublePass')) { menu_properties['bHarmonicMixDoublePass'] = ['Harmonic mixing double pass to match more tracks', true]; }
@@ -18,11 +18,14 @@
 			// Delete unused properties
 			const toAdd = ['bAscii', 'bTagsCache', 'tags', 'genreStyleFilterTag', 'folksonomyWhitelistTag', 'folksonomyBlacklistTag', 'filePaths'];
 			let toMerge = {}; // Deep copy
-			Object.keys(SearchByDistance_properties).forEach((key) => {
-				if (toAdd.includes(key)) {
+			toAdd.forEach((key) => {
+				if (Object.hasOwn(SearchByDistance_properties, key)) {
 					toMerge[key] = [...SearchByDistance_properties[key]];
-					toMerge[key][0] = '\'Music Map\' ' + toMerge[key][0];
-				}
+					toMerge[key][0] = '\'' + sbd.name + '\' ' + toMerge[key][0];
+				} else if (Object.hasOwn(SearchByDistance_panelProperties, key)) {
+					toMerge[key] = [...SearchByDistance_panelProperties[key]];
+					toMerge[key][0] = '\'' + sbd.name + '\' ' + toMerge[key][0];
+				} else { console.log(scriptName + ': error merging ' + sbd.name + ' property (' + key + ')'); }
 			});
 			// Run once at startup
 			deferFunc.push({
@@ -42,6 +45,9 @@
 			}
 			if (!Object.hasOwn(menu_properties, 'smartShuffleSortBias')) {
 				menu_properties['smartShuffleSortBias'] = ['Smart shuffle sorting bias', 'random', { func: isStringWeak }, 'random'];
+			}
+			if (!Object.hasOwn(menu_properties, 'smartShuffleTag')) {
+				menu_properties['smartShuffleTag'] = ['Smart shuffle tag', JSON.stringify([globTags.artist]), { func: isJSON }, JSON.stringify([globTags.artist])];
 			}
 			// Set default args
 			const scriptDefaultArgs = { properties: menu_properties, bNegativeWeighting: true, bUseAntiInfluencesFilter: false, bUseInfluencesFilter: false, method: '', scoreFilter: 70, graphDistance: 100, poolFilteringTag: [], poolFilteringN: -1, bPoolFiltering: false, bRandomPick: true, bInversePick: false, probPick: 100, bSortRandom: false, bProgressiveListOrder: false, bInverseListOrder: false, bScatterInstrumentals: false, bSmartShuffle: true, bSmartShuffleAdvc: menu_properties.bSmartShuffleAdvc[1], smartShuffleSortBias: menu_properties.smartShuffleSortBias[1], artistRegionFilter: -1, bInKeyMixingPlaylist: false, bProgressiveListCreation: false, progressiveListCreationN: 1, bCreatePlaylist: true };
@@ -190,9 +196,10 @@
 											{	// Cache
 												const options = ['bAscii', 'bTagsCache'];
 												options.forEach((key) => {
+													if (key === 'bTagsCache') { return; }
 													const propObj = key === 'bTagsCache' ? sbd.panelProperties : menu_properties;
 													const keyText = propObj[key][0];
-													const entryText = (keyText.substring(keyText.indexOf('.') + 1) + (key === 'bTagsCache' && !isFoobarV2 ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ', '');
+													const entryText = (keyText.substring(keyText.indexOf('.') + 1).replace('\'' + sbd.name + '\' ', '') + (key === 'bTagsCache' && !isFoobarV2 ? '\t-only Fb >= 2.0-' : '')).replace('\'Search similar\' ', '');
 													menu.newEntry({
 														menuName: sm, entryText, func: () => {
 															propObj[key][1] = !propObj[key][1];
