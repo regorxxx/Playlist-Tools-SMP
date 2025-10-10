@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/08/25
+//07/10/25
 
 /*
 	Save tags
@@ -18,7 +18,7 @@
 include('..\\..\\helpers\\helpers_xxx.js');
 /* global folders:readable, popup:readable */
 include('..\\..\\helpers\\helpers_xxx_file.js');
-/* global WshShell:readable, _jsonParseFileCheck:readable, utf8:readable, _isFolder:readable, _createFolder:readable, _save:readable,  */
+/* global WshShell:readable, _jsonParseFileCheck:readable, utf8:readable, _save:readable,  */
 
 function saveTags({
 	selItems = plman.GetPlaylistSelectedItems(plman.ActivePlaylist),
@@ -55,7 +55,6 @@ function saveTags({
 		handleInfo.handleTags = handleTags;
 		tags.push(handleInfo);
 	}
-	if (!_isFolder(folders.data)) { _createFolder(folders.data); }
 	_save(file, JSON.stringify(tags, null, '\t').replace(/\n/g, '\r\n'));
 }
 
