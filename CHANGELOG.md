@@ -74,6 +74,7 @@
 - Playlist Tools\Pools: 'SORTED BY' expressions not working properly on 'Custom pool...' entry.
 - Export settings: added missing buttons file on zip.
 - Import settings: multiple fixes to extra data files importing.
+- Batch tagger: fix handling of custom tags for some tools.
 
 ## [5.1.0] - 2025-09-29
 ### Added
