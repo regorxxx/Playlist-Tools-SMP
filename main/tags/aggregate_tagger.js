@@ -1,5 +1,5 @@
 ﻿'use strict';
-//06/09/25
+//13/10/25
 
 /* exported aggregateTagger */
 
@@ -82,7 +82,7 @@ function aggregateTagger(handleList, source = '[%RATING%]', destination = 'ALBUM
 		val = sourceTF.EvalWithMetadb(handle) || options.defaultVal;
 		if (val !== null) {
 			groupCount = bCountNumber ? count : (Number(countTF.EvalWithMetadb(handle)) || 0);
-			val.split(sep).forEach((subVal) => {
+			val.toString().split(sep).filter((s) => s !== '').forEach((subVal) => {
 				dic.set(subVal, (dic.get(subVal) || 0) + groupCount);
 			});
 			sum += Number(val) || 0;

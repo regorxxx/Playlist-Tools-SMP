@@ -79,6 +79,8 @@
 - Export settings: added missing buttons file on zip.
 - Import settings: multiple fixes to extra data files importing.
 - Batch tagger: fix handling of custom tags for some tools.
+- Group tagger: fixed handling of empty tags on some cases.
+- Group tagger: fixed handling of non-string tags on some cases.
 
 ## [5.1.0] - 2025-09-29
 ### Added
