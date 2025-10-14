@@ -2,6 +2,7 @@
 
 ## [Table of Contents]
 - [Unreleased](#unreleased)
+- [5.1.1](#511---2025-10-14)
 - [5.1.0](#510---2025-09-29)
 - [5.0.0](#500---2025-09-20)
 - [4.6.0](#460---2024-10-09)
@@ -66,6 +67,12 @@
 - [1.0.0](#100---2021-05-02)
 
 ## [Unreleased][]
+### Added
+### Changed
+### Removed
+### Fixed
+
+## [5.1.1] - 2025-10-14
 ### Added
 ### Changed
 - Playlist Tools: added setting for Smart Shuffle tag.
@@ -1473,7 +1480,8 @@
 ### Removed
 ### Fixed
 
-[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.1.0...HEAD
+[Unreleased]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.1.1...HEAD
+[5.1.1]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.1.0...v5.1.1
 [5.1.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.6.0...v5.0.0
 [4.6.0]: https://github.com/regorxxx/Playlist-Tools-SMP/compare/v4.5.0...v4.6.0
